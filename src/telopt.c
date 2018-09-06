@@ -293,7 +293,7 @@ ttypeSBHandle(void)
     putSock1(SB);
     putSock1(TELOPT_TTYPE);
     putSock1(TELQUAL_IS);
-    putSockN(atcmd.pt.str, atcmd.pt.len);
+    putSockN((uchar *)atcmd.pt.str, atcmd.pt.len);
     putSock1(IAC);
     putSock1(SE);
     verboseOut(VERB_TELOPT, "> SB %s IS %s SE\r\n",
