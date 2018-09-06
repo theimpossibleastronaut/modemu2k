@@ -1,6 +1,7 @@
 SUBDIRS = src
 packextrasdir=@docdir@
-EXTRA_DIST = 	COPYING README QuickStart \
+EXTRA_DIST = 	COPYING README QuickStart INSTALL AUTHORS ChangeLog \
+		NEWS CONTRIBUTING.md CODE_OF_CONDUCT.md	\
 		examples/m2k-minicom.sh
 		examples/xc-sends-mail
 packextras_DATA=$(EXTRA_DIST)
@@ -10,6 +11,6 @@ VERSION = @VERSION@
 
 ACLOCAL_AMFLAGS = --install -I m4
 
-AUTOMAKE_OPTIONS = subdir-objects foreign no-dependencies
+AUTOMAKE_OPTIONS = subdir-objects no-dependencies
 
 dist_man_MANS = modemu2k.1

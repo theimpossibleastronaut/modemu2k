@@ -1,0 +1,16 @@
+modemu2k ChangeLog
+
+2018-09-06
+
+* Added quit instructions to start-up screen
+* auto-generated config.h is now used
+* man file will now install
+
+
+2018-09-05
+
+* applied patch from https://github.com/aur-archive/modemu
+* Added configure script, autoconf and automake file
+* increase version to 0.0.2-dev
+* modemu2k Fork created
+

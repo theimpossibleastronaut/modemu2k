@@ -190,8 +190,9 @@ ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = $(SUBDIRS)
-am__DIST_COMMON = $(dist_man_MANS) $(srcdir)/Makefile.in COPYING \
-	README compile depcomp install-sh missing
+am__DIST_COMMON = $(dist_man_MANS) $(srcdir)/Makefile.in AUTHORS \
+	COPYING ChangeLog INSTALL NEWS README compile depcomp \
+	install-sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -322,12 +323,13 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = src
 packextrasdir = @docdir@
-EXTRA_DIST = COPYING README QuickStart \
+EXTRA_DIST = COPYING README QuickStart INSTALL AUTHORS ChangeLog \
+		NEWS CONTRIBUTING.md CODE_OF_CONDUCT.md	\
 		examples/m2k-minicom.sh
 
 packextras_DATA = $(EXTRA_DIST)
 ACLOCAL_AMFLAGS = --install -I m4
-AUTOMAKE_OPTIONS = subdir-objects foreign no-dependencies
+AUTOMAKE_OPTIONS = subdir-objects no-dependencies
 dist_man_MANS = modemu2k.1
 all: all-recursive
 
@@ -338,15 +340,15 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnu'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnu \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign Makefile
+	  $(AUTOMAKE) --gnu Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
