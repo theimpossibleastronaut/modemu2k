@@ -45,9 +45,9 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
   > atd"localhost
 
-  (prompt ">" is not shown) and you will see your host's login prompt.
-  When logout, you will get "NO CARRIER" indication.
-  Then input
+  (prompt ">" is not shown) You will see your host's login prompt
+  (if a server is running). When you disconnect, you will get "NO
+  CARRIER" indication. Then input
 
   > at%q
 
@@ -55,8 +55,7 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
 2) With a comm program
 
-  (This example uses XC as the comm program. The author haven't tested
-  any other programs.)
+  (This example uses XC as the comm program)
 
   Invoke with "-c" option,
 
@@ -73,7 +72,7 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
 (*) Almost all file xfer protocols require 8bit through connection,
 which means Modemu2k must be in the binary transmission mode.  See %B
-command description in man pages.
+command description in the man page.
 
 More details are in the QuickStart guide
 <https://github.com/theimpossibleastronaut/modemu2k/blob/master/QuickStart>
