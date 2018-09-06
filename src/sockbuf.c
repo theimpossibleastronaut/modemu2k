@@ -75,7 +75,7 @@ putSock1(uchar c)
 }
 
 void
-putSockN(const uchar *cp, int n)
+putSockN(const char *cp, int n)
 {
     for (; n > 0; n--,cp++) putSock1(*cp);
 }
