@@ -1,0 +1,2 @@
+Makefile* linguist-language=C
+*.sh linguist-language=C
