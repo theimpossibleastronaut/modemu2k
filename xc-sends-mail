@@ -1,8 +1,8 @@
 #!/usr/local/bin/xc -s
 
-# Modemu + xc sample script: "Xc talks SMTP and sends you a mail."
+# Modemu2k + xc sample script: "Xc talks SMTP and sends you a mail."
 # Usage:
-#     modemu -c 'xc -l tty%s -s xc-sends-mail'
+#     modemu2k -c 'xc -l tty%s -s xc-sends-mail'
 
 assign HOST eq `hostname`
 assign TOADR eq $LOGNAME
@@ -35,10 +35,10 @@ if ! waitfor "354" 10; then exit; endif
 
 transmit "From: "
 transmit $LOGNAME
-transmit " (A satisfied modemu user :)^M"
-transmit "Subject: Sample mail for modemu demo^M"
+transmit " (A satisfied modemu2k user :)^M"
+transmit "Subject: Sample mail for modemu2k demo^M"
 transmit "^M"
-transmit "This mail was sent to you by modemu + xc.^M"
+transmit "This mail was sent to you by modemu2k + xc.^M"
 
 transmit "^M.^M"
 #250 Mail accepted
