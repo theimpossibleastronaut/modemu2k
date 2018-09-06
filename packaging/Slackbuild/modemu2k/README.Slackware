@@ -20,16 +20,19 @@ Compilation
 
 ./configure
     Use ./configure --help to see extra options
+
 make
-make install
 
-Note: You can run the binary from the src/ directory without installing
+`make install` is optional. The binary can be run from the src/
+directory.
 
-Making SOCKSified or Termified Modemu2k may also require changes to
+Making SOCKSified or Termified Modemu2k may require changes to
 src/Makefile.am.
 
 Sample Usage
 ------------
+
+Note: while in the program if backspace doesn't work, use CTRL+H.
 
 1) Stand alone usage
 
@@ -71,3 +74,6 @@ Sample Usage
 (*) Almost all file xfer protocols require 8bit through connection,
 which means Modemu2k must be in the binary transmission mode.  See %B
 command description in man pages.
+
+More details are in the QuickStart guide
+<https://github.com/theimpossibleastronaut/modemu2k/blob/master/QuickStart>
