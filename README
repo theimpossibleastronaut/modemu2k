@@ -14,15 +14,15 @@ License: GNU GPL 3
 Compilation
 -----------
 
-On Linux, just type "make".  Other systems require some changes in
-Makefile and/or sources.  "Make install" is not supported.  Just copy
-the executable file "modemu2k" to a directory in your $PATH.  Only the
-executable file is required to run.
+./configure
+    Use ./configure --help to see extra options
+make
+make install
 
-Making SOCKSified or Termified Modemu2k also requires changes in
-Makefile.  Revive some commented-out lines and rewrite directory
-specifications to reflect your configurations.
+Note: You can run the binary from the src/ directory without installing
 
+Making SOCKSified or Termified Modemu2k may also require changes to
+src/Makefile.am.
 
 Sample Usage
 ------------

@@ -1,0 +1,4 @@
+autom4te.cache
+*~
+*.geany
+lex.yy.c
