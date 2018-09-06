@@ -11,3 +11,5 @@ VERSION = @VERSION@
 ACLOCAL_AMFLAGS = --install -I m4
 
 AUTOMAKE_OPTIONS = subdir-objects foreign no-dependencies
+
+dist_man_MANS = modemu2k.1
