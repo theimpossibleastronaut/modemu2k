@@ -1,4 +1,5 @@
 #include <stdio.h>	/*stderr*/
+#include <stdlib.h>
 #include <signal.h>	/*SIGCHLD*/
 #include <unistd.h>	/*(fork,execv)*/
 #include <string.h>	/*(strdup)*/

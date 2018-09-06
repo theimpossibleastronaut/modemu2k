@@ -1,4 +1,5 @@
 #include <stdio.h>	/*stderr,(fprintf)*/
+#include <stdlib.h>
 #include <sys/time.h>	/*->ttybuf.h (timeval)*/
 #define TELCMDS /*to use strings defined in telnet.h*/
 #define TELOPTS
@@ -34,9 +35,9 @@ telOptReset(void)
     TelOptStates *tosp;
 
     for (tosp = stTabMaster; tosp->opt >= 0; tosp++) {
-	tosp->local.state = 
+	tosp->local.state =
 	tosp->remote.state = 0; /* all options are disabled initially */
-	tosp->local.pending = 
+	tosp->local.pending =
 	tosp->remote.pending = 0;
     }
     telOpt.binsend =
@@ -154,7 +155,7 @@ telOptSendReqs(void)
 	    }
 	    break;
 	default:;
-	}	    
+	}
 	switch (tosp->remote.req) {
 	case TOR_MUSTNOT:
 	case TOR_BETTERNOT:
@@ -173,7 +174,7 @@ telOptSendReqs(void)
 	    }
 	    break;
 	default:;
-	}	    
+	}
     }
     telOpt.sentReqs = 1;
 }

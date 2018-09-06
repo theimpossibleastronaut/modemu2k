@@ -30,7 +30,7 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <sys/stat.h>
 #include <stdio.h>	/*(printf,fprintf)*/
 #include <ctype.h>	/*isprint*/
 #include <arpa/telnet.h>/*IAC,DO,DONT,...*/

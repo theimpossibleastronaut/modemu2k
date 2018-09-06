@@ -1,4 +1,5 @@
 #include <stdio.h>	/*stderr,(perror)*/
+#include <stdlib.h>
 #include <unistd.h>	/*(read,write)*/
 #include <sys/time.h>	/*->ttybuf.h (timeval)*/
 
