@@ -187,8 +187,8 @@ ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = $(SUBDIRS)
-am__DIST_COMMON = $(srcdir)/Makefile.in COPYING README TODO compile \
-	depcomp install-sh missing
+am__DIST_COMMON = $(srcdir)/Makefile.in COPYING README compile depcomp \
+	install-sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -319,7 +319,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = src
 packextrasdir = @docdir@
-EXTRA_DIST = COPYING README
+EXTRA_DIST = COPYING README QuickStart example_minicom.sh xc-sends-mail
 packextras_DATA = $(EXTRA_DIST)
 ACLOCAL_AMFLAGS = --install -I m4
 AUTOMAKE_OPTIONS = subdir-objects foreign no-dependencies
