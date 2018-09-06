@@ -1,4 +1,4 @@
-modemu2k is a fork of modemu. Originally developed by Toru Egashira
+modemu2k is a fork of modemu, originally developed by Toru Egashira
 
 (Travis Build status
 <https://travis-ci.org/theimpossibleastronaut/modemu2k>)
@@ -6,12 +6,13 @@ modemu2k is a fork of modemu. Originally developed by Toru Egashira
 What is Modemu2k?
 ---------------
 
-Modemu2k is a TELNET client with a modem-like user interface.  It can
-redirect its I/O to a pty so that a comm program can handle the pty as
-a tty with a real modem.
+modemu2k adds telnet capability to a comm program.
+It can redirect telnet I/O to a pty so that a comm program
+can handle the pty as a tty with a real modem.
 
 Maintainer: Andy Alt
 License: GNU GPL 3
+Home page: https://github.com/theimpossibleastronaut/modemu2k
 
 
 Compilation
