@@ -5,7 +5,7 @@
 # Written by (Andy Alt) (andy400-dev@yahoo.com)
 
 PRGNAM=modemu2k
-VERSION=${VERSION:-0.0.02}
+VERSION=${VERSION:-0.0.2}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 
