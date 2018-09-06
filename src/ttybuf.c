@@ -67,7 +67,7 @@ putTty1(uchar c)
 }
 
 void
-putTtyN(const uchar *cp, int n)
+putTtyN(const char *cp, int n)
 {
     for (; n > 0; n--,cp++) putTty1(*cp);
 }

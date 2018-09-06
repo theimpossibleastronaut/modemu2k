@@ -55,4 +55,4 @@ ttyBufWrite(void);
 void
 putTty1(uchar c);
 void
-putTtyN(const uchar *cp, int n);
+putTtyN(const char *cp, int n);
