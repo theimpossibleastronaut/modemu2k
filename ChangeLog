@@ -5,6 +5,7 @@ modemu2k ChangeLog
 * Added quit instructions to start-up screen
 * auto-generated config.h is now used
 * man file will now install
+* issue v0.0.2 release
 
 
 2018-09-05
