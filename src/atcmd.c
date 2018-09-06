@@ -1,3 +1,30 @@
+/*
+ * atcmd.c
+ *
+ * Copyright 2018 Andy <andy400-dev@yahoo.com>
+ *
+ * modemu2k is a fork of modemu
+ * Originally developed by Toru Egashira
+ * Copyright (c) 1995, 1996
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ *
+ */
+
 #include <stdio.h>	/*stderr,(sscanf,sprintf)*/
 #include <string.h>	/*(strncpy)*/
 #include <stdlib.h>	/*(getenv)*/
@@ -172,7 +199,7 @@ static void
 prVersion(void)
 {
     putTty1(CHAR_CR); putTty1(CHAR_LF);
-    putTtyStr("modemu version " LIT(VERSION_MAJOR) "." LIT(VERSION_MINOR));
+    putTtyStr("modemu2k version " VERSION);
     putTty1(CHAR_CR); putTty1(CHAR_LF);
 }
 
@@ -185,7 +212,7 @@ atcmdI(const char *s)
     switch (idx) {
     case 4:
 	putTty1(CHAR_CR); putTty1(CHAR_LF);
-	putTtyStr("MODEMU current settings:");
+	putTtyStr("MODEMU2K current settings:");
 	putTty1(CHAR_CR); putTty1(CHAR_LF);
 	prPercent(&atcmd);
 	prSreg(atcmd.s);
@@ -193,7 +220,7 @@ atcmdI(const char *s)
 	break;
     case 5:
 	putTty1(CHAR_CR); putTty1(CHAR_LF);
-	putTtyStr("MODEMU '&W'ed settings:");
+	putTtyStr("MODEMU2K '&W'ed settings:");
 	putTty1(CHAR_CR); putTty1(CHAR_LF);
 	prPercent(&atcmdNV);
 	prSreg(atcmdNV.s);
