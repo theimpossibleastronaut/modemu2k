@@ -2,3 +2,12 @@ autom4te.cache
 *~
 *.geany
 lex.yy.c
+
+src/*.o
+src/.deps
+config.h
+Makefile
+src/modemu2k
+src/stamp-h1
+config.log
+config.status
