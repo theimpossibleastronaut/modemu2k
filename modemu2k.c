@@ -1,3 +1,33 @@
+/*
+ * modemu2k.c
+ *      Modemu2k adds Telnet capability to a comm program.
+ *      It can redirect Telnet I/O to a pty so that a comm program
+ *      can handle the pty as a tty with a real modem.
+ *
+ * Copyright 2018 Andy <andy400-dev@yahoo.com>
+ *
+ * modemu2k is a fork of modemu
+ * Originally developed by Toru Egashira
+ * Copyright (c) 1995, 1996
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ *
+ */
+
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -363,7 +393,7 @@ cmdMode(void)
     cmdBufReset();
     ttyBufRReset();
     /*ttyBufWReset();*/
-    
+
     for (;;) {
 	FD_ZERO(&rfds);
 	FD_ZERO(&wfds);
@@ -390,7 +420,7 @@ cmdMode(void)
 		    putTtyCmdstat(stat);
 		    break;
 		default:; /*CMDST_NOCMD*/
-		}		
+		}
 	    }
 	}
 	if (FD_ISSET(tty.rfd, &rfds)) {
@@ -484,13 +514,13 @@ getPtyMaster(char **line_return)
     line[5] = 't';
     rc = chown(line, getuid(), getgid());
     if(rc < 0) {
-        fprintf(stderr, 
+        fprintf(stderr,
                 "Warning: could not change ownership of tty -- "
                 "pty is insecure!\n");
     }
     rc = chmod(line, S_IRUSR | S_IWUSR | S_IWGRP);
     if (rc < 0) {
-        fprintf(stderr, 
+        fprintf(stderr,
                 "Warning: could not change permissions of tty -- "
                 "pty is insecure!\n");
     }
@@ -614,7 +644,7 @@ main(int argc, const char *argv[])
     }
 
     return 1;
-    
+
  ONLINE:
     putTtyCmdstat(CMDST_CONNECT);
     switch (onlineMode()) {
@@ -625,7 +655,7 @@ main(int argc, const char *argv[])
 	putTtyCmdstat(CMDST_OK);
 	goto CMDMODE;
     default:;
-    }	
+    }
 
     return 1;
 }

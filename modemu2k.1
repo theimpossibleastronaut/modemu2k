@@ -1,34 +1,34 @@
 .\" -*- nroff -*-
-.TH MODEMU 1 "1 April 1995" "Version 0.0"
+.TH MODEMU2k 1 "1 April 1995" "Version 0.0.2"
 .\"
 .\"
 .SH NAME
 .\"
-modemu \- dialup TCP connecting
+modemu2k \- dialup TCP connecting
 .\"
 .\"
 .SH SYNOPSIS
 .\"
-.B modemu
+.B modemu2k
 [\fB-c \fIcomm_prog\fR] [\fB-d \fIpty_master\fR] [\fB-e \fIatcmds\fR]
 [\fB-h\fR] [\fB-s\fR] [\fB-\fR]
 .\"
 .\"
 .SH DESCRIPTION
 .\"
-.B Modemu
+.B Modemu2k
 is a TELNET client with a modem-like user interface.
 It can redirect its I/O via a
 .BR pty (4)
 so that a comm program can handle the pty as a tty with a real modem.
 .PP
-.B Modemu
+.B Modemu2k
 has two major modes: a command mode and online mode.
 When invoked,
-.B modemu
+.B modemu2k
 is in the command mode, waiting for AT commands input.
 Entering a D or O command will put into the online mode, in which \" <===
-.B modemu
+.B modemu2k
 communicate with a remote host.
 Connection closing or a escape command input returns to the command mode.
 .\"
@@ -38,18 +38,18 @@ Connection closing or a escape command input returns to the command mode.
 .TP
 .BI -c " comm_prog"
 Invoke a comm program \fIcomm_prog\fP.
-.B Modemu
+.B Modemu2k
 invokes it by passing /bin/sh an option `-c \fIcomm_prog\fP'.
 Therefore, any
 .BR sh (1)
 commands can be specified.
 The string \fIcomm_prog\fP can include a `%s',
-which will be replaced with the 
+which will be replaced with the
 device name of the slave device after removal of the initial "/dev/".
 .RS
 Example:
 .RS
-modemu -c "xc -l %s"
+modemu2k -c "xc -l %s"
 .RE
 .RE
 .\" ===== -d =====
@@ -59,7 +59,7 @@ Open a file \fIpty_master\fP and talk through it.
 A named pipe can be a
 .I pty_master
 as well as a pty master device because
-.B modemu
+.B modemu2k
 doesn't ioctl a \fIpty_master\fP.
 .\" ===== -e =====
 .TP
@@ -77,16 +77,16 @@ Print a usage summary.
 .B -s
 Print the last two letters of a device name.
 The device is a pty master device which
-.B modemu
+.B modemu2k
 talks through.
 Therefore, when
-.B modemu
+.B modemu2k
 prints `p8',
 comm program must open /dev/tty\fIp8\fP.
 .\" ===== - =====
 .TP
 .B `-'
-.B Modemu
+.B Modemu2k
 talks through the standard input/output. (Default)
 .\" ==========
 .PP
@@ -122,7 +122,7 @@ A (*) marks default settings.
 Dialing command.
 Open a connection to \fIhost\fP.
 If \fIport\fP is specified,
-.B modemu
+.B modemu2k
 attempts to connect with the port instead of the default TELNET port,
 and
 doesn't initiate TELNET option negotiation.
@@ -173,7 +173,7 @@ Current settings
 .IP I6
 TELNET option states
 .IP I7
-.B Modemu
+.B Modemu2k
 version
 .RE
 .\" ===== O =====
@@ -226,7 +226,7 @@ Valid values for \fIn\fP are:
 .RS
 .RS
 .IP 0
-Control the local (modemu) option
+Control the local (modemu2k) option
 .IP 1
 Control the remote (TELNET server) option
 .RE
@@ -245,10 +245,10 @@ Disconnect if the request is refused
 Example:
 .RS
 .IP AT%B1=1
-Requesting binary mode in remote-to-modemu direction
+Requesting binary mode in remote-to-modemu2k direction
 .IP AT%B0=3%B1=3
 Requesting binary mode
-in both remote-to-modemu and modemu-to-remote direction.
+in both remote-to-modemu2k and modemu2k-to-remote direction.
 No use connecting in non-binary mode (using file xfer protocol or something)
 .RE
 .RE
@@ -277,7 +277,7 @@ Input characters are buffered and not sent until a CR character is entered.
 .TP
 .B %Q
 Quit
-.BR modemu .
+.BR modemu2k .
 .\" ===== %R =====
 .TP
 .BI %R n
@@ -287,9 +287,9 @@ Control raw-mode.
 Normal mode (*)
 .IP %R1
 Raw mode.
-.B Modemu
+.B Modemu2k
 transmits every octet as received.
-Applied to both remote-to-modemu and modemu-to-remote direction.
+Applied to both remote-to-modemu2k and modemu2k-to-remote direction.
 Override %B and %L settings.
 .RE
 .\" ===== %T =====
@@ -311,7 +311,7 @@ The closing double quote can be omitted if no command follows.
 .BI %V n
 Control verbose level.
 %V0 (*) is the quietest, and adding following values to \fIn\fP lets
-.B modemu
+.B modemu2k
 print more information to stderr.
 .RS
 .IP +1
@@ -323,7 +323,7 @@ Print TELNET option negotioation
 .\"
 .SH ONLINE MODE
 .\"
-.B Modemu
+.B Modemu2k
 recognizes only the following command when in online mode.
 .\" ===== +++ =====
 .TP
@@ -361,14 +361,14 @@ Connecting attempt time limit in seconds.
 (20)
 .TP
 .B S12
-Escape sequence guard time in 50ths of a second. 
+Escape sequence guard time in 50ths of a second.
 (50)
 .\"
 .\"
 .SH ENVIRONMENT VARIABLES
 .\"
 .TP
-.B MODEMU
+.B MODEMU2k
 Initially evaluated as AT commands
 (before -e option argument is evaluated).
 Must have an `AT' or `at' prefix.
@@ -390,5 +390,5 @@ telnet(1),
 .\"
 No dial-resriction, or blacklisting, capability.
 So using
-.B modemu
+.B modemu2k
 maybe unlawful in some countries. B)

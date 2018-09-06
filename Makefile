@@ -46,21 +46,21 @@ LFLAGS	=
 LDFLAGS	= $(LDFLAGS_OS) $(LDFLAGS_PS) $(LDFLAGS_EXT)
 LIBS	= $(LIBS_EXT) $(LIBS_PS) $(LIBS_OS)
 
-all: modemu
+all: modemu2k
 
-OBJS	= modemu.o sockbuf.o ttybuf.o stty.o telopt.o sock.o atcmd.o \
+OBJS	= modemu2k.o sockbuf.o ttybuf.o stty.o telopt.o sock.o atcmd.o \
 	timeval.o commx.o cmdarg.o verbose.o \
 	lex.yy.o
-modemu: $(OBJS)
+modemu2k: $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
 
 lex.yy.c:
 	$(LEX) $(LFLAGS) cmdlex.l
 
 TAR	= tar
-TARTAR	= modemu.tar
-TARTARSRC = modemu-0.0.1.lsm README COPYING TODO modemu.1 \
-	Makefile depend defs.h modemu.c \
+TARTAR	= modemu2k.tar
+TARTARSRC = modemu2k-0.0.2.lsm README COPYING TODO modemu2k.1 \
+	Makefile depend defs.h modemu2k.c \
 	cmdlex.l cmdlex.h  sockbuf.c sockbuf.h  ttybuf.c ttybuf.h \
 	stty.c stty.h  telopt.c telopt.h  sock.c sock.h  atcmd.c atcmd.h \
 	timeval.c timeval.h  commx.c commx.h  cmdarg.c cmdarg.h \
@@ -70,7 +70,7 @@ tar: $(TARTAR)
 $(TARTAR): $(TARTARSRC)
 	$(TAR) cvf $(TARTAR) $(TARTARSRC)
 clean:
-	$(RM) modemu core *.o lex.yy.c
+	$(RM) modemu2k core *.o lex.yy.c
 tags:
 	$(RM) lex.yy.c
 	etags -t *.[ch]

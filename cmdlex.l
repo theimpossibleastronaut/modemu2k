@@ -1,5 +1,5 @@
 %{ /* -*- fundamental -*- */
-/* lexer spec. for modemu command mode */
+/* lexer spec. for modemu2k command mode */
 #include "cmdlex.h"	/*Cmdstat*/
 #include "defs.h"	/*->atcmd.h (uchar)*/
 #include "atcmd.h"	/*(atcmdDAddr)*/
