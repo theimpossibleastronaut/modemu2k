@@ -7,4 +7,4 @@
 # <https://github.com/theimpossibleastronaut/modemu2k>
 
 
-TERM=ansi src/modemu2k -e "AT%B0=1%B1=1&W" -c "minicom -l -tansi -con -p %s"
+TERM=ansi modemu2k -e "AT%B0=1%B1=1&W" -c "minicom -l -tansi -con -p %s"
