@@ -5,7 +5,7 @@ LIBS_EXT	=
 #{ OS specific part
 
 ## Linux
-CFLAGS_OS = -Wall
+CFLAGS_OS = -Wall -O2 -D_GNU_SOURCE
 LDFLAGS_OS =
 LIBS_OS =
 LEX	= flex

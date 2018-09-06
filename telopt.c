@@ -272,8 +272,10 @@ telOptHandle(int cmd, int opt)
 	    tostp->pending = 0;
 	    /* don't response because cmd is the response of my request */
 	} else {
-	    putOptCmd(posiResCmd, opt); /* positive response */
-	    printCmdOpt(">", posiResCmd, opt);
+          if (tostp->state == !reqState) { /* this may not happen */
+                putOptCmd(posiResCmd, opt); /* positive response */
+                printCmdOpt(">", posiResCmd, opt);
+            }
 	}
 	tostp->state = reqState; /* {en,dis}able option as requested */
     }

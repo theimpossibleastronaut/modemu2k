@@ -1,9 +1,17 @@
+#include <stdlib.h>
+#include <unistd.h>
+
 #include <stdio.h>	/*(printf,fprintf)*/
 #include <ctype.h>	/*isprint*/
 #include <arpa/telnet.h>/*IAC,DO,DONT,...*/
 #include <sys/time.h>	/*fd_set,FD_ZERO*/
 #include <fcntl.h>	/*O_RDWR*/
 #include <errno.h>	/*EINTR*/
+#include <string.h>
+
+#ifdef __GLIBC__
+#include <pty.h>
+#endif
 
 #include "defs.h"	/*uchar*/
 #include "sock.h"	/*sock*/
@@ -394,7 +402,6 @@ cmdMode(void)
 
 
 /* open a pty */
-
 static int
 openPtyMaster(const char *dev)
 {
@@ -407,6 +414,99 @@ openPtyMaster(const char *dev)
     }
     return fd;
 }
+
+#ifdef HAVE_GRANTPT
+
+static int
+getPtyMaster(char **line_return)
+{
+    int rc;
+    char name[12], *temp_line, *line = NULL;
+    int pty = -1;
+    char *name1 = "pqrstuvwxyzPQRST", *name2 = "0123456789abcdef";
+    char *p1, *p2;
+
+#ifdef HAVE_GRANTPT
+    pty = open("/dev/ptmx", O_RDWR);
+    if(pty < 0)
+        goto bsd;
+
+    rc = grantpt(pty);
+    if(rc < 0) {
+        close(pty);
+        goto bsd;
+    }
+
+    rc = unlockpt(pty);
+    if(rc < 0) {
+        close(pty);
+        goto bsd;
+    }
+
+    temp_line = ptsname(pty);
+    if(!temp_line) {
+        close(pty);
+        goto bsd;
+    }
+    line = malloc(strlen(temp_line) + 1);
+    if(!line) {
+        close(pty);
+        return -1;
+    }
+    strcpy(line, temp_line);
+
+    *line_return = line;
+    return pty;
+#endif /* HAVE_GRANTPT */
+
+  bsd:
+
+    strcpy(name, "/dev/pty??");
+    for(p1 = name1; *p1; p1++) {
+        name[8] = *p1;
+        for(p2 = name2; *p2; p2++) {
+            name[9] = *p2;
+            pty = open(name, O_RDWR);
+            if(pty >= 0)
+                goto found;
+            if(errno == ENOENT)
+                goto bail;
+            else
+                continue;
+        }
+    }
+
+    goto bail;
+
+  found:
+    line = malloc(strlen(name));
+    strcpy(line, name);
+    line[5] = 't';
+    rc = chown(line, getuid(), getgid());
+    if(rc < 0) {
+        fprintf(stderr, 
+                "Warning: could not change ownership of tty -- "
+                "pty is insecure!\n");
+    }
+    rc = chmod(line, S_IRUSR | S_IWUSR | S_IWGRP);
+    if (rc < 0) {
+        fprintf(stderr, 
+                "Warning: could not change permissions of tty -- "
+                "pty is insecure!\n");
+    }
+
+    *line_return = line;
+    return pty;
+
+  bail:
+    if(pty >= 0)
+        close(pty);
+    if(line)
+        free(line);
+    return -1;
+}
+
+#else
 
 #define PTY00 "/dev/ptyXX"
 #define PTY10 "pqrs"
@@ -436,6 +536,7 @@ getPtyMaster(char *tty10, char *tty01)
     exit(1);
     return fd;
 }
+#endif
 
 
 
@@ -447,19 +548,31 @@ main(int argc, const char *argv[])
 #endif
     cmdargParse(argv);
     switch (cmdarg.ttymode) {
+#ifdef HAVE_GRANTPT
+	char * ptyslave;
+    case CA_SHOWDEV:
+	tty.rfd = tty.wfd = getPtyMaster(&ptyslave);
+	printf("%s\n", ptyslave);
+	return 0;
+    case CA_COMMX:
+	tty.rfd = tty.wfd = getPtyMaster(&ptyslave);
+	commxForkExec(cmdarg.commx, ptyslave);
+	break;
+#else
 	char c10, c01;
+    case CA_SHOWDEV:
+	tty.rfd = tty.wfd = getPtyMaster(&c10, &c01);
+	printf("%c%c\n", c10, c01);
+	return 0;
+    case CA_COMMX:
+	tty.rfd = tty.wfd = getPtyMaster(&c10, &c01);
+	commxForkExec(cmdarg.commx, c10, c01);
+	break;
+#endif
     case CA_STDINOUT:
 	tty.rfd = 0;
 	tty.wfd = 1;
 	setTty();
-	break;
-    case CA_SHOWDEV:
-	tty.rfd = tty.wfd = getPtyMaster(&c10, &c01);
-	printf("%c%c\n", c10, c01);
-	break;
-    case CA_COMMX:
-	tty.rfd = tty.wfd = getPtyMaster(&c10, &c01);
-	commxForkExec(cmdarg.commx, c10, c01);
 	break;
     case CA_DEVGIVEN:
 	tty.rfd = tty.wfd = openPtyMaster(cmdarg.dev);

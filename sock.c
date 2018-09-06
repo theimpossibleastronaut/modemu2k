@@ -16,6 +16,7 @@
 #include <sys/time.h>	/*->ttybuf.h (timeval)*/
 #include <unistd.h>	/*(close)*/
 #include <errno.h>	/*EINPROGRESS*/
+#include <stdio.h>
 
 #include "sock.h"	/*sock*/
 #include "defs.h"	/*->atcmd.h (uchar)*/

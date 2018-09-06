@@ -44,12 +44,12 @@ Therefore, any
 .BR sh (1)
 commands can be specified.
 The string \fIcomm_prog\fP can include a `%s',
-which will be replaced with the last two letters of a device name.
-The device is a pty slave device which the comm program must open.
+which will be replaced with the 
+device name of the slave device after removal of the initial "/dev/".
 .RS
 Example:
 .RS
-modemu -c "xc -l tty%s"
+modemu -c "xc -l %s"
 .RE
 .RE
 .\" ===== -d =====

@@ -3,6 +3,7 @@
 #include <unistd.h>	/*(fork,execv)*/
 #include <string.h>	/*(strdup)*/
 #include <sys/wait.h>	/*WNOHANG*/
+#include "defs.h"
 #include "commx.h"	/*(commxForkExec)*/
 #include "verbose.h"	/*VERB_MISC*/
 
@@ -45,14 +46,28 @@ forkExec(char *s)
     }
 }
 
+#ifdef HAVE_GRANTPT
+void
+commxForkExec(const char *cmd, char *ptyslave)
+{
+    char *s;
+    s = malloc(strlen(cmd) + strlen(ptyslave)+1);
+    if (strcmp("/dev/", ptyslave) == 0 )
+       ptyslave += 5;
+    sprintf(s, cmd, ptyslave);
+    forkExec(s);
+}
+#else
 void
 commxForkExec(const char *cmd, char c10, char c01)
 {
-    char c[3];
+    char c[16];
     char *s;
 
-    c[0] = c10; c[1] = c01; c[2] = 0;
-    s = strdup(cmd);
+    strcpy(c, "tty");
+    c[3] = c10; c[4] = c01; c[5] = 0;
+    s = malloc(strlen(cmd) + strlen(c)+1);
     sprintf(s, cmd, c); /*'%s' -> 'p1' or sth*/
     forkExec(s);
 }
+#endif
