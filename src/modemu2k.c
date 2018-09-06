@@ -573,6 +573,8 @@ getPtyMaster(char *tty10, char *tty01)
 int
 main(int argc, const char *argv[])
 {
+    printf (PACKAGE_NAME" "VERSION"\n");
+    printf ("Enter 'at%%q' to quit\n\n");
 #ifdef SOCKS
     SOCKSinit(argv[0]);
 #endif
