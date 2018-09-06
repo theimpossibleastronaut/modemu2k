@@ -1,7 +1,7 @@
 /*
  * atcmd.c
  *
- * Copyright 2018 Andy <andy400-dev@yahoo.com>
+ * Copyright 2018 Andy Alt <andy400-dev@yahoo.com>
  *
  * modemu2k is a fork of modemu
  * Originally developed by Toru Egashira

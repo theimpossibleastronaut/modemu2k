@@ -4,7 +4,7 @@
  *      It can redirect Telnet I/O to a pty so that a comm program
  *      can handle the pty as a tty with a real modem.
  *
- * Copyright 2018 Andy <andy400-dev@yahoo.com>
+ * Copyright 2018 Andy Alt <andy400-dev@yahoo.com>
  *
  * modemu2k is a fork of modemu
  * Originally developed by Toru Egashira
