@@ -1,6 +1,8 @@
 SUBDIRS = src
 packextrasdir=@docdir@
-EXTRA_DIST = 	COPYING README QuickStart example_minicom.sh xc-sends-mail
+EXTRA_DIST = 	COPYING README QuickStart \
+		examples/m2k-minicom.sh
+		examples/xc-sends-mail
 packextras_DATA=$(EXTRA_DIST)
 
 PACKAGE = @PACKAGE@

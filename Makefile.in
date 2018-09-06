@@ -319,7 +319,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = src
 packextrasdir = @docdir@
-EXTRA_DIST = COPYING README QuickStart example_minicom.sh xc-sends-mail
+EXTRA_DIST = COPYING README QuickStart \
+		examples/m2k-minicom.sh
+
 packextras_DATA = $(EXTRA_DIST)
 ACLOCAL_AMFLAGS = --install -I m4
 AUTOMAKE_OPTIONS = subdir-objects foreign no-dependencies
@@ -802,6 +804,7 @@ uninstall-am: uninstall-packextrasDATA
 
 .PRECIOUS: Makefile
 
+		examples/xc-sends-mail
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
