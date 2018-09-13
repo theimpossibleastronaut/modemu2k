@@ -74,7 +74,7 @@ only work on one patch at a time.
 
 ### Syncing ###
 
-Periodically, especially before starting a new patch, you'll need the sync your
+Periodically, especially before starting a new patch, you'll need to sync your
 repo with the remote upstream. GitHub has instructions for doing this:
 
 1. [Configuring a remote for a fork](https://help.github.com/articles/configuring-a-remote-for-a-fork/)
