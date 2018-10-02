@@ -51,14 +51,6 @@ of your choice to [AUTHORS](https://github.com/theimpossibleastronaut/modemu2k).
 nice GUI front-end for adding files and entering commit messages
 (git-cola is probably available from your OS repository).
 
-If you're working on documentation or something else that doesn't
-require compilation, add
-
-    [skip ci]
-
-to the commit message. That way, the [Travis code integration test]
-(https://travis-ci.org/andy5995/hldig) will be skipped.
-
 9. Push the working branch (e.g. issue_32) to your remote fork and make
 your [pull request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/).
     * Do not merge it with the master branch on your fork. That would
