@@ -32,32 +32,32 @@ Git](https://github.com/grayghostvisuals/Practice-Git).
 
 ### Procedure
 
-2. [Fork the repo](https://github.com/theimpossibleastronaut/modemu2k#fork-destination-box) (if you haven't already done so)
+1. [Fork the repo](https://github.com/theimpossibleastronaut/modemu2k#fork-destination-box) (if you haven't already done so)
 
-3. Clone it to your computer
+2. Clone it to your computer
 
-4. When you're ready to work on an issue, be sure you're on the
+3. When you're ready to work on an issue, be sure you're on the
 **master** branch. From there, [create a separate
 branch](https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches)
 (e.g. issue_32)
 
-5. Make your changes. If you're unsure of some details while you're
+4. Make your changes. If you're unsure of some details while you're
 making edits, you can discuss them on the ticket.
 
-7. If you are a first time contributor, please add your name and link
+5. If you are a first time contributor, please add your name and link
 of your choice to [AUTHORS](https://github.com/theimpossibleastronaut/modemu2k).
 
-8. Commit your changes. [git-cola](https://git-cola.github.io/) is a
+6. Commit your changes. [git-cola](https://git-cola.github.io/) is a
 nice GUI front-end for adding files and entering commit messages
 (git-cola is probably available from your OS repository).
 
-9. Push the working branch (e.g. issue_32) to your remote fork and make
+7. Push the working branch (e.g. issue_32) to your remote fork and make
 your [pull request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/).
     * Do not merge it with the master branch on your fork. That would
     result in multiple, or unrelated patches being included in a single
     PR.
 
-10. If any further changes need to be made, comments will be made on the
+8. If any further changes need to be made, comments will be made on the
 pull request.
 
 It's possible to work on two or more different patches (and therefore
