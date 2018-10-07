@@ -1,30 +1,30 @@
 #ifdef TERMNET
 #include <termnet.h>
 #endif
-#include <sys/types.h>	/*->socket.h (u_short etc.)*/
-#include <sys/socket.h>	/*AF_INET*/
-#include <netinet/in.h>	/*sockaddr_in*/
-#include <arpa/inet.h>	/*(inet_addr)*/
-#include <string.h>	/*(memset)*/
-#include <netdb.h>	/*hostent,(gethostbyname)*/
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <string.h>
+#include <netdb.h>
 #ifdef USE_FILIO_H
-#include <sys/filio.h>	/*FIONBIO*/
+#include <sys/filio.h>
 #else
-#include <sys/ioctl.h>	/*FIONBIO*/
+#include <sys/ioctl.h>
 #endif
-#include <stdlib.h>	/*(atoi)*/
-#include <sys/time.h>	/*->ttybuf.h (timeval)*/
-#include <unistd.h>	/*(close)*/
-#include <errno.h>	/*EINPROGRESS*/
+#include <stdlib.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <errno.h>
 #include <stdio.h>
 
-#include "sock.h"	/*sock*/
-#include "defs.h"	/*->atcmd.h (uchar)*/
-#include "atcmd.h"	/*atcmd*/
-#include "telopt.h"	/*telOpt*/
-#include "ttybuf.h"	/*tty*/
-#include "timeval.h"	/*(timeval...)*/
-#include "verbose.h"	/*VERB_MISC*/
+#include "sock.h"
+#include "defs.h"
+#include "atcmd.h"
+#include "telopt.h"
+#include "ttybuf.h"
+#include "timeval.h"
+#include "verbose.h"
 
 void
 sockClose(void)
