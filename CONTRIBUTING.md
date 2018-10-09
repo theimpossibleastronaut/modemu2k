@@ -45,7 +45,7 @@ branch](https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git
 making edits, you can discuss them on the ticket.
 
 5. If you are a first time contributor, please add your name and link
-of your choice to [AUTHORS](https://github.com/theimpossibleastronaut/modemu2k).
+of your choice to [AUTHORS](https://github.com/theimpossibleastronaut/modemu2k/blob/master/AUTHORS).
 
 6. Commit your changes. [git-cola](https://git-cola.github.io/) is a
 nice GUI front-end for adding files and entering commit messages
