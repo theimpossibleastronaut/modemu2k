@@ -25,10 +25,10 @@
  *
  */
 
-#include <stdio.h>	/*stderr*/
+#include <stdio.h>              /*stderr */
 #include <stdlib.h>
-#include "cmdarg.h"	/*cmdarg*/
-#include "defs.h"	/*VERSION_...*/
+#include "cmdarg.h"             /*cmdarg */
+#include "defs.h"               /*VERSION_... */
 
 static const char *argv0;
 
@@ -37,9 +37,9 @@ static const char *argv0;
 #define LIT(s) LIT_(s)
 
 static void
-showUsage(void)
+showUsage (void)
 {
-    printf("\n\
+  printf ("\n\
 Usage: %s [OPTION]...\n\
 \n\
   -c comm_prog            invoke [comm_prog]\n\
@@ -53,58 +53,65 @@ Usage: %s [OPTION]...\n\
 \n\
 Note:  -c,  -d,  -s  and - options are exclusive each other.  If two or\n\
 more of the options are specified, only the last one is effective.\n\
-\n",
-  argv0);
+\n", argv0);
 }
 
 void
-cmdargParse(const char **argv)
+cmdargParse (const char **argv)
 {
-    argv0 = argv[0];
-    for (argv++; *argv != NULL; argv++) {
-	if ((*argv)[0] == '-') {
-	    switch ((*argv)[1]) {
-	    case 'c': /* -c <commx args>*/
-		cmdarg.ttymode = CA_COMMX;
-		cmdarg.commx = *++argv;
-		if (cmdarg.commx == NULL) goto FEWARG;
-		break;
-	    case 'd': /* -d <pty_device>*/
-		cmdarg.ttymode = CA_DEVGIVEN;
-		cmdarg.dev = *++argv;
-		if (cmdarg.dev == NULL) goto FEWARG;
-		break;
-	    case 'e': /* -e <atcommands>*/
-		cmdarg.atcmd = *++argv;
-		if (cmdarg.atcmd == NULL) goto FEWARG;
-		break;
-	    case 'h': /* -h */
-		showUsage();
-		exit(0);
-	    case 's': /* -s */
-		cmdarg.ttymode = CA_SHOWDEV;
-		break;
-    case 'v':
-      printf(PACKAGE_NAME" version " VERSION"\n");
-      exit(0);
-      break;
-    case '\0': /* - */
-		cmdarg.ttymode = CA_STDINOUT;
-		break;
-	    default:
-		fprintf(stderr, "Unknown option -%c.\n", (*argv)[1]);
-		showUsage();
-		exit(1);
-	    }
-	} else {
-	    fprintf(stderr, "Error in command line.\n");
-	    showUsage();
-	    exit(1);
-	}
+  argv0 = argv[0];
+  for (argv++; *argv != NULL; argv++)
+  {
+    if ((*argv)[0] == '-')
+    {
+      switch ((*argv)[1])
+      {
+      case 'c':                /* -c <commx args> */
+        cmdarg.ttymode = CA_COMMX;
+        cmdarg.commx = *++argv;
+        if (cmdarg.commx == NULL)
+          goto FEWARG;
+        break;
+      case 'd':                /* -d <pty_device> */
+        cmdarg.ttymode = CA_DEVGIVEN;
+        cmdarg.dev = *++argv;
+        if (cmdarg.dev == NULL)
+          goto FEWARG;
+        break;
+      case 'e':                /* -e <atcommands> */
+        cmdarg.atcmd = *++argv;
+        if (cmdarg.atcmd == NULL)
+          goto FEWARG;
+        break;
+      case 'h':                /* -h */
+        showUsage ();
+        exit (0);
+      case 's':                /* -s */
+        cmdarg.ttymode = CA_SHOWDEV;
+        break;
+      case 'v':
+        printf (PACKAGE_NAME " version " VERSION "\n");
+        exit (0);
+        break;
+      case '\0':               /* - */
+        cmdarg.ttymode = CA_STDINOUT;
+        break;
+      default:
+        fprintf (stderr, "Unknown option -%c.\n", (*argv)[1]);
+        showUsage ();
+        exit (1);
+      }
     }
-    return;
+    else
+    {
+      fprintf (stderr, "Error in command line.\n");
+      showUsage ();
+      exit (1);
+    }
+  }
+  return;
 
- FEWARG:
-    fprintf(stderr, "'-%c' requires an argument.\n", (*--argv)[1]);
-    exit(1);
+FEWARG:
+  fprintf (stderr, "'-%c' requires an argument.\n", (*--argv)[1]);
+  exit (1);
 }

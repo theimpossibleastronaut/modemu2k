@@ -44,4 +44,3 @@ typedef unsigned char uchar;
 #if defined(__GLIBC__) || defined(SVR4)
 #define HAVE_GRANTPT
 #endif
-

@@ -1,2 +1,1 @@
-void
-setTty(void);
+void setTty (void);
