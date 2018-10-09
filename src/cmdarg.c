@@ -40,8 +40,17 @@ static void
 showUsage(void)
 {
     printf(PACKAGE_NAME" version " VERSION"\n");
-    printf("usage: %s [-c comm_prog] [-d pty_master] [-e ATxxx]"
-	   " [-h] [-s] [-]\n", argv0);
+    printf("\n\
+Usage: %s [OPTION]...\n\
+\n\
+  -h                            display help\n\
+  -c comm_prog                  invoke modemu2k with a comm program\n\
+  -d pty_master                 which pty to use\n\
+  -e ATxxx]                     issue AT commands at startup\n\
+  -s                            show which device will be used\n\
+  -                             (needs documenting)\n\
+\n",
+  argv0);
 }
 
 void
