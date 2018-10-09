@@ -330,7 +330,7 @@ EXTRA_DIST = COPYING README QuickStart INSTALL AUTHORS ChangeLog \
 packextras_DATA = $(EXTRA_DIST)
 ACLOCAL_AMFLAGS = --install -I m4
 AUTOMAKE_OPTIONS = subdir-objects no-dependencies
-dist_man_MANS = modemu2k.1
+dist_man_MANS = man/modemu2k.1
 all: all-recursive
 
 .SUFFIXES:
