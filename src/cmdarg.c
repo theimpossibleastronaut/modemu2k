@@ -42,14 +42,17 @@ showUsage(void)
     printf("\n\
 Usage: %s [OPTION]...\n\
 \n\
-  -c comm_prog                  invoke modemu2k with a comm program\n\
-  -d pty_master                 which pty to use\n\
-  -e ATxxx]                     issue AT commands at startup\n\
-  -s                            show which device will be used\n\
-  -                             (needs documenting)\n\
+  -c comm_prog            invoke [comm_prog]\n\
+  -d pty_master           talk through [pty_master]\n\
+  -e ATxxx]               issue [ATxxx] commands at startup\n\
+  -s                      show which device will be used\n\
+  -                       talks through the standard input/output. (Default)\n\
 \n\
-  -h                            display help\n\
-  -v                            display version\n\
+  -h                      display help\n\
+  -v                      display version\n\
+\n\
+Note:  -c,  -d,  -s  and - options are exclusive each other.  If two or\n\
+more of the options are specified, only the last one is effective.\n\
 \n",
   argv0);
 }
