@@ -39,7 +39,7 @@ static const char *argv0;
 static void
 showUsage (void)
 {
-  printf ("\n\
+  printf ("\
 Usage: %s [OPTION]...\n\
 \n\
   -c comm_prog            invoke [comm_prog]\n\
