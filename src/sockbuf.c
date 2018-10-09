@@ -9,7 +9,7 @@
 #include "sockbuf.h"            /*sockBufR,sockBufW */
 #include "sock.h"               /*sock */
 #include "verbose.h"            /*VERB_MISC */
-
+
 
 /* reading socket */
 
@@ -34,7 +34,7 @@ sockBufRead (void)
   sockBufR.ptr = sockBufR.buf;
   sockBufR.end = sockBufR.buf + l;
 }
-
+
 
 /* writing socket */
 

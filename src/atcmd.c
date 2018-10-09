@@ -132,7 +132,7 @@ atcmdH (const char *s)
   }
   return 0;
 }
-
+
 
 /* In */
 /* n: 4(show current settings), 5(show '&W'ed settings) or */
@@ -273,7 +273,7 @@ atcmdI (const char *s)
   }
   return 0;
 }
-
+
 
 
 /* Sn? */

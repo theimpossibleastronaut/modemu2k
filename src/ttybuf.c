@@ -7,7 +7,7 @@
 #include "ttybuf.h"             /*sockBufR,sockBufW */
 #include "sock.h"               /*(sockShutdown) */
 #include "verbose.h"            /*VERB_MISC */
-
+
 
 /* reading tty */
 
@@ -30,7 +30,7 @@ ttyBufRead (void)
   ttyBufR.ptr = ttyBufR.buf;
   ttyBufR.end = ttyBufR.buf + l;
 }
-
+
 
 /* writing tty */
 

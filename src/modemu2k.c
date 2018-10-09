@@ -52,7 +52,7 @@
 #include "timeval.h"            /*(timeval...) */
 #include "commx.h"              /*(commxForkExec) */
 #include "cmdarg.h"             /*cmdarg */
-/* socket input processing loop */
+/* socket input processing loop */
   static void
 sockReadLoop (void)
 {
@@ -134,7 +134,7 @@ sockReadLoop (void)
     }
   }
 }
-
+
 
 /* TTY input processing loop */
 
@@ -280,7 +280,7 @@ ttyReadLoop (void)
     }
   }
 }
-
+
 
 /* online mode main loop */
 
@@ -364,7 +364,7 @@ onlineMode (void)
   sockShutdown ();
   return 0;
 }
-
+
 
 /* command mode input processing loop */
 
@@ -422,7 +422,7 @@ cmdReadLoop (void)
     }
   }
 }
-
+
 
 /* command mode main loop */
 
@@ -500,7 +500,7 @@ cmdMode (void)
     }
   }
 }
-
+
 
 /* open a pty */
 static int
@@ -650,8 +650,6 @@ getPtyMaster (char *tty10, char *tty01)
   return fd;
 }
 #endif
-
-
 
 int
 main (int argc, const char *argv[])

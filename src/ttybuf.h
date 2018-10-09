@@ -8,7 +8,7 @@ struct
   int rfd;
   int wfd;
 } tty;
-
+
 
 /* reading tty */
 
@@ -29,7 +29,7 @@ struct
 #define getTty1() ((ttyBufR.ptr >= ttyBufR.end)? -1 : *ttyBufR.ptr++)
 
 void ttyBufRead (void);
-
+
 
 /* writing tty */
 

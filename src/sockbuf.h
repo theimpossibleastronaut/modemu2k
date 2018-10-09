@@ -1,7 +1,7 @@
 #if 0
 #include "defs.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 #endif
-
+
 
 /* reading socket */
 
@@ -16,7 +16,7 @@ struct
 #define getSock1() ((sockBufR.ptr >= sockBufR.end)? -1 : *sockBufR.ptr++)
 
 void sockBufRead (void);
-
+
 
 /* writing socket */
 
