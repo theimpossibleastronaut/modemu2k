@@ -39,16 +39,17 @@ static const char *argv0;
 static void
 showUsage(void)
 {
-    printf(PACKAGE_NAME" version " VERSION"\n");
     printf("\n\
 Usage: %s [OPTION]...\n\
 \n\
-  -h                            display help\n\
   -c comm_prog                  invoke modemu2k with a comm program\n\
   -d pty_master                 which pty to use\n\
   -e ATxxx]                     issue AT commands at startup\n\
   -s                            show which device will be used\n\
   -                             (needs documenting)\n\
+\n\
+  -h                            display help\n\
+  -v                            display version\n\
 \n",
   argv0);
 }
@@ -80,7 +81,11 @@ cmdargParse(const char **argv)
 	    case 's': /* -s */
 		cmdarg.ttymode = CA_SHOWDEV;
 		break;
-	    case '\0': /* - */
+    case 'v':
+      printf(PACKAGE_NAME" version " VERSION"\n");
+      exit(0);
+      break;
+    case '\0': /* - */
 		cmdarg.ttymode = CA_STDINOUT;
 		break;
 	    default:
