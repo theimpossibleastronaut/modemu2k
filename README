@@ -10,9 +10,11 @@ modemu2k adds telnet capability to a comm program.
 It can redirect telnet I/O to a pty so that a comm program
 can handle the pty as a tty with a real modem.
 
-Maintainer: Andy Alt
+Maintainer: Andy Alt <andy400-dev@yahoo.com>
 License: GNU GPL 3
-Home page: https://github.com/theimpossibleastronaut/modemu2k
+Home page: <https://github.com/theimpossibleastronaut/modemu2k>
+
+Other contact/chat room: <https://gitter.im/modemu2k/Lobby>
 
 
 Compilation
