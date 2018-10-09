@@ -51,7 +51,7 @@ Usage: %s [OPTION]...\n\
   -h                      display help\n\
   -v                      display version\n\
 \n\
-Note:  -c,  -d,  -s  and - options are exclusive each other.  If two or\n\
+Note:  -c,  -d,  -s  and - options are exclusive of each other.  If two or\n\
 more of the options are specified, only the last one is effective.\n\
 \n", argv0);
 }
