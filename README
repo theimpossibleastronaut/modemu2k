@@ -67,8 +67,8 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
   > atd"localhost
 
-  Yes, Modemu2k makes the comm program a TELNET client.  Now you can use
-  comm program's scripting and file xfer(*) facilities on TELNET.
+  Yes, Modemu2k makes the comm program a telnet client. Now you can use a
+  comm program's scripting and file transfer features over telnet.
 
   To quit Modemu2k, just quit the comm program.
 
