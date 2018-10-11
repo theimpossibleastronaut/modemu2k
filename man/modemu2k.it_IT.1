@@ -1,0 +1,394 @@
+.\" -*- nroff -*-
+.TH MODEMU2k 1 "1 Aprile 1995" "Versione 0.0.2"
+.\"
+.\"
+.SH NOME
+.\"
+modemu2k \- connessione TCP dialup
+.\"
+.\"
+.SH SINOSSI
+.\"
+.B modemu2k
+[\fB-c \fIcomm_prog\fR] [\fB-d \fIpty_master\fR] [\fB-e \fIatcmds\fR]
+[\fB-h\fR] [\fB-s\fR] [\fB-\fR]
+.\"
+.\"
+.SH DESCRIZIONE
+.\"
+.B Modemu2k
+è un client TELNET con una interfaccia utente del tipo modem.
+Può redirezionare i suoi I/O attraverso un 
+.BR pty (4)
+in modo che un programma comm possa gestire i pty come un tty con un modem reale.
+.PP
+.B Modemu2k
+Ha due modalità pricipali: una modalità di comando e una modalità online.
+Quando invocato,
+.B modemu2k
+è nella modalità di comando, in attesa di un comando AT in ingresso.
+Inserendo un comando D oppure O lo collocherà nella modalità online, in cui \" <===
+.B modemu2k
+comunica con un host remoto.
+La chiusura della connessione o un comando di ritorna alla modalità di commando.
+.\"
+.\"
+.SH OPZIONI
+.\" ===== -c =====
+.TP
+.BI -c " comm_prog"
+Invoca un programma comm \fIcomm_prog\fP.
+.B Modemu2k
+lo invoca passando a /bin/sh un'opzione `-c \fIcomm_prog\fP'.
+Dunque, qualsiasi comando
+.BR sh (1)
+può essere specificato.
+La stringa \fIcomm_prog\fP può includere un `%s',
+che sarà rimpiazzato con
+il device name del dispositivo slave dopo aver rimosso il "/dev/" iniziale.
+.RS
+Esempio:
+.RS
+modemu2k -c "xc -l %s"
+.RE
+.RE
+.\" ===== -d =====
+.TP
+.BI -d " pty_master"
+Apre un file \fIpty_master\fP e comunica tramite di esso.
+Un pipe nominato può essere sia un
+.I pty_master
+che un dispositivo pty master dato che
+.B modemu2k
+non esegue ioctl su \fIpty_master\fP.
+.\" ===== -e =====
+.TP
+.BI -e " atcmds"
+Esegue una series di comandi AT \fIatcmds\fP inizialmente.
+.I Atcmds
+deve avere un prefisso `AT' o `at'.
+i comandi D e O sono ignorati in \fIatcmds\fP.
+.\" ===== -h =====
+.TP
+.B -h
+Stampa un riassunto dell'utilizzo.
+.\" ===== -s =====
+.TP
+.B -s
+Stampa le ultime due lettere del nome di un dispositivo.
+Il dispositivo è un master pty attraverso il quale
+.B modemu2k
+parla.
+Quindi, quando
+.B modemu2k
+stampa `p8',
+il programma comm deve aprire /dev/tty\fIp8\fP.
+.\" ===== - =====
+.TP
+.B `-'
+.B Modemu2k
+parla attraverso l'input/output standard. (Predefinito)
+.\" ==========
+.PP
+Nota: le opzioni -c, -d, -s e - sono esclusive.
+Se più di una opzione è specificata,
+solo l'ultima è effettiva.
+.\"
+.\"
+.SH MODALITA' DI COMANDO
+.\"
+La modalità di comando prevede una riga nel seguente formato:
+.IP ""
+[\fIgarbage\fP]\fIat\fP[\fIsp\fP][\fIcmd\fP[\fIsp\fP]]...\fIcr\fP
+.PP
+dove
+.I at
+è un `AT' o `at',
+.I sp
+sono spazi,
+.I cr
+è il carattere di ritorno a capo (registro S3),
+.I garbage
+è una stringa che non include \fIat\fP.
+Se un `#' precede una riga, questa è ignorata.
+Di seguito sono elencati i
+.IR cmd s
+disponibili.
+Sono tutti case in-sensitive ad eccezione di alcuni argomenti usati letteralmente.
+Un (*) marca le impostazioni predefinite.
+.\" ===== D =====
+.TP
+.BI D str
+Comando di composizione.
+Apre una connessione a \fIhost\fP.
+Se \fIport\fP è specificato,
+.B modemu2k
+prova a connettersi a quella porta nvece che alla porta predefinita per TELNET,
+e
+non inizia la negoziazione di operazioni TELNET.
+I formati seguenti sono disponibili per \fIstr\fP:
+.RS
+.TP
+\fIhost\fP[:\fIport\fP]
+\fIHost\fP è un indirizzo internet in notazione numeri-e-punti.
+Opzionale \fIport\fP è un numero di porta.
+.TP
+"\fIhost\fP[:\fIport\fP]["]
+\fIHost\fP è un indirizzo internet o un nome host.
+Opzionale \fIport\fP è un numero di porta o il nome di un servizio.
+La virgoletta doppia di chiusura può essere omessa se non segue nessun comando.
+.PP
+.I Str
+può essere preceduto da `T', `P', `\fIdigit\fPW' e/o `\fIdigit\fP,'.
+I prefissi sono semplicemente ignorati.
+.br
+Esempio:
+.RS
+ATDT0W127.0.0.1
+.br
+ATDP"foo.bar.jp:daytime
+.RE
+.RE
+.\" ===== E =====
+.TP
+.B E1
+Nessuna operazione.
+.\" ===== F =====
+.TP
+.B F1
+Nessuna operazione.
+.\" ===== H =====
+.TP
+.BR H [ 0 ]
+Chiude la sessione TELNET attuale.
+.\" ===== I =====
+.TP
+.BI I n
+Stampa varie informazioni.
+.RS
+.IP I4
+Impostazioni attuali
+.IP I5
+Configurazioni che sono state `&W'
+.IP I6
+stato delle opzioni TELNET
+.IP I7
+Versione di
+.B Modemu2k
+.RE
+.\" ===== O =====
+.TP
+.BR O [ 0 ]
+Ritorna alla modalità online.
+.\" ===== P =====
+.TP
+.B P
+Nessuna operazione.
+.\" ===== Q =====
+.TP
+.BR Q [ 0 ]
+Nessuna operazione.
+.TP
+.B T
+Nessuna operazione.
+.\" ===== V =====
+.TP
+.B V1
+Nessuna operazione.
+.\" ===== X =====
+.TP
+.BR X [ 0 ]
+Nessuna operazione.
+.\" ===== Sn=m =====
+.TP
+.BI S n = m
+Imposta il S-register S\fIn\fP a \fIm\fP.
+E' consentio un numero da 0 a 255 per \fIm\fP.
+.\" ===== Sn? =====
+.TP
+.BI S n ?
+Stampa il valore di un S-register S\fIn\fP.
+.\" ===== Z =====
+.TP
+.B Z
+Chiudi la sessione TELNET attuale, e ripristina le impostazioni che sono state `&W'.
+.\" ===== &W =====
+.TP
+.B &W
+Salva le impostazioni attuali.
+Le impostazioni salvate andranno perse alla fine del processo
+perchè non sono memorizzate nella NV-RAM o in files.
+.\" ===== %B =====
+.TP
+.BI %B n = m
+Controlla le opzioni binarie TELNET.
+I valori validi per \fIn\fP sono:
+.RS
+.RS
+.IP 0
+Controlla le opzioni locali (modemu2k)
+.IP 1
+Controlla le opzioni remote (server TELNET)
+.RE
+.PP
+I vaori validi per \fIm\fP sono:
+.RS
+.IP 0
+Richiedi la modalità di trasmissione non-binaria (*)
+.IP 1
+Richiedi la modalità di trasmissione binaria (8-bit)
+.TP
+.I above+2
+Disconnectti se la richiesta è rifiutata
+.RE
+.PP
+Esempio:
+.RS
+.IP AT%B1=1
+Richiesta della modalità binaria in direzione remoto-a-modemu2k
+.IP AT%B0=3%B1=3
+Richiesta modalità binaria
+sia in direzione remoto-a-modemu2k che modemu2k-a-remoto.
+Inutile connettersi in modalità non binaria (utilizzndo il protocollo file xfer o qualcosa del genere)
+.RE
+.RE
+.\" ===== %D =====
+.TP
+.BI %D n
+Annullamento della composizione.
+.RS
+.IP %D0
+Premere un tasto annulla la composizione (*)
+.IP %D1
+Premere un tasto non annulla la composizione
+.RE
+.\" ===== %L =====
+.TP
+.BI %L n
+Controllo modalità linea.
+.RS
+.IP %L0
+Richiedi modalità a un carattere alla volta (*)
+.IP %L1
+Richiedi modalità a una linea per volta (vecchia modalità linea).
+I caratteri di input sono inseriti in un buffer e non sono inviati finchè non si inserisce un carattere CR.
+.RE
+.\" ===== %Q =====
+.TP
+.B %Q
+Esci
+.BR modemu2k .
+.\" ===== %R =====
+.TP
+.BI %R n
+Controllo modalità raw.
+.RS
+.IP %R0
+Modalità normale (*)
+.IP %R1
+Modalità raw.
+.B Modemu2k
+trasmette gli octet come ricevuti.
+Applicato sia in direzione remoto-a-modemu2k che modemu2k-a-remoto..
+Ignora impostazioni %B e %L.
+.RE
+.\" ===== %T =====
+.TP
+.BI %T str
+Controlla operazioni TELNET di tipo da terminale.
+.RS
+.IP %T0
+Rifiuta l'opzione da terminal
+.IP %T1
+Lo stesso di %T="$\fBTERM\fP"
+(E' usato il valore \fBTERM\fP d'ambiente) (*)
+.IP %T="\fIterm\fP["]
+Invia \fIterm\fP come da terminal se presenti richieste remote.
+La virgoletta doppia di chiusura può essere omessa se non segue nessun comando.
+.RE
+.\" ===== %V =====
+.TP
+.BI %V n
+Controllo livello verbose.
+%V0 (*) è il più silenzioso e, aggiungendo valori successivi a \fIn\fP permette a
+.B modemu2k
+di stampare più informazioni su stderr.
+.RS
+.IP +1
+Stampa informazioni miste per compensare le indicazioni ATX0 meno descrittive
+.IP +2
+Stampa la negoziazione di opzioni TELNET
+.RE
+.\"
+.\"
+.SH MODALTA' ONLINE
+.\"
+.B Modemu2k
+riconosce solo i seguenti comandi quando è in modalità online.
+.\" ===== +++ =====
+.TP
+.IB "wait " +++ " wait"
+Rirorna alla modalità di comando.
+I `+++' devono essere inseriti entro il tempo di guardia.
+.I Wait
+èun periodo di tempo maggiore del tempo di guardia
+senza premere alcun tasto.
+Vedi anche la descrizione dei registri S2 e S12.
+.\"
+.\"
+.SH REGISTRI S
+.\"
+Sono elencati solo i registri significativi.
+I valori tra parentesi sono i predefiniti
+.TP
+.B S2
+Codice del carattere di escape. (43 = `+')
+.TP
+.B S3
+Codice del ritorno a capo.
+(13)
+.TP
+.B S4
+Codice di avanzamento di linea [line feed].
+(10)
+.TP
+.B S5
+Codice del carattere backspace.
+(8)
+.TP
+.B S7
+Limite di tempo per i tentativi di connessione in secondi.
+(20)
+.TP
+.B S12
+Tempo di guardia della sequenza diescape in 50esimi si secondo.
+(50)
+.\"
+.\"
+.SH VARIABILI D'AMBIENTE
+.\"
+.TP
+.B MODEMU2k
+Inizialmente valutati come comandi AT
+(prima che l'argomento dell'opzione -e sia valutato).
+Deve essere preceduto da un `AT' o `at'.
+.TP
+.B TERM
+Consulta la descrizione del comando %T1.
+.\"
+.\"
+.SH AUTORE
+Toru Egashira (egashira@nwk.CL.nec.co.jp)
+.\"
+.\"
+.SH VEDI ANCHE
+telnet(1),
+.I Your favorite modem's manual
+.\"
+.\"
+.SH BUG
+.\"
+Nessuna restrizione sulla composizione, o blacklisting.
+Quindi usare
+.B modemu2k
+potrebbe essere illegale in alcuni paesi. B)
