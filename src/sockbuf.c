@@ -12,6 +12,7 @@
 
 
 /* reading socket */
+#define MSG_CONNECTION_CLOSED_BY_PEER gettext ("Connection closed by peer.\r\n")
 
 void
 sockBufRead (void)
@@ -23,7 +24,7 @@ sockBufRead (void)
   {
     sock.alive = 0;
     if (l == 0)
-      verboseOut (VERB_MISC, "Connection closed by peer.\r\n");
+      verboseOut (VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
     else
       /* PPP link down or something to reach here. */
       /* v0.0 exited, which comm progs don't expect. */
@@ -51,7 +52,7 @@ sockBufWrite (void)
   {
     sock.alive = 0;
     if (l == 0)
-      verboseOut (VERB_MISC, "Connection closed by peer.\r\n");
+      verboseOut (VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
     else
       perror ("send()");
     return;

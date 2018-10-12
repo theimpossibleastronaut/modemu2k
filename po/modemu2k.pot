@@ -1,0 +1,189 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Andy Alt
+# This file is distributed under the same license as the modemu2k package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: modemu2k 0.0.3-dev\n"
+"Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
+"POT-Creation-Date: 2018-10-13 16:25-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. TRANSLATORS: do not translate ttyBufW
+#: src/ttybuf.c:75
+#, c-format
+msgid "\attyBufW overrun.\n"
+msgstr ""
+
+#: src/stty.c:25
+#, c-format
+msgid ""
+"\n"
+"Goodbye.\n"
+msgstr ""
+
+#: src/commx.c:22
+#, c-format
+msgid "Child returned status %d.\r\n"
+msgstr ""
+
+#: src/commx.c:21
+#, c-format
+msgid "Comm program exited.\r\n"
+msgstr ""
+
+#: src/sock.c:177
+msgid "Connecting attempt canceled by user input.\r\n"
+msgstr ""
+
+#: src/sock.c:205
+msgid "Connection attempt timed out.\r\n"
+msgstr ""
+
+#: src/sockbuf.c:15
+msgid "Connection closed by peer.\r\n"
+msgstr ""
+
+#. TRANSLATORS: reminder: do not translate any "AT" command strings
+#: src/atcmd.c:132
+msgid "Connection closed with ATH.\r\n"
+msgstr ""
+
+#. TRANSLATORS: reminder: do not translate any "AT" command strings
+#: src/atcmd.c:336
+msgid "Connection closed with ATZ.\r\n"
+msgstr ""
+
+#: src/commx.c:43
+#, c-format
+msgid "Could not run shell.\n"
+msgstr ""
+
+#. TRANSLATORS: do not translate `at%%q`
+#: src/modemu2k.c:667
+#, c-format
+msgid ""
+"Enter 'at%%q' to quit\n"
+"\n"
+msgstr ""
+
+#: src/atcmd.c:70
+#, c-format
+msgid "Error in initialization commands.\r\n"
+msgstr ""
+
+#: src/sock.c:68
+msgid "Host address lookup failed.\r\n"
+msgstr ""
+
+#: src/modemu2k.c:648
+#, c-format
+msgid "No more pty devices available.\n"
+msgstr ""
+
+#: src/sock.c:88
+msgid "Port number lookup failed.\r\n"
+msgstr ""
+
+#. TRANSLATORS: do not translate "pty" or "read"
+#: src/ttybuf.c:24
+#, c-format
+msgid "Pty closed. (read() returned %d)\r\n"
+msgstr ""
+
+#: src/ttybuf.c:51
+#, c-format
+msgid "Pty closed. (write() returned %d)\r\n"
+msgstr ""
+
+#: src/cmdarg.c:75
+#, c-format
+msgid ""
+"THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n"
+"APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT\n"
+"HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY\n"
+"OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,\n"
+"THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\n"
+"PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM\n"
+"IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF\n"
+"ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n"
+msgstr ""
+
+#. TRANSLATORS: do not translate the command line options, only the descriptions
+#.
+#: src/cmdarg.c:43
+#, c-format
+msgid ""
+"Usage: %s [OPTION]...\n"
+"\n"
+"  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using "
+"[arguments]\n"
+"  -d, --device=<pty_master>               talk through [pty_master]\n"
+"  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at "
+"startup\n"
+"  -s, --show                              show which device will be used\n"
+"\n"
+"  -h, --help                              display help\n"
+"  -v, --version                           display version\n"
+"  -w, --warranty                          display warranty\n"
+"\n"
+"The arguments for (-c, --commprog) and (-e, --atcommands) must be enclosed "
+"in\n"
+"quotes. (eg. -c \"minicom -l -w -c\")\n"
+"\n"
+"The arguments for the comm program must be native to the comm program, not\n"
+"arguments used by modemu2k.\n"
+"\n"
+"Note: The  -c, -d, and -s options are exclusive of each other. If two or\n"
+"more of the options are specified, only the last one is effective.\n"
+"\n"
+"The modemu2k project and support site is at\n"
+"<https://github.com/theimpossibleastronaut/modemu2k>\n"
+"\n"
+"Report bugs to <andy400-dev@yahoo.com> or\n"
+"<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"
+msgstr ""
+
+#. TRANSLATORS: do not translate "tty" or "pty"
+#: src/modemu2k.c:597
+#, c-format
+msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
+msgstr ""
+
+#. TRANSLATORS: do not translate "tty" or "pty"
+#: src/modemu2k.c:604
+#, c-format
+msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
+msgstr ""
+
+#: src/cmdarg.c:88
+#, c-format
+msgid ""
+"modemu2k %s\n"
+"Maintainer: Andy Alt (andy400-dev@yahoo.com)\n"
+"This program comes with ABSOLUTELY NO WARRANTY; for details type '%s -w.'\n"
+"This is free software, and you are welcome to redistribute it\n"
+"under certain conditions; see <http://www.gnu.org/licenses/gpl.html>\n"
+"for details.\n"
+msgstr ""
+
+#. TRANSLATORS: ignore the "&W'ed"
+#: src/atcmd.c:259
+msgid "modemu2k '&W'ed settings:"
+msgstr ""
+
+#: src/atcmd.c:247
+msgid "modemu2k current settings:"
+msgstr ""
+
+#: src/atcmd.c:192
+msgid "modemu2k telnet option states:"
+msgstr ""

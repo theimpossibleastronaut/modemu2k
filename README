@@ -3,18 +3,27 @@ modemu2k is a fork of modemu, originally developed by Toru Egashira
 (Travis Build status
 <https://travis-ci.org/theimpossibleastronaut/modemu2k>)
 
-What is Modemu2k?
+
+What is modemu2k?
 ---------------
 
-modemu2k adds telnet capability to a comm program.
-It can redirect telnet I/O to a pty so that a comm program
-can handle the pty as a tty with a real modem.
+modemu2k adds telnet capability to a comm program. It can redirect
+telnet I/O to a pty so that a comm program can handle the pty as a tty
+with a real modem, and allows you to use a comm program's scripting
+and file transfer features over telnet.
 
 Maintainer: Andy Alt <andy400-dev@yahoo.com>
 License: GNU GPL 3
 Home page: <https://github.com/theimpossibleastronaut/modemu2k>
 
 Other contact/chat room: <https://gitter.im/modemu2k/Lobby>
+
+
+Translation
+-----------
+
+If you're interested in translating the output messages for modemu2k,
+see the [TRANSLATE.md](TRANSLATE.md) document.
 
 
 Compilation
@@ -31,6 +40,7 @@ directory.
 Making SOCKSified or Termified Modemu2k may require changes to
 src/Makefile.am.
 
+
 Sample Usage
 ------------
 
@@ -42,7 +52,7 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
   > modemu2k
 
-  Modemu2k reads from standard input and writes to standard output.
+  modemu2k reads from standard input and writes to standard output.
   Input
 
   > atd"localhost
@@ -53,7 +63,7 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
   > at%q
 
-  to quit Modemu2k.
+  to quit modemu2k.
 
 2) With a comm program
 
@@ -67,10 +77,9 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
   > atd"localhost
 
-  Yes, Modemu2k makes the comm program a telnet client. Now you can use a
-  comm program's scripting and file transfer features over telnet.
+  Yes, modemu2k makes the comm program a telnet client.
 
-  To quit Modemu2k, just quit the comm program.
+  To quit modemu2k, just quit the comm program.
 
 (*) Almost all file xfer protocols require 8bit through connection,
 which means Modemu2k must be in the binary transmission mode.  See %B

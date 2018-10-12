@@ -18,8 +18,8 @@ sigchld (int dummy)
   /* waitpid(-1,,) messes SOCKS up */
   if (waitpid (commxPid, &s, WNOHANG) > 0)
   {
-    fprintf (stderr, "Comm program exited.\r\n");
-    verboseOut (VERB_MISC, "Child returns status %d.\r\n", WEXITSTATUS (s));
+    fprintf (stderr, _("Comm program exited.\r\n"));
+    verboseOut (VERB_MISC, _("Child returned status %d.\r\n"), WEXITSTATUS (s));
     exit (0);
   }
 }
@@ -40,7 +40,7 @@ forkExec (char *s)
     signal (SIGCHLD, SIG_DFL);
     argv[2] = s;
     execv ("/bin/sh", argv);
-    fprintf (stderr, "Could not exec sh.\n");
+    fprintf (stderr, _("Could not run shell.\n"));
     _exit (127);
   default:                     /*parent */
     signal (SIGINT, SIG_IGN);

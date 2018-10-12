@@ -65,7 +65,7 @@ sockDial (void)
     hep = gethostbyname (atcmd.d.addr.str);
     if (hep == NULL)
     {
-      verboseOut (VERB_MISC, "Host address lookup failed.\r\n");
+      verboseOut (VERB_MISC, _("Host address lookup failed.\r\n"));
       return 1;
     }
     sa.sin_addr.s_addr = *(unsigned long *) hep->h_addr_list[0];
@@ -85,7 +85,7 @@ sockDial (void)
     sep = getservbyname (atcmd.d.port.str, "tcp");
     if (sep == NULL)
     {
-      verboseOut (VERB_MISC, "Port number lookup failed.\r\n");
+      verboseOut (VERB_MISC, _("Port number lookup failed.\r\n"));
       return 1;
     }
     sa.sin_port = sep->s_port;
@@ -174,7 +174,7 @@ sockDial (void)
       {
         sockShutdown ();
         verboseOut (VERB_MISC,
-                    "Connecting attempt canceled by user input.\r\n");
+                    _("Connecting attempt canceled by user input.\r\n"));
         return 1;
       }
       /* check if really connected or not */
@@ -202,7 +202,7 @@ sockDial (void)
     }
     while (timevalCmp (&t, &to) < 0);
     sockShutdown ();
-    verboseOut (VERB_MISC, "Connecting attempt timed out.\r\n");
+    verboseOut (VERB_MISC, _("Connection attempt timed out.\r\n"));
     return 1;                   /* timeout */
   }
 #endif /*ifdef NO_DIAL_CANCELING */

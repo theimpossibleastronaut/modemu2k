@@ -4,6 +4,7 @@
 #include <stdlib.h>             /*(atexit) */
 #include <unistd.h>             /*(isatty) */
 #include "stty.h"               /*(setTty) */
+#include "defs.h"
 /* stty -icannon -echo -isig -icrnl -inlcr */
   static void
 sigint (int i)
@@ -21,7 +22,7 @@ recoverTermios (void)
     return;                     /* SOCKS (at least v4.2) subprocess
                                    calls exit() (why not _exit()??) */
   tcsetattr (0, TCSADRAIN, &oldTermios);
-  printf ("\nBye.\n");
+  printf (_("\nGoodbye.\n"));
 }
 
 #ifdef USE_ON_EXIT

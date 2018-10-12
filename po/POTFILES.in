@@ -1,0 +1,10 @@
+# List of source files which contain translatable strings.
+
+src/atcmd.c
+src/cmdarg.c
+src/commx.c
+src/modemu2k.c
+src/sock.c
+src/sockbuf.c
+src/stty.c
+src/ttybuf.c

@@ -1,4 +1,4 @@
-SUBDIRS = src
+SUBDIRS = src po
 packextrasdir=@docdir@
 EXTRA_DIST = 	COPYING README QuickStart INSTALL AUTHORS ChangeLog \
 		NEWS CONTRIBUTING.md CODE_OF_CONDUCT.md	\

@@ -593,16 +593,16 @@ found:
   rc = chown (line, getuid (), getgid ());
   if (rc < 0)
   {
-    fprintf (stderr,
-             "Warning: could not change ownership of tty -- "
-             "pty is insecure!\n");
+    /* TRANSLATORS: do not translate "tty" or "pty" */
+    fprintf (stderr, _("\
+Warning: could not change ownership of tty -- pty is insecure!\n"));
   }
   rc = chmod (line, S_IRUSR | S_IWUSR | S_IWGRP);
   if (rc < 0)
   {
-    fprintf (stderr,
-             "Warning: could not change permissions of tty -- "
-             "pty is insecure!\n");
+    /* TRANSLATORS: do not translate "tty" or "pty" */
+    fprintf (stderr, _("\
+Warning: could not change permissions of tty -- pty is insecure!\n"));
   }
 
   *line_return = line;
@@ -645,21 +645,26 @@ getPtyMaster (char *tty10, char *tty01)
       }
     }
   }
-  fprintf (stderr, "Ran out of pty.\n");
+  fprintf (stderr, _("No more pty devices available.\n"));
   exit (1);
   return fd;
 }
 #endif
 
 int
-main (int argc, const char *argv[])
+main (int argc, char* const argv[])
 {
+  setlocale (LC_ALL, "");
+  bindtextdomain (PACKAGE, LOCALEDIR);
+  textdomain (PACKAGE);
+
 #ifdef SOCKS
   SOCKSinit (argv[0]);
 #endif
-  cmdargParse (argv);
+  cmdargParse (argc, argv);
   printf (PACKAGE_NAME " " VERSION "\n");
-  printf ("Enter 'at%%q' to quit\n\n");
+  /* TRANSLATORS: do not translate `at%%q` */
+  printf (_("Enter 'at%%q' to quit\n\n"));
   switch (cmdarg.ttymode)
   {
 #ifdef HAVE_GRANTPT
