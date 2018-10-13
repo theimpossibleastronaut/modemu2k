@@ -34,7 +34,7 @@ msgstr "reguläre Datei"
 ```
 
 * You will need the `gettext` package from your OS distribution.
-* [Fork the repo](https://github.com/shnupta/bric#fork-destination-box)
+* [Fork the repo](https://github.com/theimpossibleastronaut/modemu2k#fork-destination-box)
 * After you clone your fork, go into the modemu2k source po/ directory
 
 * run `msginit -i bric.pot -o lc_CC.po -l lc_CC` (Where lc is your
