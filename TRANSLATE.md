@@ -1,6 +1,6 @@
 # Translating
 
-Translators are welcome to joine the [chat
+Translators are welcome to join the [chat
 room](https://gitter.im/modemu2k/Lobby). We will try to help and answer
 any questions you may have about the translation process.
 
