@@ -37,7 +37,7 @@ msgstr "reguläre Datei"
 * [Fork the repo](https://github.com/theimpossibleastronaut/modemu2k#fork-destination-box)
 * After you clone your fork, go into the modemu2k source po/ directory
 
-* run `msginit -i bric.pot -o lc_CC.po -l lc_CC` (Where lc is your
+* run `msginit -i modemu2k.pot -o lc_CC.po -l lc_CC` (Where lc is your
  [iso-631-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)) and CC is your country code
 
 * At this point, you may open your new .po file and begin adding
