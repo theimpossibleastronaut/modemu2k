@@ -2,6 +2,7 @@ modemu2k ChangeLog
 
 2018-10-13
 
+* Removed "-" option
 * Added support for translated messages using the GNU gettext library
 * Improved usage output
 
