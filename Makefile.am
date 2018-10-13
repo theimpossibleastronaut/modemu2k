@@ -1,4 +1,4 @@
-SUBDIRS = src po
+SUBDIRS = src man po
 packextrasdir=@docdir@
 EXTRA_DIST = 	COPYING README QuickStart INSTALL AUTHORS ChangeLog \
 		NEWS CONTRIBUTING.md CODE_OF_CONDUCT.md	\
@@ -12,5 +12,3 @@ VERSION = @VERSION@
 ACLOCAL_AMFLAGS = --install -I m4
 
 AUTOMAKE_OPTIONS = subdir-objects no-dependencies
-
-dist_man_MANS = man/modemu2k.1
