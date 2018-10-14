@@ -1,0 +1,228 @@
+# Chinese translations for modemu2k package.
+# Copyright (C) 2018 Andy Alt
+# This file is distributed under the same license as the modemu2k package.
+# name1e5s <name1e5s@qq.com>, 2018.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: modemu2k 0.0.3-dev\n"
+"Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
+"POT-Creation-Date: 2018-10-13 16:25-0500\n"
+"PO-Revision-Date: 2018-10-14 17:15+0800\n"
+"Last-Translator: U-LAPTOP-S0HDQ8NL\\name1e5s <name1e5s@qq.com>\n"
+"Language-Team: Chinese (simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. TRANSLATORS: do not translate ttyBufW
+#: src/ttybuf.c:75
+#, c-format
+msgid "\attyBufW overrun.\n"
+msgstr "attyBufW 超时."
+
+#: src/stty.c:25
+#, c-format
+msgid ""
+"\n"
+"Goodbye.\n"
+msgstr ""
+"\n"
+"再见.\n"
+
+#: src/commx.c:22
+#, c-format
+msgid "Child returned status %d.\r\n"
+msgstr "子进程返回状态值为 %d.\r\n"
+
+#: src/commx.c:21
+#, c-format
+msgid "Comm program exited.\r\n"
+msgstr "通讯程序已退出.\r\n"
+
+#: src/sock.c:177
+msgid "Connecting attempt canceled by user input.\r\n"
+msgstr "连接尝试被用户输入取消.\r\n"
+
+#: src/sock.c:205
+msgid "Connection attempt timed out.\r\n"
+msgstr "连接超时.\r\n"
+
+#: src/sockbuf.c:15
+msgid "Connection closed by peer.\r\n"
+msgstr "连接被关闭.\r\n"
+
+#. TRANSLATORS: reminder: do not translate any "AT" command strings
+#: src/atcmd.c:132
+msgid "Connection closed with ATH.\r\n"
+msgstr "ATH 连接被关闭.\r\n"
+
+#. TRANSLATORS: reminder: do not translate any "AT" command strings
+#: src/atcmd.c:336
+msgid "Connection closed with ATZ.\r\n"
+msgstr "ATZ 连接被关闭.\r\n"
+
+#: src/commx.c:43
+#, c-format
+msgid "Could not run shell.\n"
+msgstr "无法运行 shell.\n"
+
+#. TRANSLATORS: do not translate `at%%q`
+#: src/modemu2k.c:667
+#, c-format
+msgid ""
+"Enter 'at%%q' to quit\n"
+"\n"
+msgstr "输入 'at%%q' 退出"
+
+#: src/atcmd.c:70
+#, c-format
+msgid "Error in initialization commands.\r\n"
+msgstr "初始化命令出错.\r\n"
+
+#: src/sock.c:68
+msgid "Host address lookup failed.\r\n"
+msgstr "查找主机地址失败.\r\n"
+
+#: src/modemu2k.c:648
+#, c-format
+msgid "No more pty devices available.\n"
+msgstr "暂无可用 pty 设备.\n"
+
+#: src/sock.c:88
+msgid "Port number lookup failed.\r\n"
+msgstr "查找端口号失败.\r\n"
+
+#. TRANSLATORS: do not translate "pty" or "read"
+#: src/ttybuf.c:24
+#, c-format
+msgid "Pty closed. (read() returned %d)\r\n"
+msgstr "Pty 已关闭.(read() 返回值为 %d)\r\n"
+
+#: src/ttybuf.c:51
+#, c-format
+msgid "Pty closed. (write() returned %d)\r\n"
+msgstr "Pty 已关闭.(write() 返回值为 %d)\r\n"
+
+#: src/cmdarg.c:75
+#, c-format
+msgid ""
+"THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n"
+"APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT\n"
+"HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY\n"
+"OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,\n"
+"THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\n"
+"PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM\n"
+"IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF\n"
+"ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n"
+msgstr "本程序在适用法律范围内不提供品质担保。除非另作书面声明，\n"
+"版权持有人及其他程序提供者“概”不提供任何显式或隐式的品质担保，\n"
+"品质担保所指包括而不仅限于有经济价值和适合特定用途的保证。全部\n"
+"风险，如程序的质量和性能问题，皆由你承担。若程序出现缺陷，你将\n"
+"承担所有必要的修复和更正服务的费用。\n"
+
+#. TRANSLATORS: do not translate the command line options, only the descriptions
+#. 
+#: src/cmdarg.c:43
+#, c-format
+msgid ""
+"Usage: %s [OPTION]...\n"
+"\n"
+"  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using "
+"[arguments]\n"
+"  -d, --device=<pty_master>               talk through [pty_master]\n"
+"  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at "
+"startup\n"
+"  -s, --show                              show which device will be used\n"
+"\n"
+"  -h, --help                              display help\n"
+"  -v, --version                           display version\n"
+"  -w, --warranty                          display warranty\n"
+"\n"
+"The arguments for (-c, --commprog) and (-e, --atcommands) must be enclosed "
+"in\n"
+"quotes. (eg. -c \"minicom -l -w -c\")\n"
+"\n"
+"The arguments for the comm program must be native to the comm program, not\n"
+"arguments used by modemu2k.\n"
+"\n"
+"Note: The  -c, -d, and -s options are exclusive of each other. If two or\n"
+"more of the options are specified, only the last one is effective.\n"
+"\n"
+"The modemu2k project and support site is at\n"
+"<https://github.com/theimpossibleastronaut/modemu2k>\n"
+"\n"
+"Report bugs to <andy400-dev@yahoo.com> or\n"
+"<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"
+msgstr ""
+"使用方法: %s [选项]...\n"
+"\n"
+"  -c, --commprog=\"<comm_prog> <args>\"   创建一个使用 "
+"[arguments] 参数的连接程序\n"
+"  -d, --device=<pty_master>               使用 [pty_master] 进行连接\n"
+"  -e, --atstring=\"<ATxxx>\"              在启动时执行 [ATxxx]"
+"\n"
+"  -s, --show                              显示使用哪个设备\n"
+"\n"
+"  -h, --help                              显示帮助\n"
+"  -v, --version                           显示版本号\n"
+"  -w, --warranty                          显示免责声明\n"
+"\n"
+"(-c, --commprog) 以及 (-e, --atcommands) 的参数必须 "
+"在\n"
+"双引号内 (例如 -c \"minicom -l -w -c\")\n"
+"\n"
+"参数必须是被连接程序里的参数，而非\n"
+"modemu2k 使用的参数.\n"
+"\n"
+"注意: -c, -d, 以及 -s 选项互相不兼容. 如果同时\n"
+"制定了两或三个选项，只有最后一个会生效.\n"
+"\n"
+"modemu2k 项目的网址如下：\n"
+"<https://github.com/theimpossibleastronaut/modemu2k>\n"
+"\n"
+"若要提交 bug，请联系 <andy400-dev@yahoo.com> 或者在如下网址进行提交：\n"
+"<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"
+
+#. TRANSLATORS: do not translate "tty" or "pty"
+#: src/modemu2k.c:597
+#, c-format
+msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
+msgstr "警告: 无法改变 tty 所有者 -- pty 不安全!\n"
+
+#. TRANSLATORS: do not translate "tty" or "pty"
+#: src/modemu2k.c:604
+#, c-format
+msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
+msgstr "警告: 无法修改 tty 权限 -- pty 不安全!\n"
+
+#: src/cmdarg.c:88
+#, c-format
+msgid ""
+"modemu2k %s\n"
+"Maintainer: Andy Alt (andy400-dev@yahoo.com)\n"
+"This program comes with ABSOLUTELY NO WARRANTY; for details type '%s -w.'\n"
+"This is free software, and you are welcome to redistribute it\n"
+"under certain conditions; see <http://www.gnu.org/licenses/gpl.html>\n"
+"for details.\n"
+msgstr ""
+"modemu2k %s\n"
+"维护者: Andy Alt (andy400-dev@yahoo.com)\n"
+"本程序完全免责; 如需详细信息，输入 '%s -w.' 查看\n"
+"本程序为自由软件，在协议允许的范围内\n"
+"我们欢迎对软件的重分发;参见 <http://www.gnu.org/licenses/gpl.html>\n"
+"以获取详细信息.\n"
+
+#. TRANSLATORS: ignore the "&W'ed"
+#: src/atcmd.c:259
+msgid "modemu2k '&W'ed settings:"
+msgstr "modemu2k '&W'ed 设置:"
+
+#: src/atcmd.c:247
+msgid "modemu2k current settings:"
+msgstr "modemu2k 当前 settings:"
+
+#: src/atcmd.c:192
+msgid "modemu2k telnet option states:"
+msgstr "modemu2k telnet 选项状态:"
