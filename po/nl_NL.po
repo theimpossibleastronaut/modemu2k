@@ -1,0 +1,253 @@
+# Dutch translations for modemu2k package
+# Nederlandse vertalingen voor het pakket modemu2k.
+# Copyright (C) 2018 Andy Alt
+# This file is distributed under the same license as the modemu2k package.
+# Martijn <translations@sexybiggetje.nl>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: modemu2k 0.0.3-dev\n"
+"Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
+"POT-Creation-Date: 2018-10-13 16:25-0500\n"
+"PO-Revision-Date: 2018-10-14 17:52+0200\n"
+"Last-Translator: Martijn de Boer <translations@sexybiggetje.nl>\n"
+"Language-Team: Dutch\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.2\n"
+
+#. TRANSLATORS: do not translate ttyBufW
+#: src/ttybuf.c:75
+#, c-format
+msgid "\attyBufW overrun.\n"
+msgstr "\attyBufW overschrijding.\n"
+
+#: src/stty.c:25
+#, c-format
+msgid ""
+"\n"
+"Goodbye.\n"
+msgstr ""
+"\n"
+"Tot ziens.\n"
+
+#: src/commx.c:22
+#, c-format
+msgid "Child returned status %d.\r\n"
+msgstr "Kind gaf status %d terug.\n"
+
+#: src/commx.c:21
+#, c-format
+msgid "Comm program exited.\r\n"
+msgstr "Comm programma sloot af.\r\n"
+
+#: src/sock.c:177
+msgid "Connecting attempt canceled by user input.\r\n"
+msgstr "Verbindingspoging geannuleerd door gebruikersinvoer.\r\n"
+
+#: src/sock.c:205
+msgid "Connection attempt timed out.\r\n"
+msgstr "Verbindingspoging time-out.\r\n"
+
+#: src/sockbuf.c:15
+msgid "Connection closed by peer.\r\n"
+msgstr "Verbinding gesloten door peer.\r\n"
+
+#. TRANSLATORS: reminder: do not translate any "AT" command strings
+#: src/atcmd.c:132
+msgid "Connection closed with ATH.\r\n"
+msgstr "Verbinding gesloten met ATH.\r\n"
+
+#. TRANSLATORS: reminder: do not translate any "AT" command strings
+#: src/atcmd.c:336
+msgid "Connection closed with ATZ.\r\n"
+msgstr "Verbinding gesloten met ATZ.\r\n"
+
+#: src/commx.c:43
+#, c-format
+msgid "Could not run shell.\n"
+msgstr "Kan shell niet uitvoeren.\n"
+
+#. TRANSLATORS: do not translate `at%%q`
+#: src/modemu2k.c:667
+#, c-format
+msgid ""
+"Enter 'at%%q' to quit\n"
+"\n"
+msgstr ""
+"Voer ‘at%%q’ in om af te sluiten\n"
+"\n"
+
+#: src/atcmd.c:70
+#, c-format
+msgid "Error in initialization commands.\r\n"
+msgstr "Fout bij het initialiseren van commando’s.\r\n"
+
+#: src/sock.c:68
+msgid "Host address lookup failed.\r\n"
+msgstr "Host adres opzoeken mislukt.\r\n"
+
+#: src/modemu2k.c:648
+#, c-format
+msgid "No more pty devices available.\n"
+msgstr "Geen pty apparaten meer beschikbaar.\n"
+
+#: src/sock.c:88
+msgid "Port number lookup failed.\r\n"
+msgstr "Poort nummer opzoeken mislukt.\r\n"
+
+#. TRANSLATORS: do not translate "pty" or "read"
+#: src/ttybuf.c:24
+#, c-format
+msgid "Pty closed. (read() returned %d)\r\n"
+msgstr "Pty afgesloten. (read() gaf %d terug)\r\n"
+
+#: src/ttybuf.c:51
+#, c-format
+msgid "Pty closed. (write() returned %d)\r\n"
+msgstr "Pty afgesloten. (write() gaf %d terug)\r\n"
+
+#: src/cmdarg.c:75
+#, c-format
+msgid ""
+"THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n"
+"APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT\n"
+"HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT "
+"WARRANTY\n"
+"OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,\n"
+"THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\n"
+"PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE "
+"PROGRAM\n"
+"IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF\n"
+"ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n"
+msgstr ""
+"ER ZIT GEEN GARANTIE OP HET PROGRAMMA, TOT ZOVER TOEGELATEN DOOR "
+"WETGEVING.\n"
+"TENZIJ ANDERS IS AANGEGEVEN IN SHRIFT BIEDEN DE COPYRIGHT HOUERS EN/OF "
+"ANDERE\n"
+"PARTIJEN HET PROGRAMMA AAN ZOALS HET IS ZONDER GARANTIE VAN ENIGE AARD, "
+"ZOWEL\n"
+"EXPLICIET ALS IMPLICIET INHOUDEND, MAAR NIET GELIMITEERD TOT, DE "
+"GEÏMPLICEERDE\n"
+"GARANTIES VAN VERKOOP EN GESCHIKTHEID MET BETREKKING TOT EEN SPECIFIEK "
+"DOEL. \n"
+"HET GEHELE RISICO OP KWALITEIT EN SNELHEID VAN HET PROGRAMMA LIGT BIJ JOU. "
+"BLIJKT\n"
+"HET PROGRAMMA DEFECT, DAN NEEM JIJ ALLE NODIGE KOSTEN VOOR ONDERHOUD, "
+"REPARATIE\n"
+"OF CORRECTIE OP JE.\n"
+
+#. TRANSLATORS: do not translate the command line options, only the descriptions
+#.
+#: src/cmdarg.c:43
+#, c-format
+msgid ""
+"Usage: %s [OPTION]...\n"
+"\n"
+"  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using "
+"[arguments]\n"
+"  -d, --device=<pty_master>               talk through [pty_master]\n"
+"  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at "
+"startup\n"
+"  -s, --show                              show which device will be used\n"
+"\n"
+"  -h, --help                              display help\n"
+"  -v, --version                           display version\n"
+"  -w, --warranty                          display warranty\n"
+"\n"
+"The arguments for (-c, --commprog) and (-e, --atcommands) must be enclosed "
+"in\n"
+"quotes. (eg. -c \"minicom -l -w -c\")\n"
+"\n"
+"The arguments for the comm program must be native to the comm program, "
+"not\n"
+"arguments used by modemu2k.\n"
+"\n"
+"Note: The  -c, -d, and -s options are exclusive of each other. If two or\n"
+"more of the options are specified, only the last one is effective.\n"
+"\n"
+"The modemu2k project and support site is at\n"
+"<https://github.com/theimpossibleastronaut/modemu2k>\n"
+"\n"
+"Report bugs to <andy400-dev@yahoo.com> or\n"
+"<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"
+msgstr ""
+"Gebruik: %s [OPTIES]…\n"
+"\n"
+"  -c, —commprog=“<comm_prog> <argumenten>”     gebruik een comm programme "
+"met [argumenten]\n"
+"  -d, —device=<pty_master>               communiceer door [pty_master]\n"
+"  -e, —atstring=“<ATxxx>”                voer [ATxxx] commando’s uit bij "
+"opstarten\n"
+"  -s, —show                              toon welk apparaat zal worden "
+"gebruikt\n"
+"\n"
+"  -h, —help                              toon help\n"
+"  -v, —version                           toon versie\n"
+"  -w, —warranty                          toon garanties\n"
+"\n"
+"De argumenten voor (-c, —commprog) en (-e, —atcommands) moeten worden\n"
+"ontsloten door quotes. (bijv. -c “minicom -l -w -c”)\n"
+"\n"
+"De argumenten voor het comm programma moeten native zijn voor het "
+"programma, niet\n"
+"de argumenten voor modemu2k.\n"
+"\n"
+"Notitie: De  -c, -d, en -s optiens zijn exclusief van elkaar. Indien twee "
+"of meer zijn opgegeven\n"
+"dan zal enkel de laatste effectief zijn.\n"
+"\n"
+"Het modemu2k project en ondersteuning is te vinden op\n"
+"<https://github.com/theimpossibleastronaut/modemu2k>\n"
+"\n"
+"Rapporteer bugs naar <andy400-dev@yahoo.com> or\n"
+"<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"
+
+#. TRANSLATORS: do not translate "tty" or "pty"
+#: src/modemu2k.c:597
+#, c-format
+msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
+msgstr ""
+"Waarschuwing: kan het eigenaarschap van tty niet veranderen — pty is "
+"onveilig!\n"
+
+#. TRANSLATORS: do not translate "tty" or "pty"
+#: src/modemu2k.c:604
+#, c-format
+msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
+msgstr ""
+"Waarschuwing: kan de permissies van tty niet veranderen — pty is "
+"onveilig!\n"
+
+#: src/cmdarg.c:88
+#, c-format
+msgid ""
+"modemu2k %s\n"
+"Maintainer: Andy Alt (andy400-dev@yahoo.com)\n"
+"This program comes with ABSOLUTELY NO WARRANTY; for details type '%s -w.'\n"
+"This is free software, and you are welcome to redistribute it\n"
+"under certain conditions; see <http://www.gnu.org/licenses/gpl.html>\n"
+"for details.\n"
+msgstr ""
+"modemu2k %s\n"
+"Maintainer: Andy Alt (andy400-dev@yahoo.com)\n"
+"Dit programma komt ZONDER GARANTIES; voor details type ‘%s -w’.\n"
+"Dit is vrije software, en je mag dit onder bepaalde condities "
+"verspreiden;\n"
+"zie <http://www.gnu.org/licenses/gpl.html>voor details.\n"
+
+#. TRANSLATORS: ignore the "&W'ed"
+#: src/atcmd.c:259
+msgid "modemu2k '&W'ed settings:"
+msgstr "modemu2k ‘&W’ed instellingen:"
+
+#: src/atcmd.c:247
+msgid "modemu2k current settings:"
+msgstr "modemu2k huidige instellingen:"
+
+#: src/atcmd.c:192
+msgid "modemu2k telnet option states:"
+msgstr "modemu2k telnet optie statussen:"
