@@ -50,7 +50,7 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
   Invoked with no option,
 
-  > modemu2k
+      modemu2k
 
   modemu2k reads from standard input and writes to standard output.
   Input
@@ -67,17 +67,18 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
 2) With a comm program
 
-  (This example uses XC as the comm program)
+  (This example uses minicom as the comm program)
 
   Invoke with "-c" option,
 
-  > modemu2k -c "xc -l tty%s"
+      modemu2k -e "AT%B0=1%B1=1&W" -c "minicom -l -tansi -con -p %s"
 
-  you see XC runs. Go to the terminal mode and input
+  From within the comm program, if you have a server running, you can enter
 
-  > atd"localhost
+      atd"localhost
 
-  Yes, modemu2k makes the comm program a telnet client.
+  to connect. You could also connect to a BBS. Here's a list of
+  telnet-enabled bulletin board systems: <http://www.synchro.net/sbbslist.html>
 
   To quit modemu2k, just quit the comm program.
 

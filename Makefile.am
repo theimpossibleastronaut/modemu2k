@@ -1,9 +1,8 @@
 SUBDIRS = src man po
 packextrasdir=@docdir@
 EXTRA_DIST = 	COPYING README QuickStart INSTALL AUTHORS ChangeLog \
-		NEWS CONTRIBUTING.md CODE_OF_CONDUCT.md	\
-		examples/m2k-minicom.sh
-		examples/xc-sends-mail
+		NEWS CONTRIBUTING.md CODE_OF_CONDUCT.md
+
 packextras_DATA=$(EXTRA_DIST)
 
 PACKAGE = @PACKAGE@

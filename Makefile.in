@@ -357,8 +357,7 @@ top_srcdir = @top_srcdir@
 SUBDIRS = src man po
 packextrasdir = @docdir@
 EXTRA_DIST = COPYING README QuickStart INSTALL AUTHORS ChangeLog \
-		NEWS CONTRIBUTING.md CODE_OF_CONDUCT.md	\
-		examples/m2k-minicom.sh
+		NEWS CONTRIBUTING.md CODE_OF_CONDUCT.md
 
 packextras_DATA = $(EXTRA_DIST)
 ACLOCAL_AMFLAGS = --install -I m4
@@ -842,7 +841,6 @@ uninstall-am: uninstall-packextrasDATA
 
 .PRECIOUS: Makefile
 
-		examples/xc-sends-mail
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
