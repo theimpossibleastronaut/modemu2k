@@ -2,7 +2,7 @@
 # Copyright (C) 2018 Andy Alt
 # This file is distributed under the same license as the modemu2k package.
 # name1e5s <name1e5s@qq.com>, 2018.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: modemu2k 0.0.3-dev\n"
@@ -13,14 +13,14 @@ msgstr ""
 "Language-Team: Chinese (simplified)\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #. TRANSLATORS: do not translate ttyBufW
 #: src/ttybuf.c:75
 #, c-format
 msgid "\attyBufW overrun.\n"
-msgstr "attyBufW 超时."
+msgstr "attyBufW 超时.\n"
 
 #: src/stty.c:25
 #, c-format
@@ -74,7 +74,7 @@ msgstr "无法运行 shell.\n"
 msgid ""
 "Enter 'at%%q' to quit\n"
 "\n"
-msgstr "输入 'at%%q' 退出"
+msgstr "输入 'at%%q' 退出\n"
 
 #: src/atcmd.c:70
 #, c-format
@@ -116,14 +116,15 @@ msgid ""
 "PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM\n"
 "IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF\n"
 "ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n"
-msgstr "本程序在适用法律范围内不提供品质担保。除非另作书面声明，\n"
+msgstr ""
+"本程序在适用法律范围内不提供品质担保。除非另作书面声明，\n"
 "版权持有人及其他程序提供者“概”不提供任何显式或隐式的品质担保，\n"
 "品质担保所指包括而不仅限于有经济价值和适合特定用途的保证。全部\n"
 "风险，如程序的质量和性能问题，皆由你承担。若程序出现缺陷，你将\n"
 "承担所有必要的修复和更正服务的费用。\n"
 
 #. TRANSLATORS: do not translate the command line options, only the descriptions
-#. 
+#.
 #: src/cmdarg.c:43
 #, c-format
 msgid ""
@@ -158,19 +159,17 @@ msgid ""
 msgstr ""
 "使用方法: %s [选项]...\n"
 "\n"
-"  -c, --commprog=\"<comm_prog> <args>\"   创建一个使用 "
-"[arguments] 参数的连接程序\n"
+"  -c, --commprog=\"<comm_prog> <args>\"   创建一个使用 [arguments] 参数的连接"
+"程序\n"
 "  -d, --device=<pty_master>               使用 [pty_master] 进行连接\n"
-"  -e, --atstring=\"<ATxxx>\"              在启动时执行 [ATxxx]"
-"\n"
+"  -e, --atstring=\"<ATxxx>\"              在启动时执行 [ATxxx]\n"
 "  -s, --show                              显示使用哪个设备\n"
 "\n"
 "  -h, --help                              显示帮助\n"
 "  -v, --version                           显示版本号\n"
 "  -w, --warranty                          显示免责声明\n"
 "\n"
-"(-c, --commprog) 以及 (-e, --atcommands) 的参数必须 "
-"在\n"
+"(-c, --commprog) 以及 (-e, --atcommands) 的参数必须 在\n"
 "双引号内 (例如 -c \"minicom -l -w -c\")\n"
 "\n"
 "参数必须是被连接程序里的参数，而非\n"
