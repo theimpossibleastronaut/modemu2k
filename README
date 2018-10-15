@@ -19,11 +19,13 @@ Home page: <https://github.com/theimpossibleastronaut/modemu2k>
 Other contact/chat room: <https://gitter.im/modemu2k/Lobby>
 
 
-Translation
+For Translators
 -----------
 
-If you're interested in translating the output messages for modemu2k,
-see the [TRANSLATE.md](TRANSLATE.md) document.
+We use Transifex to translate the output messages. To start translating
+modemu2k, ​create an account in Transifex and ask to join a translation
+team (or create a new one) at
+https://www.transifex.com/na-309/modemu2k/
 
 
 Compilation
