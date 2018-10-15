@@ -18,7 +18,7 @@ modemu2k \- connessione TCP dialup
 .\"
 .B Modemu2k
 è un client TELNET con una interfaccia utente del tipo modem.
-Può redirezionare i suoi I/O attraverso un 
+Può redirezionare i suoi I/O attraverso un
 .BR pty (4)
 in modo che un programma comm possa gestire i pty come un tty con un modem reale.
 .PP
@@ -83,11 +83,6 @@ Quindi, quando
 .B modemu2k
 stampa `p8',
 il programma comm deve aprire /dev/tty\fIp8\fP.
-.\" ===== - =====
-.TP
-.B `-'
-.B Modemu2k
-parla attraverso l'input/output standard. (Predefinito)
 .\" ==========
 .PP
 Nota: le opzioni -c, -d, -s e - sono esclusive.
