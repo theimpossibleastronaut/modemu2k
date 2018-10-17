@@ -1,4 +1,4 @@
-LEX	= flex
+LEX = flex
 
 ## SunOS 4.1
 #CC	= gcc
@@ -40,7 +40,7 @@ noinst_HEADERS = atcmd.h cmdarg.h cmdlex.h commx.h defs.h sockbuf.h \
 		sock.h stty.h telopt.h timeval.h ttybuf.h verbose.h \
 		gettext.h
 
-DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
+DEFS = -DLOCALEDIR=\"$(localedir)\"
 
 lex.yy.c:
 	$(LEX) $(LFLAGS) cmdlex.l
