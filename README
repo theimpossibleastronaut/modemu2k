@@ -37,7 +37,7 @@ Compilation
 make
 
 `make install` is optional. The binary can be run from the src/
-directory.
+directory. (installation is required to use the translations.)
 
 Making SOCKSified or Termified Modemu2k may require changes to
 src/Makefile.am.
@@ -90,3 +90,5 @@ command description in the man page.
 
 More details are in the QuickStart guide
 <https://github.com/theimpossibleastronaut/modemu2k/blob/master/QuickStart>
+
+A man page is also available.
