@@ -5,7 +5,7 @@
 # Written by (Andy Alt) (andy400-dev@yahoo.com)
 
 PRGNAM=modemu2k
-VERSION=${VERSION:-0.0.2}
+VERSION=${VERSION:-0.0.3}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 
@@ -56,6 +56,7 @@ CXXFLAGS="$SLKCFLAGS" \
 ./configure \
   --prefix=/usr \
   --mandir=/usr/man \
+  --localedir=/usr/share/locale \
   --docdir=/usr/doc/$PRGNAM-$VERSION \
   --build=$ARCH-slackware-linux
 

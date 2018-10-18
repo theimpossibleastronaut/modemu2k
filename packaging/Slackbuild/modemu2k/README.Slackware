@@ -3,16 +3,29 @@ modemu2k is a fork of modemu, originally developed by Toru Egashira
 (Travis Build status
 <https://travis-ci.org/theimpossibleastronaut/modemu2k>)
 
-What is Modemu2k?
+
+What is modemu2k?
 ---------------
 
-modemu2k adds telnet capability to a comm program.
-It can redirect telnet I/O to a pty so that a comm program
-can handle the pty as a tty with a real modem.
+modemu2k adds telnet capability to a comm program. It can redirect
+telnet I/O to a pty so that a comm program can handle the pty as a tty
+with a real modem, and allows you to use a comm program's scripting
+and file transfer features over telnet.
 
-Maintainer: Andy Alt
+Maintainer: Andy Alt <andy400-dev@yahoo.com>
 License: GNU GPL 3
-Home page: https://github.com/theimpossibleastronaut/modemu2k
+Home page: <https://github.com/theimpossibleastronaut/modemu2k>
+
+Other contact/chat room: <https://gitter.im/modemu2k/Lobby>
+
+
+For Translators
+-----------
+
+We use Transifex to translate the output messages. To start translating
+modemu2k, ​create an account in Transifex and ask to join a translation
+team (or create a new one) at
+https://www.transifex.com/na-309/modemu2k/
 
 
 Compilation
@@ -24,10 +37,11 @@ Compilation
 make
 
 `make install` is optional. The binary can be run from the src/
-directory.
+directory. (installation is required to use the translations.)
 
 Making SOCKSified or Termified Modemu2k may require changes to
 src/Makefile.am.
+
 
 Sample Usage
 ------------
@@ -38,42 +52,43 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
   Invoked with no option,
 
-  > modemu2k
+      modemu2k
 
-  Modemu2k reads from standard input and writes to standard output.
+  modemu2k reads from standard input and writes to standard output.
   Input
 
   > atd"localhost
 
-  (prompt ">" is not shown) and you will see your host's login prompt.
-  When logout, you will get "NO CARRIER" indication.
-  Then input
+  (prompt ">" is not shown) You will see your host's login prompt
+  (if a server is running). When you disconnect, you will get "NO
+  CARRIER" indication. Then input
 
   > at%q
 
-  to quit Modemu2k.
+  to quit modemu2k.
 
 2) With a comm program
 
-  (This example uses XC as the comm program. The author haven't tested
-  any other programs.)
+  (This example uses minicom as the comm program)
 
   Invoke with "-c" option,
 
-  > modemu2k -c "xc -l tty%s"
+      modemu2k -e "AT%B0=1%B1=1&W" -c "minicom -l -tansi -con -p %s"
 
-  you see XC runs. Go to the terminal mode and input
+  From within the comm program, if you have a server running, you can enter
 
-  > atd"localhost
+      atd"localhost
 
-  Yes, Modemu2k makes the comm program a TELNET client.  Now you can use
-  comm program's scripting and file xfer(*) facilities on TELNET.
+  to connect. You could also connect to a BBS. Here's a list of
+  telnet-enabled bulletin board systems: <http://www.synchro.net/sbbslist.html>
 
-  To quit Modemu2k, just quit the comm program.
+  To quit modemu2k, just quit the comm program.
 
 (*) Almost all file xfer protocols require 8bit through connection,
 which means Modemu2k must be in the binary transmission mode.  See %B
-command description in man pages.
+command description in the man page.
 
 More details are in the QuickStart guide
 <https://github.com/theimpossibleastronaut/modemu2k/blob/master/QuickStart>
+
+A man page is also available.
