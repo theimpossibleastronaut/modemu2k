@@ -11,3 +11,7 @@ src/stamp-h1
 config.log
 config.status
 /po/Makevars.template
+*.tar.gz
+*.tgz
+build
+
