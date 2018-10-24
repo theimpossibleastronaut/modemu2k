@@ -587,7 +587,7 @@ bsd:
   goto bail;
 
 found:
-  line = malloc (strlen (name));
+  line = malloc (strlen (name) + 1);
   strcpy (line, name);
   line[5] = 't';
   rc = chown (line, getuid (), getgid ());
@@ -612,7 +612,10 @@ bail:
   if (pty >= 0)
     close (pty);
   if (line)
+  {
+    line = NULL;
     free (line);
+  }
   return -1;
 }
 
