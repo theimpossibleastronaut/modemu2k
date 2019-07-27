@@ -14,4 +14,4 @@ config.status
 *.tar.gz
 *.tgz
 build
-
+*.gmo
