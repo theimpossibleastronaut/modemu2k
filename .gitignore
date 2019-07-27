@@ -1,6 +1,6 @@
 autom4te.cache
 *~
-*.geany
+_build
 
 src/*.o
 src/.deps
