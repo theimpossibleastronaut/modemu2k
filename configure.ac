@@ -1,12 +1,22 @@
 AC_INIT([modemu2k],
-        [0.0.3],
+        [0.0.3-dev],
         [andy400-dev@yahoo.com],
         ,
         [https://github.com/theimpossibleastronaut/modemu2k])
-AM_INIT_AUTOMAKE
+AC_CONFIG_AUX_DIR([build-aux])
+AM_INIT_AUTOMAKE([-Wall subdir-objects foreign no-dependencies])
+AM_SILENT_RULES([yes])
 AC_PREREQ(2.69)
 AC_CONFIG_HEADERS([src/config.h:config.in])
+
+# RELEASE TODO
+# set to "no"
+AX_CHECK_ENABLE_DEBUG([yes])
+
 AC_PROG_CC
+AC_PROG_CC_STDC
+AX_APPEND_COMPILE_FLAGS(-Wall)
+AC_CONFIG_MACRO_DIRS([build-aux/m4])
 AC_PROG_INSTALL
 
 AM_GNU_GETTEXT([external], [need-formatstring-macros])

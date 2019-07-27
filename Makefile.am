@@ -5,6 +5,4 @@ EXTRA_DIST = 	COPYING README QuickStart INSTALL AUTHORS ChangeLog \
 
 packextras_DATA=$(EXTRA_DIST)
 
-ACLOCAL_AMFLAGS = --install -I m4
-
-AUTOMAKE_OPTIONS = subdir-objects no-dependencies
+ACLOCAL_AMFLAGS = --install -I build-aux/m4
