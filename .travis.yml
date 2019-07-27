@@ -1,52 +1,95 @@
-language: cpp
-
-sudo: required
-
+language: c
+cache: ccache
 matrix:
+# gcc
   include:
     - os: linux
+      dist: xenial
       compiler: gcc
-      env: Tr_Compiler_Version="default"
+      env: CHECK="true" COMPILER="default"
     - os: linux
+      dist: bionic
       compiler: gcc
-      env: Tr_Compiler_Version="5"
     - os: linux
+      dist: bionic
       compiler: gcc
-      env: Tr_Compiler_Version="6"
+      env:
+        - secure: "YAToy/SW1sZ9/EP/zLukW0KCkWhEPQ9CIUhs9DPn36yoAJoRFC0l+xw0qwinmpWLXEPhCYjhqPzacwIE5TQd5kilUP9+bQYoQf69WRVPFhom2ZcfY2Fr281N/ceN6MkHXigW8iuCchmiRhJaXBXYxoBOPSHPyzjHeOIrpbqUT7Z/ncbCb4skaCS3ZKU0Lbn42UWnIwt2wZmfwx9RGuVJhRwAsd6Deyqrnp18mKt1v3g+bVvPQwYCs+TeBxO7OoI4E4n8oxuY0Ytup/wD7QYn3VloP+Cd5BeLaVD7jg3bFINxrIAIdA6sKUTrR3LoWoACgA0CGum0eGzkQ1+samoTkbq5QjGXvYSEH9OTBRqCkIjL8pTesabUlsPrz99tnmPJuD0aLoURIAHMQyBqgI50u0gcf13D1WxBEYGe3YtbmRiQejCiOz8qM04QltIgka71mjFkAjM2d5k9pifySy055ti4Dshh7mfe4SLyJuCDhyNhP0MjGoVc6jbe8Cmals9XvL4+RXHahMNTitMqAwa2fhuteWLcgb5xI2rS8Vc7ZtuSRolkqevlIuKP0rPqQxFyuVTioftMaqfG5Q7O5/ghqH+wlq1B8XaY/mA6Gt6io9QhS2gy79XFbS65IrasheTLzMqJmh9L1SFim/GbUXLNuEY4N7C5ma/LiChNa77sYDg="
+      before_install:
+        - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+      addons:
+        coverity_scan:
+          project:
+            name: "theimpossibleastronaut/modemu2k"
+            description: "modemu2k is a fork of modemu, a telnet client with a modem-like user interface"
+          notification_email: "andy400-dev@yahoo.com"
+          build_command_prepend: "./configure"
+          build_command: "make"
+          branch_pattern: coverity_scan
     - os: linux
+      dist: bionic
       compiler: gcc
-      env: Tr_Compiler_Version="7"
+      env: MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
     - os: linux
+      dist: bionic
       compiler: gcc
-      env: Tr_Compiler_Version="8"
+      env: MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
     - os: linux
+      dist: bionic
+      compiler: gcc
+      env: MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+
 # clang
-      compiler: clang
-      env: Tr_Compiler_Version="default"
     - os: linux
+      dist: xenial
       compiler: clang
-      env: Tr_Compiler_Version="6.0"
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-xenial-5.0
+          packages:
+            - clang-5.0
+      env: MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+    - os: linux
+      dist: xenial
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-xenial-6.0
+          packages:
+            - clang-6.0
+      env: MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
+    - os: linux
+      dist: xenial
+      compiler: clang
 # osx
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode9.4
+      env: XCODE="true"
     - os: osx
-      osx_image: xcode9.3beta
+      osx_image: xcode10.1
+      env: XCODE="true"
+
+#  allow_failures:
+#    - os: osx
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./.travis-before_install.sh "$CC" "$Tr_Compiler_Version"; fi
-  - if [ "$Tr_Compiler_Version" != "" ] && [ "$Tr_Compiler_Version" != "default" ] && [ "$CC" = "gcc" ]; then export CXX="g++-${Tr_Compiler_Version}" CC="gcc-${Tr_Compiler_Version}"; fi
-  - if [ "$Tr_Compiler_Version" != "" ] && [ "$Tr_Compiler_Version" != "default" ] && [ "$CC" == "clang" ]; then export CXX="clang++-${Tr_Compiler_Version}" CC="clang-${Tr_Compiler_Version}"; fi
-  - $CC --version
-  - $CXX --version
+  - echo $CC
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+      eval "${MATRIX_EVAL}";
+      if [ -n "$MATRIX_EVAL" ] && [ "$TRAVIS_COMPILER" != "clang" ]; then
+        sudo apt-get install -y $CC;
+      fi;
+    fi
 
 script:
-  - ./configure --prefix=$PWD/install-test
-  - make && make install && make uninstall
-
-notifications:
-    webhooks:
-        urls:
-            - "https://scalar.vector.im/api/neb/services/hooks/dHJhdmlzLWNpLyU0MGFuZHk1OTk1JTNBbWF0cml4Lm9yZy8lMjFld0dYZnR2em9OcmVRR2NqQnglM0FtYXRyaXgub3Jn"
-        on_success: change  # always|never|change
-        on_failure: always
-        on_start: never
+  - if [ -n "$COVERITY_SCAN_TOKEN" ]; then
+      exit 0;
+    fi
+  - ./configure
+  - if [ -z "$CHECK" ]; then
+      make;
+    else
+      make distcheck;
+    fi
