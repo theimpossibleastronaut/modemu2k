@@ -193,7 +193,7 @@ CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DEFS = -DLOCALEDIR=\"$(localedir)\"
+DEFS = -DLOCALEDIR=\"$(localedir)\" -D_GNU_SOURCE
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
@@ -293,7 +293,6 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 LEX = flex
-AM_CFLAGS = -std=c99 -Wall -g -D_GNU_SOURCE
 modemu2k_SOURCES = modemu2k.c atcmd.c commx.c sockbuf.c stty.c \
 	timeval.c verbose.c cmdarg.c sock.c telopt.c ttybuf.c lex.yy.c
 
