@@ -14,7 +14,6 @@
 
 @SET_MAKE@
 
-
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -110,8 +109,7 @@ am__aclocal_m4_deps =  \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-DIST_COMMON = $(srcdir)/Makefile.am $(noinst_HEADERS) \
-	$(am__DIST_COMMON)
+DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
@@ -159,7 +157,6 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-HEADERS = $(noinst_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -293,12 +290,32 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 LEX = flex
-modemu2k_SOURCES = modemu2k.c atcmd.c commx.c sockbuf.c stty.c \
-	timeval.c verbose.c cmdarg.c sock.c telopt.c ttybuf.c lex.yy.c
-
-noinst_HEADERS = atcmd.h cmdarg.h cmdlex.h commx.h defs.h sockbuf.h \
-		sock.h stty.h telopt.h timeval.h ttybuf.h verbose.h \
-		gettext.h
+modemu2k_SOURCES = \
+	modemu2k.c	\
+	atcmd.c	\
+	commx.c	\
+	sockbuf.c	\
+	stty.c	\
+	timeval.c	\
+	verbose.c	\
+	cmdarg.c	\
+	sock.c	\
+	telopt.c	\
+	ttybuf.c	\
+	lex.yy.c	\
+	atcmd.h	\
+	cmdarg.h	\
+	cmdlex.h	\
+	commx.h	\
+	defs.h	\
+	sockbuf.h	\
+	sock.h	\
+	stty.h	\
+	telopt.h	\
+	timeval.h	\
+	ttybuf.h	\
+	verbose.h \
+	gettext.h
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -495,7 +512,7 @@ distdir-am: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(HEADERS) config.h
+all-am: Makefile $(PROGRAMS) config.h
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \

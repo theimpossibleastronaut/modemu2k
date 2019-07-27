@@ -33,12 +33,32 @@ LEX = flex
 
 bin_PROGRAMS = modemu2k
 
-modemu2k_SOURCES = modemu2k.c atcmd.c commx.c sockbuf.c stty.c \
-	timeval.c verbose.c cmdarg.c sock.c telopt.c ttybuf.c lex.yy.c
-
-noinst_HEADERS = atcmd.h cmdarg.h cmdlex.h commx.h defs.h sockbuf.h \
-		sock.h stty.h telopt.h timeval.h ttybuf.h verbose.h \
-		gettext.h
+modemu2k_SOURCES =	\
+	modemu2k.c	\
+	atcmd.c	\
+	commx.c	\
+	sockbuf.c	\
+	stty.c	\
+	timeval.c	\
+	verbose.c	\
+	cmdarg.c	\
+	sock.c	\
+	telopt.c	\
+	ttybuf.c	\
+	lex.yy.c	\
+	atcmd.h	\
+	cmdarg.h	\
+	cmdlex.h	\
+	commx.h	\
+	defs.h	\
+	sockbuf.h	\
+	sock.h	\
+	stty.h	\
+	telopt.h	\
+	timeval.h	\
+	ttybuf.h	\
+	verbose.h \
+	gettext.h
 
 DEFS = -DLOCALEDIR=\"$(localedir)\" -D_GNU_SOURCE
 
