@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: modemu2k 0.0.3-dev\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2018-10-17 23:06-0500\n"
+"POT-Creation-Date: 2019-07-27 14:29-0500\n"
 "PO-Revision-Date: 2018-10-14 17:52+0200\n"
 "Last-Translator: Martijn de Boer <translations@sexybiggetje.nl>\n"
 "Language-Team: Dutch\n"
@@ -21,7 +21,6 @@ msgstr ""
 
 #. TRANSLATORS: do not translate ttyBufW
 #: src/ttybuf.c:75
-#, c-format
 msgid "\attyBufW overrun.\n"
 msgstr "\attyBufW overschrijding.\n"
 
@@ -40,7 +39,6 @@ msgid "Child returned status %d.\r\n"
 msgstr "Kind gaf status %d terug.\n"
 
 #: src/commx.c:21
-#, c-format
 msgid "Comm program exited.\r\n"
 msgstr "Comm programma sloot af.\r\n"
 
@@ -67,12 +65,11 @@ msgid "Connection closed with ATZ.\r\n"
 msgstr "Verbinding gesloten met ATZ.\r\n"
 
 #: src/commx.c:43
-#, c-format
 msgid "Could not run shell.\n"
 msgstr "Kan shell niet uitvoeren.\n"
 
 #. TRANSLATORS: do not translate `at%%q`
-#: src/modemu2k.c:667
+#: src/modemu2k.c:669
 #, c-format
 msgid ""
 "Enter 'at%%q' to quit\n"
@@ -82,7 +79,6 @@ msgstr ""
 "\n"
 
 #: src/atcmd.c:70
-#, c-format
 msgid "Error in initialization commands.\r\n"
 msgstr "Fout bij het initialiseren van commando’s.\r\n"
 
@@ -90,8 +86,7 @@ msgstr "Fout bij het initialiseren van commando’s.\r\n"
 msgid "Host address lookup failed.\r\n"
 msgstr "Host adres opzoeken mislukt.\r\n"
 
-#: src/modemu2k.c:648
-#, c-format
+#: src/modemu2k.c:650
 msgid "No more pty devices available.\n"
 msgstr "Geen pty apparaten meer beschikbaar.\n"
 
@@ -109,6 +104,10 @@ msgstr "Pty afgesloten. (read() gaf %d terug)\r\n"
 #, c-format
 msgid "Pty closed. (write() returned %d)\r\n"
 msgstr "Pty afgesloten. (write() gaf %d terug)\r\n"
+
+#: src/modemu2k.c:514
+msgid "Pty open error.\n"
+msgstr ""
 
 #: src/cmdarg.c:75
 #, c-format
@@ -204,7 +203,6 @@ msgstr ""
 
 #. TRANSLATORS: do not translate "tty" or "pty"
 #: src/modemu2k.c:597
-#, c-format
 msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
 msgstr ""
 "Waarschuwing: kan het eigenaarschap van tty niet veranderen — pty is "
@@ -212,7 +210,6 @@ msgstr ""
 
 #. TRANSLATORS: do not translate "tty" or "pty"
 #: src/modemu2k.c:604
-#, c-format
 msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
 msgstr ""
 "Waarschuwing: kan de permissies van tty niet veranderen — pty is onveilig!\n"

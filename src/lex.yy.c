@@ -33,7 +33,7 @@
 #if defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 
 /* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
- * if you want the limit (max/min) macros for int types. 
+ * if you want the limit (max/min) macros for int types.
  */
 #ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS 1
@@ -1610,7 +1610,7 @@ input (void)
 
 /** Immediately switch to a different input stream.
  * @param input_file A readable stream.
- * 
+ *
  * @note This function does not reset the start condition to @c INITIAL .
  */
 void
@@ -1629,7 +1629,7 @@ yyrestart (FILE * input_file)
 
 /** Switch to a different input buffer.
  * @param new_buffer The new input buffer.
- * 
+ *
  */
 void
 yy_switch_to_buffer (YY_BUFFER_STATE new_buffer)
@@ -1675,7 +1675,7 @@ yy_load_buffer_state (void)
 /** Allocate and initialize an input buffer state.
  * @param file A readable stream.
  * @param size The character buffer size in bytes. When in doubt, use @c YY_BUF_SIZE.
- * 
+ *
  * @return the allocated buffer state.
  */
 YY_BUFFER_STATE
@@ -1705,7 +1705,7 @@ yy_create_buffer (FILE * file, int size)
 
 /** Destroy the buffer.
  * @param b a buffer created with yy_create_buffer()
- * 
+ *
  */
 void
 yy_delete_buffer (YY_BUFFER_STATE b)
@@ -1754,7 +1754,7 @@ yy_init_buffer (YY_BUFFER_STATE b, FILE * file)
 
 /** Discard all buffered characters. On the next scan, YY_INPUT will be called.
  * @param b the buffer state to be flushed, usually @c YY_CURRENT_BUFFER.
- * 
+ *
  */
 void
 yy_flush_buffer (YY_BUFFER_STATE b)
@@ -1784,7 +1784,7 @@ yy_flush_buffer (YY_BUFFER_STATE b)
  *  the current state. This function will allocate the stack
  *  if necessary.
  *  @param new_buffer The new state.
- *  
+ *
  */
 void
 yypush_buffer_state (YY_BUFFER_STATE new_buffer)
@@ -1815,7 +1815,7 @@ yypush_buffer_state (YY_BUFFER_STATE new_buffer)
 
 /** Removes and deletes the top of the stack, if present.
  *  The next element becomes the new top.
- *  
+ *
  */
 void
 yypop_buffer_state (void)
@@ -1886,7 +1886,7 @@ yyensure_buffer_stack (void)
 /** Setup the input buffer state to scan directly from a user-specified character buffer.
  * @param base the character buffer
  * @param size the size in bytes of the character buffer
- * 
+ *
  * @return the newly allocated buffer state object.
  */
 YY_BUFFER_STATE
@@ -1922,7 +1922,7 @@ yy_scan_buffer (char *base, yy_size_t size)
 /** Setup the input buffer state to scan a string. The next call to yylex() will
  * scan from a @e copy of @a str.
  * @param yystr a NUL-terminated string to scan
- * 
+ *
  * @return the newly allocated buffer state object.
  * @note If you want to scan bytes that may contain NUL values, then use
  *       yy_scan_bytes() instead.
@@ -1938,7 +1938,7 @@ yy_scan_string (yyconst char *yystr)
  * scan from a @e copy of @a bytes.
  * @param yybytes the byte buffer to scan
  * @param _yybytes_len the number of bytes in the buffer pointed to by @a bytes.
- * 
+ *
  * @return the newly allocated buffer state object.
  */
 YY_BUFFER_STATE
@@ -1979,7 +1979,7 @@ yy_scan_bytes (yyconst char *yybytes, int _yybytes_len)
 static void yynoreturn
 yy_fatal_error (yyconst char *msg)
 {
-  (void) fprintf (stderr, "%s\n", msg);
+  (void) fputs ("msg\n", stderr);
   exit (YY_EXIT_FAILURE);
 }
 
@@ -2003,7 +2003,7 @@ yy_fatal_error (yyconst char *msg)
 /* Accessor  methods (get/set functions) to struct members. */
 
 /** Get the current line number.
- * 
+ *
  */
 int
 yyget_lineno (void)
@@ -2013,7 +2013,7 @@ yyget_lineno (void)
 }
 
 /** Get the input stream.
- * 
+ *
  */
 FILE *
 yyget_in (void)
@@ -2022,7 +2022,7 @@ yyget_in (void)
 }
 
 /** Get the output stream.
- * 
+ *
  */
 FILE *
 yyget_out (void)
@@ -2031,7 +2031,7 @@ yyget_out (void)
 }
 
 /** Get the length of the current token.
- * 
+ *
  */
 int
 yyget_leng (void)
@@ -2040,7 +2040,7 @@ yyget_leng (void)
 }
 
 /** Get the current token.
- * 
+ *
  */
 
 char *
@@ -2051,7 +2051,7 @@ yyget_text (void)
 
 /** Set the current line number.
  * @param _line_number line number
- * 
+ *
  */
 void
 yyset_lineno (int _line_number)
@@ -2063,7 +2063,7 @@ yyset_lineno (int _line_number)
 /** Set the input stream. This does not discard the current
  * input buffer.
  * @param _in_str A readable stream.
- * 
+ *
  * @see yy_switch_to_buffer
  */
 void

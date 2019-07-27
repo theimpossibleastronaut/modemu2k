@@ -75,7 +75,7 @@ putSock1 (uchar c)
   {                             /* limit */
     if (sockBufW.ptr >= sockBufW.buf + SOCKBUFW_SIZE_A)
     {                           /*actual limit */
-      fprintf (stderr, "\asockBufW overrun.\n");
+      fputs ("\asockBufW overrun.\n", stderr);
       return;
     }
     else

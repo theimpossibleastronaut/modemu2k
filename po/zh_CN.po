@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: modemu2k 0.0.3-dev\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2018-10-17 23:06-0500\n"
+"POT-Creation-Date: 2019-07-27 14:29-0500\n"
 "PO-Revision-Date: 2018-10-14 17:15+0800\n"
 "Last-Translator: U-LAPTOP-S0HDQ8NL\\name1e5s <name1e5s@qq.com>\n"
 "Language-Team: Chinese (simplified)\n"
@@ -18,7 +18,6 @@ msgstr ""
 
 #. TRANSLATORS: do not translate ttyBufW
 #: src/ttybuf.c:75
-#, c-format
 msgid "\attyBufW overrun.\n"
 msgstr "attyBufW 超时.\n"
 
@@ -37,7 +36,6 @@ msgid "Child returned status %d.\r\n"
 msgstr "子进程返回状态值为 %d.\r\n"
 
 #: src/commx.c:21
-#, c-format
 msgid "Comm program exited.\r\n"
 msgstr "通讯程序已退出.\r\n"
 
@@ -64,12 +62,11 @@ msgid "Connection closed with ATZ.\r\n"
 msgstr "ATZ 连接被关闭.\r\n"
 
 #: src/commx.c:43
-#, c-format
 msgid "Could not run shell.\n"
 msgstr "无法运行 shell.\n"
 
 #. TRANSLATORS: do not translate `at%%q`
-#: src/modemu2k.c:667
+#: src/modemu2k.c:669
 #, c-format
 msgid ""
 "Enter 'at%%q' to quit\n"
@@ -77,7 +74,6 @@ msgid ""
 msgstr "输入 'at%%q' 退出\n"
 
 #: src/atcmd.c:70
-#, c-format
 msgid "Error in initialization commands.\r\n"
 msgstr "初始化命令出错.\r\n"
 
@@ -85,8 +81,7 @@ msgstr "初始化命令出错.\r\n"
 msgid "Host address lookup failed.\r\n"
 msgstr "查找主机地址失败.\r\n"
 
-#: src/modemu2k.c:648
-#, c-format
+#: src/modemu2k.c:650
 msgid "No more pty devices available.\n"
 msgstr "暂无可用 pty 设备.\n"
 
@@ -104,6 +99,10 @@ msgstr "Pty 已关闭.(read() 返回值为 %d)\r\n"
 #, c-format
 msgid "Pty closed. (write() returned %d)\r\n"
 msgstr "Pty 已关闭.(write() 返回值为 %d)\r\n"
+
+#: src/modemu2k.c:514
+msgid "Pty open error.\n"
+msgstr ""
 
 #: src/cmdarg.c:75
 #, c-format
@@ -186,13 +185,11 @@ msgstr ""
 
 #. TRANSLATORS: do not translate "tty" or "pty"
 #: src/modemu2k.c:597
-#, c-format
 msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
 msgstr "警告: 无法改变 tty 所有者 -- pty 不安全!\n"
 
 #. TRANSLATORS: do not translate "tty" or "pty"
 #: src/modemu2k.c:604
-#, c-format
 msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
 msgstr "警告: 无法修改 tty 权限 -- pty 不安全!\n"
 

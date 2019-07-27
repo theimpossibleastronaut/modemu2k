@@ -67,7 +67,7 @@ atcmdInit (void)
       || ((s = cmdLex (getenv ("MODEMU"))) != CMDST_OK && s != CMDST_NOAT)
       || ((s = cmdLex (cmdarg.atcmd)) != CMDST_OK && s != CMDST_NOAT))
   {
-    fprintf (stderr, _("Error in initialization commands.\r\n"));
+    fputs (_("Error in initialization commands.\r\n"), stderr);
     CHAR_CR = '\r';             /* force normal settings */
     CHAR_LF = '\n';
   }

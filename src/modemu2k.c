@@ -511,7 +511,7 @@ openPtyMaster (const char *dev)
   fd = open (dev, O_RDWR);
   if (fd < 0)
   {
-    fprintf (stderr, "Pty open error.\n");
+    fputs (_("Pty open error.\n"), stderr);
     exit (1);
   }
   return fd;
@@ -594,15 +594,14 @@ found:
   if (rc < 0)
   {
     /* TRANSLATORS: do not translate "tty" or "pty" */
-    fprintf (stderr, _("\
-Warning: could not change ownership of tty -- pty is insecure!\n"));
+    fputs (_("\
+Warning: could not change ownership of tty -- pty is insecure!\n"), stderr);
   }
   rc = chmod (line, S_IRUSR | S_IWUSR | S_IWGRP);
   if (rc < 0)
   {
     /* TRANSLATORS: do not translate "tty" or "pty" */
-    fprintf (stderr, _("\
-Warning: could not change permissions of tty -- pty is insecure!\n"));
+    fputs (_("Warning: could not change permissions of tty -- pty is insecure!\n"), stderr);
   }
 
   *line_return = line;
@@ -648,7 +647,7 @@ getPtyMaster (char *tty10, char *tty01)
       }
     }
   }
-  fprintf (stderr, _("No more pty devices available.\n"));
+  fputs (_("No more pty devices available.\n"), stderr);
   exit (1);
   return fd;
 }

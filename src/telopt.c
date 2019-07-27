@@ -264,7 +264,7 @@ telOptHandle (int cmd, int opt)
     negaResCmd = WILL;
     break;
   default:
-    fprintf (stderr, "bug\r\n");
+    fputs ("bug\r\n", stderr);
     exit (1);
   }
 
