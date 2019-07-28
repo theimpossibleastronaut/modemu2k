@@ -11,10 +11,10 @@ matrix:
       dist: bionic
       compiler: gcc
     - os: linux
-      dist: bionic
+      dist: xenial
       compiler: gcc
       env:
-        - secure: "YAToy/SW1sZ9/EP/zLukW0KCkWhEPQ9CIUhs9DPn36yoAJoRFC0l+xw0qwinmpWLXEPhCYjhqPzacwIE5TQd5kilUP9+bQYoQf69WRVPFhom2ZcfY2Fr281N/ceN6MkHXigW8iuCchmiRhJaXBXYxoBOPSHPyzjHeOIrpbqUT7Z/ncbCb4skaCS3ZKU0Lbn42UWnIwt2wZmfwx9RGuVJhRwAsd6Deyqrnp18mKt1v3g+bVvPQwYCs+TeBxO7OoI4E4n8oxuY0Ytup/wD7QYn3VloP+Cd5BeLaVD7jg3bFINxrIAIdA6sKUTrR3LoWoACgA0CGum0eGzkQ1+samoTkbq5QjGXvYSEH9OTBRqCkIjL8pTesabUlsPrz99tnmPJuD0aLoURIAHMQyBqgI50u0gcf13D1WxBEYGe3YtbmRiQejCiOz8qM04QltIgka71mjFkAjM2d5k9pifySy055ti4Dshh7mfe4SLyJuCDhyNhP0MjGoVc6jbe8Cmals9XvL4+RXHahMNTitMqAwa2fhuteWLcgb5xI2rS8Vc7ZtuSRolkqevlIuKP0rPqQxFyuVTioftMaqfG5Q7O5/ghqH+wlq1B8XaY/mA6Gt6io9QhS2gy79XFbS65IrasheTLzMqJmh9L1SFim/GbUXLNuEY4N7C5ma/LiChNa77sYDg="
+        - secure: "OIN5iLSZBgBIyRUFuxVjgMZEDv30y5XTxaP8DjmzommL949f3M3rcPNabvtjH8ehR7By1OpBQVKP2u52KJJJSw8PC4zRh4ddqgyvXT5fP5uiV5oepOBHpWMdHWCAND9c0RF5tK4lj8rs9E5lll9C01qlCQOP6Vq8az6d+K54R3eEWiDZh03qWBzKyhoPdUMlDHCnMTZF4DKVD1uaUmHfOL4nj+gohH3j4DoTCt0ItwaR/6uKo3Lpexq3Ho/xJk//lDXBb1IHvxBnmtpU/nRRMop8SkZyy6UzZFssCTjul0rH1rEbadI8hbOoj2UCfGdGRqT3fiyUxghBcU5K4WdXtJIk5iOeiJ0aSZ/X5TOTWcBBfV9htIp9w7apHaNPwlq0EQfti81hGDtOTzYqjVjzqO1FxaZF7Oa8HTS68bp2YXug1cXoFr9m2TaoS3nTDsQFh0t0UOERiC0voIxh+QYizzrTr818LxJrxHTd1qVIJkym+HaUDms9FJ6saMxICXp3tBqrwfvwGs5+jUJcSu+3TrqB9XOLjAuXyfx56sXH+ojZICasocVaEHmgWN5ZuNCJvYso6Q8WzQ1ZH8N5ra7Pfi1GPlwdMUfQ4r/4SWSOqg9G8/iMBzvEq9nDieKRzcsnYhIREW2ST3MB7Wm37BQE5h1KAt5zpzqO+7DyDvN3wuM="
       before_install:
         - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
       addons:
