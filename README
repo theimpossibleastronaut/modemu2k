@@ -1,4 +1,5 @@
-# modemu2k v0.0.4-dev
+modemu2k v0.0.4-dev
+-------------------
 
 modemu2k is a fork of modemu, originally developed by Toru Egashira
 
@@ -7,7 +8,7 @@ modemu2k is a fork of modemu, originally developed by Toru Egashira
 
 
 What is modemu2k?
----------------
+----------------
 
 modemu2k adds telnet capability to a comm program. It can redirect
 telnet I/O to a pty so that a comm program can handle the pty as a tty
@@ -82,10 +83,18 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
       atd"localhost
 
-  to connect. You could also connect to a BBS. Here's a list of
-  telnet-enabled bulletin board systems: <http://www.synchro.net/sbbslist.html>
+  to connect. You could also connect to a BBS:
+
+  * <<Prism BBS<http://filegate.net/>
+  * Synchronet BBS List<http://www.synchro.net/sbbslist.html>
 
   To quit modemu2k, just quit the comm program.
+
+Downloads
+---------
+
+* Release page<https://github.com/theimpossibleastronaut/modemu2k/releases>
+* FileGate->(Linux Utilities category)<http://www.filegate.net/utiln/utillnx/>
 
 (*) Almost all file xfer protocols require 8bit through connection,
 which means Modemu2k must be in the binary transmission mode.  See %B
