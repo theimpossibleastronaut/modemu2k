@@ -38,35 +38,44 @@
 static void
 showUsage (char* const argv[])
 {
-  /* TRANSLATORS: do not translate the command line options, only the descriptions
-   */
-  printf (_("\
-Usage: %s [OPTION]...\n\
-\n\
-  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using [arguments]\n\
-  -d, --device=<pty_master>               talk through [pty_master]\n\
-  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at startup\n\
-  -s, --show                              show which device will be used\n\
-\n\
-  -h, --help                              display help\n\
-  -v, --version                           display version\n\
-  -w, --warranty                          display warranty\n\
-\n\
+  printf (("Usage: %s [OPTION]...\n\n"), argv[0]);
+
+  puts (_("\
+  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using [arguments]"));
+  puts (_("\
+  -d, --device=<pty_master>               talk through [pty_master]"));
+  puts (_("\
+  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at startup"));
+  puts (_("\
+  -s, --show                              show which device will be used"));
+  puts ("");
+  puts (_("\
+  -h, --help                              display help"));
+  puts (_("\
+  -v, --version                           display version"));
+  puts (_("\
+  -w, --warranty                          display warranty"));
+  puts ("");
+  puts (_("\
 The arguments for (-c, --commprog) and (-e, --atcommands) must be enclosed in\n\
-quotes. (eg. -c \"minicom -l -w -c\")\n\
-\n\
+quotes. (eg. -c \"minicom -l -w -c\")"));
+  puts ("");
+  puts (_("\
 The arguments for the comm program must be native to the comm program, not\n\
-arguments used by modemu2k.\n\
-\n\
+arguments used by modemu2k."));
+  puts ("");
+  puts (_("\
 Note: The  -c, -d, and -s options are exclusive of each other. If two or\n\
-more of the options are specified, only the last one is effective.\n\
-\n\
+more of the options are specified, only the last one is effective."));
+  puts ("");
+  puts (_("\
 The modemu2k project and support site is at\n\
 <https://github.com/theimpossibleastronaut/modemu2k>\n\
 \n\
 Report bugs to <andy400-dev@yahoo.com> or\n\
-<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"),
-  argv[0]);
+<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"));
+
+ return;
 }
 
 static void
