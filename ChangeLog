@@ -1,5 +1,9 @@
 modemu2k ChangeLog
 
+2019-08-17
+
+* Fixed --version output
+
 2018-10-17
 
 * v0.0.3 released

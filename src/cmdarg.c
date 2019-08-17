@@ -100,7 +100,7 @@ Maintainer: Andy Alt (andy400-dev@yahoo.com)\n\
 This program comes with ABSOLUTELY NO WARRANTY; for details type '%s -w.'\n\
 This is free software, and you are welcome to redistribute it\n\
 under certain conditions; see <http://www.gnu.org/licenses/gpl.html>\n\
-for details.\n"), argv[0], VERSION);
+for details.\n"), VERSION, argv[0]);
 }
 
 void
