@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: modemu2k 0.0.4-dev\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2019-07-27 14:29-0500\n"
+"POT-Creation-Date: 2019-08-17 00:59-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,6 +27,39 @@ msgstr ""
 msgid ""
 "\n"
 "Goodbye.\n"
+msgstr ""
+
+#: src/cmdarg.c:43
+msgid ""
+"  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using "
+"[arguments]"
+msgstr ""
+
+#: src/cmdarg.c:45
+msgid "  -d, --device=<pty_master>               talk through [pty_master]"
+msgstr ""
+
+#: src/cmdarg.c:47
+msgid ""
+"  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at "
+"startup"
+msgstr ""
+
+#: src/cmdarg.c:52
+msgid "  -h, --help                              display help"
+msgstr ""
+
+#: src/cmdarg.c:49
+msgid ""
+"  -s, --show                              show which device will be used"
+msgstr ""
+
+#: src/cmdarg.c:54
+msgid "  -v, --version                           display version"
+msgstr ""
+
+#: src/cmdarg.c:56
+msgid "  -w, --warranty                          display warranty"
 msgstr ""
 
 #: src/commx.c:22
@@ -65,10 +98,9 @@ msgid "Could not run shell.\n"
 msgstr ""
 
 #. TRANSLATORS: do not translate `at%%q`
-#: src/modemu2k.c:669
-#, c-format
+#: src/modemu2k.c:665
 msgid ""
-"Enter 'at%%q' to quit\n"
+"Enter 'at%q' to quit\n"
 "\n"
 msgstr ""
 
@@ -80,8 +112,14 @@ msgstr ""
 msgid "Host address lookup failed.\r\n"
 msgstr ""
 
-#: src/modemu2k.c:650
+#: src/modemu2k.c:646
 msgid "No more pty devices available.\n"
+msgstr ""
+
+#: src/cmdarg.c:67
+msgid ""
+"Note: The  -c, -d, and -s options are exclusive of each other. If two or\n"
+"more of the options are specified, only the last one is effective."
 msgstr ""
 
 #: src/sock.c:88
@@ -103,7 +141,7 @@ msgstr ""
 msgid "Pty open error.\n"
 msgstr ""
 
-#: src/cmdarg.c:75
+#: src/cmdarg.c:84
 #, c-format
 msgid ""
 "THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n"
@@ -116,34 +154,21 @@ msgid ""
 "ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n"
 msgstr ""
 
-#. TRANSLATORS: do not translate the command line options, only the descriptions
-#.
-#: src/cmdarg.c:43
-#, c-format
+#: src/cmdarg.c:59
 msgid ""
-"Usage: %s [OPTION]...\n"
-"\n"
-"  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using "
-"[arguments]\n"
-"  -d, --device=<pty_master>               talk through [pty_master]\n"
-"  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at "
-"startup\n"
-"  -s, --show                              show which device will be used\n"
-"\n"
-"  -h, --help                              display help\n"
-"  -v, --version                           display version\n"
-"  -w, --warranty                          display warranty\n"
-"\n"
 "The arguments for (-c, --commprog) and (-e, --atcommands) must be enclosed "
 "in\n"
-"quotes. (eg. -c \"minicom -l -w -c\")\n"
-"\n"
+"quotes. (eg. -c \"minicom -l -w -c\")"
+msgstr ""
+
+#: src/cmdarg.c:63
+msgid ""
 "The arguments for the comm program must be native to the comm program, not\n"
-"arguments used by modemu2k.\n"
-"\n"
-"Note: The  -c, -d, and -s options are exclusive of each other. If two or\n"
-"more of the options are specified, only the last one is effective.\n"
-"\n"
+"arguments used by modemu2k."
+msgstr ""
+
+#: src/cmdarg.c:71
+msgid ""
 "The modemu2k project and support site is at\n"
 "<https://github.com/theimpossibleastronaut/modemu2k>\n"
 "\n"
@@ -161,7 +186,7 @@ msgstr ""
 msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
 msgstr ""
 
-#: src/cmdarg.c:88
+#: src/cmdarg.c:97
 #, c-format
 msgid ""
 "modemu2k %s\n"
