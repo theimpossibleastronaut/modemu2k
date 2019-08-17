@@ -1,7 +1,7 @@
 SUBDIRS = src man po
 packextrasdir=@docdir@
 EXTRA_DIST = 	COPYING README QuickStart INSTALL AUTHORS ChangeLog \
-		NEWS CONTRIBUTING.md CODE_OF_CONDUCT.md
+		ReleaseNotes CONTRIBUTING.md CODE_OF_CONDUCT.md
 
 packextras_DATA=$(EXTRA_DIST)
 
