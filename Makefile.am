@@ -1,4 +1,4 @@
-SUBDIRS = src man scripts po
+SUBDIRS = src man tests scripts po
 packextrasdir=@docdir@
 EXTRA_DIST = 	\
 	COPYING	\

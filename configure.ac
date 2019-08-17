@@ -34,6 +34,7 @@ AM_MAINTAINER_MODE
 AC_CONFIG_FILES([	Makefile
 			src/Makefile
 			man/Makefile
+			tests/Makefile
 			scripts/Makefile
 			po/Makefile.in])
 

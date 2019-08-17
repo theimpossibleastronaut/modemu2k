@@ -6728,7 +6728,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile man/Makefile scripts/Makefile po/Makefile.in"
+ac_config_files="$ac_config_files Makefile src/Makefile man/Makefile tests/Makefile scripts/Makefile po/Makefile.in"
 
 
 ac_config_files="$ac_config_files scripts/m2k-minicom.sh"
@@ -7467,6 +7467,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "man/Makefile") CONFIG_FILES="$CONFIG_FILES man/Makefile" ;;
+    "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
     "scripts/Makefile") CONFIG_FILES="$CONFIG_FILES scripts/Makefile" ;;
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
     "scripts/m2k-minicom.sh") CONFIG_FILES="$CONFIG_FILES scripts/m2k-minicom.sh" ;;

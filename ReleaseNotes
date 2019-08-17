@@ -3,3 +3,6 @@ v0.0.4
 * Fixed --version output
 
 * Added script to invoke minicom: 'm2k-minicom.sh'
+
+* Infrastructure to implement testing with `make check` added; however,
+no tests have been created yet.

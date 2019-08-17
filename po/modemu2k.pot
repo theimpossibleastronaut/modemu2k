@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: modemu2k 0.0.4-dev\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2019-08-17 00:59-0500\n"
+"POT-Creation-Date: 2019-08-17 14:35-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -98,7 +98,7 @@ msgid "Could not run shell.\n"
 msgstr ""
 
 #. TRANSLATORS: do not translate `at%%q`
-#: src/modemu2k.c:665
+#: src/modemu2k.c:667
 msgid ""
 "Enter 'at%q' to quit\n"
 "\n"
