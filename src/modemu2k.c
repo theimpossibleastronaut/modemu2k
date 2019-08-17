@@ -610,11 +610,7 @@ Warning: could not change ownership of tty -- pty is insecure!\n"), stderr);
 bail:
   if (pty >= 0)
     close (pty);
-  if (line)
-  {
-    line = NULL;
-    free (line);
-  }
+
   return -1;
 }
 
