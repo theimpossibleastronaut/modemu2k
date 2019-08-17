@@ -679,7 +679,7 @@ main (int argc, char* const argv[])
     char c10, c01;
   case CA_SHOWDEV:
     tty.rfd = tty.wfd = getPtyMaster (&c10, &c01);
-    puts (c10""c01);
+    printf ("%c%c\n", c10, c01);
     return 0;
   case CA_COMMX:
     tty.rfd = tty.wfd = getPtyMaster (&c10, &c01);
