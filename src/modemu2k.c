@@ -660,16 +660,16 @@ main (int argc, char* const argv[])
   SOCKSinit (argv[0]);
 #endif
   cmdargParse (argc, argv);
-  printf (PACKAGE_NAME " " VERSION "\n");
+  fputs (PACKAGE_NAME " " VERSION "\n", stdout);
   /* TRANSLATORS: do not translate `at%%q` */
-  printf (_("Enter 'at%%q' to quit\n\n"));
+  fputs (_("Enter 'at%q' to quit\n\n"), stdout);
   switch (cmdarg.ttymode)
   {
 #ifdef HAVE_GRANTPT
     char *ptyslave;
   case CA_SHOWDEV:
     tty.rfd = tty.wfd = getPtyMaster (&ptyslave);
-    printf ("%s\n", ptyslave);
+    puts (ptyslave);
     return 0;
   case CA_COMMX:
     tty.rfd = tty.wfd = getPtyMaster (&ptyslave);
@@ -679,7 +679,7 @@ main (int argc, char* const argv[])
     char c10, c01;
   case CA_SHOWDEV:
     tty.rfd = tty.wfd = getPtyMaster (&c10, &c01);
-    printf ("%c%c\n", c10, c01);
+    puts (c10""c01);
     return 0;
   case CA_COMMX:
     tty.rfd = tty.wfd = getPtyMaster (&c10, &c01);
