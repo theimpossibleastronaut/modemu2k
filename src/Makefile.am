@@ -62,5 +62,10 @@ modemu2k_SOURCES =	\
 
 DEFS = -DLOCALEDIR=\"$(localedir)\" -D_GNU_SOURCE
 
+# static library used by 'make check'
+check_LIBRARIES = libmodemu2k_test.a
+libmodemu2k_test_a_SOURCES = $(modemu2k_SOURCES)
+libmodemu2k_test_a_CFLAGS = $(AM_CFLAGS) -DUSE_AS_TEST_LIB
+
 lex.yy.c:
 	$(LEX) $(LFLAGS) cmdlex.l

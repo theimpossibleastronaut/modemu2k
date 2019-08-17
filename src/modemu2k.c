@@ -649,6 +649,8 @@ getPtyMaster (char *tty10, char *tty01)
 }
 #endif
 
+#ifndef USE_AS_TEST_LIB
+
 int
 main (int argc, char* const argv[])
 {
@@ -751,3 +753,5 @@ ONLINE:
 
   return 1;
 }
+
+#endif

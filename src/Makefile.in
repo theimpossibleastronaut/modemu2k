@@ -116,6 +116,27 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
+ARFLAGS = cru
+AM_V_AR = $(am__v_AR_@AM_V@)
+am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
+am__v_AR_0 = @echo "  AR      " $@;
+am__v_AR_1 = 
+libmodemu2k_test_a_AR = $(AR) $(ARFLAGS)
+libmodemu2k_test_a_LIBADD =
+am__objects_1 = libmodemu2k_test_a-modemu2k.$(OBJEXT) \
+	libmodemu2k_test_a-atcmd.$(OBJEXT) \
+	libmodemu2k_test_a-commx.$(OBJEXT) \
+	libmodemu2k_test_a-sockbuf.$(OBJEXT) \
+	libmodemu2k_test_a-stty.$(OBJEXT) \
+	libmodemu2k_test_a-timeval.$(OBJEXT) \
+	libmodemu2k_test_a-verbose.$(OBJEXT) \
+	libmodemu2k_test_a-cmdarg.$(OBJEXT) \
+	libmodemu2k_test_a-sock.$(OBJEXT) \
+	libmodemu2k_test_a-telopt.$(OBJEXT) \
+	libmodemu2k_test_a-ttybuf.$(OBJEXT) \
+	libmodemu2k_test_a-lex.yy.$(OBJEXT)
+am_libmodemu2k_test_a_OBJECTS = $(am__objects_1)
+libmodemu2k_test_a_OBJECTS = $(am_libmodemu2k_test_a_OBJECTS)
 am_modemu2k_OBJECTS = modemu2k.$(OBJEXT) atcmd.$(OBJEXT) \
 	commx.$(OBJEXT) sockbuf.$(OBJEXT) stty.$(OBJEXT) \
 	timeval.$(OBJEXT) verbose.$(OBJEXT) cmdarg.$(OBJEXT) \
@@ -138,6 +159,10 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp =
 am__maybe_remake_depfiles =
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 AM_V_CC = $(am__v_CC_@AM_V@)
@@ -150,8 +175,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(modemu2k_SOURCES)
-DIST_SOURCES = $(modemu2k_SOURCES)
+SOURCES = $(libmodemu2k_test_a_SOURCES) $(modemu2k_SOURCES)
+DIST_SOURCES = $(libmodemu2k_test_a_SOURCES) $(modemu2k_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -181,6 +206,7 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+AR = @AR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -231,6 +257,7 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 POSUB = @POSUB@
+RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -244,6 +271,7 @@ abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
+ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 am__leading_dot = @am__leading_dot@
 am__tar = @am__tar@
@@ -317,6 +345,11 @@ modemu2k_SOURCES = \
 	verbose.h \
 	gettext.h
 
+
+# static library used by 'make check'
+check_LIBRARIES = libmodemu2k_test.a
+libmodemu2k_test_a_SOURCES = $(modemu2k_SOURCES)
+libmodemu2k_test_a_CFLAGS = $(AM_CFLAGS) -DUSE_AS_TEST_LIB
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -409,6 +442,14 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
+clean-checkLIBRARIES:
+	-test -z "$(check_LIBRARIES)" || rm -f $(check_LIBRARIES)
+
+libmodemu2k_test.a: $(libmodemu2k_test_a_OBJECTS) $(libmodemu2k_test_a_DEPENDENCIES) $(EXTRA_libmodemu2k_test_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libmodemu2k_test.a
+	$(AM_V_AR)$(libmodemu2k_test_a_AR) libmodemu2k_test.a $(libmodemu2k_test_a_OBJECTS) $(libmodemu2k_test_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libmodemu2k_test.a
+
 modemu2k$(EXEEXT): $(modemu2k_OBJECTS) $(modemu2k_DEPENDENCIES) $(EXTRA_modemu2k_DEPENDENCIES) 
 	@rm -f modemu2k$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(modemu2k_OBJECTS) $(modemu2k_LDADD) $(LIBS)
@@ -424,6 +465,78 @@ distclean-compile:
 
 .c.obj:
 	$(AM_V_CC)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+libmodemu2k_test_a-modemu2k.o: modemu2k.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-modemu2k.o `test -f 'modemu2k.c' || echo '$(srcdir)/'`modemu2k.c
+
+libmodemu2k_test_a-modemu2k.obj: modemu2k.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-modemu2k.obj `if test -f 'modemu2k.c'; then $(CYGPATH_W) 'modemu2k.c'; else $(CYGPATH_W) '$(srcdir)/modemu2k.c'; fi`
+
+libmodemu2k_test_a-atcmd.o: atcmd.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-atcmd.o `test -f 'atcmd.c' || echo '$(srcdir)/'`atcmd.c
+
+libmodemu2k_test_a-atcmd.obj: atcmd.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-atcmd.obj `if test -f 'atcmd.c'; then $(CYGPATH_W) 'atcmd.c'; else $(CYGPATH_W) '$(srcdir)/atcmd.c'; fi`
+
+libmodemu2k_test_a-commx.o: commx.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-commx.o `test -f 'commx.c' || echo '$(srcdir)/'`commx.c
+
+libmodemu2k_test_a-commx.obj: commx.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-commx.obj `if test -f 'commx.c'; then $(CYGPATH_W) 'commx.c'; else $(CYGPATH_W) '$(srcdir)/commx.c'; fi`
+
+libmodemu2k_test_a-sockbuf.o: sockbuf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-sockbuf.o `test -f 'sockbuf.c' || echo '$(srcdir)/'`sockbuf.c
+
+libmodemu2k_test_a-sockbuf.obj: sockbuf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-sockbuf.obj `if test -f 'sockbuf.c'; then $(CYGPATH_W) 'sockbuf.c'; else $(CYGPATH_W) '$(srcdir)/sockbuf.c'; fi`
+
+libmodemu2k_test_a-stty.o: stty.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-stty.o `test -f 'stty.c' || echo '$(srcdir)/'`stty.c
+
+libmodemu2k_test_a-stty.obj: stty.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-stty.obj `if test -f 'stty.c'; then $(CYGPATH_W) 'stty.c'; else $(CYGPATH_W) '$(srcdir)/stty.c'; fi`
+
+libmodemu2k_test_a-timeval.o: timeval.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-timeval.o `test -f 'timeval.c' || echo '$(srcdir)/'`timeval.c
+
+libmodemu2k_test_a-timeval.obj: timeval.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-timeval.obj `if test -f 'timeval.c'; then $(CYGPATH_W) 'timeval.c'; else $(CYGPATH_W) '$(srcdir)/timeval.c'; fi`
+
+libmodemu2k_test_a-verbose.o: verbose.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-verbose.o `test -f 'verbose.c' || echo '$(srcdir)/'`verbose.c
+
+libmodemu2k_test_a-verbose.obj: verbose.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-verbose.obj `if test -f 'verbose.c'; then $(CYGPATH_W) 'verbose.c'; else $(CYGPATH_W) '$(srcdir)/verbose.c'; fi`
+
+libmodemu2k_test_a-cmdarg.o: cmdarg.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-cmdarg.o `test -f 'cmdarg.c' || echo '$(srcdir)/'`cmdarg.c
+
+libmodemu2k_test_a-cmdarg.obj: cmdarg.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-cmdarg.obj `if test -f 'cmdarg.c'; then $(CYGPATH_W) 'cmdarg.c'; else $(CYGPATH_W) '$(srcdir)/cmdarg.c'; fi`
+
+libmodemu2k_test_a-sock.o: sock.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-sock.o `test -f 'sock.c' || echo '$(srcdir)/'`sock.c
+
+libmodemu2k_test_a-sock.obj: sock.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-sock.obj `if test -f 'sock.c'; then $(CYGPATH_W) 'sock.c'; else $(CYGPATH_W) '$(srcdir)/sock.c'; fi`
+
+libmodemu2k_test_a-telopt.o: telopt.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-telopt.o `test -f 'telopt.c' || echo '$(srcdir)/'`telopt.c
+
+libmodemu2k_test_a-telopt.obj: telopt.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-telopt.obj `if test -f 'telopt.c'; then $(CYGPATH_W) 'telopt.c'; else $(CYGPATH_W) '$(srcdir)/telopt.c'; fi`
+
+libmodemu2k_test_a-ttybuf.o: ttybuf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-ttybuf.o `test -f 'ttybuf.c' || echo '$(srcdir)/'`ttybuf.c
+
+libmodemu2k_test_a-ttybuf.obj: ttybuf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-ttybuf.obj `if test -f 'ttybuf.c'; then $(CYGPATH_W) 'ttybuf.c'; else $(CYGPATH_W) '$(srcdir)/ttybuf.c'; fi`
+
+libmodemu2k_test_a-lex.yy.o: lex.yy.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-lex.yy.o `test -f 'lex.yy.c' || echo '$(srcdir)/'`lex.yy.c
+
+libmodemu2k_test_a-lex.yy.obj: lex.yy.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-lex.yy.obj `if test -f 'lex.yy.c'; then $(CYGPATH_W) 'lex.yy.c'; else $(CYGPATH_W) '$(srcdir)/lex.yy.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -511,6 +624,7 @@ distdir-am: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_LIBRARIES)
 check: check-am
 all-am: Makefile $(PROGRAMS) config.h
 installdirs:
@@ -549,7 +663,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-binPROGRAMS clean-checkLIBRARIES clean-generic \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -614,21 +729,21 @@ ps-am:
 
 uninstall-am: uninstall-binPROGRAMS
 
-.MAKE: all install-am install-strip
+.MAKE: all check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean \
-	clean-binPROGRAMS clean-generic cscopelist-am ctags ctags-am \
-	distclean distclean-compile distclean-generic distclean-hdr \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS
+	clean-binPROGRAMS clean-checkLIBRARIES clean-generic \
+	cscopelist-am ctags ctags-am distclean distclean-compile \
+	distclean-generic distclean-hdr distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-binPROGRAMS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 

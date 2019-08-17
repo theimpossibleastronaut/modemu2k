@@ -19,6 +19,10 @@ AX_APPEND_COMPILE_FLAGS(-Wall)
 AC_CONFIG_MACRO_DIRS([build-aux/m4])
 AC_PROG_INSTALL
 
+# For creating the static test library
+AC_PROG_RANLIB
+AM_PROG_AR
+
 AM_GNU_GETTEXT([external], [need-formatstring-macros])
 AM_GNU_GETTEXT_VERSION([0.19.8])
 
