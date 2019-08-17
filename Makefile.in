@@ -367,10 +367,18 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = src man po
+SUBDIRS = src man scripts po
 packextrasdir = @docdir@
-EXTRA_DIST = COPYING README QuickStart INSTALL AUTHORS ChangeLog \
-		ReleaseNotes CONTRIBUTING.md CODE_OF_CONDUCT.md
+EXTRA_DIST = \
+	COPYING	\
+	README	\
+	QuickStart	\
+	INSTALL	\
+	AUTHORS	\
+	ChangeLog \
+	ReleaseNotes	\
+	CONTRIBUTING.md	\
+	CODE_OF_CONDUCT.md
 
 packextras_DATA = $(EXTRA_DIST)
 ACLOCAL_AMFLAGS = --install -I build-aux/m4

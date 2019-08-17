@@ -41,7 +41,9 @@ Compilation
 make
 
 `make install` is optional. The binary can be run from the src/
-directory. (installation is required to use the translations.)
+directory; however, installation is required to use the translations,
+and to create and install a script (m2k-minicom.sh) that can invoke
+minicom (see below).
 
 Making SOCKSified or Termified Modemu2k may require changes to
 src/Makefile.am.
@@ -89,6 +91,9 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
   * Synchronet BBS List<http://www.synchro.net/sbbslist.html>
 
   To quit modemu2k, just quit the comm program.
+
+  A script to invoke minicom as mentioned above will be installed to
+  your bin directory when `make install` is run.
 
 Downloads
 ---------
