@@ -1,5 +1,7 @@
 v0.0.4
 
+Noteworthy changes:
+
 * Fixed --version output
 
 * Added script to invoke minicom: 'm2k-minicom.sh'
