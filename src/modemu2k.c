@@ -588,24 +588,29 @@ bsd:
 
 found:
   line = malloc (strlen (name) + 1);
-  strcpy (line, name);
-  line[5] = 't';
-  rc = chown (line, getuid (), getgid ());
-  if (rc < 0)
+  if (line)
   {
-    /* TRANSLATORS: do not translate "tty" or "pty" */
-    fputs (_("\
+    strcpy (line, name);
+    line[5] = 't';
+    rc = chown (line, getuid (), getgid ());
+    if (rc < 0)
+    {
+      /* TRANSLATORS: do not translate "tty" or "pty" */
+      fputs (_("\
 Warning: could not change ownership of tty -- pty is insecure!\n"), stderr);
-  }
-  rc = chmod (line, S_IRUSR | S_IWUSR | S_IWGRP);
-  if (rc < 0)
-  {
-    /* TRANSLATORS: do not translate "tty" or "pty" */
-    fputs (_("Warning: could not change permissions of tty -- pty is insecure!\n"), stderr);
-  }
+    }
+    rc = chmod (line, S_IRUSR | S_IWUSR | S_IWGRP);
+    if (rc < 0)
+    {
+      /* TRANSLATORS: do not translate "tty" or "pty" */
+      fputs (_("Warning: could not change permissions of tty -- pty is insecure!\n"), stderr);
+    }
 
-  *line_return = line;
-  return pty;
+    *line_return = line;
+    return pty;
+  }
+  fputs ("malloc(): error allocating memory -- exiting.", stderr);
+  exit (EXIT_FAILURE);
 
 bail:
   if (pty >= 0)
