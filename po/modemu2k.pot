@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: modemu2k 0.0.4-dev\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2019-08-17 14:35-0500\n"
+"POT-Creation-Date: 2019-08-18 00:39-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -98,7 +98,7 @@ msgid "Could not run shell.\n"
 msgstr ""
 
 #. TRANSLATORS: do not translate `at%%q`
-#: src/modemu2k.c:667
+#: src/modemu2k.c:672
 msgid ""
 "Enter 'at%q' to quit\n"
 "\n"
@@ -112,7 +112,7 @@ msgstr ""
 msgid "Host address lookup failed.\r\n"
 msgstr ""
 
-#: src/modemu2k.c:646
+#: src/modemu2k.c:651
 msgid "No more pty devices available.\n"
 msgstr ""
 
@@ -177,12 +177,12 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: do not translate "tty" or "pty"
-#: src/modemu2k.c:597
+#: src/modemu2k.c:599
 msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
 msgstr ""
 
 #. TRANSLATORS: do not translate "tty" or "pty"
-#: src/modemu2k.c:604
+#: src/modemu2k.c:606
 msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
 msgstr ""
 

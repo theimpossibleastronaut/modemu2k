@@ -62,6 +62,10 @@ modemu2k_SOURCES =	\
 
 DEFS = -DLOCALEDIR=\"$(localedir)\" -D_GNU_SOURCE
 
+# If LIBINTL (required for gettext) isn't added, the build breaks on
+# OpenBSD and probably others
+LDADD = @LIBINTL@
+
 # static library used by 'make check'
 check_LIBRARIES = libmodemu2k_test.a
 libmodemu2k_test_a_SOURCES = $(modemu2k_SOURCES)

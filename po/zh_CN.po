@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: modemu2k 0.0.3-dev\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2019-08-17 14:35-0500\n"
+"POT-Creation-Date: 2019-08-18 00:39-0500\n"
 "PO-Revision-Date: 2018-10-14 17:15+0800\n"
 "Last-Translator: U-LAPTOP-S0HDQ8NL\\name1e5s <name1e5s@qq.com>\n"
 "Language-Team: Chinese (simplified)\n"
@@ -99,7 +99,7 @@ msgid "Could not run shell.\n"
 msgstr "无法运行 shell.\n"
 
 #. TRANSLATORS: do not translate `at%%q`
-#: src/modemu2k.c:667
+#: src/modemu2k.c:672
 #, fuzzy
 #| msgid ""
 #| "Enter 'at%%q' to quit\n"
@@ -117,7 +117,7 @@ msgstr "初始化命令出错.\r\n"
 msgid "Host address lookup failed.\r\n"
 msgstr "查找主机地址失败.\r\n"
 
-#: src/modemu2k.c:646
+#: src/modemu2k.c:651
 msgid "No more pty devices available.\n"
 msgstr "暂无可用 pty 设备.\n"
 
@@ -187,12 +187,12 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: do not translate "tty" or "pty"
-#: src/modemu2k.c:597
+#: src/modemu2k.c:599
 msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
 msgstr "警告: 无法改变 tty 所有者 -- pty 不安全!\n"
 
 #. TRANSLATORS: do not translate "tty" or "pty"
-#: src/modemu2k.c:604
+#: src/modemu2k.c:606
 msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
 msgstr "警告: 无法修改 tty 权限 -- pty 不安全!\n"
 

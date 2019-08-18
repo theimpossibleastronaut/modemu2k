@@ -144,6 +144,7 @@ am_modemu2k_OBJECTS = modemu2k.$(OBJEXT) atcmd.$(OBJEXT) \
 	lex.yy.$(OBJEXT)
 modemu2k_OBJECTS = $(am_modemu2k_OBJECTS)
 modemu2k_LDADD = $(LDADD)
+modemu2k_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -345,6 +346,10 @@ modemu2k_SOURCES = \
 	verbose.h \
 	gettext.h
 
+
+# If LIBINTL (required for gettext) isn't added, the build breaks on
+# OpenBSD and probably others
+LDADD = @LIBINTL@
 
 # static library used by 'make check'
 check_LIBRARIES = libmodemu2k_test.a

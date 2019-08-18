@@ -6,8 +6,8 @@ modemu2k ChangeLog
 
 * Added script to invoke minicom: 'm2k-minicom.sh'
 
-* Infrastructure to implement testing with `make check` added; however,
-no tests have been created yet.
+* Infrastructure to implement testing with `make check` added.
+
 
 2018-10-17
 

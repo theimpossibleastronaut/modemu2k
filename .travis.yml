@@ -89,7 +89,7 @@ script:
     fi
   - ./configure
   - if [ -z "$CHECK" ]; then
-      make;
+      make check;
     else
       make distcheck;
     fi

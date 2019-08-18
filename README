@@ -45,9 +45,6 @@ directory; however, installation is required to use the translations,
 and to create and install a script (m2k-minicom.sh) that can invoke
 minicom (see below).
 
-`make check` does nothing yet (If you'd like to write a test, please
-open a ticket).
-
 
 Sample Usage
 ------------
@@ -81,11 +78,12 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
       modemu2k -e "AT%B0=1%B1=1&W" -c "minicom -l -tansi -con -p %s"
 
-  From within the comm program, if you have a server running, you can enter
+  From within the comm program, if you have a server running, to
+  connect you can enter:
 
       atd"localhost
 
-  to connect. You could also connect to a BBS:
+  You could also connect to a BBS. For some telnet addresses, see:
 
   * <<Prism BBS<http://filegate.net/>
   * Synchronet BBS List<http://www.synchro.net/sbbslist.html>
