@@ -49,60 +49,48 @@ sockShutdown (void)
 int
 sockDial (void)
 {
-  struct sockaddr_in sa;
-  struct hostent *hep;
-  struct servent *sep;
-  int tmp;
+  struct addrinfo hints;
+  memset (&hints, 0, sizeof (struct addrinfo));
 
-  memset (&sa, 0, sizeof (sa));
+  struct addrinfo *result, *rp;
+  int s;
 
-  switch (atcmd.d.addr.type)
+  hints.ai_family = AF_UNSPEC;  /* Allow IPv4 or IPv6 */
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = 0;
+  hints.ai_protocol = 0;        /* Any protocol */
+
+  char out_port[PORT_MAX + 1];
+
+  if (atcmd.d.port.type == ATDP_NUL)
+    snprintf (out_port, sizeof out_port, "%d", DEFAULT_PORT);
+  else
   {
-  case ATDA_NUM:
-    sa.sin_addr.s_addr = inet_addr (atcmd.d.addr.str);
-    break;
-  case ATDA_STR:
-    hep = gethostbyname (atcmd.d.addr.str);
-    if (hep == NULL)
-    {
-      verboseOut (VERB_MISC, _("Host address lookup failed.\r\n"));
-      return 1;
-    }
-    sa.sin_addr.s_addr = *(unsigned long *) hep->h_addr_list[0];
-    break;
+    strcpy (out_port, atcmd.d.port.str);
+    telOpt.sentReqs = 1;        /* skip sending option requests */
   }
 
-  switch (atcmd.d.port.type)
+  s = getaddrinfo (atcmd.d.addr.str, out_port, &hints, &result);
+  if (s != 0)
   {
-  case ATDP_NUL:
-    sa.sin_port = htons (DEFAULT_PORT);
-    break;
-  case ATDP_NUM:
-    sa.sin_port = htons (atoi (atcmd.d.port.str));
-    telOpt.sentReqs = 1;        /* skip sending option requests */
-    break;
-  case ATDP_STR:
-    sep = getservbyname (atcmd.d.port.str, "tcp");
-    if (sep == NULL)
-    {
-      verboseOut (VERB_MISC, _("Port number lookup failed.\r\n"));
-      return 1;
-    }
-    sa.sin_port = sep->s_port;
-    telOpt.sentReqs = 1;        /* skip sending option requests */
-    break;
-  }
-
-  sa.sin_family = AF_INET;
-
-  sock.fd = socket (AF_INET, SOCK_STREAM, 0);
-  if (sock.fd < 0)
-  {
-    perror ("socket()");
+    verboseOut (VERB_MISC, _("Host address lookup failed: %s\n"), gai_strerror (s));
     return 1;
   }
 
-  tmp = 1;
+  for (rp = result; rp != NULL; rp = rp->ai_next)
+  {
+    sock.fd = socket (rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+    if (sock.fd != -1)
+      break;
+  }
+
+  if (sock.fd == -1)
+  {                             /* No address succeeded */
+    perror ("socket");
+    return 1;
+  }
+
+  int tmp = 1;
   if (setsockopt (sock.fd, SOL_SOCKET, SO_OOBINLINE, &tmp, sizeof (tmp)) < 0)
   {
     perror ("setsockopt()");
@@ -112,12 +100,13 @@ sockDial (void)
 
 #ifdef NO_DIAL_CANCELING
   /* blocking connect. */
-  if (connect (sock.fd, (struct sockaddr *) &sa, sizeof (sa)) < 0)
+  if (connect (sock.fd, rp->ai_addr, rp->ai_addrlen) != 0)
   {
     sockShutdown ();
     perror ("connect()");
     return 1;
   }
+  freeaddrinfo (result);
   sock.alive = 1;
   return 0;
 #else /*!ifdef NO_DIAL_CANCELING */
@@ -132,7 +121,7 @@ sockDial (void)
     ioctl (sock.fd, FIONBIO, &tmp);     /* non-blocking i/o */
 
     /* but Term's connect() blocks here... */
-    if (connect (sock.fd, (struct sockaddr *) &sa, sizeof (sa)) < 0
+    if (connect (sock.fd, rp->ai_addr, rp->ai_addrlen) < 0
         && errno != EINPROGRESS)
     {
       perror ("connect()");
@@ -140,6 +129,7 @@ sockDial (void)
       return 1;
     }
 
+    freeaddrinfo (result);
     FD_ZERO (&rfds);
     FD_ZERO (&wfds);
     tv.tv_sec = 0;
@@ -185,13 +175,14 @@ sockDial (void)
       /* SOCKS requires this check method (ref: What_SOCKS_expects) */
       if (FD_ISSET (sock.fd, &wfds))
       {
-        if (connect (sock.fd, (struct sockaddr *) &sa, sizeof (sa)) < 0
+        if (connect (sock.fd, rp->ai_addr, rp->ai_addrlen) < 0
             && errno != EISCONN)
         {
           perror ("connect()-2");
           sockShutdown ();
           return 1;
         }
+
         tmp = 0;
         ioctl (sock.fd, FIONBIO, &tmp); /* blocking i/o */
         sock.alive = 1;
