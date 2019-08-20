@@ -1,11 +1,10 @@
 AM_CFLAGS = -I$(top_srcdir)/src
 
-check_PROGRAMS =	\
-	getNumArg
+TESTS =	\
+	getNumArg	\
+	connect
 
-getNumArg_SOURCES = getNumArg.c
-
-TESTS = $(check_PROGRAMS)
+check_PROGRAMS = $(TESTS:.c=)
 
 # If LIBINTL (used by gettext) isn't added, the build breaks on
 # OpenBSD and probably others

@@ -25,9 +25,11 @@
  *
  */
 
-#if 0
-#include "defs.h"       /*->atcmd.h (uchar)*/
-#endif
+#include <stdio.h>              /*stderr,(sscanf,sprintf) */
+#include <string.h>             /*(strncpy) */
+#include <stdlib.h>             /*(getenv) */
+#include <sys/time.h>   /*->ttybuf.h (timeval)*/
+#include <arpa/telnet.h>        /*TELOPT_xxx */
 
 typedef enum
 {

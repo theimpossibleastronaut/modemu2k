@@ -25,6 +25,25 @@
  *
  */
 
+
+#ifdef TERMNET
+#include <termnet.h>
+#endif
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <string.h>
+#ifdef USE_FILIO_H
+#include <sys/filio.h>
+#else
+#include <sys/ioctl.h>
+#endif
+#include <stdlib.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <errno.h>
+#include <stdio.h>
+
 struct
 {
   int fd;

@@ -87,7 +87,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-check_PROGRAMS = getNumArg$(EXEEXT)
+TESTS = getNumArg$(EXEEXT) connect$(EXEEXT)
+check_PROGRAMS = $(am__EXEEXT_1)
 subdir = tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
@@ -113,8 +114,13 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am_getNumArg_OBJECTS = getNumArg.$(OBJEXT)
-getNumArg_OBJECTS = $(am_getNumArg_OBJECTS)
+am__EXEEXT_1 = getNumArg$(EXEEXT) connect$(EXEEXT)
+connect_SOURCES = connect.c
+connect_OBJECTS = connect.$(OBJEXT)
+connect_LDADD = $(LDADD)
+connect_DEPENDENCIES = $(top_builddir)/src/libmodemu2k_test.a
+getNumArg_SOURCES = getNumArg.c
+getNumArg_OBJECTS = getNumArg.$(OBJEXT)
 getNumArg_LDADD = $(LDADD)
 getNumArg_DEPENDENCIES = $(top_builddir)/src/libmodemu2k_test.a
 AM_V_P = $(am__v_P_@AM_V@)
@@ -144,8 +150,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(getNumArg_SOURCES)
-DIST_SOURCES = $(getNumArg_SOURCES)
+SOURCES = connect.c getNumArg.c
+DIST_SOURCES = connect.c getNumArg.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -492,8 +498,6 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CFLAGS = -I$(top_srcdir)/src
-getNumArg_SOURCES = getNumArg.c
-TESTS = $(check_PROGRAMS)
 
 # If LIBINTL (used by gettext) isn't added, the build breaks on
 # OpenBSD and probably others
@@ -534,6 +538,10 @@ $(am__aclocal_m4_deps):
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
+
+connect$(EXEEXT): $(connect_OBJECTS) $(connect_DEPENDENCIES) $(EXTRA_connect_DEPENDENCIES) 
+	@rm -f connect$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(connect_OBJECTS) $(connect_LDADD) $(LIBS)
 
 getNumArg$(EXEEXT): $(getNumArg_OBJECTS) $(getNumArg_DEPENDENCIES) $(EXTRA_getNumArg_DEPENDENCIES) 
 	@rm -f getNumArg$(EXEEXT)
@@ -747,6 +755,13 @@ recheck: all $(check_PROGRAMS)
 getNumArg.log: getNumArg$(EXEEXT)
 	@p='getNumArg$(EXEEXT)'; \
 	b='getNumArg'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+connect.log: connect$(EXEEXT)
+	@p='connect$(EXEEXT)'; \
+	b='connect'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
