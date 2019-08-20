@@ -5,7 +5,7 @@ modemu2k ChangeLog
   * Replaced obsolete gethostbyname() with getaddrinfo()
 
   * If the m2k-minicom.sh script is run from the scripts/ directory, it will
-  uses the dev build of modemu2k in src/
+  use the dev build of modemu2k in src/
 
 
 2019-08-18
