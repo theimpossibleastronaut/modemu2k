@@ -19,7 +19,8 @@ sigchld (int dummy)
   if (waitpid (commxPid, &s, WNOHANG) > 0)
   {
     fputs (_("Comm program exited.\r\n"), stderr);
-    verboseOut (VERB_MISC, _("Child returned status %d.\r\n"), WEXITSTATUS (s));
+    verboseOut (VERB_MISC, _("Child returned status %d.\r\n"),
+                WEXITSTATUS (s));
     exit (0);
   }
 }

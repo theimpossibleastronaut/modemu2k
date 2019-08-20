@@ -71,7 +71,7 @@ putTty1 (uchar c)
   {                             /* limit */
     if (ttyBufW.ptr >= ttyBufW.buf + TTYBUFW_SIZE_A)
     {                           /*actual limit */
-	/* TRANSLATORS: do not translate ttyBufW */
+      /* TRANSLATORS: do not translate ttyBufW */
       fputs (_("\attyBufW overrun.\n"), stderr);
       return;
     }

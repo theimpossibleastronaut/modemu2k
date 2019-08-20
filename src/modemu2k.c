@@ -286,7 +286,7 @@ ttyReadLoop (void)
 #ifndef USE_AS_TEST_LIB
 static
 #endif
-int
+  int
 onlineMode (void)
 {
   fd_set rfds, wfds;
@@ -451,7 +451,7 @@ putTtyCmdstat (Cmdstat s)
 #ifndef USE_AS_TEST_LIB
 static
 #endif
-Cmdstat
+  Cmdstat
 cmdMode (void)
 {
   fd_set rfds, wfds;
@@ -511,7 +511,7 @@ cmdMode (void)
 #ifndef USE_AS_TEST_LIB
 static
 #endif
-int
+  int
 openPtyMaster (const char *dev)
 {
   int fd;
@@ -530,7 +530,7 @@ openPtyMaster (const char *dev)
 #ifndef USE_AS_TEST_LIB
 static
 #endif
-int
+  int
 getPtyMaster (char **line_return)
 {
   int rc;
@@ -614,7 +614,9 @@ Warning: could not change ownership of tty -- pty is insecure!\n"), stderr);
     if (rc < 0)
     {
       /* TRANSLATORS: do not translate "tty" or "pty" */
-      fputs (_("Warning: could not change permissions of tty -- pty is insecure!\n"), stderr);
+      fputs (_
+             ("Warning: could not change permissions of tty -- pty is insecure!\n"),
+             stderr);
     }
 
     *line_return = line;
@@ -668,7 +670,7 @@ getPtyMaster (char *tty10, char *tty01)
 #ifndef USE_AS_TEST_LIB
 
 int
-main (int argc, char* const argv[])
+main (int argc, char *const argv[])
 {
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);

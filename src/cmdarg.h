@@ -34,4 +34,4 @@ struct
   const char *dev;
 } cmdarg;
 
-void cmdargParse (const int argc, char* const argv[]);
+void cmdargParse (const int argc, char *const argv[]);

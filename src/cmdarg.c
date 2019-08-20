@@ -36,7 +36,7 @@
 #define LIT(s) LIT_(s)
 
 static void
-showUsage (char* const argv[])
+showUsage (char *const argv[])
 {
   printf (("Usage: %s [OPTION]...\n\n"), argv[0]);
 
@@ -75,13 +75,13 @@ The modemu2k project and support site is at\n\
 Report bugs to <andy400-dev@yahoo.com> or\n\
 <https://github.com/theimpossibleastronaut/modemu2k/issues>\n"));
 
- return;
+  return;
 }
 
 static void
 warranty (void)
 {
-printf (_("\
+  printf (_("\
 THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n\
 APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT\n\
 HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY\n\
@@ -92,7 +92,8 @@ IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF\n\
 ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n"));
 }
 
-static void version (char * const argv[])
+static void
+version (char *const argv[])
 {
   printf (_("\
 modemu2k %s\n\
@@ -104,11 +105,11 @@ for details.\n"), VERSION, argv[0]);
 }
 
 void
-cmdargParse (const int argc, char* const argv[])
+cmdargParse (const int argc, char *const argv[])
 {
   const char *const short_options = "c:d:e:hsvw";
 
-    const struct option long_options[] = {
+  const struct option long_options[] = {
     {"commprog", 1, NULL, 'c'},
     {"device", 1, NULL, 'd'},
     {"atstring", 1, NULL, 'e'},
@@ -126,33 +127,33 @@ cmdargParse (const int argc, char* const argv[])
   {
     next_option = getopt_long (argc, argv, short_options, long_options, NULL);
 
-    switch ((char)next_option)
+    switch ((char) next_option)
     {
-      case 'c':                /* -c <commx args> */
-        cmdarg.ttymode = CA_COMMX;
-        cmdarg.commx = optarg;
-        break;
-      case 'd':                /* -d <pty_device> */
-        cmdarg.ttymode = CA_DEVGIVEN;
-        cmdarg.dev = optarg;
-        break;
-      case 'e':                /* -a <atcommands> */
-        cmdarg.atcmd = optarg;
-        break;
-      case 'h':                /* -h */
-        showUsage (argv);
-        exit (0);
-      case 's':                /* -s */
-        cmdarg.ttymode = CA_SHOWDEV;
-        break;
-      case 'v':
-        version (argv);
-        exit (0);
-      case 'w':
-        warranty ();
-        exit (0);
-      default:
-        break;
+    case 'c':                  /* -c <commx args> */
+      cmdarg.ttymode = CA_COMMX;
+      cmdarg.commx = optarg;
+      break;
+    case 'd':                  /* -d <pty_device> */
+      cmdarg.ttymode = CA_DEVGIVEN;
+      cmdarg.dev = optarg;
+      break;
+    case 'e':                  /* -a <atcommands> */
+      cmdarg.atcmd = optarg;
+      break;
+    case 'h':                  /* -h */
+      showUsage (argv);
+      exit (0);
+    case 's':                  /* -s */
+      cmdarg.ttymode = CA_SHOWDEV;
+      break;
+    case 'v':
+      version (argv);
+      exit (0);
+    case 'w':
+      warranty ();
+      exit (0);
+    default:
+      break;
     }
   } while (next_option != -1);
 
