@@ -92,13 +92,6 @@ sockDial (void)
     sock.fd = socket (rp->ai_family, rp->ai_socktype, rp->ai_protocol);
     if (sock.fd != -1)
       break;
-
-    if (close (sock.fd) != 0)
-    {
-      perror ("close() socket");
-      return 1;
-    }
-
   }
 
   if (sock.fd == -1)
