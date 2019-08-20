@@ -1,5 +1,11 @@
 modemu2k ChangeLog
 
+2019-8-19
+
+  * If the m2k-minicom.sh script is run from the scripts/ directory, it will
+  uses the dev build of modemu2k in src/
+
+
 2019-08-18
 
   * v0.0.4 released

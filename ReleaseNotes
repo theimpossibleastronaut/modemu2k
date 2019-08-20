@@ -1,9 +1,6 @@
-v0.0.4
+v0.0.5
 
 Noteworthy changes:
 
-* Fixed --version output
-
-* Added script to invoke minicom: 'm2k-minicom.sh'
-
-* Infrastructure to implement testing with `make check` added.
+  * If the m2k-minicom.sh script is run from the scripts/ directory, it will
+  uses the dev build of modemu2k in src/
