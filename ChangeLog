@@ -2,54 +2,54 @@ modemu2k ChangeLog
 
 2019-08-18
 
-* v0.0.4 released
+  * v0.0.4 released
 
 2019-08-17
 
-* Fixed --version output
+  * Fixed --version output
 
-* Added script to invoke minicom: 'm2k-minicom.sh'
+  * Added script to invoke minicom: 'm2k-minicom.sh'
 
-* Infrastructure to implement testing with `make check` added.
+  * Infrastructure to implement testing with `make check` added.
 
 
 2018-10-17
 
-* v0.0.3 released
+  * v0.0.3 released
 
 2018-10-14
 
-* zh_CN translation added
-* nl_NL translation added
+  * zh_CN translation added
+  * nl_NL translation added
 
 2018-10-13
 
-* Removed "-" option
-* Added support for translated messages using the GNU gettext library
-* Improved usage output
-* Now using getopt.h to parse cmd args
+  * Removed "-" option
+  * Added support for translated messages using the GNU gettext library
+  * Improved usage output
+  * Now using getopt.h to parse cmd args
 
 2018-10-11
 
-* it_IT translation of man page added
+  * it_IT translation of man page added
 
 
 2018-10-08
 
-* pt_BR translation of man page added
+  * pt_BR translation of man page added
 
 2018-09-06
 
-* Added quit instructions to start-up screen
-* auto-generated config.h is now used
-* man file will now install
-* issue v0.0.2 release
+  * Added quit instructions to start-up screen
+  * auto-generated config.h is now used
+  * man file will now install
+  * issue v0.0.2 release
 
 
 2018-09-05
 
-* applied patch from https://github.com/aur-archive/modemu
-* Added configure script, autoconf and automake file
-* increase version to 0.0.2-dev
-* modemu2k Fork created
+  * applied patch from https://github.com/aur-archive/modemu
+  * Added configure script, autoconf and automake file
+  * increase version to 0.0.2-dev
+  * modemu2k Fork created
 
