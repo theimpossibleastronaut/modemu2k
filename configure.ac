@@ -1,5 +1,5 @@
 AC_INIT([modemu2k],
-        [0.0.4],
+        [0.0.5-dev],
         [andy400-dev@yahoo.com],
         ,
         [https://github.com/theimpossibleastronaut/modemu2k])
