@@ -48,6 +48,7 @@ struct
 {
   int fd;
   int alive;
+  struct addrinfo *rp;
 } sock;
 
 #define sockIsAlive() (sock.alive)

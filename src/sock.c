@@ -62,7 +62,9 @@ sockDial (void)
   struct addrinfo hints;
   memset (&hints, 0, sizeof (struct addrinfo));
 
-  struct addrinfo *result = NULL, *rp = NULL;
+  sock.rp = NULL;
+  struct addrinfo *result = NULL;
+
   int s;
 
   hints.ai_family = AF_UNSPEC;  /* Allow IPv4 or IPv6 */
@@ -87,9 +89,9 @@ sockDial (void)
     return 1;
   }
 
-  for (rp = result; rp != NULL; rp = rp->ai_next)
+  for (sock.rp = result; sock.rp != NULL; sock.rp = sock.rp->ai_next)
   {
-    sock.fd = socket (rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+    sock.fd = socket (sock.rp->ai_family, sock.rp->ai_socktype, sock.rp->ai_protocol);
     if (sock.fd != -1)
       break;
   }
@@ -110,7 +112,7 @@ sockDial (void)
 
 #ifdef NO_DIAL_CANCELING
   /* blocking connect. */
-  if (connect (sock.fd, rp->ai_addr, rp->ai_addrlen) != 0)
+  if (connect (sock.fd, sock.rp->ai_addr, sock.rp->ai_addrlen) != 0)
   {
     sockShutdown ();
     perror ("connect()");
@@ -132,7 +134,7 @@ sockDial (void)
     ioctl (sock.fd, FIONBIO, &tmp);     /* non-blocking i/o */
 
     /* but Term's connect() blocks here... */
-    if (connect (sock.fd, rp->ai_addr, rp->ai_addrlen) < 0
+    if (connect (sock.fd, sock.rp->ai_addr, sock.rp->ai_addrlen) < 0
         && errno != EINPROGRESS)
     {
       perror ("connect()");
@@ -185,7 +187,7 @@ sockDial (void)
       /* SOCKS requires this check method (ref: What_SOCKS_expects) */
       if (FD_ISSET (sock.fd, &wfds))
       {
-        if (connect (sock.fd, rp->ai_addr, rp->ai_addrlen) < 0
+        if (connect (sock.fd, sock.rp->ai_addr, sock.rp->ai_addrlen) < 0
             && errno != EISCONN)
         {
           perror ("connect()-2");
