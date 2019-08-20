@@ -56,7 +56,10 @@ sockClose (void)
 {
   if (sock.fd <= 0)
     return;
-  close (sock.fd);
+
+  if (close (sock.fd) != 0)
+    perror ("sockClose()");
+
   sock.fd = sock.alive = 0;
 }
 
@@ -77,7 +80,7 @@ sockDial (void)
   struct addrinfo hints;
   memset (&hints, 0, sizeof (struct addrinfo));
 
-  struct addrinfo *result, *rp;
+  struct addrinfo *result = NULL, *rp = NULL;
   int s;
 
   hints.ai_family = AF_UNSPEC;  /* Allow IPv4 or IPv6 */
@@ -107,6 +110,13 @@ sockDial (void)
     sock.fd = socket (rp->ai_family, rp->ai_socktype, rp->ai_protocol);
     if (sock.fd != -1)
       break;
+
+    if (close (sock.fd) != 0)
+    {
+      perror ("close() socket");
+      return 1;
+    }
+
   }
 
   if (sock.fd == -1)
@@ -131,6 +141,7 @@ sockDial (void)
     perror ("connect()");
     return 1;
   }
+
   freeaddrinfo (result);
   sock.alive = 1;
   return 0;
@@ -154,7 +165,6 @@ sockDial (void)
       return 1;
     }
 
-    freeaddrinfo (result);
     FD_ZERO (&rfds);
     FD_ZERO (&wfds);
     tv.tv_sec = 0;
@@ -217,6 +227,8 @@ sockDial (void)
       gettimeofday (&t, NULL);
     }
     while (timevalCmp (&t, &to) < 0);
+
+    freeaddrinfo (result);
     sockShutdown ();
     verboseOut (VERB_MISC, _("Connection attempt timed out.\r\n"));
     return 1;                   /* timeout */
