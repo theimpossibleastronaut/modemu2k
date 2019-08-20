@@ -214,8 +214,8 @@ telOptHandle (int cmd, int opt)
   int negaResCmd;               /* negative response command for cmd */
   TelOptReq mustNegate;         /* must negate if req is this */
   TelOptReq betterNegate;       /* better negate if req is this */
-  TelOptReq betterAssert;       /* better assert if req is this */
-  TelOptReq mustAssert;         /* must assert if req is this */
+  //  TelOptReq betterAssert;       /* better assert if req is this */
+  //  TelOptReq mustAssert;         /* must assert if req is this */
 
   printCmdOpt ("<", cmd, opt);
 
@@ -228,8 +228,8 @@ telOptHandle (int cmd, int opt)
     reqState = 1;
     mustNegate = TOR_MUSTNOT;
     betterNegate = TOR_BETTERNOT;
-    betterAssert = TOR_BETTER;
-    mustAssert = TOR_MUST;
+    // betterAssert = TOR_BETTER;
+    // mustAssert = TOR_MUST;
     posiResCmd = DO;
     negaResCmd = DONT;
     break;
@@ -238,8 +238,8 @@ telOptHandle (int cmd, int opt)
     reqState = 0;
     mustNegate = TOR_MUST;
     betterNegate = TOR_BETTER;
-    betterAssert = TOR_BETTERNOT;
-    mustAssert = TOR_MUSTNOT;
+    // betterAssert = TOR_BETTERNOT;
+    // mustAssert = TOR_MUSTNOT;
     posiResCmd = DONT;
     negaResCmd = DO;
     break;
@@ -248,8 +248,8 @@ telOptHandle (int cmd, int opt)
     reqState = 1;
     mustNegate = TOR_MUSTNOT;
     betterNegate = TOR_BETTERNOT;
-    betterAssert = TOR_BETTER;
-    mustAssert = TOR_MUST;
+    //  betterAssert = TOR_BETTER;
+    //  mustAssert = TOR_MUST;
     posiResCmd = WILL;
     negaResCmd = WONT;
     break;
@@ -258,8 +258,8 @@ telOptHandle (int cmd, int opt)
     reqState = 0;
     mustNegate = TOR_MUST;
     betterNegate = TOR_BETTER;
-    betterAssert = TOR_BETTERNOT;
-    mustAssert = TOR_MUSTNOT;
+    // betterAssert = TOR_BETTERNOT;
+    // mustAssert = TOR_MUSTNOT;
     posiResCmd = WONT;
     negaResCmd = WILL;
     break;
