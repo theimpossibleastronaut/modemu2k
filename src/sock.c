@@ -101,7 +101,7 @@ sockDial (void)
   s = getaddrinfo (atcmd.d.addr.str, out_port, &hints, &result);
   if (s != 0)
   {
-    verboseOut (VERB_MISC, _("Host address lookup failed: %s\n"), gai_strerror (s));
+    fprintf (stderr, _("Host address lookup failed: %s\n"), gai_strerror (s));
     return 1;
   }
 
