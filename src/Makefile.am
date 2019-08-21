@@ -72,4 +72,4 @@ libmodemu2k_test_a_SOURCES = $(modemu2k_SOURCES)
 libmodemu2k_test_a_CFLAGS = $(AM_CFLAGS) -DUSE_AS_TEST_LIB
 
 lex.yy.c:
-	$(LEX) $(LFLAGS) cmdlex.l
+	$(LEX) $(LFLAGS) @srcdir@/cmdlex.l

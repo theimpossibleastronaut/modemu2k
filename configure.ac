@@ -23,6 +23,8 @@ AC_PROG_INSTALL
 AC_PROG_RANLIB
 AM_PROG_AR
 
+AM_PROG_LEX
+
 AM_GNU_GETTEXT([external], [need-formatstring-macros])
 AM_GNU_GETTEXT_VERSION([0.19.8])
 
