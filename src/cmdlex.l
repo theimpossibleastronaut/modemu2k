@@ -116,16 +116,16 @@ TTYPE	([-/a-zA-Z0-9]*)
 <ATD>{A_NUM} |
 <ATD>\"{A_NUM}\"?	{ atcmdD(yytext, ATDA_NUM, ATDP_NUL);
 				cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>{A_NUM}:{P_NUM} |
-<ATD>\"{A_NUM}:{P_NUM}\"?	{ atcmdD(yytext, ATDA_NUM, ATDP_NUM);
+<ATD>{A_NUM}\ {P_NUM} |
+<ATD>\"{A_NUM}\ {P_NUM}\"?	{ atcmdD(yytext, ATDA_NUM, ATDP_NUM);
 					cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>\"{A_NUM}:{P_STR}\"?	{ atcmdD(yytext, ATDA_NUM, ATDP_STR);
+<ATD>\"{A_NUM}\ {P_STR}\"?	{ atcmdD(yytext, ATDA_NUM, ATDP_STR);
 					cmdstat = CMDST_ATD; BEGIN AT; }
 <ATD>\"{A_STR}\"?		{ atcmdD(yytext, ATDA_STR, ATDP_NUL);
 					cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>\"{A_STR}:{P_NUM}\"?	{ atcmdD(yytext, ATDA_STR, ATDP_NUM);
+<ATD>\"{A_STR}\ {P_NUM}\"?	{ atcmdD(yytext, ATDA_STR, ATDP_NUM);
 					cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>\"{A_STR}:{P_STR}\"?	{ atcmdD(yytext, ATDA_STR, ATDP_STR);
+<ATD>\"{A_STR}\ {P_STR}\"?	{ atcmdD(yytext, ATDA_STR, ATDP_STR);
 					cmdstat = CMDST_ATD; BEGIN AT; }
 <ATD>" "			{ /*ignore spaces*/ }
 <ATD>.|\n			{ return cmdstat = CMDST_ERROR; }

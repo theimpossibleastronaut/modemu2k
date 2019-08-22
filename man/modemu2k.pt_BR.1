@@ -1,5 +1,5 @@
 .\" -*- nroff -*-
-.TH MODEMU2k 1 "15º de October de 2018" "Versão 0.0.3"
+.TH MODEMU2k 1 "21º de August de 2019" "Versão 0.0.5"
 .\"
 .\"
 .SH NOME
@@ -124,11 +124,11 @@ não inicia a negociação da opção TELNET.
 Os seguintes formatos estão disponíveis para \fIstr\fP:
 .RS
 .TP
-\fIhost\fP[:\fIport\fP]
+\fIhost\fP [\fIport\fP]
 \fIHost\fP é um endereço da Internet na notação de números e pontos.
 O opcional \fIport\fP é um número de porta.
 .TP
-"\fIhost\fP[:\fIport\fP]["]
+"\fIhost\fP [\fIport\fP]["]
 \fIHost\fP é um endereço da Internet ou nome de host.
 O opcional \fIport\fP é um número de porta ou nome de serviço.
 A aspa dupla de fechamento pode ser omitida caso nenhum comando vier posteriormente.
@@ -141,7 +141,7 @@ Exemplo:
 .RS
 ATDT0W127.0.0.1
 .br
-ATDP"foo.bar.jp:daytime
+ATDP"foo.bar.jp daytime
 .RE
 .RE
 .\" ===== E =====

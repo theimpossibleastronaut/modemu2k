@@ -65,7 +65,7 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
   modemu2k reads from standard input and writes to standard output.
   Input
 
-  > atd"localhost[:port]
+  > atd"localhost [port]
 
   (prompt ">" is not shown) You will see your host's login prompt
   (if a server is running). When you disconnect, you will get "NO

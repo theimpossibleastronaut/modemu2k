@@ -1,5 +1,11 @@
 modemu2k ChangeLog
 
+2019-8-21
+
+  * To specify a non-standard port, you must use a space now instead of
+  a colon
+
+
 2019-8-19
 
   * Replaced obsolete gethostbyname() with getaddrinfo()

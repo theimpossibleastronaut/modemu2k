@@ -2,6 +2,9 @@ v0.0.5
 
 Noteworthy changes:
 
+  * To specify a non-standard port, you must use a space now instead of
+  a colon
+
   * Replaced obsolete gethostbyname() with getaddrinfo()
 
   * If the m2k-minicom.sh script is run from the scripts/ directory, it will

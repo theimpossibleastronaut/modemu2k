@@ -10,12 +10,12 @@
 int main (void)
 {
   // should connect
-  atcmdD ("github.com:80", ATDA_STR, ATDP_STR);
+  atcmdD ("github.com 80", ATDA_STR, ATDP_STR);
   assert (sockDial() == 0);
   assert (close (sock.fd) == 0);
 
   // should not connect
-  atcmdD ("github.com:23", ATDA_STR, ATDP_STR);
+  atcmdD ("github.com 23", ATDA_STR, ATDP_STR);
   assert (sockDial() == 1);
   assert (close (sock.fd) == 0);
 

@@ -71,20 +71,22 @@ atcmdInit (void)
 #define LIT_(s) #s
 #define LIT(s) LIT_(s)
 
+#define PORT_DELIMITER " "
+
 /* D */
 /* dial command */
 void
 atcmdD (const char *s, AtdAType at, AtdPType pt)
 {
-  /*fprintf(stderr,"<%s>,%d,%d\r\n",s,at,pt); */
+  // fprintf(stderr,"DEBUG: <%s>,%d,%d\r\n",s,at,pt);
   if (*s == '"')
     s++;
   /* "%[^:\"]:%[^\"]" */
-  sscanf (s, "%" LIT (ADDR_MAX) "[^:\"]:%" LIT (PORT_MAX) "[^\"]",
+  sscanf (s, "%" LIT(ADDR_MAX) "[^ \"] %" LIT(PORT_MAX) "[^\"]",
           atcmd.d.addr.str, atcmd.d.port.str);
   atcmd.d.addr.type = at;
   atcmd.d.port.type = pt;
-  /*fprintf(stderr,"<%s>:<%s>\r\n",atcmd.d.addr.str, atcmd.d.port.str); */
+  // fprintf(stderr,"DEBUG: <%s>:<%s>\r\n",atcmd.d.addr.str, atcmd.d.port.str);
 }
 
 /* "x0" or "x" -> 0, "x1" -> 1, ... */

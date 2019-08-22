@@ -1,5 +1,5 @@
 .\" -*- nroff -*-
-.TH MODEMU2k 1 "13 October 2018" "Version 0.0.3"
+.TH MODEMU2k 1 "21 Auguest 2019" "Version 0.0.5"
 .\"
 .\"
 .SH NAME
@@ -124,11 +124,11 @@ doesn't initiate TELNET option negotiation.
 The following formats are available for \fIstr\fP:
 .RS
 .TP
-\fIhost\fP[:\fIport\fP]
+\fIhost\fP [\fIport\fP]
 \fIHost\fP is an Internet address in numbers-and-dots notation.
 Optional \fIport\fP is a port number.
 .TP
-"\fIhost\fP[:\fIport\fP]["]
+"\fIhost\fP [\fIport\fP]["]
 \fIHost\fP is an Internet address or host name.
 Optional \fIport\fP is a port number or service name.
 The closing double quote can be omitted if no command follows.
@@ -141,7 +141,7 @@ Example:
 .RS
 ATDT0W127.0.0.1
 .br
-ATDP"foo.bar.jp:daytime
+ATDP"foo.bar.jp daytime
 .RE
 .RE
 .\" ===== E =====
