@@ -14,6 +14,30 @@
 
 @SET_MAKE@
 
+#CC	= gcc
+#CFLAGS_OS = -DUSE_ON_EXIT
+#LDFLAGS_OS =
+#LIBS_OS =
+
+#CC	= /usr/abiccs/bin/cc
+#CFLAGS_OS = -DUSE_FILIO_H
+#LDFLAGS_OS =
+#LIBS_OS	= -lnsl -lsocket
+
+#}
+
+#{ Proxy sockets
+
+#CFLAGS_PS = -DSOCKS -Dconnect=Rconnect -Dselect=Rselect
+#LIBS_PS = -lsocks
+#LDFLAGS_PS = -L$$HOME/lib
+
+#CFLAGS_PS = -DTERMNET -I$$HOME/include -DNO_DIAL_CANCELING
+#LDFLAGS_PS = -L$$HOME/lib
+#LIBS_PS = -ltermnet
+
+#
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -235,7 +259,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INTLLIBS = @INTLLIBS@
 INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 LDFLAGS = @LDFLAGS@
-LEX = flex
+LEX = @LEX@
 LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBICONV = @LIBICONV@
@@ -671,7 +695,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-checkLIBRARIES clean-generic \
-	mostlyclean-am
+	clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -740,23 +764,29 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean \
 	clean-binPROGRAMS clean-checkLIBRARIES clean-generic \
-	cscopelist-am ctags ctags-am distclean distclean-compile \
-	distclean-generic distclean-hdr distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS
+	clean-local cscopelist-am ctags ctags-am distclean \
+	distclean-compile distclean-generic distclean-hdr \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-binPROGRAMS install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
 
 lex.yy.c:
 	$(LEX) $(LFLAGS) @srcdir@/cmdlex.l
+
+clean-local:
+	if test -f lex.yy.c; then \
+		rm -f lex.yy.c; \
+	fi
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

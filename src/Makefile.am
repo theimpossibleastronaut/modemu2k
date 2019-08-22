@@ -1,4 +1,3 @@
-LEX = flex
 
 ## SunOS 4.1
 #CC	= gcc
@@ -73,3 +72,8 @@ libmodemu2k_test_a_CFLAGS = $(AM_CFLAGS) -DUSE_AS_TEST_LIB
 
 lex.yy.c:
 	$(LEX) $(LFLAGS) @srcdir@/cmdlex.l
+
+clean-local:
+	if test -f lex.yy.c; then \
+		rm -f lex.yy.c; \
+	fi
