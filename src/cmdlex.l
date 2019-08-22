@@ -61,19 +61,8 @@ yywrap(void)
 	/*A_NUM	(([0-9]{1,3})(\.[0-9]{1,3}){3}) <- meets ATT lex bug*/
 	/*A_NUM	(([0-9]{1,3}\.){3}[0-9]{1,3}) <- meets ATT lex bug*/
 
-/*
- * Allow IPv6 addresses
- */
-
-/* FIXME: How to change these 2 lines so ':' is accepted? These work
- * for ipV4 addresses */
-/* A_NUM	(([0-9]{1,3}\.){3}([0-9]{1,3})) */
-/* A_STR	([a-zA-Z][-a-zA-Z0-9.]*) */
-
-/* Changed to work for ipV6 addresses */
-A_NUM	(.*)
-A_STR	(.*)
-
+A_NUM	(([0-9:]{1,3}\.){3}([0-9:]{1,3}))
+A_STR	([a-zA-Z:][-a-zA-Z0-9:.]*)
 P_NUM	([0-9]{1,5})
 P_STR	([a-zA-Z][-a-zA-Z0-9]*)
 	/* TTYPE ([a-zA-Z][-/a-zA-Z0-9]*[a-zA-Z0-9]?) strict check */
