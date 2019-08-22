@@ -10,8 +10,9 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 # binary, not the one installed
 if [ -e $SCRIPTPATH/../src/modemu2k ]; then
   bindir=$SCRIPTPATH"/../src"
-  echo "Using $bindir for testing..."
-  sleep 2s
+  echo "Using $bindir/modemu2k for testing..."
+  echo "Press a key to continue..."
+  read k
 fi
 
 $bindir/modemu2k -e "AT%B0=1%B1=1&W" -c "minicom -l -tansi -con -p %s"
