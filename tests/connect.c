@@ -14,6 +14,11 @@ int main (void)
   assert (sockDial() == 0);
   assert (close (sock.fd) == 0);
 
+    // should connect
+  atcmdD ("140.82.113.3 80", ATDA_NUM, ATDP_NUM);
+  assert (sockDial() == 0);
+  assert (close (sock.fd) == 0);
+
   // should not connect
   atcmdD ("github.com 23", ATDA_STR, ATDP_STR);
   assert (sockDial() == 1);
@@ -23,5 +28,18 @@ int main (void)
   atcmdD ("github.com", ATDA_STR, ATDP_STR);
   assert (sockDial() == 1);
   assert (close (sock.fd) == 0);
+
+  /* IPv6 connection
+   *
+   * this test is disabled for now because my ISP apparently doesn't support
+   * ipv6, therefore make check or distcheck will fail
+   */
+
+  /***************************************************
+  atcmdD ("ipv6.google.com 80", ATDA_STR, ATDP_STR);
+  assert (sockDial() == 0);
+  assert (close (sock.fd) == 0);
+  ***************************************************/
+
   return 0;
 }

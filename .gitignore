@@ -15,3 +15,6 @@ config.status
 *.tgz
 build
 *.gmo
+
+# flex-generated file
+lex.yy.c

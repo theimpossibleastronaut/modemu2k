@@ -2,6 +2,8 @@ modemu2k ChangeLog
 
 2019-8-21
 
+  * IPv6 connections can now be made.
+
   * To specify a non-standard port, you must use a space now instead of
   a colon
 
