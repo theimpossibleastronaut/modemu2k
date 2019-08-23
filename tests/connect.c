@@ -27,12 +27,10 @@ int main (void)
   // should not connect
   atcmdD ("github.com 23", ATDA_STR, ATDP_STR);
   assert (sockDial() == 1);
-  assert (close (sock.fd) == 0);
 
   // should not connect (without port option, defaults to 23
   atcmdD ("github.com", ATDA_STR, ATDP_STR);
   assert (sockDial() == 1);
-  assert (close (sock.fd) == 0);
 
   /* IPv6 connections */
 
