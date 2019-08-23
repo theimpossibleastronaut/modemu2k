@@ -33,7 +33,16 @@
 
 typedef enum
 {
-  ATDA_NUM,
+  // ATD_NUM
+  /* ATD_NUM has been deprecated. After porting gethostbyname() to
+   * getaddrinfo() in sock.c, apparently no distinction is needed.
+   *
+   * FIXME:
+   * The code can eventually be updated to not use the enumerated ATDA_STR
+   *
+   * -andy5995 2019-08-22
+   *
+   */
   ATDA_STR
 } AtdAType;
 

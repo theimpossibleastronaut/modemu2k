@@ -5,6 +5,9 @@ modemu2k ChangeLog
   * When making a connection, a message is printed informing the user
   how to escape to command mode and return to online mode.
 
+  * Modemu2k no longer makes a distinction between a numeric address
+  and a hostname.
+
 
 2019-8-21
 

@@ -15,12 +15,12 @@ int main (void)
   assert (close (sock.fd) == 0);
 
   // should connect
-  atcmdD ("140.82.113.3 80", ATDA_NUM, ATDP_NUM);
+  atcmdD ("140.82.113.3 80", ATDA_STR, ATDP_NUM);
   assert (sockDial() == 0);
   assert (close (sock.fd) == 0);
 
   // connect by using service name (http)
-  atcmdD ("140.82.113.3 http", ATDA_NUM, ATDP_STR);
+  atcmdD ("140.82.113.3 http", ATDA_STR, ATDP_STR);
   assert (sockDial() == 0);
   assert (close (sock.fd) == 0);
 
@@ -34,10 +34,18 @@ int main (void)
   assert (sockDial() == 1);
   assert (close (sock.fd) == 0);
 
-  /* IPv6 connection
-   *
-   * this test is disabled for now because my ISP apparently doesn't support
-   * ipv6, therefore make check or distcheck will fail
+  /* IPv6 connections */
+
+  /* Disabled because not all systems are running a telnet server */
+  /* connect by using service name (http) */
+  /*
+  atcmdD ("::1", ATDA_STR, ATDP_NUL);
+  assert (sockDial() == 0);
+  assert (close (sock.fd) == 0); */
+
+  /*
+   * This test is disabled for now because my ISP apparently doesn't support
+   * ipv6, therefore make check or distcheck will fail (-andy5995 2019-08-22)
    */
 
   /***************************************************
