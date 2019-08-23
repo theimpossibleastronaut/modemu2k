@@ -4,6 +4,7 @@ AC_INIT([modemu2k],
         ,
         [https://github.com/theimpossibleastronaut/modemu2k])
 AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIRS([build-aux/m4])
 AM_INIT_AUTOMAKE([-Wall subdir-objects foreign no-dependencies])
 AM_SILENT_RULES([yes])
 AC_PREREQ(2.69)
@@ -15,8 +16,7 @@ AX_CHECK_ENABLE_DEBUG([yes])
 
 AC_PROG_CC
 AC_PROG_CC_STDC
-AX_APPEND_COMPILE_FLAGS(-Wall)
-AC_CONFIG_MACRO_DIRS([build-aux/m4])
+AX_CFLAGS_WARN_ALL
 AC_PROG_INSTALL
 
 # For creating the static test library
