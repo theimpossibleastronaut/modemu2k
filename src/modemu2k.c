@@ -441,8 +441,8 @@ putTtyCmdstat (Cmdstat s)
     "",
   };
 
-  char msg_escape_seq[] = "To escape to command mode, use '+++'.";
-  char msg_return_online[] = "Use ATO to return to online mode.";
+  const char msg_escape_seq[] = gettext_noop("To escape to command mode, use '+++'.");
+  const char msg_return_online[] = gettext_noop("Use ATO to return to online mode.");
 
   putTty1 (CHAR_CR);
   putTty1 (CHAR_LF);

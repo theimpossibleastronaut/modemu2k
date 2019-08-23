@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: modemu2k 0.0.5-dev\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2019-08-22 22:57-0500\n"
+"POT-Creation-Date: 2019-08-23 16:17-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,12 +84,12 @@ msgid "Connection closed by peer.\r\n"
 msgstr ""
 
 #. TRANSLATORS: reminder: do not translate any "AT" command strings
-#: src/atcmd.c:128
+#: src/atcmd.c:126
 msgid "Connection closed with ATH.\r\n"
 msgstr ""
 
 #. TRANSLATORS: reminder: do not translate any "AT" command strings
-#: src/atcmd.c:332
+#: src/atcmd.c:330
 msgid "Connection closed with ATZ.\r\n"
 msgstr ""
 
@@ -173,6 +173,14 @@ msgid ""
 "<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"
 msgstr ""
 
+#: src/modemu2k.c:444
+msgid "To escape to command mode, use '+++'."
+msgstr ""
+
+#: src/modemu2k.c:445
+msgid "Use ATO to return to online mode."
+msgstr ""
+
 #. TRANSLATORS: do not translate "tty" or "pty"
 #: src/modemu2k.c:625
 msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
@@ -194,14 +202,14 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: ignore the "&W'ed"
-#: src/atcmd.c:255
+#: src/atcmd.c:253
 msgid "modemu2k '&W'ed settings:"
 msgstr ""
 
-#: src/atcmd.c:243
+#: src/atcmd.c:241
 msgid "modemu2k current settings:"
 msgstr ""
 
-#: src/atcmd.c:188
+#: src/atcmd.c:186
 msgid "modemu2k telnet option states:"
 msgstr ""
