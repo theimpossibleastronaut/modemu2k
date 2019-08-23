@@ -14,8 +14,13 @@ int main (void)
   assert (sockDial() == 0);
   assert (close (sock.fd) == 0);
 
-    // should connect
+  // should connect
   atcmdD ("140.82.113.3 80", ATDA_NUM, ATDP_NUM);
+  assert (sockDial() == 0);
+  assert (close (sock.fd) == 0);
+
+  // connect by using service name (http)
+  atcmdD ("140.82.113.3 http", ATDA_NUM, ATDP_STR);
   assert (sockDial() == 0);
   assert (close (sock.fd) == 0);
 
