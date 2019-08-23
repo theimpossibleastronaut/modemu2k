@@ -1,5 +1,11 @@
 modemu2k ChangeLog
 
+2019-8-22
+
+  * When making a connection, a message is printed informing the user
+  how to escape to command mode and return to online mode.
+
+
 2019-8-21
 
   * IPv6 connections can now be made.

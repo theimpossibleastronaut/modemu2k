@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: modemu2k 0.0.3-dev\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2019-08-18 01:06-0500\n"
+"POT-Creation-Date: 2019-08-22 22:57-0500\n"
 "PO-Revision-Date: 2018-10-14 17:52+0200\n"
 "Last-Translator: Martijn de Boer <translations@sexybiggetje.nl>\n"
 "Language-Team: Dutch\n"
@@ -75,11 +75,11 @@ msgstr "Kind gaf status %d terug.\n"
 msgid "Comm program exited.\r\n"
 msgstr "Comm programma sloot af.\r\n"
 
-#: src/sock.c:177
+#: src/sock.c:179
 msgid "Connecting attempt canceled by user input.\r\n"
 msgstr "Verbindingspoging geannuleerd door gebruikersinvoer.\r\n"
 
-#: src/sock.c:205
+#: src/sock.c:210
 msgid "Connection attempt timed out.\r\n"
 msgstr "Verbindingspoging time-out.\r\n"
 
@@ -88,21 +88,21 @@ msgid "Connection closed by peer.\r\n"
 msgstr "Verbinding gesloten door peer.\r\n"
 
 #. TRANSLATORS: reminder: do not translate any "AT" command strings
-#: src/atcmd.c:132
+#: src/atcmd.c:128
 msgid "Connection closed with ATH.\r\n"
 msgstr "Verbinding gesloten met ATH.\r\n"
 
 #. TRANSLATORS: reminder: do not translate any "AT" command strings
-#: src/atcmd.c:336
+#: src/atcmd.c:332
 msgid "Connection closed with ATZ.\r\n"
 msgstr "Verbinding gesloten met ATZ.\r\n"
 
-#: src/commx.c:43
+#: src/commx.c:44
 msgid "Could not run shell.\n"
 msgstr "Kan shell niet uitvoeren.\n"
 
 #. TRANSLATORS: do not translate `at%%q`
-#: src/modemu2k.c:672
+#: src/modemu2k.c:700
 #, fuzzy
 #| msgid ""
 #| "Enter 'at%%q' to quit\n"
@@ -111,18 +111,20 @@ msgid ""
 "Enter 'at%q' to quit\n"
 "\n"
 msgstr ""
-"Voer ‘at%%q’ in om af te sluiten\n"
+"Voer ‘at%q’ in om af te sluiten\n"
 "\n"
 
-#: src/atcmd.c:70
+#: src/atcmd.c:64
 msgid "Error in initialization commands.\r\n"
 msgstr "Fout bij het initialiseren van commando’s.\r\n"
 
-#: src/sock.c:68
-msgid "Host address lookup failed.\r\n"
+#: src/sock.c:88
+#, fuzzy, c-format
+#| msgid "Host address lookup failed.\r\n"
+msgid "Host address lookup failed: %s\n"
 msgstr "Host adres opzoeken mislukt.\r\n"
 
-#: src/modemu2k.c:651
+#: src/modemu2k.c:679
 msgid "No more pty devices available.\n"
 msgstr "Geen pty apparaten meer beschikbaar.\n"
 
@@ -131,10 +133,6 @@ msgid ""
 "Note: The  -c, -d, and -s options are exclusive of each other. If two or\n"
 "more of the options are specified, only the last one is effective."
 msgstr ""
-
-#: src/sock.c:88
-msgid "Port number lookup failed.\r\n"
-msgstr "Poort nummer opzoeken mislukt.\r\n"
 
 #. TRANSLATORS: do not translate "pty" or "read"
 #: src/ttybuf.c:24
@@ -147,7 +145,7 @@ msgstr "Pty afgesloten. (read() gaf %d terug)\r\n"
 msgid "Pty closed. (write() returned %d)\r\n"
 msgstr "Pty afgesloten. (write() gaf %d terug)\r\n"
 
-#: src/modemu2k.c:514
+#: src/modemu2k.c:537
 msgid "Pty open error.\n"
 msgstr ""
 
@@ -201,19 +199,18 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: do not translate "tty" or "pty"
-#: src/modemu2k.c:599
+#: src/modemu2k.c:625
 msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
 msgstr ""
 "Waarschuwing: kan het eigenaarschap van tty niet veranderen — pty is "
 "onveilig!\n"
 
-#. TRANSLATORS: do not translate "tty" or "pty"
-#: src/modemu2k.c:606
+#: src/modemu2k.c:633
 msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
 msgstr ""
 "Waarschuwing: kan de permissies van tty niet veranderen — pty is onveilig!\n"
 
-#: src/cmdarg.c:97
+#: src/cmdarg.c:98
 #, c-format
 msgid ""
 "modemu2k %s\n"
@@ -230,17 +227,20 @@ msgstr ""
 "zie <http://www.gnu.org/licenses/gpl.html>voor details.\n"
 
 #. TRANSLATORS: ignore the "&W'ed"
-#: src/atcmd.c:259
+#: src/atcmd.c:255
 msgid "modemu2k '&W'ed settings:"
 msgstr "modemu2k ‘&W’ed instellingen:"
 
-#: src/atcmd.c:247
+#: src/atcmd.c:243
 msgid "modemu2k current settings:"
 msgstr "modemu2k huidige instellingen:"
 
-#: src/atcmd.c:192
+#: src/atcmd.c:188
 msgid "modemu2k telnet option states:"
 msgstr "modemu2k telnet optie statussen:"
+
+#~ msgid "Port number lookup failed.\r\n"
+#~ msgstr "Poort nummer opzoeken mislukt.\r\n"
 
 #~ msgid ""
 #~ "Usage: %s [OPTION]...\n"

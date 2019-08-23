@@ -441,9 +441,24 @@ putTtyCmdstat (Cmdstat s)
     "",
   };
 
+  char msg_escape_seq[] = "To escape to command mode, use '+++'.";
+  char msg_return_online[] = "Use ATO to return to online mode.";
+
   putTty1 (CHAR_CR);
   putTty1 (CHAR_LF);
   putTtyN (cmdstatStr[s], strlen (cmdstatStr[s]));
+
+  if (s == CMDST_CONNECT)
+  {
+    putTty1 (CHAR_CR);
+    putTty1 (CHAR_LF);
+    putTtyN (msg_escape_seq, sizeof msg_escape_seq);
+
+    putTty1 (CHAR_CR);
+    putTty1 (CHAR_LF);
+    putTtyN (msg_return_online, sizeof msg_return_online);
+  }
+
   putTty1 (CHAR_CR);
   putTty1 (CHAR_LF);
 }
