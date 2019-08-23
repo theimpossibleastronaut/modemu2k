@@ -1,5 +1,9 @@
 modemu2k ChangeLog
 
+2019-8-23
+
+  * v0.0.5 released
+
 2019-8-22
 
   * When making a connection, a message is printed informing the user

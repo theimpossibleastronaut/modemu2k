@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: modemu2k 0.0.5-dev\n"
+"Project-Id-Version: modemu2k 0.0.5\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2019-08-23 16:17-0500\n"
+"POT-Creation-Date: 2019-08-23 16:43-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -173,11 +173,11 @@ msgid ""
 "<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"
 msgstr ""
 
-#: src/modemu2k.c:444
+#: src/modemu2k.c:450
 msgid "To escape to command mode, use '+++'."
 msgstr ""
 
-#: src/modemu2k.c:445
+#: src/modemu2k.c:451
 msgid "Use ATO to return to online mode."
 msgstr ""
 

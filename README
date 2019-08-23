@@ -1,4 +1,4 @@
-modemu2k v0.0.5-dev
+modemu2k v0.0.5
 -------------------
 
 modemu2k is a fork of modemu, originally developed by Toru Egashira
@@ -21,14 +21,6 @@ Home page: <https://github.com/theimpossibleastronaut/modemu2k>
 
 Issues and bug reporting
 <https://github.com/theimpossibleastronaut/modemu2k/issues>
-
-For Translators
------------
-
-We use Transifex to translate the output messages. To start translating
-modemu2k, ​create an account in Transifex and ask to join a translation
-team (or create a new one) at
-https://www.transifex.com/na-309/modemu2k/
 
 Dependencies
 ------------
@@ -98,6 +90,20 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
   A script to invoke minicom as mentioned above will be installed to
   your bin directory when `make install` is run.
 
+Escaping to command mode and returning
+--------------------------------------
+
+To escape to command mode, use '+++'. Use ATO to return to online mode.
+
+
+Hanging up a call/closing a connection
+------------------------------------
+
+If you are connected to a server where gracefully logging out isn't
+possible, to "hang up" or close the connection you can escape to command
+mode and enter 'ATH`.
+
+
 Downloads
 ---------
 
@@ -112,3 +118,12 @@ More details are in the QuickStart guide
 <https://github.com/theimpossibleastronaut/modemu2k/blob/master/QuickStart>
 
 A man page is also available.
+
+
+For Translators
+-----------
+
+We use Transifex to translate the output messages. To start translating
+modemu2k, ​create an account in Transifex and ask to join a translation
+team (or create a new one) at
+https://www.transifex.com/na-309/modemu2k/

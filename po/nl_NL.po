@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: modemu2k 0.0.3-dev\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2019-08-23 16:17-0500\n"
+"POT-Creation-Date: 2019-08-23 16:43-0500\n"
 "PO-Revision-Date: 2018-10-14 17:52+0200\n"
 "Last-Translator: Martijn de Boer <translations@sexybiggetje.nl>\n"
 "Language-Team: Dutch\n"
@@ -198,11 +198,11 @@ msgid ""
 "<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"
 msgstr ""
 
-#: src/modemu2k.c:444
+#: src/modemu2k.c:450
 msgid "To escape to command mode, use '+++'."
 msgstr ""
 
-#: src/modemu2k.c:445
+#: src/modemu2k.c:451
 msgid "Use ATO to return to online mode."
 msgstr ""
 

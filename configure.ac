@@ -1,5 +1,5 @@
 AC_INIT([modemu2k],
-        [0.0.5-dev],
+        [0.0.5],
         [andy400-dev@yahoo.com],
         ,
         [https://github.com/theimpossibleastronaut/modemu2k])
@@ -10,8 +10,13 @@ AM_SILENT_RULES([yes])
 AC_PREREQ(2.69)
 AC_CONFIG_HEADERS([src/config.h:config.in])
 
-# RELEASE TODO
-# set to "no"
+AX_IS_RELEASE([git-directory])
+# Define the variables listed in the second argument if debug is
+# enabled, defaulting to no variables. Defines the variables listed in
+# the third argument if debug is disabled, defaulting to NDEBUG. All
+# lists of variables should be space-separated.
+#
+# A "yes" value will be overridden by the value returned by AX_IS_RELEASE()
 AX_CHECK_ENABLE_DEBUG([yes])
 
 AC_PROG_CC
