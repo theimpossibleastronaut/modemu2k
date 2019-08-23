@@ -58,7 +58,7 @@ atcmdInit (void)
 
   /*memset(atcmd, 0, sizeof(atcmd)); */
   if (cmdLex (INITSTR) != CMDST_OK
-      || ((s = cmdLex (getenv ("MODEMU"))) != CMDST_OK && s != CMDST_NOAT)
+      || ((s = cmdLex (getenv ("MODEMU2k"))) != CMDST_OK && s != CMDST_NOAT)
       || ((s = cmdLex (cmdarg.atcmd)) != CMDST_OK && s != CMDST_NOAT))
   {
     fputs (_("Error in initialization commands.\r\n"), stderr);
