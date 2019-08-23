@@ -1,3 +1,5 @@
+%option noinput
+%option nounput
 %{ /* -*- fundamental -*- */
 /* lexer spec. for modemu2k command mode */
 #include "cmdlex.h"	/*Cmdstat*/
