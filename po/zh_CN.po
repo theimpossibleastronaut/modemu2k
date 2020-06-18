@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: modemu2k 0.0.3-dev\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2019-08-23 16:43-0500\n"
+"POT-Creation-Date: 2020-06-18 00:13-0500\n"
 "PO-Revision-Date: 2018-10-14 17:15+0800\n"
 "Last-Translator: U-LAPTOP-S0HDQ8NL\\name1e5s <name1e5s@qq.com>\n"
 "Language-Team: Chinese (simplified)\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #. TRANSLATORS: do not translate ttyBufW
-#: src/ttybuf.c:75
+#: src/ttybuf.c:91
 msgid "\attyBufW overrun.\n"
 msgstr "attyBufW 超时.\n"
 
@@ -30,36 +30,36 @@ msgstr ""
 "\n"
 "再见.\n"
 
-#: src/cmdarg.c:43
+#: src/cmdarg.c:45
 msgid ""
 "  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using "
 "[arguments]"
 msgstr ""
 
-#: src/cmdarg.c:45
+#: src/cmdarg.c:47
 msgid "  -d, --device=<pty_master>               talk through [pty_master]"
 msgstr ""
 
-#: src/cmdarg.c:47
+#: src/cmdarg.c:49
 msgid ""
 "  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at "
 "startup"
 msgstr ""
 
-#: src/cmdarg.c:52
+#: src/cmdarg.c:54
 msgid "  -h, --help                              display help"
 msgstr ""
 
-#: src/cmdarg.c:49
+#: src/cmdarg.c:51
 msgid ""
 "  -s, --show                              show which device will be used"
 msgstr ""
 
-#: src/cmdarg.c:54
+#: src/cmdarg.c:56
 msgid "  -v, --version                           display version"
 msgstr ""
 
-#: src/cmdarg.c:56
+#: src/cmdarg.c:58
 msgid "  -w, --warranty                          display warranty"
 msgstr ""
 
@@ -72,25 +72,25 @@ msgstr "子进程返回状态值为 %d.\r\n"
 msgid "Comm program exited.\r\n"
 msgstr "通讯程序已退出.\r\n"
 
-#: src/sock.c:179
+#: src/sock.c:181
 msgid "Connecting attempt canceled by user input.\r\n"
 msgstr "连接尝试被用户输入取消.\r\n"
 
-#: src/sock.c:210
+#: src/sock.c:212
 msgid "Connection attempt timed out.\r\n"
 msgstr "连接超时.\r\n"
 
-#: src/sockbuf.c:15
+#: src/sockbuf.c:14
 msgid "Connection closed by peer.\r\n"
 msgstr "连接被关闭.\r\n"
 
 #. TRANSLATORS: reminder: do not translate any "AT" command strings
-#: src/atcmd.c:126
+#: src/atcmd.c:129
 msgid "Connection closed with ATH.\r\n"
 msgstr "ATH 连接被关闭.\r\n"
 
 #. TRANSLATORS: reminder: do not translate any "AT" command strings
-#: src/atcmd.c:330
+#: src/atcmd.c:333
 msgid "Connection closed with ATZ.\r\n"
 msgstr "ATZ 连接被关闭.\r\n"
 
@@ -99,7 +99,7 @@ msgid "Could not run shell.\n"
 msgstr "无法运行 shell.\n"
 
 #. TRANSLATORS: do not translate `at%%q`
-#: src/modemu2k.c:700
+#: src/modemu2k.c:704
 #, fuzzy
 #| msgid ""
 #| "Enter 'at%%q' to quit\n"
@@ -109,42 +109,42 @@ msgid ""
 "\n"
 msgstr "输入 'at%q' 退出\n"
 
-#: src/atcmd.c:64
+#: src/atcmd.c:67
 msgid "Error in initialization commands.\r\n"
 msgstr "初始化命令出错.\r\n"
 
-#: src/sock.c:88
+#: src/sock.c:90
 #, fuzzy, c-format
 #| msgid "Host address lookup failed.\r\n"
 msgid "Host address lookup failed: %s\n"
 msgstr "查找主机地址失败.\r\n"
 
-#: src/modemu2k.c:679
+#: src/modemu2k.c:683
 msgid "No more pty devices available.\n"
 msgstr "暂无可用 pty 设备.\n"
 
-#: src/cmdarg.c:67
+#: src/cmdarg.c:69
 msgid ""
 "Note: The  -c, -d, and -s options are exclusive of each other. If two or\n"
 "more of the options are specified, only the last one is effective."
 msgstr ""
 
 #. TRANSLATORS: do not translate "pty" or "read"
-#: src/ttybuf.c:24
+#: src/ttybuf.c:40
 #, c-format
 msgid "Pty closed. (read() returned %d)\r\n"
 msgstr "Pty 已关闭.(read() 返回值为 %d)\r\n"
 
-#: src/ttybuf.c:51
+#: src/ttybuf.c:67
 #, c-format
 msgid "Pty closed. (write() returned %d)\r\n"
 msgstr "Pty 已关闭.(write() 返回值为 %d)\r\n"
 
-#: src/modemu2k.c:537
+#: src/modemu2k.c:541
 msgid "Pty open error.\n"
 msgstr ""
 
-#: src/cmdarg.c:84
+#: src/cmdarg.c:86
 #, c-format
 msgid ""
 "THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n"
@@ -162,20 +162,20 @@ msgstr ""
 "风险，如程序的质量和性能问题，皆由你承担。若程序出现缺陷，你将\n"
 "承担所有必要的修复和更正服务的费用。\n"
 
-#: src/cmdarg.c:59
+#: src/cmdarg.c:61
 msgid ""
 "The arguments for (-c, --commprog) and (-e, --atcommands) must be enclosed "
 "in\n"
 "quotes. (eg. -c \"minicom -l -w -c\")"
 msgstr ""
 
-#: src/cmdarg.c:63
+#: src/cmdarg.c:65
 msgid ""
 "The arguments for the comm program must be native to the comm program, not\n"
 "arguments used by modemu2k."
 msgstr ""
 
-#: src/cmdarg.c:71
+#: src/cmdarg.c:73
 msgid ""
 "The modemu2k project and support site is at\n"
 "<https://github.com/theimpossibleastronaut/modemu2k>\n"
@@ -184,24 +184,24 @@ msgid ""
 "<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"
 msgstr ""
 
-#: src/modemu2k.c:450
+#: src/modemu2k.c:454
 msgid "To escape to command mode, use '+++'."
 msgstr ""
 
-#: src/modemu2k.c:451
+#: src/modemu2k.c:455
 msgid "Use ATO to return to online mode."
 msgstr ""
 
 #. TRANSLATORS: do not translate "tty" or "pty"
-#: src/modemu2k.c:625
+#: src/modemu2k.c:629
 msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
 msgstr "警告: 无法改变 tty 所有者 -- pty 不安全!\n"
 
-#: src/modemu2k.c:633
+#: src/modemu2k.c:637
 msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
 msgstr "警告: 无法修改 tty 权限 -- pty 不安全!\n"
 
-#: src/cmdarg.c:98
+#: src/cmdarg.c:100
 #, c-format
 msgid ""
 "modemu2k %s\n"
@@ -219,15 +219,15 @@ msgstr ""
 "以获取详细信息.\n"
 
 #. TRANSLATORS: ignore the "&W'ed"
-#: src/atcmd.c:253
+#: src/atcmd.c:256
 msgid "modemu2k '&W'ed settings:"
 msgstr "modemu2k '&W'ed 设置:"
 
-#: src/atcmd.c:241
+#: src/atcmd.c:244
 msgid "modemu2k current settings:"
 msgstr "modemu2k 当前 settings:"
 
-#: src/atcmd.c:186
+#: src/atcmd.c:189
 msgid "modemu2k telnet option states:"
 msgstr "modemu2k telnet 选项状态:"
 

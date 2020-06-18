@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: modemu2k 0.0.3-dev\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2019-08-23 16:43-0500\n"
+"POT-Creation-Date: 2020-06-18 00:13-0500\n"
 "PO-Revision-Date: 2018-10-14 17:52+0200\n"
 "Last-Translator: Martijn de Boer <translations@sexybiggetje.nl>\n"
 "Language-Team: Dutch\n"
@@ -20,7 +20,7 @@ msgstr ""
 "X-Generator: Poedit 2.2\n"
 
 #. TRANSLATORS: do not translate ttyBufW
-#: src/ttybuf.c:75
+#: src/ttybuf.c:91
 msgid "\attyBufW overrun.\n"
 msgstr "\attyBufW overschrijding.\n"
 
@@ -33,36 +33,36 @@ msgstr ""
 "\n"
 "Tot ziens.\n"
 
-#: src/cmdarg.c:43
+#: src/cmdarg.c:45
 msgid ""
 "  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using "
 "[arguments]"
 msgstr ""
 
-#: src/cmdarg.c:45
+#: src/cmdarg.c:47
 msgid "  -d, --device=<pty_master>               talk through [pty_master]"
 msgstr ""
 
-#: src/cmdarg.c:47
+#: src/cmdarg.c:49
 msgid ""
 "  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at "
 "startup"
 msgstr ""
 
-#: src/cmdarg.c:52
+#: src/cmdarg.c:54
 msgid "  -h, --help                              display help"
 msgstr ""
 
-#: src/cmdarg.c:49
+#: src/cmdarg.c:51
 msgid ""
 "  -s, --show                              show which device will be used"
 msgstr ""
 
-#: src/cmdarg.c:54
+#: src/cmdarg.c:56
 msgid "  -v, --version                           display version"
 msgstr ""
 
-#: src/cmdarg.c:56
+#: src/cmdarg.c:58
 msgid "  -w, --warranty                          display warranty"
 msgstr ""
 
@@ -75,25 +75,25 @@ msgstr "Kind gaf status %d terug.\n"
 msgid "Comm program exited.\r\n"
 msgstr "Comm programma sloot af.\r\n"
 
-#: src/sock.c:179
+#: src/sock.c:181
 msgid "Connecting attempt canceled by user input.\r\n"
 msgstr "Verbindingspoging geannuleerd door gebruikersinvoer.\r\n"
 
-#: src/sock.c:210
+#: src/sock.c:212
 msgid "Connection attempt timed out.\r\n"
 msgstr "Verbindingspoging time-out.\r\n"
 
-#: src/sockbuf.c:15
+#: src/sockbuf.c:14
 msgid "Connection closed by peer.\r\n"
 msgstr "Verbinding gesloten door peer.\r\n"
 
 #. TRANSLATORS: reminder: do not translate any "AT" command strings
-#: src/atcmd.c:126
+#: src/atcmd.c:129
 msgid "Connection closed with ATH.\r\n"
 msgstr "Verbinding gesloten met ATH.\r\n"
 
 #. TRANSLATORS: reminder: do not translate any "AT" command strings
-#: src/atcmd.c:330
+#: src/atcmd.c:333
 msgid "Connection closed with ATZ.\r\n"
 msgstr "Verbinding gesloten met ATZ.\r\n"
 
@@ -102,7 +102,7 @@ msgid "Could not run shell.\n"
 msgstr "Kan shell niet uitvoeren.\n"
 
 #. TRANSLATORS: do not translate `at%%q`
-#: src/modemu2k.c:700
+#: src/modemu2k.c:704
 #, fuzzy
 #| msgid ""
 #| "Enter 'at%%q' to quit\n"
@@ -114,42 +114,42 @@ msgstr ""
 "Voer ‘at%q’ in om af te sluiten\n"
 "\n"
 
-#: src/atcmd.c:64
+#: src/atcmd.c:67
 msgid "Error in initialization commands.\r\n"
 msgstr "Fout bij het initialiseren van commando’s.\r\n"
 
-#: src/sock.c:88
+#: src/sock.c:90
 #, fuzzy, c-format
 #| msgid "Host address lookup failed.\r\n"
 msgid "Host address lookup failed: %s\n"
 msgstr "Host adres opzoeken mislukt.\r\n"
 
-#: src/modemu2k.c:679
+#: src/modemu2k.c:683
 msgid "No more pty devices available.\n"
 msgstr "Geen pty apparaten meer beschikbaar.\n"
 
-#: src/cmdarg.c:67
+#: src/cmdarg.c:69
 msgid ""
 "Note: The  -c, -d, and -s options are exclusive of each other. If two or\n"
 "more of the options are specified, only the last one is effective."
 msgstr ""
 
 #. TRANSLATORS: do not translate "pty" or "read"
-#: src/ttybuf.c:24
+#: src/ttybuf.c:40
 #, c-format
 msgid "Pty closed. (read() returned %d)\r\n"
 msgstr "Pty afgesloten. (read() gaf %d terug)\r\n"
 
-#: src/ttybuf.c:51
+#: src/ttybuf.c:67
 #, c-format
 msgid "Pty closed. (write() returned %d)\r\n"
 msgstr "Pty afgesloten. (write() gaf %d terug)\r\n"
 
-#: src/modemu2k.c:537
+#: src/modemu2k.c:541
 msgid "Pty open error.\n"
 msgstr ""
 
-#: src/cmdarg.c:84
+#: src/cmdarg.c:86
 #, c-format
 msgid ""
 "THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n"
@@ -176,20 +176,20 @@ msgstr ""
 "REPARATIE\n"
 "OF CORRECTIE OP JE.\n"
 
-#: src/cmdarg.c:59
+#: src/cmdarg.c:61
 msgid ""
 "The arguments for (-c, --commprog) and (-e, --atcommands) must be enclosed "
 "in\n"
 "quotes. (eg. -c \"minicom -l -w -c\")"
 msgstr ""
 
-#: src/cmdarg.c:63
+#: src/cmdarg.c:65
 msgid ""
 "The arguments for the comm program must be native to the comm program, not\n"
 "arguments used by modemu2k."
 msgstr ""
 
-#: src/cmdarg.c:71
+#: src/cmdarg.c:73
 msgid ""
 "The modemu2k project and support site is at\n"
 "<https://github.com/theimpossibleastronaut/modemu2k>\n"
@@ -198,27 +198,27 @@ msgid ""
 "<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"
 msgstr ""
 
-#: src/modemu2k.c:450
+#: src/modemu2k.c:454
 msgid "To escape to command mode, use '+++'."
 msgstr ""
 
-#: src/modemu2k.c:451
+#: src/modemu2k.c:455
 msgid "Use ATO to return to online mode."
 msgstr ""
 
 #. TRANSLATORS: do not translate "tty" or "pty"
-#: src/modemu2k.c:625
+#: src/modemu2k.c:629
 msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
 msgstr ""
 "Waarschuwing: kan het eigenaarschap van tty niet veranderen — pty is "
 "onveilig!\n"
 
-#: src/modemu2k.c:633
+#: src/modemu2k.c:637
 msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
 msgstr ""
 "Waarschuwing: kan de permissies van tty niet veranderen — pty is onveilig!\n"
 
-#: src/cmdarg.c:98
+#: src/cmdarg.c:100
 #, c-format
 msgid ""
 "modemu2k %s\n"
@@ -235,15 +235,15 @@ msgstr ""
 "zie <http://www.gnu.org/licenses/gpl.html>voor details.\n"
 
 #. TRANSLATORS: ignore the "&W'ed"
-#: src/atcmd.c:253
+#: src/atcmd.c:256
 msgid "modemu2k '&W'ed settings:"
 msgstr "modemu2k ‘&W’ed instellingen:"
 
-#: src/atcmd.c:241
+#: src/atcmd.c:244
 msgid "modemu2k current settings:"
 msgstr "modemu2k huidige instellingen:"
 
-#: src/atcmd.c:186
+#: src/atcmd.c:189
 msgid "modemu2k telnet option states:"
 msgstr "modemu2k telnet optie statussen:"
 
