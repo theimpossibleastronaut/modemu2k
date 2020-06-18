@@ -376,25 +376,36 @@ onlineMode (void)
 
 /*#define CMDBUF_MAX 255 =>defs.h*/
 
-static struct
+struct cmdBuf
 {
   uchar buf[CMDBUF_MAX + 1];
   uchar *ptr;
   int eol;
-} cmdBuf;
+};
 
-#define cmdBufReset() { cmdBuf.ptr = cmdBuf.buf; cmdBuf.eol = 0; }
-#define putCmd1(c) \
-{ \
-    if (cmdBuf.ptr < cmdBuf.buf + CMDBUF_MAX) *cmdBuf.ptr++ = (c); \
-}
-#define cmdBufBS() \
-{ \
-    if (cmdBuf.ptr > cmdBuf.buf) cmdBuf.ptr--; \
+static void
+cmdBufReset(struct cmdBuf *x)
+{
+  x->ptr = x->buf;
+  x->eol = 0;
 }
 
 static void
-cmdReadLoop (void)
+putCmd1 (const int c, struct cmdBuf *cmdBuf)
+{
+  if (cmdBuf->ptr < cmdBuf->buf + CMDBUF_MAX)
+    *cmdBuf->ptr++ = c;
+}
+
+static void
+cmdBufBS(struct cmdBuf *cmdBuf)
+{
+  if (cmdBuf->ptr > cmdBuf->buf)
+  cmdBuf->ptr--;
+}
+
+static void
+cmdReadLoop (struct cmdBuf *cmdBuf)
 {
   int c;
 
@@ -403,13 +414,13 @@ cmdReadLoop (void)
     putTty1 (c);
     if (c == CHAR_CR)
     {
-      cmdBuf.eol = 1;
-      *cmdBuf.ptr = '\0';
+      cmdBuf->eol = 1;
+      *cmdBuf->ptr = '\0';
       return;                   /* may discard some chars in ttyBufR */
     }
     else if (c == CHAR_BS)
     {
-      cmdBufBS ();
+      cmdBufBS (cmdBuf);
 #if 0
     }
     else if (c <= ' ' || c == 127)
@@ -424,7 +435,7 @@ cmdReadLoop (void)
     }
     else
     {
-      putCmd1 (c);
+      putCmd1 (c, cmdBuf);
     }
   }
 }
@@ -471,12 +482,12 @@ putTtyCmdstat (Cmdstat s)
 static
 #endif
   Cmdstat
-cmdMode (void)
+cmdMode (struct cmdBuf *cmdBuf)
 {
   fd_set rfds, wfds;
   Cmdstat stat;
 
-  cmdBufReset ();
+  cmdBufReset (cmdBuf);
   ttyBufRReset ();
   /*ttyBufWReset(); */
 
@@ -500,10 +511,10 @@ cmdMode (void)
     if (FD_ISSET (tty.wfd, &wfds))
     {
       ttyBufWrite ();           /* put CR before dialup */
-      if (cmdBuf.eol)
+      if (cmdBuf->eol)
       {
-        stat = cmdLex ((char *) cmdBuf.buf);
-        cmdBufReset ();
+        stat = cmdLex ((char *) cmdBuf->buf);
+        cmdBufReset (cmdBuf);
         switch (stat)
         {
         case CMDST_ATD:
@@ -520,7 +531,7 @@ cmdMode (void)
     if (FD_ISSET (tty.rfd, &rfds))
     {
       ttyBufRead ();
-      cmdReadLoop ();
+      cmdReadLoop (cmdBuf);
     }
   }
 }
@@ -736,12 +747,13 @@ main (int argc, char *const argv[])
     break;
   }
 
+  struct cmdBuf cmdBuf;
   ttyBufWReset ();
   telOptInit ();
   atcmdInit (&cmdarg);                 /* initialize atcmd */
 
 CMDMODE:
-  switch (cmdMode ())
+  switch (cmdMode (&cmdBuf))
   {
   case CMDST_ATD:
     if (sockIsAlive ())
