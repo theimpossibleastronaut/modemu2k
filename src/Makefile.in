@@ -160,14 +160,18 @@ am__objects_1 = libmodemu2k_test_a-modemu2k.$(OBJEXT) \
 	libmodemu2k_test_a-lex.yy.$(OBJEXT)
 am_libmodemu2k_test_a_OBJECTS = $(am__objects_1)
 libmodemu2k_test_a_OBJECTS = $(am_libmodemu2k_test_a_OBJECTS)
-am_modemu2k_OBJECTS = modemu2k.$(OBJEXT) atcmd.$(OBJEXT) \
-	commx.$(OBJEXT) sockbuf.$(OBJEXT) stty.$(OBJEXT) \
-	timeval.$(OBJEXT) verbose.$(OBJEXT) cmdarg.$(OBJEXT) \
-	sock.$(OBJEXT) telopt.$(OBJEXT) ttybuf.$(OBJEXT) \
-	lex.yy.$(OBJEXT)
+am_modemu2k_OBJECTS = modemu2k-modemu2k.$(OBJEXT) \
+	modemu2k-atcmd.$(OBJEXT) modemu2k-commx.$(OBJEXT) \
+	modemu2k-sockbuf.$(OBJEXT) modemu2k-stty.$(OBJEXT) \
+	modemu2k-timeval.$(OBJEXT) modemu2k-verbose.$(OBJEXT) \
+	modemu2k-cmdarg.$(OBJEXT) modemu2k-sock.$(OBJEXT) \
+	modemu2k-telopt.$(OBJEXT) modemu2k-ttybuf.$(OBJEXT) \
+	modemu2k-lex.yy.$(OBJEXT)
 modemu2k_OBJECTS = $(am_modemu2k_OBJECTS)
 modemu2k_LDADD = $(LDADD)
 modemu2k_DEPENDENCIES =
+modemu2k_LINK = $(CCLD) $(modemu2k_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -344,6 +348,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+modemu2k_CFLAGS = -fno-common
 modemu2k_SOURCES = \
 	modemu2k.c	\
 	atcmd.c	\
@@ -482,7 +487,7 @@ libmodemu2k_test.a: $(libmodemu2k_test_a_OBJECTS) $(libmodemu2k_test_a_DEPENDENC
 
 modemu2k$(EXEEXT): $(modemu2k_OBJECTS) $(modemu2k_DEPENDENCIES) $(EXTRA_modemu2k_DEPENDENCIES) 
 	@rm -f modemu2k$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(modemu2k_OBJECTS) $(modemu2k_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(modemu2k_LINK) $(modemu2k_OBJECTS) $(modemu2k_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -567,6 +572,78 @@ libmodemu2k_test_a-lex.yy.o: lex.yy.c
 
 libmodemu2k_test_a-lex.yy.obj: lex.yy.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_test_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_test_a-lex.yy.obj `if test -f 'lex.yy.c'; then $(CYGPATH_W) 'lex.yy.c'; else $(CYGPATH_W) '$(srcdir)/lex.yy.c'; fi`
+
+modemu2k-modemu2k.o: modemu2k.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-modemu2k.o `test -f 'modemu2k.c' || echo '$(srcdir)/'`modemu2k.c
+
+modemu2k-modemu2k.obj: modemu2k.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-modemu2k.obj `if test -f 'modemu2k.c'; then $(CYGPATH_W) 'modemu2k.c'; else $(CYGPATH_W) '$(srcdir)/modemu2k.c'; fi`
+
+modemu2k-atcmd.o: atcmd.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-atcmd.o `test -f 'atcmd.c' || echo '$(srcdir)/'`atcmd.c
+
+modemu2k-atcmd.obj: atcmd.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-atcmd.obj `if test -f 'atcmd.c'; then $(CYGPATH_W) 'atcmd.c'; else $(CYGPATH_W) '$(srcdir)/atcmd.c'; fi`
+
+modemu2k-commx.o: commx.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-commx.o `test -f 'commx.c' || echo '$(srcdir)/'`commx.c
+
+modemu2k-commx.obj: commx.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-commx.obj `if test -f 'commx.c'; then $(CYGPATH_W) 'commx.c'; else $(CYGPATH_W) '$(srcdir)/commx.c'; fi`
+
+modemu2k-sockbuf.o: sockbuf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-sockbuf.o `test -f 'sockbuf.c' || echo '$(srcdir)/'`sockbuf.c
+
+modemu2k-sockbuf.obj: sockbuf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-sockbuf.obj `if test -f 'sockbuf.c'; then $(CYGPATH_W) 'sockbuf.c'; else $(CYGPATH_W) '$(srcdir)/sockbuf.c'; fi`
+
+modemu2k-stty.o: stty.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-stty.o `test -f 'stty.c' || echo '$(srcdir)/'`stty.c
+
+modemu2k-stty.obj: stty.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-stty.obj `if test -f 'stty.c'; then $(CYGPATH_W) 'stty.c'; else $(CYGPATH_W) '$(srcdir)/stty.c'; fi`
+
+modemu2k-timeval.o: timeval.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-timeval.o `test -f 'timeval.c' || echo '$(srcdir)/'`timeval.c
+
+modemu2k-timeval.obj: timeval.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-timeval.obj `if test -f 'timeval.c'; then $(CYGPATH_W) 'timeval.c'; else $(CYGPATH_W) '$(srcdir)/timeval.c'; fi`
+
+modemu2k-verbose.o: verbose.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-verbose.o `test -f 'verbose.c' || echo '$(srcdir)/'`verbose.c
+
+modemu2k-verbose.obj: verbose.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-verbose.obj `if test -f 'verbose.c'; then $(CYGPATH_W) 'verbose.c'; else $(CYGPATH_W) '$(srcdir)/verbose.c'; fi`
+
+modemu2k-cmdarg.o: cmdarg.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-cmdarg.o `test -f 'cmdarg.c' || echo '$(srcdir)/'`cmdarg.c
+
+modemu2k-cmdarg.obj: cmdarg.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-cmdarg.obj `if test -f 'cmdarg.c'; then $(CYGPATH_W) 'cmdarg.c'; else $(CYGPATH_W) '$(srcdir)/cmdarg.c'; fi`
+
+modemu2k-sock.o: sock.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-sock.o `test -f 'sock.c' || echo '$(srcdir)/'`sock.c
+
+modemu2k-sock.obj: sock.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-sock.obj `if test -f 'sock.c'; then $(CYGPATH_W) 'sock.c'; else $(CYGPATH_W) '$(srcdir)/sock.c'; fi`
+
+modemu2k-telopt.o: telopt.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-telopt.o `test -f 'telopt.c' || echo '$(srcdir)/'`telopt.c
+
+modemu2k-telopt.obj: telopt.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-telopt.obj `if test -f 'telopt.c'; then $(CYGPATH_W) 'telopt.c'; else $(CYGPATH_W) '$(srcdir)/telopt.c'; fi`
+
+modemu2k-ttybuf.o: ttybuf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-ttybuf.o `test -f 'ttybuf.c' || echo '$(srcdir)/'`ttybuf.c
+
+modemu2k-ttybuf.obj: ttybuf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-ttybuf.obj `if test -f 'ttybuf.c'; then $(CYGPATH_W) 'ttybuf.c'; else $(CYGPATH_W) '$(srcdir)/ttybuf.c'; fi`
+
+modemu2k-lex.yy.o: lex.yy.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-lex.yy.o `test -f 'lex.yy.c' || echo '$(srcdir)/'`lex.yy.c
+
+modemu2k-lex.yy.obj: lex.yy.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modemu2k_CFLAGS) $(CFLAGS) -c -o modemu2k-lex.yy.obj `if test -f 'lex.yy.c'; then $(CYGPATH_W) 'lex.yy.c'; else $(CYGPATH_W) '$(srcdir)/lex.yy.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

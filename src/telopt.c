@@ -12,6 +12,8 @@
 #include "atcmd.h"              /*atcmd */
 #include "verbose.h"            /*VERB_TELOPT */
 
+struct st_telOpt telOpt;
+
 /* telnet option negotiation module */
 
 static TelOptStates stTabMaster[] = {

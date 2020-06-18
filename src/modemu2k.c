@@ -4,7 +4,7 @@
  *      It can redirect Telnet I/O to a pty so that a comm program
  *      can handle the pty as a tty with a real modem.
  *
- * Copyright 2018 Andy Alt <andy400-dev@yahoo.com>
+ * Copyright 2018-2020 Andy Alt <andy400-dev@yahoo.com>
  *
  * modemu2k is a fork of modemu
  * Originally developed by Toru Egashira
@@ -52,6 +52,7 @@
 #include "timeval.h"            /*(timeval...) */
 #include "commx.h"              /*(commxForkExec) */
 #include "cmdarg.h"             /*cmdarg */
+
 /* socket input processing loop */
   static void
 sockReadLoop (void)
@@ -148,8 +149,11 @@ static struct
   struct timeval expireT;       /* keep silence until the time */
 } escSeq;
 
-#define escSeqReset() { escSeq.state = ESH_NORM; }
-#define checkTtySilence() (escSeq.checkSilence)
+void
+escSeqReset(void)
+{
+  escSeq.state = ESH_NORM;
+}
 
 /* t1 - t2 > S12? */
 static int

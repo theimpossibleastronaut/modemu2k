@@ -1,7 +1,7 @@
 /*
  * sock.h
  *
- * Copyright 2018-2019 Andy Alt <andy400-dev@yahoo.com>
+ * Copyright 2018-2020 Andy Alt <andy400-dev@yahoo.com>
  *
  * modemu2k is a fork of modemu
  * Originally developed by Toru Egashira
@@ -44,12 +44,14 @@
 #include <errno.h>
 #include <stdio.h>
 
-struct
+struct st_sock
 {
   int fd;
   int alive;
   struct addrinfo *rp;
-} sock;
+};
+
+extern struct st_sock sock;
 
 #define sockIsAlive() (sock.alive)
 

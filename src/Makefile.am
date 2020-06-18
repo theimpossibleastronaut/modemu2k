@@ -32,6 +32,8 @@
 
 bin_PROGRAMS = modemu2k
 
+modemu2k_CFLAGS = -fno-common
+
 modemu2k_SOURCES =	\
 	modemu2k.c	\
 	atcmd.c	\

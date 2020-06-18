@@ -29,7 +29,7 @@ typedef struct
   TelOptState remote;           /* remote state of the option */
 } TelOptStates;
 
-struct
+extern struct st_telOpt
 {
   int binsend;                  /* local binary opt is enabled */
   int binrecv;                  /* remote binary opt is enabled */

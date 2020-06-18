@@ -35,6 +35,8 @@
 #define LIT_(s) #s
 #define LIT(s) LIT_(s)
 
+struct st_cmdarg cmdarg;
+
 static void
 showUsage (char *const argv[])
 {

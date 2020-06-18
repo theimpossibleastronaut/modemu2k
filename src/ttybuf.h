@@ -3,30 +3,33 @@
 #include "defs.h"       /*->ttybuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 #endif
 
-struct
+struct st_tty
 {
   int rfd;
   int wfd;
-} tty;
+};
+
+extern struct st_tty tty;
 
 
 /* reading tty */
 
-struct
+struct st_ttyBufR
 {
   uchar buf[TTYBUFR_SIZE];
   uchar *ptr;
   uchar *end;
   struct timeval newT;
   struct timeval prevT;
-} ttyBufR;
+};
 
-#define ttyBufRReset() \
-{ \
-    ttyBufR.ptr = ttyBufR.end = ttyBufR.buf; \
-    ttyBufR.prevT.tv_sec = ttyBufR.prevT.tv_usec = 0; \
-}
-#define getTty1() ((ttyBufR.ptr >= ttyBufR.end)? -1 : *ttyBufR.ptr++)
+extern struct st_ttyBufR ttyBufR;
+
+void
+ttyBufRReset(void);
+
+int
+getTty1(void);
 
 void ttyBufRead (void);
 
@@ -36,13 +39,15 @@ void ttyBufRead (void);
 #define TTYBUFW_SIZE (2 * SOCKBUFR_SIZE)        /* this seems to be any number */
 #define TTYBUFW_SIZE_A (TTYBUFW_SIZE + SOCKBUFR_SIZE)   /* important */
 
-struct
+struct st_ttyBufW
 {
   uchar buf[TTYBUFW_SIZE_A];
   uchar *top;
   uchar *ptr;
   int stop;
-} ttyBufW;
+};
+
+extern struct st_ttyBufW ttyBufW;
 
 #define ttyBufWReset() { \
     ttyBufW.ptr = ttyBufW.top = ttyBufW.buf; \

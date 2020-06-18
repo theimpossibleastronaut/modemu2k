@@ -25,7 +25,7 @@
  *
  */
 
-struct
+extern struct st_cmdarg
 {
   enum
   { CA_STDINOUT, CA_SHOWDEV, CA_COMMX, CA_DEVGIVEN } ttymode;

@@ -8,8 +8,24 @@
 #include "sock.h"               /*(sockShutdown) */
 #include "verbose.h"            /*VERB_MISC */
 
+struct st_tty tty;
+struct st_ttyBufR ttyBufR;
+struct st_ttyBufW ttyBufW;
+
+void
+ttyBufRReset(void)
+{
+  ttyBufR.ptr = ttyBufR.end = ttyBufR.buf;
+  ttyBufR.prevT.tv_sec = ttyBufR.prevT.tv_usec = 0;
+}
 
 /* reading tty */
+
+int
+getTty1(void)
+{
+  return ((ttyBufR.ptr >= ttyBufR.end)? -1 : *ttyBufR.ptr++);
+}
 
 void
 ttyBufRead (void)

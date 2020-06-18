@@ -1,7 +1,7 @@
 /*
  * atcmd.c
  *
- * Copyright 2018 Andy Alt <andy400-dev@yahoo.com>
+ * Copyright 2018-2020 Andy Alt <andy400-dev@yahoo.com>
  *
  * modemu2k is a fork of modemu
  * Originally developed by Toru Egashira
@@ -50,6 +50,9 @@
 	BINCMD		/* binary mode */ \
 	"%T1"		/* terminal-type = $TERM */ \
 	"&W"                    /* write to NVRAM */
+
+st_Atcmd atcmd;
+st_Atcmd atcmdNV;
 
 void
 atcmdInit (void)
@@ -134,7 +137,7 @@ atcmdH (const char *s)
 /*    6(show telnet option states) */
 
 static void
-prPercent (Atcmd * atcmdp)
+prPercent (st_Atcmd * atcmdp)
 {
   char buf[64];
 

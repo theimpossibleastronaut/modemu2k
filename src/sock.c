@@ -33,6 +33,8 @@
 #include "timeval.h"
 #include "verbose.h"
 
+struct st_sock sock;
+
 void
 sockClose (void)
 {

@@ -1,7 +1,7 @@
 /*
  * atcmd.h
  *
- * Copyright 2018 Andy Alt <andy400-dev@yahoo.com>
+ * Copyright 2018-2020 Andy Alt <andy400-dev@yahoo.com>
  *
  * modemu2k is a fork of modemu
  * Originally developed by Toru Egashira
@@ -58,7 +58,8 @@ typedef enum
 #define PT_MAX 40
 #define SREG_MAX 12
 
-typedef struct
+typedef struct st_Atcmd st_Atcmd;
+struct st_Atcmd
 {
   struct
   {
@@ -86,9 +87,10 @@ typedef struct
     int wont;
   } pt;
   int pv;
-} Atcmd;
+};
 
-Atcmd atcmd, atcmdNV;
+extern st_Atcmd atcmd;
+extern st_Atcmd atcmdNV;
 
 #define CHAR_ESC (atcmd.s[2])
 #define CHAR_CR (atcmd.s[3])

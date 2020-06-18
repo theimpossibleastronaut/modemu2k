@@ -10,9 +10,23 @@
 #include "sock.h"               /*sock */
 #include "verbose.h"            /*VERB_MISC */
 
-
 /* reading socket */
 #define MSG_CONNECTION_CLOSED_BY_PEER gettext ("Connection closed by peer.\r\n")
+
+struct st_sockBufR sockBufR;
+struct st_sockBufW sockBufW;
+
+void
+sockBufRReset(void)
+{
+  sockBufR.ptr = sockBufR.end = sockBufR.buf;
+}
+
+int
+getSock1(void)
+{
+    return ((sockBufR.ptr >= sockBufR.end)? -1 : *sockBufR.ptr++);
+}
 
 void
 sockBufRead (void)
@@ -36,8 +50,26 @@ sockBufRead (void)
   sockBufR.end = sockBufR.buf + l;
 }
 
-
 /* writing socket */
+
+void
+sockBufWReset(void)
+{
+  sockBufW.ptr = sockBufW.top = sockBufW.buf;
+  sockBufW.stop = 0;
+}
+
+bool
+sockBufWHasData(void)
+{
+  return (sockBufW.ptr > sockBufW.buf);
+}
+
+bool
+sockBufWReady(void)
+{
+  return !sockBufW.stop;
+}
 
 void
 sockBufWrite (void)
