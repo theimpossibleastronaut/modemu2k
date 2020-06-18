@@ -35,8 +35,6 @@
 #define LIT_(s) #s
 #define LIT(s) LIT_(s)
 
-struct st_cmdarg cmdarg;
-
 static void
 showUsage (char *const argv[])
 {
@@ -107,7 +105,7 @@ for details.\n"), VERSION, argv[0]);
 }
 
 void
-cmdargParse (const int argc, char *const argv[])
+cmdargParse (const int argc, char *const argv[], struct st_cmdarg *x)
 {
   const char *const short_options = "c:d:e:hsvw";
 
@@ -123,7 +121,7 @@ cmdargParse (const int argc, char *const argv[])
   };
 
   int next_option = 0;
-  cmdarg.ttymode = CA_STDINOUT;
+  x->ttymode = CA_STDINOUT;
 
   do
   {
@@ -132,21 +130,21 @@ cmdargParse (const int argc, char *const argv[])
     switch ((char) next_option)
     {
     case 'c':                  /* -c <commx args> */
-      cmdarg.ttymode = CA_COMMX;
-      cmdarg.commx = optarg;
+      x->ttymode = CA_COMMX;
+      x->commx = optarg;
       break;
     case 'd':                  /* -d <pty_device> */
-      cmdarg.ttymode = CA_DEVGIVEN;
-      cmdarg.dev = optarg;
+      x->ttymode = CA_DEVGIVEN;
+      x->dev = optarg;
       break;
     case 'e':                  /* -a <atcommands> */
-      cmdarg.atcmd = optarg;
+      x->atcmd = optarg;
       break;
     case 'h':                  /* -h */
       showUsage (argv);
       exit (0);
     case 's':                  /* -s */
-      cmdarg.ttymode = CA_SHOWDEV;
+      x->ttymode = CA_SHOWDEV;
       break;
     case 'v':
       version (argv);

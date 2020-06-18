@@ -31,7 +31,6 @@
 #include "ttybuf.h"             /*(putTty1) */
 #include "telopt.h"             /*telOpt */
 #include "cmdlex.h"             /*(cmdLex) */
-#include "cmdarg.h"             /*cmdarg */
 #include "verbose.h"            /*VERB_MISC */
 
 #ifdef BINMODE_AS_DEFAULT
@@ -55,14 +54,14 @@ st_Atcmd atcmd;
 st_Atcmd atcmdNV;
 
 void
-atcmdInit (void)
+atcmdInit (struct st_cmdarg *cmdarg)
 {
   Cmdstat s;
 
   /*memset(atcmd, 0, sizeof(atcmd)); */
   if (cmdLex (INITSTR) != CMDST_OK
       || ((s = cmdLex (getenv ("MODEMU2k"))) != CMDST_OK && s != CMDST_NOAT)
-      || ((s = cmdLex (cmdarg.atcmd)) != CMDST_OK && s != CMDST_NOAT))
+      || ((s = cmdLex (cmdarg->atcmd)) != CMDST_OK && s != CMDST_NOAT))
   {
     fputs (_("Error in initialization commands.\r\n"), stderr);
     CHAR_CR = '\r';             /* force normal settings */

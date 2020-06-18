@@ -30,6 +30,7 @@
 #include <stdlib.h>             /*(getenv) */
 #include <sys/time.h>   /*->ttybuf.h (timeval)*/
 #include <arpa/telnet.h>        /*TELOPT_xxx */
+#include "cmdarg.h"
 
 typedef enum
 {
@@ -97,7 +98,7 @@ extern st_Atcmd atcmdNV;
 #define CHAR_LF (atcmd.s[4])
 #define CHAR_BS (atcmd.s[5])
 
-void atcmdInit (void);
+void atcmdInit (struct st_cmdarg *cmdarg);
 void atcmdD (const char *s, AtdAType at, AtdPType pt);
 int atcmdFake (const char *s, const char *vals);
 int atcmdH (const char *s);

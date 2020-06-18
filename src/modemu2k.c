@@ -698,7 +698,8 @@ main (int argc, char *const argv[])
 #ifdef SOCKS
   SOCKSinit (argv[0]);
 #endif
-  cmdargParse (argc, argv);
+  struct st_cmdarg cmdarg;
+  cmdargParse (argc, argv, &cmdarg);
   fputs (PACKAGE_NAME " " VERSION "\n", stdout);
   /* TRANSLATORS: do not translate `at%%q` */
   fputs (_("Enter 'at%q' to quit\n\n"), stdout);
@@ -737,7 +738,7 @@ main (int argc, char *const argv[])
 
   ttyBufWReset ();
   telOptInit ();
-  atcmdInit ();                 /* initialize atcmd */
+  atcmdInit (&cmdarg);                 /* initialize atcmd */
 
 CMDMODE:
   switch (cmdMode ())

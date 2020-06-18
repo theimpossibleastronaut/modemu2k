@@ -1,7 +1,7 @@
 /*
  * cmdarg.h
  *
- * Copyright 2018 Andy Alt <andy400-dev@yahoo.com>
+ * Copyright 2018-2020 Andy Alt <andy400-dev@yahoo.com>
  *
  * modemu2k is a fork of modemu
  * Originally developed by Toru Egashira
@@ -25,13 +25,18 @@
  *
  */
 
-extern struct st_cmdarg
+#ifndef _CMDARG_H
+#define _CMDARG_H
+
+struct st_cmdarg
 {
   enum
   { CA_STDINOUT, CA_SHOWDEV, CA_COMMX, CA_DEVGIVEN } ttymode;
   const char *commx;
   const char *atcmd;
   const char *dev;
-} cmdarg;
+};
 
-void cmdargParse (const int argc, char *const argv[]);
+void cmdargParse (const int argc, char *const argv[], struct st_cmdarg *x);
+
+#endif
