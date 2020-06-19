@@ -1,5 +1,13 @@
 modemu2k ChangeLog
 
+2020-06-19
+
+  * v0.0.6 released
+
+2020-06-18
+
+  * Fix for compiling on gcc-10
+
 2019-8-23
 
   * v0.0.5 released
