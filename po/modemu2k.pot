@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: modemu2k 0.0.6-dev\n"
+"Project-Id-Version: modemu2k 0.0.6\n"
 "Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2020-06-18 00:13-0500\n"
+"POT-Creation-Date: 2020-06-19 00:49-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,36 +29,36 @@ msgid ""
 "Goodbye.\n"
 msgstr ""
 
-#: src/cmdarg.c:45
+#: src/cmdarg.c:43
 msgid ""
 "  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using "
 "[arguments]"
 msgstr ""
 
-#: src/cmdarg.c:47
+#: src/cmdarg.c:45
 msgid "  -d, --device=<pty_master>               talk through [pty_master]"
 msgstr ""
 
-#: src/cmdarg.c:49
+#: src/cmdarg.c:47
 msgid ""
 "  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at "
 "startup"
 msgstr ""
 
-#: src/cmdarg.c:54
+#: src/cmdarg.c:52
 msgid "  -h, --help                              display help"
 msgstr ""
 
-#: src/cmdarg.c:51
+#: src/cmdarg.c:49
 msgid ""
 "  -s, --show                              show which device will be used"
 msgstr ""
 
-#: src/cmdarg.c:56
+#: src/cmdarg.c:54
 msgid "  -v, --version                           display version"
 msgstr ""
 
-#: src/cmdarg.c:58
+#: src/cmdarg.c:56
 msgid "  -w, --warranty                          display warranty"
 msgstr ""
 
@@ -84,12 +84,12 @@ msgid "Connection closed by peer.\r\n"
 msgstr ""
 
 #. TRANSLATORS: reminder: do not translate any "AT" command strings
-#: src/atcmd.c:129
+#: src/atcmd.c:128
 msgid "Connection closed with ATH.\r\n"
 msgstr ""
 
 #. TRANSLATORS: reminder: do not translate any "AT" command strings
-#: src/atcmd.c:333
+#: src/atcmd.c:332
 msgid "Connection closed with ATZ.\r\n"
 msgstr ""
 
@@ -98,13 +98,13 @@ msgid "Could not run shell.\n"
 msgstr ""
 
 #. TRANSLATORS: do not translate `at%%q`
-#: src/modemu2k.c:704
+#: src/modemu2k.c:716
 msgid ""
 "Enter 'at%q' to quit\n"
 "\n"
 msgstr ""
 
-#: src/atcmd.c:67
+#: src/atcmd.c:66
 msgid "Error in initialization commands.\r\n"
 msgstr ""
 
@@ -113,11 +113,11 @@ msgstr ""
 msgid "Host address lookup failed: %s\n"
 msgstr ""
 
-#: src/modemu2k.c:683
+#: src/modemu2k.c:694
 msgid "No more pty devices available.\n"
 msgstr ""
 
-#: src/cmdarg.c:69
+#: src/cmdarg.c:67
 msgid ""
 "Note: The  -c, -d, and -s options are exclusive of each other. If two or\n"
 "more of the options are specified, only the last one is effective."
@@ -134,11 +134,11 @@ msgstr ""
 msgid "Pty closed. (write() returned %d)\r\n"
 msgstr ""
 
-#: src/modemu2k.c:541
+#: src/modemu2k.c:552
 msgid "Pty open error.\n"
 msgstr ""
 
-#: src/cmdarg.c:86
+#: src/cmdarg.c:84
 #, c-format
 msgid ""
 "THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n"
@@ -151,20 +151,20 @@ msgid ""
 "ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n"
 msgstr ""
 
-#: src/cmdarg.c:61
+#: src/cmdarg.c:59
 msgid ""
 "The arguments for (-c, --commprog) and (-e, --atcommands) must be enclosed "
 "in\n"
 "quotes. (eg. -c \"minicom -l -w -c\")"
 msgstr ""
 
-#: src/cmdarg.c:65
+#: src/cmdarg.c:63
 msgid ""
 "The arguments for the comm program must be native to the comm program, not\n"
 "arguments used by modemu2k."
 msgstr ""
 
-#: src/cmdarg.c:73
+#: src/cmdarg.c:71
 msgid ""
 "The modemu2k project and support site is at\n"
 "<https://github.com/theimpossibleastronaut/modemu2k>\n"
@@ -173,24 +173,24 @@ msgid ""
 "<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"
 msgstr ""
 
-#: src/modemu2k.c:454
+#: src/modemu2k.c:465
 msgid "To escape to command mode, use '+++'."
 msgstr ""
 
-#: src/modemu2k.c:455
+#: src/modemu2k.c:466
 msgid "Use ATO to return to online mode."
 msgstr ""
 
 #. TRANSLATORS: do not translate "tty" or "pty"
-#: src/modemu2k.c:629
+#: src/modemu2k.c:640
 msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
 msgstr ""
 
-#: src/modemu2k.c:637
+#: src/modemu2k.c:648
 msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
 msgstr ""
 
-#: src/cmdarg.c:100
+#: src/cmdarg.c:98
 #, c-format
 msgid ""
 "modemu2k %s\n"
@@ -202,14 +202,14 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: ignore the "&W'ed"
-#: src/atcmd.c:256
+#: src/atcmd.c:255
 msgid "modemu2k '&W'ed settings:"
 msgstr ""
 
-#: src/atcmd.c:244
+#: src/atcmd.c:243
 msgid "modemu2k current settings:"
 msgstr ""
 
-#: src/atcmd.c:189
+#: src/atcmd.c:188
 msgid "modemu2k telnet option states:"
 msgstr ""

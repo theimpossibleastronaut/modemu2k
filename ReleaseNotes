@@ -1,13 +1,3 @@
-v0.0.5
+v0.0.6
 
-Noteworthy changes:
-
-  * IPv6 connections can now be made.
-
-  * To specify a non-standard port, you must use a space now instead of
-  a colon
-
-  * Replaced obsolete gethostbyname() with getaddrinfo()
-
-  * If the m2k-minicom.sh script is run from the scripts/ directory, it will
-  use the dev build of modemu2k in src/
+  * Fix for compiling on gcc-10
