@@ -3,12 +3,12 @@
 dist_man_MANS = modemu2k.1
 
 # used by the install target
-LINGUAS = pt_BR it_IT
+LINGUAS = pt_BR it
 
 # This will include the man files when `make dist` is run.
 EXTRA_DIST = \
 	modemu2k.pt_BR.1 \
-	modemu2k.it_IT.1
+	modemu2k.it.1
 
 # install translated man pages when `make install` is run.
 install-data-local:
