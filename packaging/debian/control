@@ -1,0 +1,19 @@
+Source: modemu2k
+Section: net
+Priority: optional
+Maintainer: Andy Alt <andy400-dev@yahoo.com>
+Vcs-Git: https://git.devuan.org/andy5995/modemu2k.git
+Vcs-Browser: https://git.devuan.org/andy5995/modemu2k.git
+Build-Depends: debhelper (>= 12~)
+Standards-Version: 4.3.0
+Homepage: https://github.com/theimpossibleastronaut/modemu2k/
+
+Package: modemu2k
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Telnet client with a modem-like user interface
+ modemu2k adds telnet capability to a comm program. It can redirect
+ telnet I/O to a pty so that a comm program can handle the pty as a tty
+ with a real modem, and allows you to use a comm program's scripting
+ and file transfer features over telnet. Now supports IPv6 connections.
+ modemu2k is a fork of modemu, originally developed by Toru Egashira.
