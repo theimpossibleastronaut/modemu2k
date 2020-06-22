@@ -50,8 +50,8 @@
 	"%T1"		/* terminal-type = $TERM */ \
 	"&W"                    /* write to NVRAM */
 
-st_Atcmd atcmd;
-st_Atcmd atcmdNV;
+Atcmd atcmd;
+Atcmd atcmdNV;
 
 void
 atcmdInit (struct st_cmdarg *cmdarg)
@@ -136,7 +136,7 @@ atcmdH (const char *s)
 /*    6(show telnet option states) */
 
 static void
-prPercent (st_Atcmd * atcmdp)
+prPercent (Atcmd * atcmdp)
 {
   char buf[64];
 

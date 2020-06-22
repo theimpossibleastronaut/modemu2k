@@ -59,8 +59,7 @@ typedef enum
 #define PT_MAX 40
 #define SREG_MAX 12
 
-typedef struct st_Atcmd st_Atcmd;
-struct st_Atcmd
+typedef struct
 {
   struct
   {
@@ -88,10 +87,10 @@ struct st_Atcmd
     int wont;
   } pt;
   int pv;
-};
+} Atcmd;
 
-extern st_Atcmd atcmd;
-extern st_Atcmd atcmdNV;
+extern Atcmd atcmd;
+extern Atcmd atcmdNV;
 
 #define CHAR_ESC (atcmd.s[2])
 #define CHAR_CR (atcmd.s[3])
