@@ -6920,7 +6920,7 @@ fi
 ac_config_files="$ac_config_files Makefile src/Makefile man/Makefile tests/Makefile scripts/Makefile po/Makefile.in"
 
 
-ac_config_files="$ac_config_files scripts/m2k-minicom.sh"
+ac_config_files="$ac_config_files scripts/m2k-minicom"
 
 
 cat >confcache <<\_ACEOF
@@ -7659,7 +7659,7 @@ do
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
     "scripts/Makefile") CONFIG_FILES="$CONFIG_FILES scripts/Makefile" ;;
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
-    "scripts/m2k-minicom.sh") CONFIG_FILES="$CONFIG_FILES scripts/m2k-minicom.sh" ;;
+    "scripts/m2k-minicom") CONFIG_FILES="$CONFIG_FILES scripts/m2k-minicom" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -8369,7 +8369,7 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
         ;;
       esac
     done ;;
-    "scripts/m2k-minicom.sh":F) chmod +x scripts/m2k-minicom.sh ;;
+    "scripts/m2k-minicom":F) chmod +x scripts/m2k-minicom ;;
 
   esac
 done # for ac_tag

@@ -1,5 +1,9 @@
 modemu2k ChangeLog
 
+2020-06-21
+
+  * 'm2k-minicom.sh' script renamed to 'm2k-minicom'
+
 2020-06-19
 
   * v0.0.6 released

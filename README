@@ -39,7 +39,7 @@ Compilation
 
 `make install` is optional. The binary can be run from the src/
 directory; however, installation is required to use the translations,
-and to create and install a script (m2k-minicom.sh) that can invoke
+and to create and install a script (m2k-minicom) that can invoke
 minicom (see below).
 
 

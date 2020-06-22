@@ -110,7 +110,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
-CONFIG_CLEAN_FILES = m2k-minicom.sh
+CONFIG_CLEAN_FILES = m2k-minicom
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -163,7 +163,7 @@ am__can_run_installinfo = \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/m2k-minicom.sh.in
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/m2k-minicom.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -283,7 +283,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 bin_SCRIPTS = \
-	m2k-minicom.sh
+	m2k-minicom
 
 all: all-am
 
@@ -317,7 +317,7 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-m2k-minicom.sh: $(top_builddir)/config.status $(srcdir)/m2k-minicom.sh.in
+m2k-minicom: $(top_builddir)/config.status $(srcdir)/m2k-minicom.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
@@ -515,8 +515,8 @@ uninstall-am: uninstall-binSCRIPTS
 
 
 clean-local:
-	if test -f m2k-minicom.sh; then \
-		rm -f m2k-minicom.sh; \
+	if test -f m2k-minicom; then \
+		rm -f m2k-minicom; \
 	fi
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

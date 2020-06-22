@@ -45,6 +45,6 @@ AC_CONFIG_FILES([	Makefile
 			scripts/Makefile
 			po/Makefile.in])
 
-AC_CONFIG_FILES([scripts/m2k-minicom.sh], [chmod +x scripts/m2k-minicom.sh])
+AC_CONFIG_FILES([scripts/m2k-minicom], [chmod +x scripts/m2k-minicom])
 
 AC_OUTPUT

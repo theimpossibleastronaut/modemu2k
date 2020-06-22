@@ -1,9 +1,9 @@
 bin_SCRIPTS =	\
-	m2k-minicom.sh
+	m2k-minicom
 
 clean-local:
-	if test -f m2k-minicom.sh; then \
-		rm -f m2k-minicom.sh; \
+	if test -f m2k-minicom; then \
+		rm -f m2k-minicom; \
 	fi
 
 
