@@ -30,7 +30,7 @@ matrix:
     - os: linux
       dist: bionic
       compiler: gcc
-      env: MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+      # default is gcc-7 on bionic
     - os: linux
       dist: bionic
       compiler: gcc
@@ -46,7 +46,7 @@ matrix:
             - g++-9
       env: MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
     - os: linux
-      dist: xenial
+      dist: bionic
       compiler: gcc
       addons:
         apt:
@@ -95,7 +95,7 @@ before_install:
   - echo $CC
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       eval "${MATRIX_EVAL}";
-      if [ -n "$MATRIX_EVAL" ] && [ "$TRAVIS_COMPILER" != "clang" && [ "$CC" != "gcc-7" ] && [ "$CC" != "gcc-9" ] && [ "$CC" != "gcc-10" ]; then
+      if [ -n "$MATRIX_EVAL" ] && [ "$TRAVIS_COMPILER" != "clang" ] && [ "$CC" != "gcc-9" ] && [ "$CC" != "gcc-10" ]; then
         sudo apt-get install -y $CC;
       fi;
     fi
