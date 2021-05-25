@@ -120,11 +120,8 @@ More details are in the QuickStart guide
 
 A man page is also available.
 
+Translate
+---------
 
-For Translators
------------
+See <https://github.com/theimpossibleastronaut/modemu2k/blob/master/TRANSLATE.md>
 
-We use Transifex to translate the output messages. To start translating
-modemu2k, ​create an account in Transifex and ask to join a translation
-team (or create a new one) at
-https://www.transifex.com/na-309/modemu2k/
