@@ -52,6 +52,7 @@
 #include "timeval.h"            /*(timeval...) */
 #include "commx.h"              /*(commxForkExec) */
 #include "cmdarg.h"             /*cmdarg */
+#include "utils.h"
 
 /* socket input processing loop */
   static void
@@ -587,7 +588,8 @@ getPtyMaster (char **line_return)
     goto bsd;
   }
   line = malloc (strlen (temp_line) + 1);
-  if (!line)
+  chk_alloc (line);
+  if (line == NULL)
   {
     close (pty);
     return -1;
@@ -621,7 +623,8 @@ bsd:
 
 found:
   line = malloc (strlen (name) + 1);
-  if (line)
+  chk_alloc (line);
+  if (line != NULL)
   {
     strcpy (line, name);
     line[5] = 't';
@@ -644,7 +647,6 @@ Warning: could not change ownership of tty -- pty is insecure!\n"), stderr);
     *line_return = line;
     return pty;
   }
-  fputs ("malloc(): error allocating memory -- exiting.", stderr);
   exit (EXIT_FAILURE);
 
 bail:

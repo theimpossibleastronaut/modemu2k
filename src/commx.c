@@ -7,6 +7,7 @@
 #include "defs.h"
 #include "commx.h"              /*(commxForkExec) */
 #include "verbose.h"            /*VERB_MISC */
+#include "utils.h"
 static int commxPid;
 
 static void
@@ -20,8 +21,9 @@ sigchld (int dummy)
   {
     fputs (_("Comm program exited.\r\n"), stderr);
     verboseOut (VERB_MISC, _("Child returned status %d.\r\n"),
-                WEXITSTATUS (s));
-    exit (0);
+                WEXITSTATUS (s));\
+
+    _exit (0);
   }
 }
 
@@ -55,10 +57,19 @@ commxForkExec (const char *cmd, char *ptyslave)
 {
   char *s;
   s = malloc (strlen (cmd) + strlen (ptyslave) + 1);
-  if (strcmp ("/dev/", ptyslave) == 0)
-    ptyslave += 5;
-  sprintf (s, cmd, ptyslave);
-  forkExec (s);
+  chk_alloc (s);
+  if (s != NULL)
+  {
+    if (strcmp ("/dev/", ptyslave) == 0)
+      ptyslave += 5;
+    sprintf (s, cmd, ptyslave);
+    forkExec (s);
+    return;
+  }
+  else
+  {
+    return;
+  }
 }
 #else
 void
@@ -72,7 +83,16 @@ commxForkExec (const char *cmd, char c10, char c01)
   c[4] = c01;
   c[5] = 0;
   s = malloc (strlen (cmd) + strlen (c) + 1);
-  sprintf (s, cmd, c);          /*'%s' -> 'p1' or sth */
-  forkExec (s);
+  chk_alloc (s);
+  if (s != NULL)
+  {
+    sprintf (s, cmd, c);          /*'%s' -> 'p1' or sth */
+    forkExec (s);
+    return;
+  }
+  else
+  {
+    return;
+  }
 }
 #endif

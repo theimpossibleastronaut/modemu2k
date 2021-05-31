@@ -9,7 +9,7 @@
   static void
 sigint (int i)
 {
-  exit (1);
+  _exit (1);
 }
 
 static int pid;
