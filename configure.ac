@@ -20,9 +20,15 @@ AX_IS_RELEASE([git-directory])
 AX_CHECK_ENABLE_DEBUG([yes])
 
 AC_PROG_CC
-AC_PROG_CC_STDC
 AX_CFLAGS_WARN_ALL
 AC_PROG_INSTALL
+
+EXTRA_CFLAGS="-fno-common"
+
+AX_CHECK_COMPILE_FLAG(-fanalyzer, [ax_gcc_flag_option=yes], [ax_gcc_flag_option=no], [-Werror])
+if test "x$ax_gcc_flag_option" = "xyes"; then
+        EXTRA_CFLAGS+=" -fanalyzer"
+fi
 
 # For creating the static test library
 AC_PROG_RANLIB
@@ -37,6 +43,11 @@ AM_GNU_GETTEXT_VERSION([0.19.8])
 # https://github.com/theimpossibleastronaut/rmw/commit/90200c2df06b16f16b5d21d25c51966c0ee65b23#commitcomment-30291627
 # and https://github.com/theimpossibleastronaut/rmw/issues/21
 AM_MAINTAINER_MODE
+
+AX_VALGRIND_DFLT([memcheck], [on])
+AX_VALGRIND_CHECK([off])
+
+AC_SUBST([EXTRA_CFLAGS])
 
 AC_CONFIG_FILES([	Makefile
 			src/Makefile

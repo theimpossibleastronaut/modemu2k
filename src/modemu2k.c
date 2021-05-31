@@ -287,9 +287,7 @@ ttyReadLoop (void)
 
 
 /* online mode main loop */
-#ifndef USE_AS_TEST_LIB
 static
-#endif
   int
 onlineMode (void)
 {
@@ -478,10 +476,8 @@ putTtyCmdstat (Cmdstat s)
   putTty1 (CHAR_LF);
 }
 
-#ifndef USE_AS_TEST_LIB
-static
-#endif
-  Cmdstat
+
+static Cmdstat
 cmdMode (struct cmdBuf *cmdBuf)
 {
   fd_set rfds, wfds;
@@ -538,9 +534,7 @@ cmdMode (struct cmdBuf *cmdBuf)
 
 
 /* open a pty */
-#ifndef USE_AS_TEST_LIB
 static
-#endif
   int
 openPtyMaster (const char *dev)
 {
@@ -557,9 +551,7 @@ openPtyMaster (const char *dev)
 
 #ifdef HAVE_GRANTPT
 
-#ifndef USE_AS_TEST_LIB
 static
-#endif
   int
 getPtyMaster (char **line_return)
 {
@@ -697,7 +689,6 @@ getPtyMaster (char *tty10, char *tty01)
 }
 #endif
 
-#ifndef USE_AS_TEST_LIB
 
 int
 main (int argc, char *const argv[])
@@ -803,5 +794,3 @@ ONLINE:
 
   return 1;
 }
-
-#endif

@@ -92,9 +92,11 @@ subdir = scripts
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/build-aux/m4/ax_append_flag.m4 \
 	$(top_srcdir)/build-aux/m4/ax_cflags_warn_all.m4 \
+	$(top_srcdir)/build-aux/m4/ax_check_compile_flag.m4 \
 	$(top_srcdir)/build-aux/m4/ax_check_enable_debug.m4 \
 	$(top_srcdir)/build-aux/m4/ax_is_release.m4 \
 	$(top_srcdir)/build-aux/m4/ax_require_defined.m4 \
+	$(top_srcdir)/build-aux/m4/ax_valgrind_check.m4 \
 	$(top_srcdir)/build-aux/m4/gettext.m4 \
 	$(top_srcdir)/build-aux/m4/iconv.m4 \
 	$(top_srcdir)/build-aux/m4/intlmacosx.m4 \
@@ -162,6 +164,10 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__extra_recursive_targets = check-valgrind-recursive \
+	check-valgrind-memcheck-recursive \
+	check-valgrind-helgrind-recursive check-valgrind-drd-recursive \
+	check-valgrind-sgcheck-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/m2k-minicom.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -183,7 +189,12 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_VALGRIND_drd = @ENABLE_VALGRIND_drd@
+ENABLE_VALGRIND_helgrind = @ENABLE_VALGRIND_helgrind@
+ENABLE_VALGRIND_memcheck = @ENABLE_VALGRIND_memcheck@
+ENABLE_VALGRIND_sgcheck = @ENABLE_VALGRIND_sgcheck@
 EXEEXT = @EXEEXT@
+EXTRA_CFLAGS = @EXTRA_CFLAGS@
 GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GMSGFMT = @GMSGFMT@
 GMSGFMT_015 = @GMSGFMT_015@
@@ -228,6 +239,8 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 USE_NLS = @USE_NLS@
+VALGRIND = @VALGRIND@
+VALGRIND_ENABLED = @VALGRIND_ENABLED@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
 XGETTEXT_015 = @XGETTEXT_015@
@@ -282,6 +295,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+valgrind_enabled_tools = @valgrind_enabled_tools@
+valgrind_tools = @valgrind_tools@
 bin_SCRIPTS = \
 	m2k-minicom
 
@@ -354,6 +369,11 @@ uninstall-binSCRIPTS:
 	files=`for p in $$list; do echo "$$p"; done | \
 	       sed -e 's,.*/,,;$(transform)'`; \
 	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
+check-valgrind-local: 
+check-valgrind-memcheck-local: 
+check-valgrind-helgrind-local: 
+check-valgrind-drd-local: 
+check-valgrind-sgcheck-local: 
 tags TAGS:
 
 ctags CTAGS:
@@ -431,6 +451,26 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+check-valgrind: check-valgrind-am
+
+check-valgrind-am: check-valgrind-local
+
+check-valgrind-drd: check-valgrind-drd-am
+
+check-valgrind-drd-am: check-valgrind-drd-local
+
+check-valgrind-helgrind: check-valgrind-helgrind-am
+
+check-valgrind-helgrind-am: check-valgrind-helgrind-local
+
+check-valgrind-memcheck: check-valgrind-memcheck-am
+
+check-valgrind-memcheck-am: check-valgrind-memcheck-local
+
+check-valgrind-sgcheck: check-valgrind-sgcheck-am
+
+check-valgrind-sgcheck-am: check-valgrind-sgcheck-local
+
 clean: clean-am
 
 clean-am: clean-generic clean-local mostlyclean-am
@@ -499,7 +539,12 @@ uninstall-am: uninstall-binSCRIPTS
 
 .MAKE: install-am install-strip
 
-.PHONY: all all-am check check-am clean clean-generic clean-local \
+.PHONY: all all-am check check-am check-valgrind-am \
+	check-valgrind-drd-am check-valgrind-drd-local \
+	check-valgrind-helgrind-am check-valgrind-helgrind-local \
+	check-valgrind-local check-valgrind-memcheck-am \
+	check-valgrind-memcheck-local check-valgrind-sgcheck-am \
+	check-valgrind-sgcheck-local clean clean-generic clean-local \
 	cscopelist-am ctags-am distclean distclean-generic distdir dvi \
 	dvi-am html html-am info info-am install install-am \
 	install-binSCRIPTS install-data install-data-am install-dvi \

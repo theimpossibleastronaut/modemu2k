@@ -1,11 +1,17 @@
-AM_CFLAGS = -I$(top_srcdir)/src
+AM_CFLAGS = -I$(top_srcdir)/src @EXTRA_CFLAGS@
 
-TESTS =	\
-	getNumArg	\
-	connect
+check_PROGRAMS = test_atcmd
+test_atcmd_SOURCES = $(top_srcdir)/src/atcmd.c
 
-check_PROGRAMS = $(TESTS:.c=)
+TESTS=$(check_PROGRAMS)
+
+@VALGRIND_CHECK_RULES@
+AUTOMAKE_OPTIONS = parallel-tests
+# TEST_EXTENSIONS = .sh
+LOG_COMPILER = $(VALGRIND)
+
+DEFS = -DUSE_AS_TEST_LIB
 
 # If LIBINTL (used by gettext) isn't added, the build breaks on
 # OpenBSD and probably others
-LDADD = @LIBINTL@ $(top_builddir)/src/libmodemu2k_test.a
+LDADD = @LIBINTL@ $(top_builddir)/src/libmodemu2k.a

@@ -1,5 +1,10 @@
 modemu2k ChangeLog
 
+2021-05-30
+
+  * Implemented valgrind using the autoconf macro for use with 'make
+  check'
+
 2020-06-21
 
   * 'm2k-minicom.sh' script renamed to 'm2k-minicom'

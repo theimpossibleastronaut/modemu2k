@@ -87,15 +87,16 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = getNumArg$(EXEEXT) connect$(EXEEXT)
-check_PROGRAMS = $(am__EXEEXT_1)
+check_PROGRAMS = test_atcmd$(EXEEXT)
 subdir = tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/build-aux/m4/ax_append_flag.m4 \
 	$(top_srcdir)/build-aux/m4/ax_cflags_warn_all.m4 \
+	$(top_srcdir)/build-aux/m4/ax_check_compile_flag.m4 \
 	$(top_srcdir)/build-aux/m4/ax_check_enable_debug.m4 \
 	$(top_srcdir)/build-aux/m4/ax_is_release.m4 \
 	$(top_srcdir)/build-aux/m4/ax_require_defined.m4 \
+	$(top_srcdir)/build-aux/m4/ax_valgrind_check.m4 \
 	$(top_srcdir)/build-aux/m4/gettext.m4 \
 	$(top_srcdir)/build-aux/m4/iconv.m4 \
 	$(top_srcdir)/build-aux/m4/intlmacosx.m4 \
@@ -113,15 +114,11 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__EXEEXT_1 = getNumArg$(EXEEXT) connect$(EXEEXT)
-connect_SOURCES = connect.c
-connect_OBJECTS = connect.$(OBJEXT)
-connect_LDADD = $(LDADD)
-connect_DEPENDENCIES = $(top_builddir)/src/libmodemu2k_test.a
-getNumArg_SOURCES = getNumArg.c
-getNumArg_OBJECTS = getNumArg.$(OBJEXT)
-getNumArg_LDADD = $(LDADD)
-getNumArg_DEPENDENCIES = $(top_builddir)/src/libmodemu2k_test.a
+am__dirstamp = $(am__leading_dot)dirstamp
+am_test_atcmd_OBJECTS = $(top_builddir)/src/atcmd.$(OBJEXT)
+test_atcmd_OBJECTS = $(am_test_atcmd_OBJECTS)
+test_atcmd_LDADD = $(LDADD)
+test_atcmd_DEPENDENCIES = $(top_builddir)/src/libmodemu2k.a
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,13 +146,17 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = connect.c getNumArg.c
-DIST_SOURCES = connect.c getNumArg.c
+SOURCES = $(test_atcmd_SOURCES)
+DIST_SOURCES = $(test_atcmd_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__extra_recursive_targets = check-valgrind-recursive \
+	check-valgrind-memcheck-recursive \
+	check-valgrind-helgrind-recursive check-valgrind-drd-recursive \
+	check-valgrind-sgcheck-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -395,12 +396,17 @@ CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DEFS = @DEFS@
+DEFS = -DUSE_AS_TEST_LIB
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_VALGRIND_drd = @ENABLE_VALGRIND_drd@
+ENABLE_VALGRIND_helgrind = @ENABLE_VALGRIND_helgrind@
+ENABLE_VALGRIND_memcheck = @ENABLE_VALGRIND_memcheck@
+ENABLE_VALGRIND_sgcheck = @ENABLE_VALGRIND_sgcheck@
 EXEEXT = @EXEEXT@
+EXTRA_CFLAGS = @EXTRA_CFLAGS@
 GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GMSGFMT = @GMSGFMT@
 GMSGFMT_015 = @GMSGFMT_015@
@@ -445,6 +451,8 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 USE_NLS = @USE_NLS@
+VALGRIND = @VALGRIND@
+VALGRIND_ENABLED = @VALGRIND_ENABLED@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
 XGETTEXT_015 = @XGETTEXT_015@
@@ -499,11 +507,18 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CFLAGS = -I$(top_srcdir)/src
+valgrind_enabled_tools = @valgrind_enabled_tools@
+valgrind_tools = @valgrind_tools@
+AM_CFLAGS = -I$(top_srcdir)/src @EXTRA_CFLAGS@
+test_atcmd_SOURCES = $(top_srcdir)/src/atcmd.c
+TESTS = $(check_PROGRAMS)
+AUTOMAKE_OPTIONS = parallel-tests
+# TEST_EXTENSIONS = .sh
+LOG_COMPILER = $(VALGRIND)
 
 # If LIBINTL (used by gettext) isn't added, the build breaks on
 # OpenBSD and probably others
-LDADD = @LIBINTL@ $(top_builddir)/src/libmodemu2k_test.a
+LDADD = @LIBINTL@ $(top_builddir)/src/libmodemu2k.a
 all: all-am
 
 .SUFFIXES:
@@ -540,17 +555,19 @@ $(am__aclocal_m4_deps):
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
+$(top_builddir)/src/$(am__dirstamp):
+	@$(MKDIR_P) $(top_builddir)/src
+	@: > $(top_builddir)/src/$(am__dirstamp)
+$(top_builddir)/src/atcmd.$(OBJEXT):  \
+	$(top_builddir)/src/$(am__dirstamp)
 
-connect$(EXEEXT): $(connect_OBJECTS) $(connect_DEPENDENCIES) $(EXTRA_connect_DEPENDENCIES) 
-	@rm -f connect$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(connect_OBJECTS) $(connect_LDADD) $(LIBS)
-
-getNumArg$(EXEEXT): $(getNumArg_OBJECTS) $(getNumArg_DEPENDENCIES) $(EXTRA_getNumArg_DEPENDENCIES) 
-	@rm -f getNumArg$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(getNumArg_OBJECTS) $(getNumArg_LDADD) $(LIBS)
+test_atcmd$(EXEEXT): $(test_atcmd_OBJECTS) $(test_atcmd_DEPENDENCIES) $(EXTRA_test_atcmd_DEPENDENCIES) 
+	@rm -f test_atcmd$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_atcmd_OBJECTS) $(test_atcmd_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f $(top_builddir)/src/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -560,6 +577,11 @@ distclean-compile:
 
 .c.obj:
 	$(AM_V_CC)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+check-valgrind-local: 
+check-valgrind-memcheck-local: 
+check-valgrind-helgrind-local: 
+check-valgrind-drd-local: 
+check-valgrind-sgcheck-local: 
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -754,16 +776,9 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-getNumArg.log: getNumArg$(EXEEXT)
-	@p='getNumArg$(EXEEXT)'; \
-	b='getNumArg'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-connect.log: connect$(EXEEXT)
-	@p='connect$(EXEEXT)'; \
-	b='connect'; \
+test_atcmd.log: test_atcmd$(EXEEXT)
+	@p='test_atcmd$(EXEEXT)'; \
+	b='test_atcmd'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -851,10 +866,31 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(top_builddir)/src/$(am__dirstamp)" || rm -f $(top_builddir)/src/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+check-valgrind: check-valgrind-am
+
+check-valgrind-am: check-valgrind-local
+
+check-valgrind-drd: check-valgrind-drd-am
+
+check-valgrind-drd-am: check-valgrind-drd-local
+
+check-valgrind-helgrind: check-valgrind-helgrind-am
+
+check-valgrind-helgrind-am: check-valgrind-helgrind-local
+
+check-valgrind-memcheck: check-valgrind-memcheck-am
+
+check-valgrind-memcheck-am: check-valgrind-memcheck-local
+
+check-valgrind-sgcheck: check-valgrind-sgcheck-am
+
+check-valgrind-sgcheck-am: check-valgrind-sgcheck-local
+
 clean: clean-am
 
 clean-am: clean-checkPROGRAMS clean-generic mostlyclean-am
@@ -924,7 +960,12 @@ uninstall-am:
 
 .MAKE: check-am install-am install-strip
 
-.PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
+.PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am \
+	check-valgrind-am check-valgrind-drd-am \
+	check-valgrind-drd-local check-valgrind-helgrind-am \
+	check-valgrind-helgrind-local check-valgrind-local \
+	check-valgrind-memcheck-am check-valgrind-memcheck-local \
+	check-valgrind-sgcheck-am check-valgrind-sgcheck-local clean \
 	clean-checkPROGRAMS clean-generic cscopelist-am ctags ctags-am \
 	distclean distclean-compile distclean-generic distclean-tags \
 	distdir dvi dvi-am html html-am info info-am install \
@@ -939,6 +980,8 @@ uninstall-am:
 
 .PRECIOUS: Makefile
 
+
+@VALGRIND_CHECK_RULES@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

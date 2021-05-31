@@ -44,7 +44,10 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-9
-      env: MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
+            - valgrind
+      env:
+        - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
+        - USE_VALGRIND="true"
     - os: linux
       dist: bionic
       compiler: gcc
@@ -55,6 +58,19 @@ matrix:
           packages:
             - g++-10
       env: MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
+    - os: linux
+      dist: bionic
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-11
+            - valgrind
+      env:
+        - MATRIX_EVAL="CC=gcc-11 && CXX=g++-11"
+        - USE_VALGRIND="true"
 
 # clang
     - os: linux
@@ -99,12 +115,16 @@ before_install:
         sudo apt-get install -y $CC;
       fi;
     fi
+  - if [ -n "${USE_VALGRIND}" ]; then
+      CONFIGURE_OPTS="--enable-valgrind";
+    fi
+  - export CONFIGURE_OPTS
 
 script:
   - if [ -n "$COVERITY_SCAN_TOKEN" ]; then
       exit 0;
     fi
-  - ./configure
+  - ./configure ${CONFIGURE_OPTS}
   - if [ -z "$CHECK" ]; then
       make check;
     else

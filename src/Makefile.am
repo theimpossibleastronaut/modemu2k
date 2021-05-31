@@ -30,12 +30,11 @@
 
 #
 
-bin_PROGRAMS = modemu2k
+AM_CFLAGS = @EXTRA_CFLAGS@
 
-modemu2k_CFLAGS = -fno-common
+modemu2k_SOURCES = modemu2k.c
 
-modemu2k_SOURCES =	\
-	modemu2k.c	\
+libmodemu2k_a_SOURCES =	\
 	atcmd.c	\
 	commx.c	\
 	sockbuf.c	\
@@ -58,21 +57,21 @@ modemu2k_SOURCES =	\
 	telopt.h	\
 	timeval.h	\
 	ttybuf.h	\
-	verbose.h \
-	gettext.h
-
-modemu2k_SOURCES += utils.c utils.h
+	verbose.h	\
+	gettext.h	\
+	utils.c	\
+	utils.h
 
 DEFS = -DLOCALEDIR=\"$(localedir)\" -D_GNU_SOURCE
 
+# static library used by 'make check'
+noinst_LIBRARIES = libmodemu2k.a
+libmodemu2k_a_CFLAGS = $(AM_CFLAGS)
+
+bin_PROGRAMS = modemu2k
 # If LIBINTL (required for gettext) isn't added, the build breaks on
 # OpenBSD and probably others
-LDADD = @LIBINTL@
-
-# static library used by 'make check'
-check_LIBRARIES = libmodemu2k_test.a
-libmodemu2k_test_a_SOURCES = $(modemu2k_SOURCES)
-libmodemu2k_test_a_CFLAGS = $(AM_CFLAGS) -DUSE_AS_TEST_LIB
+modemu2k_LDADD = @LIBINTL@ libmodemu2k.a
 
 lex.yy.c:
 	$(LEX) $(LFLAGS) @srcdir@/cmdlex.l
