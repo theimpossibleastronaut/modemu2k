@@ -61,6 +61,8 @@ modemu2k_SOURCES =	\
 	verbose.h \
 	gettext.h
 
+modemu2k_SOURCES += utils.c utils.h
+
 DEFS = -DLOCALEDIR=\"$(localedir)\" -D_GNU_SOURCE
 
 # If LIBINTL (required for gettext) isn't added, the build breaks on
