@@ -35,6 +35,7 @@ AM_CFLAGS = @EXTRA_CFLAGS@
 modemu2k_SOURCES = modemu2k.c
 
 libmodemu2k_a_SOURCES =	\
+	cmdlex.l	\
 	atcmd.c	\
 	commx.c	\
 	sockbuf.c	\
@@ -45,7 +46,6 @@ libmodemu2k_a_SOURCES =	\
 	sock.c	\
 	telopt.c	\
 	ttybuf.c	\
-	lex.yy.c	\
 	atcmd.h	\
 	cmdarg.h	\
 	cmdlex.h	\
@@ -72,9 +72,6 @@ bin_PROGRAMS = modemu2k
 # If LIBINTL (required for gettext) isn't added, the build breaks on
 # OpenBSD and probably others
 modemu2k_LDADD = @LIBINTL@ libmodemu2k.a
-
-lex.yy.c:
-	$(LEX) $(LFLAGS) @srcdir@/cmdlex.l
 
 clean-local:
 	if test -f lex.yy.c; then \

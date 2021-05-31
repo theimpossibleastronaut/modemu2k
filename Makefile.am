@@ -4,12 +4,10 @@ EXTRA_DIST = 	\
 	COPYING	\
 	README	\
 	QuickStart	\
-	INSTALL	\
 	AUTHORS	\
 	ChangeLog \
 	ReleaseNotes	\
-	CONTRIBUTING.md	\
-	CODE_OF_CONDUCT.md
+	CONTRIBUTING.md
 
 packextras_DATA=$(EXTRA_DIST)
 

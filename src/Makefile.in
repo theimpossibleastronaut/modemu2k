@@ -150,13 +150,13 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libmodemu2k_a_AR = $(AR) $(ARFLAGS)
 libmodemu2k_a_LIBADD =
-am_libmodemu2k_a_OBJECTS = libmodemu2k_a-atcmd.$(OBJEXT) \
-	libmodemu2k_a-commx.$(OBJEXT) libmodemu2k_a-sockbuf.$(OBJEXT) \
-	libmodemu2k_a-stty.$(OBJEXT) libmodemu2k_a-timeval.$(OBJEXT) \
+am_libmodemu2k_a_OBJECTS = libmodemu2k_a-cmdlex.$(OBJEXT) \
+	libmodemu2k_a-atcmd.$(OBJEXT) libmodemu2k_a-commx.$(OBJEXT) \
+	libmodemu2k_a-sockbuf.$(OBJEXT) libmodemu2k_a-stty.$(OBJEXT) \
+	libmodemu2k_a-timeval.$(OBJEXT) \
 	libmodemu2k_a-verbose.$(OBJEXT) libmodemu2k_a-cmdarg.$(OBJEXT) \
 	libmodemu2k_a-sock.$(OBJEXT) libmodemu2k_a-telopt.$(OBJEXT) \
-	libmodemu2k_a-ttybuf.$(OBJEXT) libmodemu2k_a-lex.yy.$(OBJEXT) \
-	libmodemu2k_a-utils.$(OBJEXT)
+	libmodemu2k_a-ttybuf.$(OBJEXT) libmodemu2k_a-utils.$(OBJEXT)
 libmodemu2k_a_OBJECTS = $(am_libmodemu2k_a_OBJECTS)
 am_modemu2k_OBJECTS = modemu2k.$(OBJEXT)
 modemu2k_OBJECTS = $(am_modemu2k_OBJECTS)
@@ -192,6 +192,13 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
+@MAINTAINER_MODE_FALSE@am__skiplex = test -f $@ ||
+LEXCOMPILE = $(LEX) $(AM_LFLAGS) $(LFLAGS)
+AM_V_LEX = $(am__v_LEX_@AM_V@)
+am__v_LEX_ = $(am__v_LEX_@AM_DEFAULT_V@)
+am__v_LEX_0 = @echo "  LEX     " $@;
+am__v_LEX_1 = 
+YLWRAP = $(top_srcdir)/build-aux/ylwrap
 SOURCES = $(libmodemu2k_a_SOURCES) $(modemu2k_SOURCES)
 DIST_SOURCES = $(libmodemu2k_a_SOURCES) $(modemu2k_SOURCES)
 am__can_run_installinfo = \
@@ -222,7 +229,8 @@ am__define_uniq_tagged_files = \
   done | $(am__uniquify_input)`
 ETAGS = etags
 CTAGS = ctags
-am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/config.in
+am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/build-aux/ylwrap \
+	$(top_srcdir)/config.in cmdlex.c
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -353,6 +361,7 @@ valgrind_tools = @valgrind_tools@
 AM_CFLAGS = @EXTRA_CFLAGS@
 modemu2k_SOURCES = modemu2k.c
 libmodemu2k_a_SOURCES = \
+	cmdlex.l	\
 	atcmd.c	\
 	commx.c	\
 	sockbuf.c	\
@@ -363,7 +372,6 @@ libmodemu2k_a_SOURCES = \
 	sock.c	\
 	telopt.c	\
 	ttybuf.c	\
-	lex.yy.c	\
 	atcmd.h	\
 	cmdarg.h	\
 	cmdlex.h	\
@@ -391,7 +399,7 @@ all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .o .obj
+.SUFFIXES: .c .l .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -503,6 +511,12 @@ distclean-compile:
 .c.obj:
 	$(AM_V_CC)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
+libmodemu2k_a-cmdlex.o: cmdlex.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_a-cmdlex.o `test -f 'cmdlex.c' || echo '$(srcdir)/'`cmdlex.c
+
+libmodemu2k_a-cmdlex.obj: cmdlex.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_a-cmdlex.obj `if test -f 'cmdlex.c'; then $(CYGPATH_W) 'cmdlex.c'; else $(CYGPATH_W) '$(srcdir)/cmdlex.c'; fi`
+
 libmodemu2k_a-atcmd.o: atcmd.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_a-atcmd.o `test -f 'atcmd.c' || echo '$(srcdir)/'`atcmd.c
 
@@ -563,17 +577,14 @@ libmodemu2k_a-ttybuf.o: ttybuf.c
 libmodemu2k_a-ttybuf.obj: ttybuf.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_a-ttybuf.obj `if test -f 'ttybuf.c'; then $(CYGPATH_W) 'ttybuf.c'; else $(CYGPATH_W) '$(srcdir)/ttybuf.c'; fi`
 
-libmodemu2k_a-lex.yy.o: lex.yy.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_a-lex.yy.o `test -f 'lex.yy.c' || echo '$(srcdir)/'`lex.yy.c
-
-libmodemu2k_a-lex.yy.obj: lex.yy.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_a-lex.yy.obj `if test -f 'lex.yy.c'; then $(CYGPATH_W) 'lex.yy.c'; else $(CYGPATH_W) '$(srcdir)/lex.yy.c'; fi`
-
 libmodemu2k_a-utils.o: utils.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_a-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
 
 libmodemu2k_a-utils.obj: utils.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmodemu2k_a_CFLAGS) $(CFLAGS) -c -o libmodemu2k_a-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
+
+.l.c:
+	$(AM_V_LEX)$(am__skiplex) $(SHELL) $(YLWRAP) $< $(LEX_OUTPUT_ROOT).c $@ -- $(LEXCOMPILE)
 check-valgrind-local: 
 check-valgrind-memcheck-local: 
 check-valgrind-helgrind-local: 
@@ -702,6 +713,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f cmdlex.c
 check-valgrind: check-valgrind-am
 
 check-valgrind-am: check-valgrind-local
@@ -813,9 +825,6 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
-
-lex.yy.c:
-	$(LEX) $(LFLAGS) @srcdir@/cmdlex.l
 
 clean-local:
 	if test -f lex.yy.c; then \
