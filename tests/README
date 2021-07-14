@@ -1,0 +1,9 @@
+# Running Tests
+
+From the builddir:
+
+    ninja test
+
+To run the tests with valgrind
+
+    meson test --setup=valgrind

@@ -696,15 +696,17 @@ int
 main (int argc, char *const argv[])
 {
   setlocale (LC_ALL, "");
-  bindtextdomain (PACKAGE, LOCALEDIR);
-  textdomain (PACKAGE);
+#ifdef ENABLE_NLS
+  bindtextdomain (PACKAGE_STRING, LOCALEDIR);
+  textdomain (PACKAGE_STRING);
+#endif
 
 #ifdef SOCKS
   SOCKSinit (argv[0]);
 #endif
   struct st_cmdarg cmdarg;
   cmdargParse (argc, argv, &cmdarg);
-  fputs (PACKAGE_NAME " " VERSION "\n", stdout);
+  fputs (PACKAGE_STRING " " VERSION "\n", stdout);
   /* TRANSLATORS: do not translate `at%%q` */
   fputs (_("Enter 'at%q' to quit\n\n"), stdout);
   switch (cmdarg.ttymode)

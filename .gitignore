@@ -1,20 +1,10 @@
-autom4te.cache
 *~
-_build
-
-src/*.o
-src/.deps
-config.h
-Makefile
-src/modemu2k
-src/stamp-h1
-config.log
-config.status
-/po/Makevars.template
-*.tar.gz
+/_build/
+/builddir/
+*.gz
 *.tgz
-build
-*.gmo
+Dockerfile
 
 # flex-generated file
 lex.yy.c
+cmdlex.c

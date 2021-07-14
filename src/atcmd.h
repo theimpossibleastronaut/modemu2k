@@ -75,7 +75,7 @@ typedef struct
     } port;
   } d;
   int f;
-  uchar s[SREG_MAX + 1];
+  unsigned char s[SREG_MAX + 1];
   int pb[2];
   int pd;
   int pl;

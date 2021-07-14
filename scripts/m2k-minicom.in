@@ -1,15 +1,12 @@
 #!/bin/sh
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-bindir=@bindir@
-
-SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
+bindir=@BINDIR@
+SCRIPTPATH="$(dirname "$0")"
 
 # If running the script from the scripts directory for testing, use the dev
 # binary, not the one installed
-if [ -e $SCRIPTPATH/../src/modemu2k ]; then
-  bindir=$SCRIPTPATH"/../src"
+if [ -e $SCRIPTPATH/../modemu2k ]; then
+  bindir=$SCRIPTPATH"/.."
   echo "Using $bindir/modemu2k for testing..."
   echo "Press a key to continue..."
   read k

@@ -1,0 +1,35 @@
+name: AppImage Build
+on:
+  push:
+    branches: [ master ]
+jobs:
+
+  # This workflow contains a single job called "build"
+  build:
+    runs-on: ubuntu-18.04
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    # Runs a single command using the runners shell
+    - name: Install required dependencies
+      run: sudo apt-get install -y meson
+
+    # Runs a set of commands using the runners shell
+    - name: Download building tools & executing AppImage build
+      run: |
+        wget -nv -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+        chmod +x linuxdeploy-x86_64.AppImage
+        wget -q https://github.com/TheAssassin/pyuploadtool/releases/download/continuous/pyuploadtool-x86_64.AppImage
+        chmod +x pyuploadtool-x86_64.AppImage
+    - run: |
+        meson setup _build -Dprefix=/usr -Dstrip=true --buildtype=release
+        cd _build
+        ninja
+        DESTDIR=AppDir ninja -v install
+        ../linuxdeploy-x86_64.AppImage --executable AppDir/usr/bin/modemu2k \
+          --icon-file=../packaging/modemu2k.png --icon-filename=modemu2k \
+          --create-desktop-file --appdir $PWD/AppDir --output appimage
+        ../pyuploadtool-x86_64.AppImage modemu2k*AppImage

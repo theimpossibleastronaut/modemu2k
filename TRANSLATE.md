@@ -1,6 +1,6 @@
 # Translating
 
-We use Transifex to translate the output messages. To start translating
-modemu2k, ​create an account in Transifex and ask to join a translation
-team (or create a new one) at
-https://www.transifex.com/na-aalt/modemu2k/
+You can use Transifex (https://www.transifex.com/na-aalt/modemu2k) or
+make a pull request. Use the
+[Discussions](https://github.com/theimpossibleastronaut/modemu2k/discussions)
+for extra questions on getting started.
