@@ -2,6 +2,8 @@ project(
   'modemu2k',
   'c',
   version: '0.0.999',
+#https://mesonbuild.com/Release-notes-for-0-56-0.html#mesonbuild_root-and-mesonsource_root-are-deprecated
+  meson_version : '>= 0.56.0',
   default_options: ['warning_level=2']
   )
 
@@ -65,7 +67,7 @@ install_data(
 if get_option('nls')
   ul = configuration_data()
   ul.set('LOCALEDIR', localedir)
-  ul.set('MESON_SOURCE_ROOT', meson.source_root())
+  ul.set('MESON_SOURCE_ROOT', meson.current_source_dir())
   ul.set('MESON_PROJECT_NAME', meson.project_name())
   configure_file(input : 'uninstall_langs.sh.in',
                  output : 'uninstall_langs.sh',
