@@ -140,7 +140,7 @@ prPercent (Atcmd * atcmdp)
 {
   char buf[64];
 
-  sprintf (buf, "%c%c%%B0=%d  %%B1=%d  %%D%d  %%L%d  %%R%d",
+  snprintf (buf, sizeof buf, "%c%c%%B0=%d  %%B1=%d  %%D%d  %%L%d  %%R%d",
            CHAR_CR, CHAR_LF,
            atcmdp->pb[0], atcmdp->pb[1], atcmdp->pd, atcmdp->pl, atcmdp->pr);
   putTtyN (buf, strlen (buf));
@@ -172,7 +172,7 @@ prSreg (uchar * s)
     }
     else
       putTtyStr ("  ");
-    sprintf (buf, "S%02d=%03d", i, *s);
+    snprintf (buf, sizeof buf, "S%02d=%03d", i, *s);
     putTtyN (buf, 7);
   }
 }
