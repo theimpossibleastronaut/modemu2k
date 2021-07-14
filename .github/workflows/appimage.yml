@@ -17,7 +17,7 @@ jobs:
     - name: Install required dependencies
       run: |
         sudo apt-get install -y gettext
-        sudo apt-get install -y python3-pip python-setuptools
+        sudo apt-get install -y python3-pip python3-setuptools
         sudo -H python3 -m pip install meson ninja
 
     # Runs a set of commands using the runners shell
