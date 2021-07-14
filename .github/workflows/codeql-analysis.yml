@@ -65,8 +65,8 @@ jobs:
     #    and modify them (or add more) to build your code if your project
     #    uses a compiled language
     - run: |
-      sudo apt-get install -y python3-pip python3-setuptools gettext
-      sudo -H python3 -m pip install meson ninja
+        sudo apt-get install -y python3-pip python3-setuptools gettext
+        sudo -H python3 -m pip install meson ninja
     - run: |
         meson builddir
         cd builddir
