@@ -3,8 +3,8 @@ modemu2k v0.0.999
 
 modemu2k is a fork of modemu, originally developed by Toru Egashira
 
-(Travis Build status
-<https://travis-ci.com/theimpossibleastronaut/modemu2k>)
+(Build status
+<https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml>)
 
 
 What is modemu2k?
