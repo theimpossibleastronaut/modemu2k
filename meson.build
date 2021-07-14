@@ -8,17 +8,18 @@ project(
   )
 
 add_global_arguments(
-  ['-fno-common', '-D_GNU_SOURCE'],
+  ['-D_GNU_SOURCE'],
   language : 'c'
   )
 
 cc = meson.get_compiler('c')
 
 extra_flags = [
-  ['-fstack-protector-strong'],
-  ['-fanalyzer'],
-  ['-Wformat-security'],
-  ['-Wformat-overflow=2']
+  '-fno-common',
+  '-fstack-protector-strong',
+  '-fanalyzer',
+  '-Wformat-security',
+  '-Wformat-overflow=2'
 ]
 
 foreach cflag : extra_flags
