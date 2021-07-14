@@ -1,5 +1,9 @@
 modemu2k ChangeLog
 
+2021-07-14
+
+  * replaced autotools build system with mesonbuild
+
 2021-05-30
 
   * Implemented valgrind using the autoconf macro for use with 'make
