@@ -15,7 +15,10 @@ jobs:
         submodules: true
     # Runs a single command using the runners shell
     - name: Install required dependencies
-      run: sudo apt-get install -y meson gettext
+      run: |
+        sudo apt-get install -y gettext
+        sudo apt-get install -y python3-pip python-setuptools
+        sudo -H python3 -m pip install meson ninja
 
     # Runs a set of commands using the runners shell
     - name: Download building tools & executing AppImage build
