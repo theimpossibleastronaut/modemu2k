@@ -18,7 +18,7 @@ typedef enum
 typedef struct
 {
   TelOptReq req;                /* requirement for the opt */
-  int state;                    /* current state (enabled:1 or disabled:0) */
+  int state;                      /* current state (enabled:1 or disabled:0) */
   int pending;                  /* state is pending (requested but no reply yet) */
 } TelOptState;
 

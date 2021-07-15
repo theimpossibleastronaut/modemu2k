@@ -17,12 +17,12 @@ struct st_telOpt telOpt;
 /* telnet option negotiation module */
 
 static TelOptStates stTabMaster[] = {
-  /*[opt]             [local]         [remote] */
-  {TELOPT_BINARY, {TOR_BETTER}, {TOR_BETTER}},  /*0 */
-  {TELOPT_ECHO, {TOR_MUSTNOT}, {TOR_BETTER}},   /*1 */
-  {TELOPT_SGA, {TOR_BETTER}, {TOR_MUST}},       /*3 */
-  {TELOPT_TTYPE, {TOR_NEUTRAL}, {TOR_MUSTNOT}}, /*24 */
-  {-1, {TOR_MUSTNOT}, {TOR_MUSTNOT}}    /* default state */
+  /*[opt]             [local]               [remote] */
+  {TELOPT_BINARY,     {TOR_BETTER, 0, 0},   {TOR_BETTER, 0, 0}},  /*0 */
+  {TELOPT_ECHO,       {TOR_MUSTNOT, 0, 0},  {TOR_BETTER, 0, 0}},   /*1 */
+  {TELOPT_SGA,        {TOR_BETTER, 0, 0},   {TOR_MUST, 0, 0}},       /*3 */
+  {TELOPT_TTYPE,      {TOR_NEUTRAL, 0, 0},  {TOR_MUSTNOT, 0, 0}}, /*24 */
+  {-1,                {TOR_MUSTNOT, 0, 0},  {TOR_MUSTNOT, 0, 0}}    /* default state */
 };
 
 TelOptStates *stTab[NTELOPTS];  /* telOptInit() makes it usable */
