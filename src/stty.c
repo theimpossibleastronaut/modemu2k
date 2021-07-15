@@ -6,11 +6,6 @@
 #include "stty.h"               /*(setTty) */
 #include "defs.h"
 /* stty -icannon -echo -isig -icrnl -inlcr */
-  static void
-sigint (int i)
-{
-  _exit (1);
-}
 
 static int pid;
 static struct termios oldTermios;
@@ -37,8 +32,8 @@ setTty (void)
   if (!isatty (0))
     return;
   pid = getpid ();
-  signal (SIGTERM, sigint);
-  signal (SIGINT, sigint);
+  signal (SIGTERM, SIG_DFL);
+  signal (SIGINT, SIG_DFL);
   tcgetattr (0, &t);
   oldTermios = t;
   atexit (recoverTermios);
