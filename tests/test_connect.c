@@ -27,6 +27,8 @@ static void test_connect (void)
   atcmdD ("github.com", ATDA_STR, ATDP_STR);
   assert (sockDial() == 1);
 
+  assert (close (sock.fd) == 0);
+
   /* IPv6 connection
    *
    * this test is disabled for now because my ISP apparently doesn't support

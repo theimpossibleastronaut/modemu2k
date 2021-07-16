@@ -1,5 +1,9 @@
 modemu2k ChangeLog
 
+2021-07-15
+
+  * fix connecting to host using IP
+
 2021-07-14
 
   * replaced autotools build system with mesonbuild
