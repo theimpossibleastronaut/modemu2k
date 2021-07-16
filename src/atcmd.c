@@ -73,6 +73,8 @@ atcmdInit (struct st_cmdarg *cmdarg)
 #define LIT_(s) #s
 #define LIT(s) LIT_(s)
 
+#define PORT_DELIMITER " "
+
 /* D */
 /* dial command */
 void

@@ -66,6 +66,7 @@ int yywrap(void)
 	/*A_NUM	(([0-9]{1,3})(\.[0-9]{1,3}){3}) <- meets ATT lex bug*/
 	/*A_NUM	(([0-9]{1,3}\.){3}[0-9]{1,3}) <- meets ATT lex bug*/
 
+A_NUM	(([0-9:]{1,3}\.){3}([0-9:]{1,3}))
 A_STR	([a-zA-Z:][-a-zA-Z0-9:.]*)
 P_NUM	([0-9]{1,5})
 P_STR	([a-zA-Z][-a-zA-Z0-9]*)
@@ -118,10 +119,16 @@ TTYPE	([-/a-zA-Z0-9]*)
 <ATD>[tTpP] |
 <ATD>[0-9][wW,]		{ /* ignore them */ }
 <ATD>[sS][0-9]*		{ /* use registered number (not work yet) */ }
-<ATD>{A_STR} |
+<ATD>{A_NUM} |
+<ATD>\"{A_NUM}\"?	{ atcmdD(yytext, ATDA_NUM, ATDP_NUL);
+				cmdstat = CMDST_ATD; BEGIN AT; }
+<ATD>{A_NUM}\ {P_NUM} |
+<ATD>\"{A_NUM}\ {P_NUM}\"?	{ atcmdD(yytext, ATDA_NUM, ATDP_NUM);
+					cmdstat = CMDST_ATD; BEGIN AT; }
+<ATD>\"{A_NUM}\ {P_STR}\"?	{ atcmdD(yytext, ATDA_NUM, ATDP_STR);
+					cmdstat = CMDST_ATD; BEGIN AT; }
 <ATD>\"{A_STR}\"?		{ atcmdD(yytext, ATDA_STR, ATDP_NUL);
 					cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>{A_STR}\ {P_NUM} |
 <ATD>\"{A_STR}\ {P_NUM}\"?	{ atcmdD(yytext, ATDA_STR, ATDP_NUM);
 					cmdstat = CMDST_ATD; BEGIN AT; }
 <ATD>\"{A_STR}\ {P_STR}\"?	{ atcmdD(yytext, ATDA_STR, ATDP_STR);
