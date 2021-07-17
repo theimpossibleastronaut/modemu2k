@@ -35,25 +35,35 @@
 
 struct st_sock sock;
 
-void
+static void
+sockInit (struct st_sock *sock)
+{
+  sock->fd = 0;
+  sock->alive = 0;
+  sock->rp = NULL;
+}
+
+int
 sockClose (void)
 {
   if (sock.fd <= 0)
-    return;
+    return 0;
 
-  if (close (sock.fd) != 0)
+  int r = close (sock.fd);
+  if (r != 0)
     perror ("sockClose()");
 
   sock.fd = sock.alive = 0;
+  return r;
 }
 
-void
+int
 sockShutdown (void)
 {
   if (sock.fd <= 0)
-    return;
+    return 0;
   shutdown (sock.fd, 2);
-  sockClose ();
+  return sockClose ();
 }
 
 #define DEFAULT_PORT 23
@@ -64,7 +74,7 @@ sockDial (void)
   struct addrinfo hints;
   memset (&hints, 0, sizeof (struct addrinfo));
 
-  sock.rp = NULL;
+  sockInit (&sock);
   struct addrinfo *result = NULL;
 
   int s;
@@ -101,14 +111,16 @@ sockDial (void)
   if (sock.fd == -1)
   {                             /* No address succeeded */
     perror ("socket");
+    if (result)
+      freeaddrinfo (result);
     return 1;
   }
 
   int tmp = 1;
   if (setsockopt (sock.fd, SOL_SOCKET, SO_OOBINLINE, &tmp, sizeof (tmp)) < 0)
   {
-    perror ("setsockopt()");
     sockClose ();
+    perror ("setsockopt()");
     return 1;
   }
 
@@ -116,12 +128,13 @@ sockDial (void)
   /* blocking connect. */
   if (connect (sock.fd, sock.rp->ai_addr, sock.rp->ai_addrlen) != 0)
   {
+    if (result)
+      freeaddrinfo (result);
     sockShutdown ();
     perror ("connect()");
     return 1;
   }
 
-  freeaddrinfo (result);
   sock.alive = 1;
   return 0;
 #else /*!ifdef NO_DIAL_CANCELING */
@@ -140,6 +153,8 @@ sockDial (void)
         && errno != EINPROGRESS)
     {
       perror ("connect()");
+      if (result)
+        freeaddrinfo (result);
       sockShutdown ();
       return 1;
     }
@@ -193,6 +208,8 @@ sockDial (void)
             && errno != EISCONN)
         {
           perror ("connect()-2");
+          if (result)
+            freeaddrinfo (result);
           sockShutdown ();
           return 1;
         }
@@ -207,7 +224,6 @@ sockDial (void)
     }
     while (timevalCmp (&t, &to) < 0);
 
-    freeaddrinfo (result);
     sockShutdown ();
     verboseOut (VERB_MISC, _("Connection attempt timed out.\r\n"));
     return 1;                   /* timeout */

@@ -55,6 +55,6 @@ extern struct st_sock sock;
 
 #define sockIsAlive() (sock.alive)
 
-void sockClose (void);
-void sockShutdown (void);
+int sockClose (void);
+int sockShutdown (void);
 int sockDial (void);

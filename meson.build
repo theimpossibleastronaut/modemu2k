@@ -43,7 +43,7 @@ subdir('src')
 
 executable(
   'modemu2k',
-  'src/modemu2k.c',
+  ['src/modemu2k.c', 'src/cmdarg.c'],
   dependencies: dep_modemu2k,
   install : true
   )

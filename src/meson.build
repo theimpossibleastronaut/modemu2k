@@ -15,7 +15,6 @@ src = [
   'stty.c',
   'timeval.c',
   'verbose.c',
-  'cmdarg.c',
   'sock.c',
   'telopt.c',
   'ttybuf.c',

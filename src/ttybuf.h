@@ -16,9 +16,9 @@ extern struct st_tty tty;
 
 struct st_ttyBufR
 {
-  uchar buf[TTYBUFR_SIZE];
-  uchar *ptr;
-  uchar *end;
+  unsigned char buf[TTYBUFR_SIZE];
+  unsigned char *ptr;
+  unsigned char *end;
   struct timeval newT;
   struct timeval prevT;
 };
@@ -58,5 +58,5 @@ extern struct st_ttyBufW ttyBufW;
 #define putTtyStr(s) putTtyN(s, sizeof(s)-1)
 
 void ttyBufWrite (void);
-void putTty1 (uchar c);
+void putTty1 (unsigned char c);
 void putTtyN (const char *cp, int n);
