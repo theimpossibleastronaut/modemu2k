@@ -4,7 +4,7 @@ project(
   version: '0.0.999',
 #https://mesonbuild.com/Release-notes-for-0-56-0.html#mesonbuild_root-and-mesonsource_root-are-deprecated
   meson_version : '>= 0.56.0',
-  default_options: ['warning_level=2']
+  default_options: ['buildtype=release', 'warning_level=2']
   )
 
 add_global_arguments(
