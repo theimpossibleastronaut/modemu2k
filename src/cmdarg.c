@@ -122,6 +122,9 @@ cmdargParse (const int argc, char *const argv[], struct st_cmdarg *x)
 
   int next_option = 0;
   x->ttymode = CA_STDINOUT;
+  x->commx = NULL;
+  x->atcmd = NULL;
+  x->dev = NULL;
 
   do
   {
