@@ -11,7 +11,6 @@ if get_option('nls')
   endif
 
   conf.set('ENABLE_NLS', 1)
-  conf.set_quoted('LOCALEDIR', localedir)
 
   i18n = import('i18n')
   i18n.gettext(meson.project_name(),

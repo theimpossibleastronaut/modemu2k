@@ -31,7 +31,7 @@ jobs:
         meson setup _build -Dprefix=/usr -Dstrip=true --buildtype=release
         cd _build
         ninja
-        DESTDIR=AppDir ninja -v install
+        DESTDIR=$PWD/AppDir ninja -v install
         ../linuxdeploy-x86_64.AppImage --executable AppDir/usr/bin/modemu2k \
           --icon-file=../packaging/modemu2k.png --icon-filename=modemu2k \
           --create-desktop-file --appdir $PWD/AppDir --output appimage

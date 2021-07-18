@@ -28,13 +28,16 @@ foreach cflag : extra_flags
   endif
 endforeach
 
+localedir = join_paths(get_option('prefix'), get_option('localedir'))
+
 conf = configuration_data()
+conf.set_quoted('LOCALEDIR', localedir)
 conf.set_quoted('VERSION', meson.project_version())
 conf.set_quoted('PACKAGE_STRING', meson.project_name())
 conf.set_quoted('PACKAGE_URL', 'http://theimpossibleastronaut.com/modemu2k/')
 conf.set_quoted('PACKAGE_BUGREPORT', 'https://github.com/theimpossibleastronaut/modemu2k/issues')
 
-localedir = join_paths(get_option('prefix'), get_option('localedir'))
+
 subdir('po')
 
 config_h = configure_file(output : 'config.h', configuration : conf)
