@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>modemu2k: # modemu2k v0.0.999</title>
+<title>modemu2k: modemu2k v0.0.999</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -63,30 +63,31 @@ $(function() {
 
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title"># modemu2k v0.0.999 </div>  </div>
+<div class="title">modemu2k v0.0.999 </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md_README"></a></p>
-<p>modemu2k is a fork of modemu, originally developed by Toru Egashira</p>
+<div class="textblock"><p><a class="anchor" id="md_README"></a> modemu2k is a fork of modemu, originally developed by Toru Egashira</p>
 <p>(Build status <a href="https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml">https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml</a>)</p>
-<h1><a class="anchor" id="autotoc_md0"></a>
+<h1><a class="anchor" id="autotoc_md1"></a>
 What is modemu2k?</h1>
 <p>modemu2k adds telnet capability to a comm program. It can redirect telnet I/O to a pty so that a comm program can handle the pty as a tty with a real modem, and allows you to use a comm program's scripting and file transfer features over telnet. Now supports IPv6 connections.</p>
-<p>Maintainer: Andy Alt <a href="#" onclick="location.href='mai'+'lto:'+'and'+'y4'+'00-'+'de'+'v@y'+'ah'+'oo.'+'co'+'m'; return false;">andy4<span style="display: none;">.nosp@m.</span>00-d<span style="display: none;">.nosp@m.</span>ev@ya<span style="display: none;">.nosp@m.</span>hoo.<span style="display: none;">.nosp@m.</span>com</a> License: GNU GPL 3 Home page: <a href="http://theimpossibleastronaut.com/modemu2k/">http://theimpossibleastronaut.com/modemu2k/</a></p>
-<p>Issues and bug reporting <a href="https://github.com/theimpossibleastronaut/modemu2k/issues">https://github.com/theimpossibleastronaut/modemu2k/issues</a></p>
-<h1><a class="anchor" id="autotoc_md1"></a>
+<p>Maintainer: Andy Alt &lt;andy400-dev [at] yahoo [dot] com&gt;</p>
+<p>License: GNU GPL 3</p>
+<p>Home page: <a href="http://theimpossibleastronaut.com/modemu2k/">http://theimpossibleastronaut.com/modemu2k/</a></p>
+<p><a href="https://github.com/theimpossibleastronaut/modemu2k/issues">Issues and bug reporting</a></p>
+<h1><a class="anchor" id="autotoc_md2"></a>
 Dependencies</h1>
 <ul>
 <li>gettext (optional, for translations)</li>
 <li>flex</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md2"></a>
+<h1><a class="anchor" id="autotoc_md3"></a>
 Compilation</h1>
 <pre class="fragment">meson builddir
 cd builddir
 </pre><p> Use <code>meson configure</code> to see extra options </p><pre class="fragment">ninja
 </pre><p><code>ninja install</code> is optional. The binary can be run from the build directory; however, installation is required to use the translations, and to create and install a script (m2k-minicom) that can invoke minicom (see below).</p>
-<h1><a class="anchor" id="autotoc_md3"></a>
+<h1><a class="anchor" id="autotoc_md4"></a>
 Sample Usage</h1>
 <p>Note: while in the program if backspace doesn't work, use CTRL+H.</p>
 <p>1) Stand alone usage</p>
@@ -107,29 +108,32 @@ Sample Usage</h1>
 </pre><p> From within the comm program, if you have a server running, to connect you can enter: </p><pre class="fragment">atd"localhost
 </pre><p> You could also connect to a BBS. For some telnet addresses, see:</p>
 <ul>
-<li>&lt;&lt;Prism BBS<a href="http://filegate.net/">http://filegate.net/</a></li>
+<li><a href="http://filegate.net">Prism BBS</a></li>
 <li>The Rusty Mailbox (telnet to trmb.ca, port 2030)</li>
-<li>Synchronet BBS List<a href="http://www.synchro.net/sbbslist.html">http://www.synchro.net/sbbslist.html</a></li>
+<li><a href="http://www.synchro.net/sbbslist.html">Synchronet BBS List</a></li>
 </ul>
 <p>To quit modemu2k, just quit the comm program.</p>
 <p>A script to invoke minicom as mentioned above will be installed to your bin directory when <code>make install</code> is run.</p>
-<h1><a class="anchor" id="autotoc_md4"></a>
+<h1><a class="anchor" id="autotoc_md5"></a>
 Escaping to command mode and returning</h1>
 <p>To escape to command mode, use '+++'. Use ATO to return to online mode.</p>
-<h1><a class="anchor" id="autotoc_md5"></a>
+<h1><a class="anchor" id="autotoc_md6"></a>
 Hanging up a call/closing a connection</h1>
 <p>If you are connected to a server where gracefully logging out isn't possible, to "hang up" or close the connection you can escape to command mode and enter 'ATH`.</p>
-<h1><a class="anchor" id="autotoc_md6"></a>
+<h1><a class="anchor" id="autotoc_md7"></a>
+Extra Notes</h1>
+<p>(*) Almost all file xfer protocols require 8bit through connection, which means Modemu2k must be in the binary transmission mode. See B command description in the man page.</p>
+<p>More details are in the QuickStart guide <a href="https://github.com/theimpossibleastronaut/modemu2k/blob/master/QuickStart">https://github.com/theimpossibleastronaut/modemu2k/blob/master/QuickStart</a></p>
+<p>A man page is also available.</p>
+<h1><a class="anchor" id="autotoc_md8"></a>
 Downloads</h1>
 <ul>
 <li>Release page<a href="https://github.com/theimpossibleastronaut/modemu2k/releases">https://github.com/theimpossibleastronaut/modemu2k/releases</a></li>
 <li>FileGate-&gt;(Linux Utilities category)<a href="http://www.filegate.net/utiln/utillnx/">http://www.filegate.net/utiln/utillnx/</a></li>
 </ul>
-<p>(*) Almost all file xfer protocols require 8bit through connection, which means Modemu2k must be in the binary transmission mode. See B command description in the man page.</p>
-<p>More details are in the QuickStart guide <a href="https://github.com/theimpossibleastronaut/modemu2k/blob/master/QuickStart">https://github.com/theimpossibleastronaut/modemu2k/blob/master/QuickStart</a></p>
-<p>A man page is also available.</p>
-<h1><a class="anchor" id="autotoc_md7"></a>
-Translate</h1>
+<p><a href="https://repology.org/project/modemu2k/versions"><img src="https://repology.org/badge/vertical-allrepos/modemu2k.svg" alt="Packaging status" style="pointer-events: none;" class="inline"/></a></p>
+<h2><a class="anchor" id="autotoc_md9"></a>
+Translate</h2>
 <p>See <a href="https://github.com/theimpossibleastronaut/modemu2k/blob/master/TRANSLATE.md">https://github.com/theimpossibleastronaut/modemu2k/blob/master/TRANSLATE.md</a> </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->

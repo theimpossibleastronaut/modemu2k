@@ -1,5 +1,4 @@
 # modemu2k v0.0.999
--------------------
 
 modemu2k is a fork of modemu, originally developed by Toru Egashira
 
@@ -7,20 +6,21 @@ modemu2k is a fork of modemu, originally developed by Toru Egashira
 <https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml>)
 
 
-What is modemu2k?
-----------------
+## What is modemu2k?
 
 modemu2k adds telnet capability to a comm program. It can redirect
 telnet I/O to a pty so that a comm program can handle the pty as a tty
 with a real modem, and allows you to use a comm program's scripting
 and file transfer features over telnet. Now supports IPv6 connections.
 
-Maintainer: Andy Alt <andy400-dev@yahoo.com>
+Maintainer: Andy Alt <andy400-dev [at] yahoo [dot] com>
+
 License: GNU GPL 3
+
 Home page: <http://theimpossibleastronaut.com/modemu2k/>
 
-Issues and bug reporting
-<https://github.com/theimpossibleastronaut/modemu2k/issues>
+[Issues and bug reporting](https://github.com/theimpossibleastronaut/modemu2k/issues)
+
 
 Dependencies
 ------------
@@ -46,8 +46,8 @@ and to create and install a script (m2k-minicom) that can invoke
 minicom (see below).
 
 
-Sample Usage
-------------
+## Sample Usage
+
 
 Note: while in the program if backspace doesn't work, use CTRL+H.
 
@@ -85,34 +85,27 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
   You could also connect to a BBS. For some telnet addresses, see:
 
-  * <<Prism BBS<http://filegate.net/>
+  * [Prism BBS](http://filegate.net)
   * The Rusty Mailbox (telnet to trmb.ca, port 2030)
-  * Synchronet BBS List<http://www.synchro.net/sbbslist.html>
+  * [Synchronet BBS List](http://www.synchro.net/sbbslist.html)
 
   To quit modemu2k, just quit the comm program.
 
   A script to invoke minicom as mentioned above will be installed to
   your bin directory when `make install` is run.
 
-Escaping to command mode and returning
---------------------------------------
+## Escaping to command mode and returning
 
 To escape to command mode, use '+++'. Use ATO to return to online mode.
 
 
-Hanging up a call/closing a connection
-------------------------------------
+## Hanging up a call/closing a connection
 
 If you are connected to a server where gracefully logging out isn't
 possible, to "hang up" or close the connection you can escape to command
 mode and enter 'ATH`.
 
-
-Downloads
----------
-
-* Release page<https://github.com/theimpossibleastronaut/modemu2k/releases>
-* FileGate->(Linux Utilities category)<http://www.filegate.net/utiln/utillnx/>
+## Extra Notes
 
 (*) Almost all file xfer protocols require 8bit through connection,
 which means Modemu2k must be in the binary transmission mode.  See %B
@@ -123,8 +116,15 @@ More details are in the QuickStart guide
 
 A man page is also available.
 
-Translate
----------
+
+# Downloads
+
+* Release page<https://github.com/theimpossibleastronaut/modemu2k/releases>
+* FileGate->(Linux Utilities category)<http://www.filegate.net/utiln/utillnx/>
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/modemu2k.svg)](https://repology.org/project/modemu2k/versions)
+
+## Translate
 
 See <https://github.com/theimpossibleastronaut/modemu2k/blob/master/TRANSLATE.md>
 
