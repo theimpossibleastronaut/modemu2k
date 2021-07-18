@@ -24,6 +24,11 @@
  *
  */
 
+#include <errno.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <sys/time.h>   /*->ttybuf.h (timeval)*/
+#include <stdlib.h>             /*(getenv) */
 #include "modemu2k.h"
 
 struct st_sock sock;

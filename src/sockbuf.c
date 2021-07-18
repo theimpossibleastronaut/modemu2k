@@ -1,4 +1,6 @@
 
+#include <sys/socket.h>
+#include <stdbool.h>
 #include "modemu2k.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 
 /* reading socket */

@@ -24,6 +24,9 @@
  *
  */
 
+#include <stdlib.h>             /*(getenv) */
+#include <arpa/telnet.h>        /*TELOPT_xxx */
+#include "cmdarg.h"
 #include "modemu2k.h"
 
 #ifdef BINMODE_AS_DEFAULT

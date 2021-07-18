@@ -1,6 +1,8 @@
 
 #include <signal.h> /*SIGCHLD*/
 #include <sys/wait.h> /*WNOHANG*/
+#include <unistd.h>
+#include <stdlib.h>             /*(getenv) */
 #include "modemu2k.h"
 
 static int commxPid;

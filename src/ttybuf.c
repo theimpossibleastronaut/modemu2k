@@ -1,4 +1,7 @@
 
+#include <sys/time.h>   /*->ttybuf.h (timeval)*/
+#include <stdlib.h>             /*(getenv) */
+#include <unistd.h>
 #include "modemu2k.h"       /*->ttybuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 
 struct st_tty tty;

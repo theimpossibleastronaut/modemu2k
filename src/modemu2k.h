@@ -29,18 +29,10 @@
  * @brief core modemu2k API
  */
 
-
-#include <arpa/telnet.h>        /*TELOPT_xxx */
-#include <errno.h>
-#include <netdb.h>
 #include <stdio.h>              /*stderr,(sscanf,sprintf) */
-#include <stdlib.h>             /*(getenv) */
 #include <string.h>             /*(strncpy) */
-#include <sys/socket.h>
 #include <stdbool.h>
-#include <sys/time.h>   /*->ttybuf.h (timeval)*/
 #include <sys/types.h>
-#include <unistd.h>
 
 #ifdef TERMNET
 #include <termnet.h>
@@ -52,7 +44,7 @@
 #include <sys/ioctl.h>
 #endif
 
-
+#include "cmdarg.h"
 
 /* TODO: the API shouldn't be localized and really shouldn't contain any strings;
  * but rather the functions should return values to the application can print
@@ -64,8 +56,6 @@
 #define _(String) gettext (String)
 #define gettext_noop(String) String
 #define N_(String) gettext_noop (String)
-
-#include "cmdarg.h"
 
 /* socket read buffer size */
 #define SOCKBUFR_SIZE	1024

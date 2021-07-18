@@ -1,4 +1,5 @@
 
+#include <sys/time.h>   /*->ttybuf.h (timeval)*/
 #include "modemu2k.h"
 
 /* a = b [10mS] */

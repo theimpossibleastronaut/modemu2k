@@ -28,8 +28,10 @@
  *
  */
 
-#include "modemu2k.h"
+#include <arpa/telnet.h>        /*TELOPT_xxx */
+#include <sys/time.h>   /*->ttybuf.h (timeval)*/
 #include <unistd.h>
+#include <stdlib.h>             /*(getenv) */
 #include <sys/stat.h>
 #include <ctype.h>              /*isprint */
 #include <fcntl.h>              /*O_RDWR */
@@ -41,6 +43,7 @@
 #include "cmdarg.h"             /*cmdarg */
 
 #include "config.h"
+#include "modemu2k.h"
 
 /* socket input processing loop */
   static void
