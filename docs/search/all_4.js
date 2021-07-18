@@ -1,11 +1,6 @@
 var searchData=
 [
-  ['st_5fcmdarg_6',['st_cmdarg',['../structst__cmdarg.html',1,'']]],
-  ['st_5fsock_7',['st_sock',['../structst__sock.html',1,'']]],
-  ['st_5fsockbufr_8',['st_sockBufR',['../structst__sockBufR.html',1,'']]],
-  ['st_5fsockbufw_9',['st_sockBufW',['../structst__sockBufW.html',1,'']]],
-  ['st_5ftelopt_10',['st_telOpt',['../structst__telOpt.html',1,'']]],
-  ['st_5ftty_11',['st_tty',['../structst__tty.html',1,'']]],
-  ['st_5fttybufr_12',['st_ttyBufR',['../structst__ttyBufR.html',1,'']]],
-  ['st_5fttybufw_13',['st_ttyBufW',['../structst__ttyBufW.html',1,'']]]
+  ['m2k_5fatcmdd_5',['m2k_atcmdD',['../modemu2k_8h.html#ad6c2b8c292c7636c2929031d49d247e8',1,'atcmd.c']]],
+  ['m2k_5fsockdial_6',['m2k_sockDial',['../modemu2k_8h.html#acd7f957dd08b75b9921fbd8954b588a1',1,'sock.c']]],
+  ['modemu2k_2eh_7',['modemu2k.h',['../modemu2k_8h.html',1,'']]]
 ];

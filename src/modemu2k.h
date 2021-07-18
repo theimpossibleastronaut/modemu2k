@@ -75,6 +75,38 @@ typedef unsigned char uchar;
 #define HAVE_GRANTPT
 #endif
 
+#define DEFAULT_PORT 23
+
+// sock
+
+typedef struct st_sock
+{
+  /** file descriptor returned by socket(3P) **/
+  int fd;
+
+  /** is the socket still alive */
+  int alive;
+
+  /** pointer to the addrinfo struct returned by getaddrinfo(3) */
+  struct addrinfo *rp;
+} st_sock;
+
+//extern st_sock sock;
+
+void sockInit (struct st_sock *sock);
+int sockClose (st_sock *sock);
+int sockShutdown (st_sock *sock);
+
+
+/**
+ * Initiate connection
+ *
+ * @param sock
+ * @returns 0 if completed successfully, 1 otherwise
+ * @see m2k_atcmdD()
+ */
+int m2k_sockDial (st_sock *sock);
+
 // atcmd
 
 typedef enum
@@ -133,7 +165,7 @@ extern Atcmd atcmdNV;
 #define CHAR_LF (atcmd.s[4])
 #define CHAR_BS (atcmd.s[5])
 
-void atcmdInit (struct st_cmdarg *cmdarg);
+void atcmdInit (struct st_cmdarg *cmdarg, st_sock *sock);
 
 
 /**
@@ -143,24 +175,25 @@ void atcmdInit (struct st_cmdarg *cmdarg);
  * @param at
  * @param pt
  * @returns void
- *
- * @code atcmdD("github.com 80", ATDA_STR, ATDP_NUM); @endcode
  * @see m2k_sockDial()
+ *
+ * Example:
+ * @code atcmdD("github.com 80", ATDA_STR, ATDP_NUM); @endcode
  */
 void m2k_atcmdD (const char *s, AtdAType at, AtdPType pt);
 
 
 int atcmdFake (const char *s, const char *vals);
-int atcmdH (const char *s);
+int atcmdH (const char *s, st_sock *sock);
 int atcmdI (const char *s);
 int atcmdSQuery (const char *s);
 int atcmdSSet (const char *s);
-void atcmdZ (void);
+void atcmdZ (st_sock *sock);
 void atcmdAW (void);
 int atcmdPB (const char *s);
 int atcmdPD (const char *s);
 int atcmdPL (const char *s);
-void atcmdPQ (void);
+void atcmdPQ (st_sock *sock);
 int atcmdPR (const char *s);
 int atcmdPT (const char *s);
 int atcmdPTSet (const char *s);
@@ -172,32 +205,6 @@ void commxForkExec (const char *cmd, char *ptyslave);
 #else
 void commxForkExec (const char *cmd, char c10, char c01);
 #endif
-
-// sock
-
-struct st_sock
-{
-  int fd;
-  int alive;
-  struct addrinfo *rp;
-};
-
-extern struct st_sock sock;
-
-#define sockIsAlive() (sock.alive)
-
-int sockClose (void);
-int sockShutdown (void);
-
-
-/**
- * Initiate connection
- *
- * @param void
- * @returns 0 if completed successfully, 1 otherwise
- * @see m2k_atcmdD()
- */
-int m2k_sockDial (void);
 
 // sockbuf
 
@@ -218,7 +225,7 @@ sockBufRReset(void);
 int
 getSock1(void);
 
-void sockBufRead (void);
+void sockBufRead (st_sock *sock);
 
 
 /* writing socket */
@@ -243,7 +250,7 @@ sockBufWHasData(void);
 bool
 sockBufWReady(void);
 
-void sockBufWrite (void);
+void sockBufWrite (st_sock *sock);
 void putSock1 (uchar c);
 void putSockN (const uchar * cp, int n);
 
@@ -334,7 +341,7 @@ ttyBufRReset(void);
 int
 getTty1(void);
 
-void ttyBufRead (void);
+void ttyBufRead (st_sock *sock);
 
 
 /* writing tty */
@@ -360,7 +367,7 @@ extern struct st_ttyBufW ttyBufW;
 #define ttyBufWReady() (!ttyBufW.stop)
 #define putTtyStr(s) putTtyN(s, sizeof(s)-1)
 
-void ttyBufWrite (void);
+void ttyBufWrite (st_sock *sock);
 void putTty1 (unsigned char c);
 void putTtyN (const char *cp, int n);
 
@@ -389,5 +396,5 @@ typedef enum
   CMDST_ATO
 } Cmdstat;
 
-Cmdstat cmdLex (const char *ptr);
+Cmdstat cmdLex (const char *ptr, st_sock *sock);
 

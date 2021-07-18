@@ -24,14 +24,14 @@ getTty1(void)
 }
 
 void
-ttyBufRead (void)
+ttyBufRead (st_sock *sock)
 {
   int l;
 
   l = read (tty.rfd, ttyBufR.buf, sizeof (ttyBufR.buf));
   if (l <= 0)
   {
-    sockClose ();
+    sockClose (sock);
     /* TRANSLATORS: do not translate "pty" or "read" */
     verboseOut (VERB_MISC, _("Pty closed. (read() returned %d)\r\n"), l);
     if (l < 0)
@@ -48,7 +48,7 @@ ttyBufRead (void)
 /* writing tty */
 
 void
-ttyBufWrite (void)
+ttyBufWrite (st_sock *sock)
 {
   int wl, l;
 
@@ -58,7 +58,7 @@ ttyBufWrite (void)
   l = write (tty.wfd, ttyBufW.top, wl);
   if (l <= 0)
   {
-    sockClose ();
+    sockClose (sock);
     /* TRANSLATORS do not translate "pty" or "write" */
     verboseOut (VERB_MISC, _("Pty closed. (write() returned %d)\r\n"), l);
     if (l < 0)

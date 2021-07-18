@@ -31,10 +31,7 @@
 #include <stdlib.h>             /*(getenv) */
 #include "modemu2k.h"
 
-struct st_sock sock;
-
-static void
-sockInit (struct st_sock *sock)
+void sockInit (struct st_sock *sock)
 {
   sock->fd = 0;
   sock->alive = 0;
@@ -42,37 +39,34 @@ sockInit (struct st_sock *sock)
 }
 
 int
-sockClose (void)
+sockClose (st_sock *sock)
 {
-  if (sock.fd <= 0)
+  if (sock->fd <= 0)
     return 0;
 
-  int r = close (sock.fd);
+  int r = close (sock->fd);
   if (r != 0)
     perror ("sockClose()");
 
-  sock.fd = sock.alive = 0;
+  sock->fd = sock->alive = 0;
   return r;
 }
 
 int
-sockShutdown (void)
+sockShutdown (st_sock *sock)
 {
-  if (sock.fd <= 0)
+  if (sock->fd <= 0)
     return 0;
-  shutdown (sock.fd, 2);
-  return sockClose ();
+  shutdown (sock->fd, 2);
+  return sockClose (sock);
 }
 
-#define DEFAULT_PORT 23
-
-
-int m2k_sockDial (void)
+int m2k_sockDial (st_sock *sock)
 {
   struct addrinfo hints;
   memset (&hints, 0, sizeof (struct addrinfo));
 
-  sockInit (&sock);
+  sockInit (sock);
   struct addrinfo *result = NULL;
 
   int s;
@@ -99,14 +93,14 @@ int m2k_sockDial (void)
     return 1;
   }
 
-  for (sock.rp = result; sock.rp != NULL; sock.rp = sock.rp->ai_next)
+  for (sock->rp = result; sock->rp != NULL; sock->rp = sock->rp->ai_next)
   {
-    sock.fd = socket (sock.rp->ai_family, sock.rp->ai_socktype, sock.rp->ai_protocol);
-    if (sock.fd != -1)
+    sock->fd = socket (sock->rp->ai_family, sock->rp->ai_socktype, sock->rp->ai_protocol);
+    if (sock->fd != -1)
       break;
   }
 
-  if (sock.fd == -1)
+  if (sock->fd == -1)
   {                             /* No address succeeded */
     perror ("socket");
     if (result)
@@ -115,25 +109,25 @@ int m2k_sockDial (void)
   }
 
   int tmp = 1;
-  if (setsockopt (sock.fd, SOL_SOCKET, SO_OOBINLINE, &tmp, sizeof (tmp)) < 0)
+  if (setsockopt (sock->fd, SOL_SOCKET, SO_OOBINLINE, &tmp, sizeof (tmp)) < 0)
   {
-    sockClose ();
+    sockClose (sock);
     perror ("setsockopt()");
     return 1;
   }
 
 #ifdef NO_DIAL_CANCELING
   /* blocking connect. */
-  if (connect (sock.fd, sock.rp->ai_addr, sock.rp->ai_addrlen) != 0)
+  if (connect (sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) != 0)
   {
     if (result)
       freeaddrinfo (result);
-    sockShutdown ();
+    sockShutdown (sock);
     perror ("connect()");
     return 1;
   }
 
-  sock.alive = 1;
+  sock->alive = 1;
   return 0;
 #else /*!ifdef NO_DIAL_CANCELING */
   {
@@ -144,16 +138,16 @@ int m2k_sockDial (void)
     struct timeval to, t;
 
     tmp = 1;
-    ioctl (sock.fd, FIONBIO, &tmp);     /* non-blocking i/o */
+    ioctl (sock->fd, FIONBIO, &tmp);     /* non-blocking i/o */
 
     /* but Term's connect() blocks here... */
-    if (connect (sock.fd, sock.rp->ai_addr, sock.rp->ai_addrlen) < 0
+    if (connect (sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0
         && errno != EINPROGRESS)
     {
       perror ("connect()");
       if (result)
         freeaddrinfo (result);
-      sockShutdown ();
+      sockShutdown (sock);
       return 1;
     }
 
@@ -171,50 +165,50 @@ int m2k_sockDial (void)
     {
       if (!atcmd.pd)
         FD_SET (tty.rfd, &rfds);
-      FD_SET (sock.fd, &wfds);
+      FD_SET (sock->fd, &wfds);
       tv.tv_usec = 200 * 1000;  /* 0.2sec period */
 
     RETRY:
-      if (select (sock.fd + 1, &rfds, &wfds, NULL, &tv) < 0)
+      if (select (sock->fd + 1, &rfds, &wfds, NULL, &tv) < 0)
       {
         if (errno == EINTR)
           goto RETRY;
         perror ("select()");
-        sockShutdown ();
+        sockShutdown (sock);
         return 1;
       }
 #if 0
       verboseOut (VERB_MISC, "tty=%d, sock=%d\r\n",
-                  FD_ISSET (tty.rfd, &rfds), FD_ISSET (sock.fd, &wfds));
+                  FD_ISSET (tty.rfd, &rfds), FD_ISSET (sock->fd, &wfds));
 #endif
       if (FD_ISSET (tty.rfd, &rfds))
       {
-        sockShutdown ();
+        sockShutdown (sock);
         verboseOut (VERB_MISC,
                     _("Connecting attempt canceled by user input.\r\n"));
         return 1;
       }
       /* check if really connected or not */
 
-      /*if (FD_ISSET(sock.fd, &wfds)
-         && getpeername(sock.fd, (struct sockaddr *)&sa, &tmp) == 0) */
+      /*if (FD_ISSET(sock->fd, &wfds)
+         && getpeername(sock->fd, (struct sockaddr *)&sa, &tmp) == 0) */
 
       /* SOCKS requires this check method (ref: What_SOCKS_expects) */
-      if (FD_ISSET (sock.fd, &wfds))
+      if (FD_ISSET (sock->fd, &wfds))
       {
-        if (connect (sock.fd, sock.rp->ai_addr, sock.rp->ai_addrlen) < 0
+        if (connect (sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0
             && errno != EISCONN)
         {
           perror ("connect()-2");
           if (result)
             freeaddrinfo (result);
-          sockShutdown ();
+          sockShutdown (sock);
           return 1;
         }
 
         tmp = 0;
-        ioctl (sock.fd, FIONBIO, &tmp); /* blocking i/o */
-        sock.alive = 1;
+        ioctl (sock->fd, FIONBIO, &tmp); /* blocking i/o */
+        sock->alive = 1;
         return 0;
       }
 
@@ -222,7 +216,7 @@ int m2k_sockDial (void)
     }
     while (timevalCmp (&t, &to) < 0);
 
-    sockShutdown ();
+    sockShutdown (sock);
     verboseOut (VERB_MISC, _("Connection attempt timed out.\r\n"));
     return 1;                   /* timeout */
   }

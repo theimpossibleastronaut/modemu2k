@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['teloptstate_14',['TelOptState',['../structTelOptState.html',1,'']]],
-  ['teloptstates_15',['TelOptStates',['../structTelOptStates.html',1,'']]],
-  ['translating_16',['Translating',['../md_TRANSLATE.html',1,'']]]
+  ['rp_8',['rp',['../structst__sock.html#a0e37bb0ddefba9b39d133c4ca12378d4',1,'st_sock']]]
 ];

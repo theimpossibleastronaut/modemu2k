@@ -80,29 +80,22 @@ $(function() {
 
 <p>core modemu2k API  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;arpa/telnet.h&gt;</code><br />
-<code>#include &lt;errno.h&gt;</code><br />
-<code>#include &lt;netdb.h&gt;</code><br />
-<code>#include &lt;stdio.h&gt;</code><br />
-<code>#include &lt;stdlib.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
-<code>#include &lt;sys/socket.h&gt;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
-<code>#include &lt;sys/time.h&gt;</code><br />
 <code>#include &lt;sys/types.h&gt;</code><br />
-<code>#include &lt;unistd.h&gt;</code><br />
 <code>#include &lt;sys/ioctl.h&gt;</code><br />
+<code>#include &quot;cmdarg.h&quot;</code><br />
 <code>#include &lt;locale.h&gt;</code><br />
 <code>#include &quot;gettext.h&quot;</code><br />
-<code>#include &quot;cmdarg.h&quot;</code><br />
 </div>
 <p><a href="modemu2k_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structAtcmd.html">Atcmd</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structst__sock.html">st_sock</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structAtcmd.html">Atcmd</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structst__sockBufR.html">st_sockBufR</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,6 +140,9 @@ Macros</h2></td></tr>
 <tr class="memitem:a9d514bcc5f30727126592574bee759a3"><td class="memItemLeft" align="right" valign="top"><a id="a9d514bcc5f30727126592574bee759a3"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>CMDBUF_MAX</b>&#160;&#160;&#160;255</td></tr>
 <tr class="separator:a9d514bcc5f30727126592574bee759a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16b710f592bf8f7900666392adc444dc"><td class="memItemLeft" align="right" valign="top"><a id="a16b710f592bf8f7900666392adc444dc"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>DEFAULT_PORT</b>&#160;&#160;&#160;23</td></tr>
+<tr class="separator:a16b710f592bf8f7900666392adc444dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa41e27b8b9028e45354e09a134566ec8"><td class="memItemLeft" align="right" valign="top"><a id="aa41e27b8b9028e45354e09a134566ec8"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>ADDR_MAX</b>&#160;&#160;&#160;63</td></tr>
 <tr class="separator:aa41e27b8b9028e45354e09a134566ec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,9 +167,6 @@ Macros</h2></td></tr>
 <tr class="memitem:a7154bc375ffe132355526d649296cca4"><td class="memItemLeft" align="right" valign="top"><a id="a7154bc375ffe132355526d649296cca4"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>CHAR_BS</b>&#160;&#160;&#160;(atcmd.s[5])</td></tr>
 <tr class="separator:a7154bc375ffe132355526d649296cca4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7327a2dd4490eccb7f8e36fdef608386"><td class="memItemLeft" align="right" valign="top"><a id="a7327a2dd4490eccb7f8e36fdef608386"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>sockIsAlive</b>()&#160;&#160;&#160;(sock.alive)</td></tr>
-<tr class="separator:a7327a2dd4490eccb7f8e36fdef608386"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a142ca01152a9ff1358ecef8da661da86"><td class="memItemLeft" align="right" valign="top"><a id="a142ca01152a9ff1358ecef8da661da86"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>SOCKBUFW_SIZE</b>&#160;&#160;&#160;(2 * TTYBUFR_SIZE)        /* this seems to be any number */</td></tr>
 <tr class="separator:a142ca01152a9ff1358ecef8da661da86"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -212,6 +205,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a65f85814a8290f9797005d3b28e7e5fc"><td class="memItemLeft" align="right" valign="top"><a id="a65f85814a8290f9797005d3b28e7e5fc"></a>
 typedef unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>uchar</b></td></tr>
 <tr class="separator:a65f85814a8290f9797005d3b28e7e5fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad64cc16aaafc5eda9cbde298aabb4299"><td class="memItemLeft" align="right" valign="top"><a id="ad64cc16aaafc5eda9cbde298aabb4299"></a>
+typedef struct <a class="el" href="structst__sock.html">st_sock</a>&#160;</td><td class="memItemRight" valign="bottom"><b>st_sock</b></td></tr>
+<tr class="separator:ad64cc16aaafc5eda9cbde298aabb4299"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -249,17 +245,28 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae27c9af8cad2506d6e92e00a64cb4d4e"><td class="memItemLeft" align="right" valign="top"><a id="ae27c9af8cad2506d6e92e00a64cb4d4e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdInit</b> (struct <a class="el" href="structst__cmdarg.html">st_cmdarg</a> *cmdarg)</td></tr>
-<tr class="separator:ae27c9af8cad2506d6e92e00a64cb4d4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a281380be7ece353b5d5673320d6f296f"><td class="memItemLeft" align="right" valign="top"><a id="a281380be7ece353b5d5673320d6f296f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>sockInit</b> (struct <a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:a281380be7ece353b5d5673320d6f296f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a848d6316e558e20fd1dfc2d3d4fb959d"><td class="memItemLeft" align="right" valign="top"><a id="a848d6316e558e20fd1dfc2d3d4fb959d"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>sockClose</b> (<a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:a848d6316e558e20fd1dfc2d3d4fb959d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96e1752d8b228d17320082744872b54b"><td class="memItemLeft" align="right" valign="top"><a id="a96e1752d8b228d17320082744872b54b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>sockShutdown</b> (<a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:a96e1752d8b228d17320082744872b54b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd7f957dd08b75b9921fbd8954b588a1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="modemu2k_8h.html#acd7f957dd08b75b9921fbd8954b588a1">m2k_sockDial</a> (<a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:acd7f957dd08b75b9921fbd8954b588a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d705e0aae8dfe05372e0e27f6ea5dce"><td class="memItemLeft" align="right" valign="top"><a id="a5d705e0aae8dfe05372e0e27f6ea5dce"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdInit</b> (struct <a class="el" href="structst__cmdarg.html">st_cmdarg</a> *cmdarg, <a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:a5d705e0aae8dfe05372e0e27f6ea5dce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6c2b8c292c7636c2929031d49d247e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="modemu2k_8h.html#ad6c2b8c292c7636c2929031d49d247e8">m2k_atcmdD</a> (const char *s, AtdAType at, AtdPType pt)</td></tr>
 <tr class="separator:ad6c2b8c292c7636c2929031d49d247e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed73df6e9c0c00c51c21482ac0d5322b"><td class="memItemLeft" align="right" valign="top"><a id="aed73df6e9c0c00c51c21482ac0d5322b"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdFake</b> (const char *s, const char *vals)</td></tr>
 <tr class="separator:aed73df6e9c0c00c51c21482ac0d5322b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9ffe7a4551805c61185f817c587378a"><td class="memItemLeft" align="right" valign="top"><a id="ae9ffe7a4551805c61185f817c587378a"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdH</b> (const char *s)</td></tr>
-<tr class="separator:ae9ffe7a4551805c61185f817c587378a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5e6ab755bd0b1eac1e8f7198eb1bd66"><td class="memItemLeft" align="right" valign="top"><a id="ad5e6ab755bd0b1eac1e8f7198eb1bd66"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdH</b> (const char *s, <a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:ad5e6ab755bd0b1eac1e8f7198eb1bd66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24e511b2bfe1f63b6552818f1e3dc76a"><td class="memItemLeft" align="right" valign="top"><a id="a24e511b2bfe1f63b6552818f1e3dc76a"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdI</b> (const char *s)</td></tr>
 <tr class="separator:a24e511b2bfe1f63b6552818f1e3dc76a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -269,9 +276,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdSQuery</b> (const
 <tr class="memitem:ac0f0463ae0c12b0be78ac1fa34b819fd"><td class="memItemLeft" align="right" valign="top"><a id="ac0f0463ae0c12b0be78ac1fa34b819fd"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdSSet</b> (const char *s)</td></tr>
 <tr class="separator:ac0f0463ae0c12b0be78ac1fa34b819fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12ff8e0700be2f54d08197a6b71e24c5"><td class="memItemLeft" align="right" valign="top"><a id="a12ff8e0700be2f54d08197a6b71e24c5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdZ</b> (void)</td></tr>
-<tr class="separator:a12ff8e0700be2f54d08197a6b71e24c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6126dbb04b785dd0b585387c40e7bb1"><td class="memItemLeft" align="right" valign="top"><a id="ab6126dbb04b785dd0b585387c40e7bb1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdZ</b> (<a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:ab6126dbb04b785dd0b585387c40e7bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08080ee47ea9a2e7091c7a36bdf074d8"><td class="memItemLeft" align="right" valign="top"><a id="a08080ee47ea9a2e7091c7a36bdf074d8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdAW</b> (void)</td></tr>
 <tr class="separator:a08080ee47ea9a2e7091c7a36bdf074d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -284,9 +291,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdPD</b> (const cha
 <tr class="memitem:afd2126b49b931e2ba84dd04e7977741a"><td class="memItemLeft" align="right" valign="top"><a id="afd2126b49b931e2ba84dd04e7977741a"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdPL</b> (const char *s)</td></tr>
 <tr class="separator:afd2126b49b931e2ba84dd04e7977741a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af60f368be951575d048fca051d6eb9a1"><td class="memItemLeft" align="right" valign="top"><a id="af60f368be951575d048fca051d6eb9a1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdPQ</b> (void)</td></tr>
-<tr class="separator:af60f368be951575d048fca051d6eb9a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbe68525bea5e345d51ef07c6b934e67"><td class="memItemLeft" align="right" valign="top"><a id="abbe68525bea5e345d51ef07c6b934e67"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdPQ</b> (<a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:abbe68525bea5e345d51ef07c6b934e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaafd26f38fc1cb23710f78f1b54a0980"><td class="memItemLeft" align="right" valign="top"><a id="aaafd26f38fc1cb23710f78f1b54a0980"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdPR</b> (const char *s)</td></tr>
 <tr class="separator:aaafd26f38fc1cb23710f78f1b54a0980"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -302,23 +309,15 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdPV</b> (const cha
 <tr class="memitem:a62faeab5080dd76ec75ef3e0061d2831"><td class="memItemLeft" align="right" valign="top"><a id="a62faeab5080dd76ec75ef3e0061d2831"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>commxForkExec</b> (const char *cmd, char c10, char c01)</td></tr>
 <tr class="separator:a62faeab5080dd76ec75ef3e0061d2831"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab49ba8de0aadbd114a21000b7ef18334"><td class="memItemLeft" align="right" valign="top"><a id="ab49ba8de0aadbd114a21000b7ef18334"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>sockClose</b> (void)</td></tr>
-<tr class="separator:ab49ba8de0aadbd114a21000b7ef18334"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a92de994b107262c0800f04471f4e8d"><td class="memItemLeft" align="right" valign="top"><a id="a6a92de994b107262c0800f04471f4e8d"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>sockShutdown</b> (void)</td></tr>
-<tr class="separator:a6a92de994b107262c0800f04471f4e8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a414ad7549553c37ebcfc7a52246860f8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="modemu2k_8h.html#a414ad7549553c37ebcfc7a52246860f8">m2k_sockDial</a> (void)</td></tr>
-<tr class="separator:a414ad7549553c37ebcfc7a52246860f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d2d676c4325eb65e2e4577c19b754a4"><td class="memItemLeft" align="right" valign="top"><a id="a4d2d676c4325eb65e2e4577c19b754a4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>sockBufRReset</b> (void)</td></tr>
 <tr class="separator:a4d2d676c4325eb65e2e4577c19b754a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2b09f6fe28566d964128abc69f94ac6"><td class="memItemLeft" align="right" valign="top"><a id="ad2b09f6fe28566d964128abc69f94ac6"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>getSock1</b> (void)</td></tr>
 <tr class="separator:ad2b09f6fe28566d964128abc69f94ac6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77b13f507d67b5999daf0ee878814052"><td class="memItemLeft" align="right" valign="top"><a id="a77b13f507d67b5999daf0ee878814052"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>sockBufRead</b> (void)</td></tr>
-<tr class="separator:a77b13f507d67b5999daf0ee878814052"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdd825e673cfc9216303b957aae370c8"><td class="memItemLeft" align="right" valign="top"><a id="afdd825e673cfc9216303b957aae370c8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>sockBufRead</b> (<a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:afdd825e673cfc9216303b957aae370c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad592a5404bf52f00b0bf62d5d0f54c8a"><td class="memItemLeft" align="right" valign="top"><a id="ad592a5404bf52f00b0bf62d5d0f54c8a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>sockBufWReset</b> (void)</td></tr>
 <tr class="separator:ad592a5404bf52f00b0bf62d5d0f54c8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -328,9 +327,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>sockBufWHasData</b> (
 <tr class="memitem:a40f06676182d54e0c47316f4d3097a6b"><td class="memItemLeft" align="right" valign="top"><a id="a40f06676182d54e0c47316f4d3097a6b"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>sockBufWReady</b> (void)</td></tr>
 <tr class="separator:a40f06676182d54e0c47316f4d3097a6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe3f69381544a50edea22c31f102dedb"><td class="memItemLeft" align="right" valign="top"><a id="abe3f69381544a50edea22c31f102dedb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>sockBufWrite</b> (void)</td></tr>
-<tr class="separator:abe3f69381544a50edea22c31f102dedb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80de18a72419a1e9ac53312dbb39adfa"><td class="memItemLeft" align="right" valign="top"><a id="a80de18a72419a1e9ac53312dbb39adfa"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>sockBufWrite</b> (<a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:a80de18a72419a1e9ac53312dbb39adfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e4a94d06cbd577ef694a69ab869c7af"><td class="memItemLeft" align="right" valign="top"><a id="a5e4a94d06cbd577ef694a69ab869c7af"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>putSock1</b> (uchar c)</td></tr>
 <tr class="separator:a5e4a94d06cbd577ef694a69ab869c7af"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -376,12 +375,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ttyBufRReset</b> (voi
 <tr class="memitem:a36c748e7f3cd5cedcfcc7d2c3acd89a9"><td class="memItemLeft" align="right" valign="top"><a id="a36c748e7f3cd5cedcfcc7d2c3acd89a9"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>getTty1</b> (void)</td></tr>
 <tr class="separator:a36c748e7f3cd5cedcfcc7d2c3acd89a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a735afca36c6d86586464f8da3848ce41"><td class="memItemLeft" align="right" valign="top"><a id="a735afca36c6d86586464f8da3848ce41"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>ttyBufRead</b> (void)</td></tr>
-<tr class="separator:a735afca36c6d86586464f8da3848ce41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af028f7bf4f71aa090bb47668bb0c74e6"><td class="memItemLeft" align="right" valign="top"><a id="af028f7bf4f71aa090bb47668bb0c74e6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>ttyBufWrite</b> (void)</td></tr>
-<tr class="separator:af028f7bf4f71aa090bb47668bb0c74e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e5e4a7449bc112791b5715817f6cba6"><td class="memItemLeft" align="right" valign="top"><a id="a0e5e4a7449bc112791b5715817f6cba6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ttyBufRead</b> (<a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:a0e5e4a7449bc112791b5715817f6cba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14ef8017c8170a507f5e042f0278aae4"><td class="memItemLeft" align="right" valign="top"><a id="a14ef8017c8170a507f5e042f0278aae4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ttyBufWrite</b> (<a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:a14ef8017c8170a507f5e042f0278aae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7507f817253d9c984b38a3b2d45e355"><td class="memItemLeft" align="right" valign="top"><a id="ae7507f817253d9c984b38a3b2d45e355"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>putTty1</b> (unsigned char c)</td></tr>
 <tr class="separator:ae7507f817253d9c984b38a3b2d45e355"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -397,9 +396,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>verboseOut</b> (int m
 <tr class="memitem:aa927729913fe20de60eae40c202fe1df"><td class="memItemLeft" align="right" valign="top"><a id="aa927729913fe20de60eae40c202fe1df"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>verbosePerror</b> (int mask, const char *s)</td></tr>
 <tr class="separator:aa927729913fe20de60eae40c202fe1df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3f64e43d61a751c5a35e3006f72695f"><td class="memItemLeft" align="right" valign="top"><a id="ae3f64e43d61a751c5a35e3006f72695f"></a>
-Cmdstat&#160;</td><td class="memItemRight" valign="bottom"><b>cmdLex</b> (const char *ptr)</td></tr>
-<tr class="separator:ae3f64e43d61a751c5a35e3006f72695f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5065dd35a605aa30da89f5e453b8c18"><td class="memItemLeft" align="right" valign="top"><a id="ad5065dd35a605aa30da89f5e453b8c18"></a>
+Cmdstat&#160;</td><td class="memItemRight" valign="bottom"><b>cmdLex</b> (const char *ptr, <a class="el" href="structst__sock.html">st_sock</a> *sock)</td></tr>
+<tr class="separator:ad5065dd35a605aa30da89f5e453b8c18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -409,9 +408,6 @@ Variables</h2></td></tr>
 <tr class="memitem:a1b1c5ff172a6c9a5c70257c939cb74c4"><td class="memItemLeft" align="right" valign="top"><a id="a1b1c5ff172a6c9a5c70257c939cb74c4"></a>
 <a class="el" href="structAtcmd.html">Atcmd</a>&#160;</td><td class="memItemRight" valign="bottom"><b>atcmdNV</b></td></tr>
 <tr class="separator:a1b1c5ff172a6c9a5c70257c939cb74c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7960e3f0f8f0a068ff12560766b9c5ca"><td class="memItemLeft" align="right" valign="top"><a id="a7960e3f0f8f0a068ff12560766b9c5ca"></a>
-struct <a class="el" href="structst__sock.html">st_sock</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sock</b></td></tr>
-<tr class="separator:a7960e3f0f8f0a068ff12560766b9c5ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17a23e612e6bc6ef7626df6de6a612fe"><td class="memItemLeft" align="right" valign="top"><a id="a17a23e612e6bc6ef7626df6de6a612fe"></a>
 struct <a class="el" href="structst__sockBufR.html">st_sockBufR</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sockBufR</b></td></tr>
 <tr class="separator:a17a23e612e6bc6ef7626df6de6a612fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -496,14 +492,14 @@ struct <a class="el" href="structst__ttyBufW.html">st_ttyBufW</a>&#160;</td><td 
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>void</dd></dl>
-<div class="fragment"><div class="line">atcmdD(<span class="stringliteral">&quot;github.com 80&quot;</span>, ATDA_STR, ATDP_NUM); </div>
-</div><!-- fragment --> <dl class="section see"><dt>See also</dt><dd><a class="el" href="modemu2k_8h.html#a414ad7549553c37ebcfc7a52246860f8">m2k_sockDial()</a> </dd></dl>
-
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="modemu2k_8h.html#acd7f957dd08b75b9921fbd8954b588a1">m2k_sockDial()</a></dd></dl>
+<p>Example: </p><div class="fragment"><div class="line">atcmdD(<span class="stringliteral">&quot;github.com 80&quot;</span>, ATDA_STR, ATDP_NUM); </div>
+</div><!-- fragment --> 
 </div>
 </div>
-<a id="a414ad7549553c37ebcfc7a52246860f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a414ad7549553c37ebcfc7a52246860f8">&#9670;&nbsp;</a></span>m2k_sockDial()</h2>
+<a id="acd7f957dd08b75b9921fbd8954b588a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd7f957dd08b75b9921fbd8954b588a1">&#9670;&nbsp;</a></span>m2k_sockDial()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -511,8 +507,8 @@ struct <a class="el" href="structst__ttyBufW.html">st_ttyBufW</a>&#160;</td><td 
         <tr>
           <td class="memname">int m2k_sockDial </td>
           <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype"><a class="el" href="structst__sock.html">st_sock</a> *&#160;</td>
+          <td class="paramname"><em>sock</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -520,7 +516,7 @@ struct <a class="el" href="structst__ttyBufW.html">st_ttyBufW</a>&#160;</td><td 
 <p>Initiate connection</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">void</td><td></td></tr>
+    <tr><td class="paramname">sock</td><td></td></tr>
   </table>
   </dd>
 </dl>

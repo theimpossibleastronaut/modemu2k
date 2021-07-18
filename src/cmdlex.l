@@ -47,6 +47,8 @@ flexYyInput(char *buf,int maxsize)
 # define unput(c) (ptr--) /* can't alter the const */
 #endif /*ifdef FLEX_SCANNER*/
 
+#define YY_DECL int yylex(st_sock *sock)
+
 static Cmdstat cmdstat;
 
 int yywrap(void);
@@ -87,7 +89,7 @@ TTYPE	([-/a-zA-Z0-9]*)
 <AT>[dD]	{ BEGIN ATD; cmdstat = CMDST_ERROR; }
 <AT>[eE][0-9]?	{ if (atcmdFake(yytext,"1")) return cmdstat = CMDST_ERROR; }
 <AT>[fF][0-9]?	{ if (atcmdFake(yytext,"1")) return cmdstat = CMDST_ERROR; }
-<AT>[hH][0-9]?	{ if (atcmdH(yytext)) return cmdstat = CMDST_ERROR; }
+<AT>[hH][0-9]?	{ if (atcmdH(yytext, sock)) return cmdstat = CMDST_ERROR; }
 <AT>[iI][0-9]?	{ if (atcmdI(yytext)) return cmdstat = CMDST_ERROR; }
 <AT>[oO][0-9]?	{ if (atcmdFake(yytext,"0")) return cmdstat = CMDST_ERROR;
 		  cmdstat = CMDST_ATO; }
@@ -100,12 +102,12 @@ TTYPE	([-/a-zA-Z0-9]*)
 				return cmdstat = CMDST_ERROR; }
 <AT>[sS][0-9]*\?	{ if (atcmdSQuery(yytext))
 				return cmdstat = CMDST_ERROR; }
-<AT>[zZ]		{ atcmdZ(); }
+<AT>[zZ]		{ atcmdZ(sock); }
 <AT>&[wW]		{ atcmdAW(); }
 <AT>%[bB][0-9]?=[0-9]?	{ if (atcmdPB(yytext)) return cmdstat = CMDST_ERROR; }
 <AT>%[dD][0-9]?		{ if (atcmdPD(yytext)) return cmdstat = CMDST_ERROR; }
 <AT>%[lL][0-9]?		{ if (atcmdPL(yytext)) return cmdstat = CMDST_ERROR; }
-<AT>%[qQ]		{ atcmdPQ(); }
+<AT>%[qQ]		{ atcmdPQ(sock); }
 <AT>%[rR][0-9]?		{ if (atcmdPR(yytext)) return cmdstat = CMDST_ERROR; }
 <AT>%[tT][0-9]?		{ if (atcmdPT(yytext)) return cmdstat = CMDST_ERROR; }
 <AT>%[tT]=\"{TTYPE}\"?	{ if (atcmdPTSet(yytext))
@@ -137,7 +139,7 @@ TTYPE	([-/a-zA-Z0-9]*)
 %%
 
 Cmdstat
-cmdLex(const char *p)
+cmdLex(const char *p, st_sock *sock)
 {
 	if (p == NULL) return CMDST_NOAT;
 	ptr = p;
@@ -145,6 +147,6 @@ cmdLex(const char *p)
 	yyrestart(yyin);
 #endif
 	cmdstat = CMDST_NOAT;
-	yylex();
+	yylex(sock);
 	return cmdstat;
 }

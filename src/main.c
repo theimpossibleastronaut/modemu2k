@@ -47,7 +47,7 @@
 
 /* socket input processing loop */
   static void
-sockReadLoop (void)
+sockReadLoop (st_sock *sock)
 {
   static enum
   {
@@ -96,7 +96,7 @@ sockReadLoop (void)
         break;
       case SRL_CMD:
         if (telOptHandle (cmd, c))
-          sock.alive = 0;
+          sock->alive = 0;
         state = SRL_NORM;
         break;
       case SRL_SB:
@@ -281,7 +281,7 @@ ttyReadLoop (void)
 /* online mode main loop */
 static
   int
-onlineMode (void)
+onlineMode (st_sock *sock)
 {
   fd_set rfds, wfds;
   struct timeval t;
@@ -297,7 +297,7 @@ onlineMode (void)
     telOptSendReqs ();
 
   t.tv_sec = 0;
-  while (sockIsAlive ())
+  while (sock->alive)
   {
     struct timeval *tp;
 
@@ -305,9 +305,9 @@ onlineMode (void)
     FD_ZERO (&wfds);
 
     if (ttyBufWReady ())
-      FD_SET (sock.fd, &rfds);  /*flow control */
+      FD_SET (sock->fd, &rfds);  /*flow control */
     if (sockBufWHasData ())
-      FD_SET (sock.fd, &wfds);
+      FD_SET (sock->fd, &wfds);
     if (sockBufWReady ())
       FD_SET (tty.rfd, &rfds);  /*flow control */
     if (ttyBufWHasData ())
@@ -331,33 +331,33 @@ onlineMode (void)
       tp = NULL;                /* infinite */
     }
 
-    if (select (sock.fd + 1, &rfds, &wfds, NULL, tp) < 0)
+    if (select (sock->fd + 1, &rfds, &wfds, NULL, tp) < 0)
     {
       if (errno != EINTR)
         perror ("select()");
       continue;
     }
 
-    if (FD_ISSET (sock.fd, &wfds))
+    if (FD_ISSET (sock->fd, &wfds))
     {
-      sockBufWrite ();
+      sockBufWrite (sock);
     }
     if (FD_ISSET (tty.wfd, &wfds))
     {
-      ttyBufWrite ();
+      ttyBufWrite (sock);
     }
-    if (FD_ISSET (sock.fd, &rfds))
+    if (FD_ISSET (sock->fd, &rfds))
     {
-      sockBufRead ();
-      sockReadLoop ();
+      sockBufRead (sock);
+      sockReadLoop (sock);
     }
     if (FD_ISSET (tty.rfd, &rfds))
     {
-      ttyBufRead ();
+      ttyBufRead (sock);
       ttyReadLoop ();
     }
   }
-  sockShutdown ();
+  sockShutdown (sock);
   return 0;
 }
 
@@ -470,7 +470,7 @@ putTtyCmdstat (Cmdstat s)
 
 
 static Cmdstat
-cmdMode (struct cmdBuf *cmdBuf)
+cmdMode (struct cmdBuf *cmdBuf, st_sock *sock)
 {
   fd_set rfds, wfds;
   Cmdstat stat;
@@ -498,10 +498,10 @@ cmdMode (struct cmdBuf *cmdBuf)
 
     if (FD_ISSET (tty.wfd, &wfds))
     {
-      ttyBufWrite ();           /* put CR before dialup */
+      ttyBufWrite (sock);           /* put CR before dialup */
       if (cmdBuf->eol)
       {
-        stat = cmdLex ((char *) cmdBuf->buf);
+        stat = cmdLex ((char *) cmdBuf->buf, sock);
         cmdBufReset (cmdBuf);
         switch (stat)
         {
@@ -518,7 +518,7 @@ cmdMode (struct cmdBuf *cmdBuf)
     }
     if (FD_ISSET (tty.rfd, &rfds))
     {
-      ttyBufRead ();
+      ttyBufRead (sock);
       cmdReadLoop (cmdBuf);
     }
   }
@@ -700,6 +700,10 @@ main (int argc, char *const argv[])
   fputs (PACKAGE_STRING " " VERSION "\n", stdout);
   /* TRANSLATORS: do not translate `at%%q` */
   fputs (_("Enter 'at%q' to quit\n\n"), stdout);
+
+  struct st_sock sock;
+  sockInit (&sock);
+
   switch (cmdarg.ttymode)
   {
 #ifdef HAVE_GRANTPT
@@ -736,20 +740,20 @@ main (int argc, char *const argv[])
   struct cmdBuf cmdBuf;
   ttyBufWReset ();
   telOptInit ();
-  atcmdInit (&cmdarg);                 /* initialize atcmd */
+  atcmdInit (&cmdarg, &sock);                 /* initialize atcmd */
 
 CMDMODE:
-  switch (cmdMode (&cmdBuf))
+  switch (cmdMode (&cmdBuf, &sock))
   {
   case CMDST_ATD:
-    if (sockIsAlive ())
+    if (sock.alive)
     {
       putTtyCmdstat (CMDST_ERROR);
       goto CMDMODE;
     }
     goto DIAL;
   case CMDST_ATO:
-    if (!sockIsAlive ())
+    if (!sock.alive)
     {
       putTtyCmdstat (CMDST_NOCARRIER);
       goto CMDMODE;
@@ -762,7 +766,7 @@ CMDMODE:
 
 DIAL:
   telOptReset ();               /* before sockDial(), which may change telOpt.xx */
-  switch (m2k_sockDial ())
+  switch (m2k_sockDial (&sock))
   {
   case 0:                      /* connect */
     goto ONLINE;
@@ -776,7 +780,7 @@ DIAL:
 
 ONLINE:
   putTtyCmdstat (CMDST_CONNECT);
-  switch (onlineMode ())
+  switch (onlineMode (&sock))
   {
   case 0:                      /* connection lost */
     putTtyCmdstat (CMDST_NOCARRIER);

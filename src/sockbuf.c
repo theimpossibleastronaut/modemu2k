@@ -22,14 +22,14 @@ getSock1(void)
 }
 
 void
-sockBufRead (void)
+sockBufRead (st_sock *sock)
 {
   int l;
 
-  l = recv (sock.fd, sockBufR.buf, sizeof (sockBufR.buf), 0);
+  l = recv (sock->fd, sockBufR.buf, sizeof (sockBufR.buf), 0);
   if (l <= 0)
   {
-    sock.alive = 0;
+    sock->alive = 0;
     if (l == 0)
       verboseOut (VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
     else
@@ -65,17 +65,17 @@ sockBufWReady(void)
 }
 
 void
-sockBufWrite (void)
+sockBufWrite (st_sock *sock)
 {
   int wl, l;
 
   wl = sockBufW.ptr - sockBufW.top;
   if (wl == 0)
     return;
-  l = send (sock.fd, sockBufW.top, wl, 0);
+  l = send (sock->fd, sockBufW.top, wl, 0);
   if (l <= 0)
   {
-    sock.alive = 0;
+    sock->alive = 0;
     if (l == 0)
       verboseOut (VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
     else

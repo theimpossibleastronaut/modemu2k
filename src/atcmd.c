@@ -50,14 +50,14 @@ Atcmd atcmd;
 Atcmd atcmdNV;
 
 void
-atcmdInit (struct st_cmdarg *cmdarg)
+atcmdInit (struct st_cmdarg *cmdarg, st_sock *sock)
 {
   Cmdstat s;
 
   /*memset(atcmd, 0, sizeof(atcmd)); */
-  if (cmdLex (INITSTR) != CMDST_OK
-      || ((s = cmdLex (getenv ("MODEMU2k"))) != CMDST_OK && s != CMDST_NOAT)
-      || ((s = cmdLex (cmdarg->atcmd)) != CMDST_OK && s != CMDST_NOAT))
+  if (cmdLex (INITSTR, sock) != CMDST_OK
+      || ((s = cmdLex (getenv ("MODEMU2k"), sock)) != CMDST_OK && s != CMDST_NOAT)
+      || ((s = cmdLex (cmdarg->atcmd, sock)) != CMDST_OK && s != CMDST_NOAT))
   {
     fputs (_("Error in initialization commands.\r\n"), stderr);
     CHAR_CR = '\r';             /* force normal settings */
@@ -115,13 +115,13 @@ atcmdFake (const char *s, const char *vals)
 /* Hn */
 /* n: 0(disconnect) */
 int
-atcmdH (const char *s)
+atcmdH (const char *s, st_sock *sock)
 {
   if (getNumArg (s) != 0)
     return 1;
-  if (sockIsAlive ())
+  if (sock->alive)
   {
-    sockClose ();
+    sockClose (sock);
     /* TRANSLATORS: reminder: do not translate any "AT" command strings */
     verboseOut (VERB_MISC, _("Connection closed with ATH.\r\n"));
   }
@@ -320,12 +320,12 @@ atcmdSSet (const char *s)
 /* Z */
 /* recover &Wed settings and disconnect */
 void
-atcmdZ (void)
+atcmdZ (st_sock *sock)
 {
   atcmd = atcmdNV;
-  if (sockIsAlive ())
+  if (sock->alive)
   {
-    sockClose ();
+    sockClose (sock);
     /* TRANSLATORS: reminder: do not translate any "AT" command strings */
     verboseOut (VERB_MISC, _("Connection closed with ATZ.\r\n"));
   }
@@ -389,9 +389,9 @@ atcmdPL (const char *s)
 /* %Q */
 /* quit modemu */
 void
-atcmdPQ (void)
+atcmdPQ (st_sock *sock)
 {
-  sockShutdown ();              /* may discard unsent chars in kernel,
+  sockShutdown (sock);              /* may discard unsent chars in kernel,
                                    or do ATH before quitting */
   exit (0);
 }

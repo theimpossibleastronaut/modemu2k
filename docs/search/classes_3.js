@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['teloptstate_27',['TelOptState',['../structTelOptState.html',1,'']]],
-  ['teloptstates_28',['TelOptStates',['../structTelOptStates.html',1,'']]]
+  ['teloptstate_30',['TelOptState',['../structTelOptState.html',1,'']]],
+  ['teloptstates_31',['TelOptStates',['../structTelOptStates.html',1,'']]]
 ];

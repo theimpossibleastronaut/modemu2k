@@ -5,38 +5,39 @@
 
 static void test_connect (void)
 {
+  st_sock sock;
   // should connect
   telOptReset ();
   m2k_atcmdD ("github.com 80", ATDA_STR, ATDP_NUM);
-  assert (m2k_sockDial() == 0);
+  assert (m2k_sockDial(&sock) == 0);
   sleep (2);
-  assert (sockShutdown () == 0);
+  assert (sockShutdown (&sock) == 0);
 
   // should connect
   telOptReset ();
   m2k_atcmdD ("140.82.113.3 80", ATDA_NUM, ATDP_NUM);
-  assert (m2k_sockDial() == 0);
+  assert (m2k_sockDial(&sock) == 0);
   sleep (2);
-  assert (sockShutdown () == 0);
+  assert (sockShutdown (&sock) == 0);
 
   //// connect by using service name (http)
   //telOptReset ();
   //atcmdD ("140.82.113.3 http", ATDA_NUM, ATDP_STR);
   //assert (sockDial() == 0);
   //sleep (2);
-  //assert (sockShutdown () == 0);
+  //assert (sockShutdown (sock) == 0);
 
   //// should not connect
   //telOptReset ();
   //atcmdD ("github.com 23", ATDA_STR, ATDP_NUM);
   //assert (sockDial() == 1);
-  //assert (sockShutdown () == 0);
+  //assert (sockShutdown (sock) == 0);
 
   //// should not connect (without port option, defaults to 23
   //telOptReset ();
   //atcmdD ("github.com", ATDA_STR, ATDP_NUL);
   //assert (sockDial() == 1);
-  //assert (sockShutdown () == 0);
+  //assert (sockShutdown (sock) == 0);
 
   /* IPv6 connection
    *
