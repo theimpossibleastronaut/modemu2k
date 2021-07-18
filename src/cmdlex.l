@@ -2,9 +2,7 @@
 %option nounput
 %{ /* -*- fundamental -*- */
 /* lexer spec. for modemu2k command mode */
-#include "cmdlex.h"	/*Cmdstat*/
-#include "defs.h"	/*->atcmd.h (uchar)*/
-#include "atcmd.h"	/*(atcmdDAddr)*/
+#include "modemu2k.h"	/*->atcmd.h (uchar)*/
 
 #if 0
 static struct {
@@ -120,18 +118,18 @@ TTYPE	([-/a-zA-Z0-9]*)
 <ATD>[0-9][wW,]		{ /* ignore them */ }
 <ATD>[sS][0-9]*		{ /* use registered number (not work yet) */ }
 <ATD>{A_NUM} |
-<ATD>\"{A_NUM}\"?	{ atcmdD(yytext, ATDA_NUM, ATDP_NUL);
+<ATD>\"{A_NUM}\"?	{ m2k_atcmdD(yytext, ATDA_NUM, ATDP_NUL);
 				cmdstat = CMDST_ATD; BEGIN AT; }
 <ATD>{A_NUM}\ {P_NUM} |
-<ATD>\"{A_NUM}\ {P_NUM}\"?	{ atcmdD(yytext, ATDA_NUM, ATDP_NUM);
+<ATD>\"{A_NUM}\ {P_NUM}\"?	{ m2k_atcmdD(yytext, ATDA_NUM, ATDP_NUM);
 					cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>\"{A_NUM}\ {P_STR}\"?	{ atcmdD(yytext, ATDA_NUM, ATDP_STR);
+<ATD>\"{A_NUM}\ {P_STR}\"?	{ m2k_atcmdD(yytext, ATDA_NUM, ATDP_STR);
 					cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>\"{A_STR}\"?		{ atcmdD(yytext, ATDA_STR, ATDP_NUL);
+<ATD>\"{A_STR}\"?		{ m2k_atcmdD(yytext, ATDA_STR, ATDP_NUL);
 					cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>\"{A_STR}\ {P_NUM}\"?	{ atcmdD(yytext, ATDA_STR, ATDP_NUM);
+<ATD>\"{A_STR}\ {P_NUM}\"?	{ m2k_atcmdD(yytext, ATDA_STR, ATDP_NUM);
 					cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>\"{A_STR}\ {P_STR}\"?	{ atcmdD(yytext, ATDA_STR, ATDP_STR);
+<ATD>\"{A_STR}\ {P_STR}\"?	{ m2k_atcmdD(yytext, ATDA_STR, ATDP_STR);
 					cmdstat = CMDST_ATD; BEGIN AT; }
 <ATD>" "			{ /*ignore spaces*/ }
 <ATD>.|\n			{ return cmdstat = CMDST_ERROR; }

@@ -1,3 +1,4 @@
+
 #include <stdio.h>              /*stderr,(fprintf) */
 #include <stdlib.h>
 #include <sys/time.h>   /*->ttybuf.h (timeval)*/
@@ -5,12 +6,7 @@
 #define TELOPTS
 #include <arpa/telnet.h>        /*IAC,DO,DONT,... */
 
-#include "defs.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
-#include "sockbuf.h"    /*->telopt.h (putSock1)*/
-#include "telopt.h"             /*TelOptReq,TelOptEnt */
-#include "ttybuf.h"             /*(putTtyN) */
-#include "atcmd.h"              /*atcmd */
-#include "verbose.h"            /*VERB_TELOPT */
+#include "modemu2k.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 
 struct st_telOpt telOpt;
 

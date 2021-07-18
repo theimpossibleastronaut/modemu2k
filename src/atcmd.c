@@ -1,5 +1,4 @@
 /*
- * atcmd.c
  *
  * Copyright 2018-2021 Andy Alt <andy400-dev@yahoo.com>
  *
@@ -25,13 +24,7 @@
  *
  */
 
-#include "defs.h"
-#include "atcmd.h"              /*atcmd */
-#include "sock.h"               /*sockIsAlive */
-#include "ttybuf.h"             /*(putTty1) */
-#include "telopt.h"             /*telOpt */
-#include "cmdlex.h"             /*(cmdLex) */
-#include "verbose.h"            /*VERB_MISC */
+#include "modemu2k.h"
 
 #ifdef BINMODE_AS_DEFAULT
 #define BINCMD "%B0=1%B1=1"
@@ -78,7 +71,7 @@ atcmdInit (struct st_cmdarg *cmdarg)
 /* D */
 /* dial command */
 void
-atcmdD (const char *s, AtdAType at, AtdPType pt)
+m2k_atcmdD (const char *s, AtdAType at, AtdPType pt)
 {
   // fprintf(stderr,"DEBUG: <%s>,%d,%d\r\n",s,at,pt);
   if (*s == '"')
@@ -226,7 +219,7 @@ prVersion (void)
 {
   putTty1 (CHAR_CR);
   putTty1 (CHAR_LF);
-  putTtyStr ("modemu2k version " VERSION);
+  putTtyStr ("modemu2k version " MODEMU2K_VERSION);
   putTty1 (CHAR_CR);
   putTty1 (CHAR_LF);
 }

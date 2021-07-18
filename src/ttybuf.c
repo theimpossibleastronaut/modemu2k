@@ -1,12 +1,5 @@
-#include <stdio.h>              /*stderr,(perror) */
-#include <stdlib.h>
-#include <unistd.h>             /*(read,write) */
-#include <sys/time.h>   /*->ttybuf.h (timeval)*/
 
-#include "defs.h"       /*->ttybuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
-#include "ttybuf.h"             /*sockBufR,sockBufW */
-#include "sock.h"               /*(sockShutdown) */
-#include "verbose.h"            /*VERB_MISC */
+#include "modemu2k.h"       /*->ttybuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 
 struct st_tty tty;
 struct st_ttyBufR ttyBufR;

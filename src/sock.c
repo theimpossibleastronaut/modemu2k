@@ -1,5 +1,4 @@
 /*
- * sock.c
  *
  * Copyright 2018-2019 Andy Alt <andy400-dev@yahoo.com>
  *
@@ -25,13 +24,7 @@
  *
  */
 
-#include "sock.h"
-#include "defs.h"
-#include "atcmd.h"
-#include "telopt.h"
-#include "ttybuf.h"
-#include "timeval.h"
-#include "verbose.h"
+#include "modemu2k.h"
 
 struct st_sock sock;
 
@@ -68,8 +61,8 @@ sockShutdown (void)
 
 #define DEFAULT_PORT 23
 
-int
-sockDial (void)
+
+int m2k_sockDial (void)
 {
   struct addrinfo hints;
   memset (&hints, 0, sizeof (struct addrinfo));

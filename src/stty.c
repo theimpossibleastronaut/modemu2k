@@ -1,10 +1,10 @@
+
 #include <stdio.h>              /*(printf) */
 #include <termios.h>            /*ICANON,TCSA... */
 #include <signal.h> /*SIGTERM*/
 #include <stdlib.h>             /*(atexit) */
 #include <unistd.h>             /*(isatty) */
-#include "stty.h"               /*(setTty) */
-#include "defs.h"
+#include "modemu2k.h"
 /* stty -icannon -echo -isig -icrnl -inlcr */
 
 static int pid;

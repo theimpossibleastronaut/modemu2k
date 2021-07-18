@@ -1,8 +1,6 @@
-#include <stdio.h>              /*stderr */
+
+#include "modemu2k.h"       /*->atcmd.h (uchar)*/
 #include <stdarg.h>             /*va_list */
-#include "verbose.h"            /*(verboseOut) */
-#include "defs.h"       /*->atcmd.h (uchar)*/
-#include "atcmd.h"              /*atcmd */
 
 void
 verboseOut (int mask, const char *format, ...)

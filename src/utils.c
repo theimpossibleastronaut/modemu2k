@@ -1,5 +1,4 @@
 /*
- * utils.c
  *      Modemu2k adds Telnet capability to a comm program.
  *      It can redirect Telnet I/O to a pty so that a comm program
  *      can handle the pty as a tty with a real modem.

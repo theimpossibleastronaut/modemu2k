@@ -29,7 +29,8 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include "cmdarg.h"             /*cmdarg */
-#include "defs.h"               /*VERSION_... */
+#include "modemu2k.h"               /*VERSION_... */
+#include "config.h"
 
 /* LIT(A) -> "10" */
 #define LIT_(s) #s

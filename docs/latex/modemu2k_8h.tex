@@ -1,0 +1,430 @@
+\hypertarget{modemu2k_8h}{}\doxysection{src/modemu2k.h File Reference}
+\label{modemu2k_8h}\index{src/modemu2k.h@{src/modemu2k.h}}
+
+
+core modemu2k API  
+
+
+{\ttfamily \#include $<$arpa/telnet.\+h$>$}\newline
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+{\ttfamily \#include $<$netdb.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$sys/socket.\+h$>$}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include $<$sys/time.\+h$>$}\newline
+{\ttfamily \#include $<$sys/types.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include $<$sys/ioctl.\+h$>$}\newline
+{\ttfamily \#include $<$locale.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}gettext.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}cmdarg.\+h\char`\"{}}\newline
+\doxysubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structAtcmd}{Atcmd}}
+\item 
+struct \mbox{\hyperlink{structst__sock}{st\+\_\+sock}}
+\item 
+struct \mbox{\hyperlink{structst__sockBufR}{st\+\_\+sock\+BufR}}
+\item 
+struct \mbox{\hyperlink{structst__sockBufW}{st\+\_\+sock\+BufW}}
+\item 
+struct \mbox{\hyperlink{structTelOptState}{Tel\+Opt\+State}}
+\item 
+struct \mbox{\hyperlink{structTelOptStates}{Tel\+Opt\+States}}
+\item 
+struct \mbox{\hyperlink{structst__telOpt}{st\+\_\+tel\+Opt}}
+\item 
+struct \mbox{\hyperlink{structst__tty}{st\+\_\+tty}}
+\item 
+struct \mbox{\hyperlink{structst__ttyBufR}{st\+\_\+tty\+BufR}}
+\item 
+struct \mbox{\hyperlink{structst__ttyBufW}{st\+\_\+tty\+BufW}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a7cc70673e1bfa2cbbc58f1733a8aa344}\label{modemu2k_8h_a7cc70673e1bfa2cbbc58f1733a8aa344}} 
+\#define {\bfseries ENABLE\+\_\+\+NLS}~1
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a32a3cf3d9dd914f5aeeca5423c157934}\label{modemu2k_8h_a32a3cf3d9dd914f5aeeca5423c157934}} 
+\#define {\bfseries \+\_\+}(String)~gettext (String)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a1a0ef2e42374f90a13299cc06f437847}\label{modemu2k_8h_a1a0ef2e42374f90a13299cc06f437847}} 
+\#define {\bfseries gettext\+\_\+noop}(String)~String
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a75278405e7f034d2b1af80bfd94675fe}\label{modemu2k_8h_a75278405e7f034d2b1af80bfd94675fe}} 
+\#define {\bfseries N\+\_\+}(String)~gettext\+\_\+noop (String)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_aa6ec1de5bee8cd40449ee244e82a48af}\label{modemu2k_8h_aa6ec1de5bee8cd40449ee244e82a48af}} 
+\#define {\bfseries SOCKBUFR\+\_\+\+SIZE}~1024
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a11845898f7e3ea36380122c5868167d5}\label{modemu2k_8h_a11845898f7e3ea36380122c5868167d5}} 
+\#define {\bfseries TTYBUFR\+\_\+\+SIZE}~1024
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a1bfaa877650727932c4358d585a20eb4}\label{modemu2k_8h_a1bfaa877650727932c4358d585a20eb4}} 
+\#define {\bfseries LINEBUF\+\_\+\+SIZE}~256
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a9d514bcc5f30727126592574bee759a3}\label{modemu2k_8h_a9d514bcc5f30727126592574bee759a3}} 
+\#define {\bfseries CMDBUF\+\_\+\+MAX}~255
+\item 
+\mbox{\Hypertarget{modemu2k_8h_aa41e27b8b9028e45354e09a134566ec8}\label{modemu2k_8h_aa41e27b8b9028e45354e09a134566ec8}} 
+\#define {\bfseries ADDR\+\_\+\+MAX}~63
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a1a22c8aea5fa6c6834bc64756d239ae4}\label{modemu2k_8h_a1a22c8aea5fa6c6834bc64756d239ae4}} 
+\#define {\bfseries PORT\+\_\+\+MAX}~63
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a1808f9f8de0d987520dc336e54c8f72a}\label{modemu2k_8h_a1808f9f8de0d987520dc336e54c8f72a}} 
+\#define {\bfseries PT\+\_\+\+MAX}~40
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ae5454b842a999e5a00a1457a5f09a973}\label{modemu2k_8h_ae5454b842a999e5a00a1457a5f09a973}} 
+\#define {\bfseries SREG\+\_\+\+MAX}~12
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ac763d1de8ee96951064bd7dbb649dfc5}\label{modemu2k_8h_ac763d1de8ee96951064bd7dbb649dfc5}} 
+\#define {\bfseries CHAR\+\_\+\+ESC}~(atcmd.\+s\mbox{[}2\mbox{]})
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a96f70aecaff003e01fc8bcf2f070c5ef}\label{modemu2k_8h_a96f70aecaff003e01fc8bcf2f070c5ef}} 
+\#define {\bfseries CHAR\+\_\+\+CR}~(atcmd.\+s\mbox{[}3\mbox{]})
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ab278969e0bc4296056adb7b18aa43227}\label{modemu2k_8h_ab278969e0bc4296056adb7b18aa43227}} 
+\#define {\bfseries CHAR\+\_\+\+LF}~(atcmd.\+s\mbox{[}4\mbox{]})
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a7154bc375ffe132355526d649296cca4}\label{modemu2k_8h_a7154bc375ffe132355526d649296cca4}} 
+\#define {\bfseries CHAR\+\_\+\+BS}~(atcmd.\+s\mbox{[}5\mbox{]})
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a7327a2dd4490eccb7f8e36fdef608386}\label{modemu2k_8h_a7327a2dd4490eccb7f8e36fdef608386}} 
+\#define {\bfseries sock\+Is\+Alive}()~(sock.\+alive)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a142ca01152a9ff1358ecef8da661da86}\label{modemu2k_8h_a142ca01152a9ff1358ecef8da661da86}} 
+\#define {\bfseries SOCKBUFW\+\_\+\+SIZE}~(2 $\ast$ TTYBUFR\+\_\+\+SIZE)        /$\ast$ this seems to be any number $\ast$/
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a5c87a3aa1ea10cbbe0c9b21feab32fd0}\label{modemu2k_8h_a5c87a3aa1ea10cbbe0c9b21feab32fd0}} 
+\#define {\bfseries SOCKBUFW\+\_\+\+SIZE\+\_\+A}~(SOCKBUFW\+\_\+\+SIZE + TTYBUFR\+\_\+\+SIZE)  /$\ast$ important $\ast$/
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a93b688496047a7ca622ee90b52a0ab06}\label{modemu2k_8h_a93b688496047a7ca622ee90b52a0ab06}} 
+\#define {\bfseries put\+Opt\+Cmd}(s,  c)~\{ put\+Sock1(IAC); put\+Sock1(s); put\+Sock1(c); \}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a83d9ff2a92a51f17a1b37bd9942b40a4}\label{modemu2k_8h_a83d9ff2a92a51f17a1b37bd9942b40a4}} 
+\#define {\bfseries TTYBUFW\+\_\+\+SIZE}~(2 $\ast$ SOCKBUFR\+\_\+\+SIZE)        /$\ast$ this seems to be any number $\ast$/
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ab5cd83010606e2d835dd533cc3c1000c}\label{modemu2k_8h_ab5cd83010606e2d835dd533cc3c1000c}} 
+\#define {\bfseries TTYBUFW\+\_\+\+SIZE\+\_\+A}~(TTYBUFW\+\_\+\+SIZE + SOCKBUFR\+\_\+\+SIZE)   /$\ast$ important $\ast$/
+\item 
+\#define {\bfseries tty\+Buf\+WReset}()
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ada11be5102f28d7ac99d225d7eacfd88}\label{modemu2k_8h_ada11be5102f28d7ac99d225d7eacfd88}} 
+\#define {\bfseries tty\+Buf\+WHas\+Data}()~(tty\+Buf\+W.\+ptr $>$ tty\+Buf\+W.\+buf)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a7c4d8f13696ae7aa227fa39b41330331}\label{modemu2k_8h_a7c4d8f13696ae7aa227fa39b41330331}} 
+\#define {\bfseries tty\+Buf\+WReady}()~(!tty\+Buf\+W.\+stop)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ac48d7ac4364d9d8cc7d4fea1420ffac3}\label{modemu2k_8h_ac48d7ac4364d9d8cc7d4fea1420ffac3}} 
+\#define {\bfseries put\+Tty\+Str}(s)~put\+TtyN(s, sizeof(s)-\/1)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_afa26b5a5d3c08ad07bdf1ffe5b825a90}\label{modemu2k_8h_afa26b5a5d3c08ad07bdf1ffe5b825a90}} 
+\#define {\bfseries VERB\+\_\+\+MISC}~1
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a06029b3778ff2a22016bc7eabf507f8f}\label{modemu2k_8h_a06029b3778ff2a22016bc7eabf507f8f}} 
+\#define {\bfseries VERB\+\_\+\+TELOPT}~2
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a65f85814a8290f9797005d3b28e7e5fc}\label{modemu2k_8h_a65f85814a8290f9797005d3b28e7e5fc}} 
+typedef unsigned char {\bfseries uchar}
+\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a22579f252d7d521ce67757f96d0fa4bc}\label{modemu2k_8h_a22579f252d7d521ce67757f96d0fa4bc}} 
+enum {\bfseries Atd\+AType} \{ {\bfseries ATDA\+\_\+\+NUM}
+, {\bfseries ATDA\+\_\+\+STR}
+ \}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a1101e2672554a247a42c7578beaaee8a}\label{modemu2k_8h_a1101e2672554a247a42c7578beaaee8a}} 
+enum {\bfseries Atd\+PType} \{ {\bfseries ATDP\+\_\+\+NUL}
+, {\bfseries ATDP\+\_\+\+NUM}
+, {\bfseries ATDP\+\_\+\+STR}
+ \}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a1c9e0ef3d6df3d859544e08ac5909f68}\label{modemu2k_8h_a1c9e0ef3d6df3d859544e08ac5909f68}} 
+enum {\bfseries Tel\+Opt\+Req} \{ \newline
+{\bfseries TOR\+\_\+\+MUSTNOT}
+, {\bfseries TOR\+\_\+\+BETTERNOT}
+, {\bfseries TOR\+\_\+\+NEUTRAL}
+, {\bfseries TOR\+\_\+\+BETTER}
+, \newline
+{\bfseries TOR\+\_\+\+MUST}
+ \}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_af938c02862424876da9972a53f7290af}\label{modemu2k_8h_af938c02862424876da9972a53f7290af}} 
+enum {\bfseries Cmdstat} \{ \newline
+{\bfseries CMDST\+\_\+\+OK}
+, {\bfseries CMDST\+\_\+\+ERROR}
+, {\bfseries CMDST\+\_\+\+CONNECT}
+, {\bfseries CMDST\+\_\+\+NOCARRIER}
+, \newline
+{\bfseries CMDST\+\_\+\+NOAT}
+, {\bfseries CMDST\+\_\+\+ATD}
+, {\bfseries CMDST\+\_\+\+ATO}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ae27c9af8cad2506d6e92e00a64cb4d4e}\label{modemu2k_8h_ae27c9af8cad2506d6e92e00a64cb4d4e}} 
+void {\bfseries atcmd\+Init} (struct \mbox{\hyperlink{structst__cmdarg}{st\+\_\+cmdarg}} $\ast$cmdarg)
+\item 
+void \mbox{\hyperlink{modemu2k_8h_a604123b9ebd9d34cbe59f375ee5875bc}{atcmdD}} (const char $\ast$s, Atd\+AType at, Atd\+PType pt)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_aed73df6e9c0c00c51c21482ac0d5322b}\label{modemu2k_8h_aed73df6e9c0c00c51c21482ac0d5322b}} 
+int {\bfseries atcmd\+Fake} (const char $\ast$s, const char $\ast$vals)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ae9ffe7a4551805c61185f817c587378a}\label{modemu2k_8h_ae9ffe7a4551805c61185f817c587378a}} 
+int {\bfseries atcmdH} (const char $\ast$s)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a24e511b2bfe1f63b6552818f1e3dc76a}\label{modemu2k_8h_a24e511b2bfe1f63b6552818f1e3dc76a}} 
+int {\bfseries atcmdI} (const char $\ast$s)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_aa1fffd66be992549efa43c81a475e9ce}\label{modemu2k_8h_aa1fffd66be992549efa43c81a475e9ce}} 
+int {\bfseries atcmd\+SQuery} (const char $\ast$s)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ac0f0463ae0c12b0be78ac1fa34b819fd}\label{modemu2k_8h_ac0f0463ae0c12b0be78ac1fa34b819fd}} 
+int {\bfseries atcmd\+SSet} (const char $\ast$s)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a12ff8e0700be2f54d08197a6b71e24c5}\label{modemu2k_8h_a12ff8e0700be2f54d08197a6b71e24c5}} 
+void {\bfseries atcmdZ} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a08080ee47ea9a2e7091c7a36bdf074d8}\label{modemu2k_8h_a08080ee47ea9a2e7091c7a36bdf074d8}} 
+void {\bfseries atcmd\+AW} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_abbcae0c9162d92bea94ce9d77b222837}\label{modemu2k_8h_abbcae0c9162d92bea94ce9d77b222837}} 
+int {\bfseries atcmd\+PB} (const char $\ast$s)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a2d9c0feccad36baaee9e23dfabee0914}\label{modemu2k_8h_a2d9c0feccad36baaee9e23dfabee0914}} 
+int {\bfseries atcmd\+PD} (const char $\ast$s)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_afd2126b49b931e2ba84dd04e7977741a}\label{modemu2k_8h_afd2126b49b931e2ba84dd04e7977741a}} 
+int {\bfseries atcmd\+PL} (const char $\ast$s)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_af60f368be951575d048fca051d6eb9a1}\label{modemu2k_8h_af60f368be951575d048fca051d6eb9a1}} 
+void {\bfseries atcmd\+PQ} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_aaafd26f38fc1cb23710f78f1b54a0980}\label{modemu2k_8h_aaafd26f38fc1cb23710f78f1b54a0980}} 
+int {\bfseries atcmd\+PR} (const char $\ast$s)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a74bbe6408546bb32ad61a298875abddc}\label{modemu2k_8h_a74bbe6408546bb32ad61a298875abddc}} 
+int {\bfseries atcmd\+PT} (const char $\ast$s)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a5c541dfb2e1c0394b29db83a9adef88e}\label{modemu2k_8h_a5c541dfb2e1c0394b29db83a9adef88e}} 
+int {\bfseries atcmd\+PTSet} (const char $\ast$s)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_acd9e06acd8a78784373254454215560b}\label{modemu2k_8h_acd9e06acd8a78784373254454215560b}} 
+int {\bfseries atcmd\+PV} (const char $\ast$s)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a62faeab5080dd76ec75ef3e0061d2831}\label{modemu2k_8h_a62faeab5080dd76ec75ef3e0061d2831}} 
+void {\bfseries commx\+Fork\+Exec} (const char $\ast$cmd, char c10, char c01)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ab49ba8de0aadbd114a21000b7ef18334}\label{modemu2k_8h_ab49ba8de0aadbd114a21000b7ef18334}} 
+int {\bfseries sock\+Close} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a6a92de994b107262c0800f04471f4e8d}\label{modemu2k_8h_a6a92de994b107262c0800f04471f4e8d}} 
+int {\bfseries sock\+Shutdown} (void)
+\item 
+int \mbox{\hyperlink{modemu2k_8h_a414ad7549553c37ebcfc7a52246860f8}{m2k\+\_\+sock\+Dial}} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a4d2d676c4325eb65e2e4577c19b754a4}\label{modemu2k_8h_a4d2d676c4325eb65e2e4577c19b754a4}} 
+void {\bfseries sock\+Buf\+RReset} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ad2b09f6fe28566d964128abc69f94ac6}\label{modemu2k_8h_ad2b09f6fe28566d964128abc69f94ac6}} 
+int {\bfseries get\+Sock1} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a77b13f507d67b5999daf0ee878814052}\label{modemu2k_8h_a77b13f507d67b5999daf0ee878814052}} 
+void {\bfseries sock\+Buf\+Read} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ad592a5404bf52f00b0bf62d5d0f54c8a}\label{modemu2k_8h_ad592a5404bf52f00b0bf62d5d0f54c8a}} 
+void {\bfseries sock\+Buf\+WReset} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ab5c0e3cb4c039e51dca156c202de4a75}\label{modemu2k_8h_ab5c0e3cb4c039e51dca156c202de4a75}} 
+bool {\bfseries sock\+Buf\+WHas\+Data} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a40f06676182d54e0c47316f4d3097a6b}\label{modemu2k_8h_a40f06676182d54e0c47316f4d3097a6b}} 
+bool {\bfseries sock\+Buf\+WReady} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_abe3f69381544a50edea22c31f102dedb}\label{modemu2k_8h_abe3f69381544a50edea22c31f102dedb}} 
+void {\bfseries sock\+Buf\+Write} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a5e4a94d06cbd577ef694a69ab869c7af}\label{modemu2k_8h_a5e4a94d06cbd577ef694a69ab869c7af}} 
+void {\bfseries put\+Sock1} (uchar c)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ab09a27e48725c30cd0dcbf5d9d9c4b2e}\label{modemu2k_8h_ab09a27e48725c30cd0dcbf5d9d9c4b2e}} 
+void {\bfseries put\+SockN} (const uchar $\ast$cp, int n)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a75be4cf9a61066f0799e160b92a02d59}\label{modemu2k_8h_a75be4cf9a61066f0799e160b92a02d59}} 
+void {\bfseries set\+Tty} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a624f9c84f25e86ddcc338849c469d5ae}\label{modemu2k_8h_a624f9c84f25e86ddcc338849c469d5ae}} 
+void {\bfseries tel\+Opt\+Reset} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a7e452e3ef35d5a29cb3c3069d5af1023}\label{modemu2k_8h_a7e452e3ef35d5a29cb3c3069d5af1023}} 
+void {\bfseries tel\+Opt\+Init} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a33991a94884060f868828e466844d9a7}\label{modemu2k_8h_a33991a94884060f868828e466844d9a7}} 
+void {\bfseries tel\+Opt\+Print\+Cmd} (const char $\ast$str, int cmd)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_afee4bf302c50be8239eb30de1b241d44}\label{modemu2k_8h_afee4bf302c50be8239eb30de1b241d44}} 
+void {\bfseries tel\+Opt\+Send\+Reqs} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a2d203a2850d41286c62fbbd9411e2dbb}\label{modemu2k_8h_a2d203a2850d41286c62fbbd9411e2dbb}} 
+int {\bfseries tel\+Opt\+Handle} (int cmd, int opt)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ad792d71f5e6c9f43457e0f42cc16ef04}\label{modemu2k_8h_ad792d71f5e6c9f43457e0f42cc16ef04}} 
+int {\bfseries tel\+Opt\+SBHandle} (int opt)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a8a397cea9b12eeacf2cbc8eb60a3df94}\label{modemu2k_8h_a8a397cea9b12eeacf2cbc8eb60a3df94}} 
+void {\bfseries timeval\+Set10ms} (struct timeval $\ast$ap, int b)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a8514db6806cda1193d7e5013e02d9a33}\label{modemu2k_8h_a8514db6806cda1193d7e5013e02d9a33}} 
+void {\bfseries timeval\+Add} (struct timeval $\ast$ap, const struct timeval $\ast$bp)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a679408b79207891efc40f2d343be8201}\label{modemu2k_8h_a679408b79207891efc40f2d343be8201}} 
+void {\bfseries timeval\+Sub} (struct timeval $\ast$ap, const struct timeval $\ast$bp)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a09c7cca2ae809d6a900d944655d4af7f}\label{modemu2k_8h_a09c7cca2ae809d6a900d944655d4af7f}} 
+int {\bfseries timeval\+Cmp} (const struct timeval $\ast$ap, const struct timeval $\ast$bp)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a4c3f0a4f861c918acf73a7db6b8a1e43}\label{modemu2k_8h_a4c3f0a4f861c918acf73a7db6b8a1e43}} 
+void {\bfseries tty\+Buf\+RReset} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a36c748e7f3cd5cedcfcc7d2c3acd89a9}\label{modemu2k_8h_a36c748e7f3cd5cedcfcc7d2c3acd89a9}} 
+int {\bfseries get\+Tty1} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a735afca36c6d86586464f8da3848ce41}\label{modemu2k_8h_a735afca36c6d86586464f8da3848ce41}} 
+void {\bfseries tty\+Buf\+Read} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_af028f7bf4f71aa090bb47668bb0c74e6}\label{modemu2k_8h_af028f7bf4f71aa090bb47668bb0c74e6}} 
+void {\bfseries tty\+Buf\+Write} (void)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ae7507f817253d9c984b38a3b2d45e355}\label{modemu2k_8h_ae7507f817253d9c984b38a3b2d45e355}} 
+void {\bfseries put\+Tty1} (unsigned char c)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a43611431b49c82172190388a592c2b18}\label{modemu2k_8h_a43611431b49c82172190388a592c2b18}} 
+void {\bfseries put\+TtyN} (const char $\ast$cp, int n)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a6fdb62fba8da557ede8eb7fd09b3434e}\label{modemu2k_8h_a6fdb62fba8da557ede8eb7fd09b3434e}} 
+void $\ast$ {\bfseries chk\+\_\+alloc} (void $\ast$ptr)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a56684bf38270203d9d50e14029e56475}\label{modemu2k_8h_a56684bf38270203d9d50e14029e56475}} 
+void {\bfseries verbose\+Out} (int mask, const char $\ast$format,...)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_aa927729913fe20de60eae40c202fe1df}\label{modemu2k_8h_aa927729913fe20de60eae40c202fe1df}} 
+void {\bfseries verbose\+Perror} (int mask, const char $\ast$s)
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ae3f64e43d61a751c5a35e3006f72695f}\label{modemu2k_8h_ae3f64e43d61a751c5a35e3006f72695f}} 
+Cmdstat {\bfseries cmd\+Lex} (const char $\ast$ptr)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_aa80c3cf29af785ae61e62ab6c2d5438e}\label{modemu2k_8h_aa80c3cf29af785ae61e62ab6c2d5438e}} 
+\mbox{\hyperlink{structAtcmd}{Atcmd}} {\bfseries atcmd}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a1b1c5ff172a6c9a5c70257c939cb74c4}\label{modemu2k_8h_a1b1c5ff172a6c9a5c70257c939cb74c4}} 
+\mbox{\hyperlink{structAtcmd}{Atcmd}} {\bfseries atcmd\+NV}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a7960e3f0f8f0a068ff12560766b9c5ca}\label{modemu2k_8h_a7960e3f0f8f0a068ff12560766b9c5ca}} 
+struct \mbox{\hyperlink{structst__sock}{st\+\_\+sock}} {\bfseries sock}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a17a23e612e6bc6ef7626df6de6a612fe}\label{modemu2k_8h_a17a23e612e6bc6ef7626df6de6a612fe}} 
+struct \mbox{\hyperlink{structst__sockBufR}{st\+\_\+sock\+BufR}} {\bfseries sock\+BufR}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a890ada2e640b108c1b95fa6aaa2dcea4}\label{modemu2k_8h_a890ada2e640b108c1b95fa6aaa2dcea4}} 
+struct \mbox{\hyperlink{structst__sockBufW}{st\+\_\+sock\+BufW}} {\bfseries sock\+BufW}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a5fb6b16d6916bf97b0e0c1629d38e848}\label{modemu2k_8h_a5fb6b16d6916bf97b0e0c1629d38e848}} 
+struct \mbox{\hyperlink{structst__telOpt}{st\+\_\+tel\+Opt}} {\bfseries tel\+Opt}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a5dadd49decf97ceab6f5d2b27ecdcc9e}\label{modemu2k_8h_a5dadd49decf97ceab6f5d2b27ecdcc9e}} 
+struct \mbox{\hyperlink{structst__tty}{st\+\_\+tty}} {\bfseries tty}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_ac5af76e408b50ff1b23e1297b08fd34f}\label{modemu2k_8h_ac5af76e408b50ff1b23e1297b08fd34f}} 
+struct \mbox{\hyperlink{structst__ttyBufR}{st\+\_\+tty\+BufR}} {\bfseries tty\+BufR}
+\item 
+\mbox{\Hypertarget{modemu2k_8h_a039e654cc8dfb11505173f0786fdc765}\label{modemu2k_8h_a039e654cc8dfb11505173f0786fdc765}} 
+struct \mbox{\hyperlink{structst__ttyBufW}{st\+\_\+tty\+BufW}} {\bfseries tty\+BufW}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+core modemu2k API 
+
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{modemu2k_8h_af1f5532a1f159a159c0c54833fa1ca9e}\label{modemu2k_8h_af1f5532a1f159a159c0c54833fa1ca9e}} 
+\index{modemu2k.h@{modemu2k.h}!ttyBufWReset@{ttyBufWReset}}
+\index{ttyBufWReset@{ttyBufWReset}!modemu2k.h@{modemu2k.h}}
+\doxysubsubsection{\texorpdfstring{ttyBufWReset}{ttyBufWReset}}
+{\footnotesize\ttfamily \#define tty\+Buf\+WReset(\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \{ \(\backslash\)}
+\DoxyCodeLine{    ttyBufW.ptr = ttyBufW.top = ttyBufW.buf; \(\backslash\)}
+\DoxyCodeLine{    ttyBufW.stop = 0; \(\backslash\)}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{modemu2k_8h_a604123b9ebd9d34cbe59f375ee5875bc}\label{modemu2k_8h_a604123b9ebd9d34cbe59f375ee5875bc}} 
+\index{modemu2k.h@{modemu2k.h}!atcmdD@{atcmdD}}
+\index{atcmdD@{atcmdD}!modemu2k.h@{modemu2k.h}}
+\doxysubsubsection{\texorpdfstring{atcmdD()}{atcmdD()}}
+{\footnotesize\ttfamily void atcmdD (\begin{DoxyParamCaption}\item[{const char $\ast$}]{s,  }\item[{Atd\+AType}]{at,  }\item[{Atd\+PType}]{pt }\end{DoxyParamCaption})}
+
+The host/ip and port number to be dialed
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & the host or IP \\
+\hline
+{\em at} & \\
+\hline
+{\em pt} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{modemu2k_8h_a604123b9ebd9d34cbe59f375ee5875bc}{atcmdD}}(\textcolor{stringliteral}{"{}github.com 80"{}}, ATDA\_STR, ATDP\_NUM); }
+
+\end{DoxyCode}
+ \begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{modemu2k_8h_a414ad7549553c37ebcfc7a52246860f8}{m2k\+\_\+sock\+Dial()}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{modemu2k_8h_a414ad7549553c37ebcfc7a52246860f8}\label{modemu2k_8h_a414ad7549553c37ebcfc7a52246860f8}} 
+\index{modemu2k.h@{modemu2k.h}!m2k\_sockDial@{m2k\_sockDial}}
+\index{m2k\_sockDial@{m2k\_sockDial}!modemu2k.h@{modemu2k.h}}
+\doxysubsubsection{\texorpdfstring{m2k\_sockDial()}{m2k\_sockDial()}}
+{\footnotesize\ttfamily int m2k\+\_\+sock\+Dial (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Initiate connection
+
+
+\begin{DoxyParams}{Parameters}
+{\em void} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 if completed successfully, 1 otherwise 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{modemu2k_8h_a604123b9ebd9d34cbe59f375ee5875bc}{atcmd\+D()}} 
+\end{DoxySeeAlso}
+ifdef NO\+\_\+\+DIAL\+\_\+\+CANCELING

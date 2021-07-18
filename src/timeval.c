@@ -1,5 +1,5 @@
-#include <sys/time.h>           /*timeval */
-#include "timeval.h"            /*(timevalXXX) */
+
+#include "modemu2k.h"
 
 /* a = b [10mS] */
 void

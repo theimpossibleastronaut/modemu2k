@@ -1,14 +1,5 @@
-#ifdef TERMNET
-#include <termnet.h>
-#endif
-#include <stdio.h>              /*stderr,(perror) */
-#include <sys/types.h>  /*->socket.h (u_short etc.)*/
-#include <sys/socket.h>         /*(send,recv) */
 
-#include "defs.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
-#include "sockbuf.h"            /*sockBufR,sockBufW */
-#include "sock.h"               /*sock */
-#include "verbose.h"            /*VERB_MISC */
+#include "modemu2k.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 
 /* reading socket */
 #define MSG_CONNECTION_CLOSED_BY_PEER gettext ("Connection closed by peer.\r\n")

@@ -8,3 +8,4 @@ Dockerfile
 # flex-generated file
 lex.yy.c
 cmdlex.c
+/doxywarn.log

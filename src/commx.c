@@ -1,13 +1,8 @@
-#include <stdio.h>              /*stderr */
-#include <stdlib.h>
+
 #include <signal.h> /*SIGCHLD*/
-#include <unistd.h>             /*(fork,execv) */
-#include <string.h>             /*(strdup) */
 #include <sys/wait.h> /*WNOHANG*/
-#include "defs.h"
-#include "commx.h"              /*(commxForkExec) */
-#include "verbose.h"            /*VERB_MISC */
-#include "utils.h"
+#include "modemu2k.h"
+
 static int commxPid;
 
 static void

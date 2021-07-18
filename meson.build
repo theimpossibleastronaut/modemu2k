@@ -31,7 +31,7 @@ endforeach
 conf = configuration_data()
 conf.set_quoted('VERSION', meson.project_version())
 conf.set_quoted('PACKAGE_STRING', meson.project_name())
-conf.set_quoted('PACKAGE_URL', 'https://github.com/theimpossibleastronaut/modemu2k')
+conf.set_quoted('PACKAGE_URL', 'http://theimpossibleastronaut.com/modemu2k/')
 conf.set_quoted('PACKAGE_BUGREPORT', 'https://github.com/theimpossibleastronaut/modemu2k/issues')
 
 localedir = join_paths(get_option('prefix'), get_option('localedir'))
@@ -43,7 +43,7 @@ subdir('src')
 
 executable(
   'modemu2k',
-  ['src/modemu2k.c', 'src/cmdarg.c'],
+  ['src/main.c', 'src/cmdarg.c'],
   dependencies: dep_modemu2k,
   install : true
   )
@@ -54,16 +54,18 @@ subdir ('tests')
 
 install_data(
   files(
-    'README',
+    'README.md',
     'QuickStart',
     'COPYING',
     'AUTHORS',
     'ChangeLog',
     'ReleaseNotes',
-    'TRANSLATE.md'
+    'TRANSLATE.md',
     ),
   install_dir : get_option('docdir')
   )
+
+install_subdir('docs', install_dir : get_option('docdir'))
 
 if get_option('nls')
   ul = configuration_data()
