@@ -120,7 +120,6 @@ A man page is also available.
 # Downloads
 
 * Release page<https://github.com/theimpossibleastronaut/modemu2k/releases>
-* FileGate->(Linux Utilities category)<http://www.filegate.net/utiln/utillnx/>
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/modemu2k.svg)](https://repology.org/project/modemu2k/versions)
 
