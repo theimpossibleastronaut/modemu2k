@@ -85,9 +85,8 @@ Note: while in the program if backspace doesn't work, use CTRL+H.
 
   You could also connect to a BBS. For some telnet addresses, see:
 
-  * [Prism BBS](http://filegate.net)
-  * The Rusty Mailbox (telnet to trmb.ca, port 2030)
-  * [Synchronet BBS List](http://www.synchro.net/sbbslist.html)
+  * The Rusty Mailbox (telnet to [trmb.ca](https://trmb.ca/), port 2030)
+  * [Synchronet BBS List](https://www.synchro.net/sbbslist.html)
 
   To quit modemu2k, just quit the comm program.
 
