@@ -1,10 +1,15 @@
 name: C/C++ CI
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 on:
   push:
+    branches: master
     paths-ignore:
     - '**/*.md'
   pull_request:
+    branches: master
     paths-ignore:
     - '**/*.md'
 
