@@ -33,6 +33,7 @@
 #include <string.h>             /*(strncpy) */
 #include <stdbool.h>
 #include <sys/types.h>
+#include <sys/time.h>
 
 #ifdef TERMNET
 #include <termnet.h>

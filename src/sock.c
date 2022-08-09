@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2018-2019 Andy Alt <andy400-dev@yahoo.com>
+ * Copyright 2018-2022 Andy Alt <arch_stanton5995@protonmail.com>
  *
  * modemu2k is a fork of modemu
  * Originally developed by Toru Egashira
@@ -27,7 +27,7 @@
 #include <errno.h>
 #include <netdb.h>
 #include <unistd.h>
-#include <sys/time.h>   /*->ttybuf.h (timeval)*/
+// #include <sys/time.h>   /*->ttybuf.h (timeval)*/
 #include <stdlib.h>             /*(getenv) */
 #include "modemu2k.h"
 
