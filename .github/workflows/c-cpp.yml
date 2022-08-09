@@ -25,7 +25,7 @@ jobs:
       MATRIX_OS: ${{ matrix.os }}
       MATRIX_ARCH: ${{ matrix.arch }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: sh ./.github/scripts/test_m2k.sh
 
   clang:
@@ -40,14 +40,14 @@ jobs:
       MAXTRIX_OS: ${{ matrix.os }}
       MAXTRIX_ARCH: ${{ matrix.arch }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: sh ./.github/scripts/test_m2k.sh
 
 
   macos:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: brew install meson
     - run: |
         meson builddir
