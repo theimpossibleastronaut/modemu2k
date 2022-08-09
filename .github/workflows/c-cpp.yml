@@ -51,5 +51,7 @@ jobs:
     - run: brew install meson
     - run: |
         meson builddir
-        ninja -v -C builddir
+        cd builddir
+        ninja -v
+        ninja test
         # ninja -C builddir dist
