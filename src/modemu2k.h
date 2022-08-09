@@ -216,7 +216,7 @@ extern struct st_sockBufR
   uchar buf[SOCKBUFR_SIZE];
   uchar *ptr;
   uchar *end;
-} sockBufR;;
+} sockBufR;
 
 
 void

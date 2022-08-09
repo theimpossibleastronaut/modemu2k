@@ -186,6 +186,9 @@ escSeqHandle (int c)
     escSeq.checkSilence = 0;
     escSeq.state = ESH_NORM;
     /*break; */
+    /* I think falling through is the desired behavior here, but is
+     * there a way to make it cleaner and get rid of the
+     * compiler warning? */
   case ESH_NORM:
     if (c == CHAR_ESC && s12timePassed (&ttyBufR.newT, &ttyBufR.prevT))
     {
