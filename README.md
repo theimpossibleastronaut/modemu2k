@@ -1,4 +1,4 @@
-# modemu2k v0.0.999
+# modemu2k v0.1.0
 
 modemu2k is a fork of modemu, originally developed by Toru Egashira
 
