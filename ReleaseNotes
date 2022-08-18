@@ -1,3 +1,8 @@
-v0.0.6
+v0.1.0
 
-  * Fix for compiling on gcc-10
+  * fix segfault when building with Slackbuild or setting buildtype to debug
+  * fix build on macos (timeval errors, see
+  https://github.com/theimpossibleastronaut/modemu2k/pull/40)
+  * fix connecting to host using IP
+  * replaced autotools build system with mesonbuild
+  * 'm2k-minicom.sh' script renamed to 'm2k-minicom'

@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Andy Alt
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the modemu2k package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: modemu2k 0.0.6\n"
-"Report-Msgid-Bugs-To: andy400-dev@yahoo.com\n"
-"POT-Creation-Date: 2020-06-19 00:49-0500\n"
+"Project-Id-Version: modemu2k\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-08-09 16:21-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,128 +17,123 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. TRANSLATORS: do not translate ttyBufW
-#: src/ttybuf.c:91
+#: src/ttybuf.c:87
 msgid "\attyBufW overrun.\n"
 msgstr ""
 
-#: src/stty.c:25
+#: src/stty.c:20
 #, c-format
 msgid ""
 "\n"
 "Goodbye.\n"
 msgstr ""
 
-#: src/cmdarg.c:43
+#: src/cmdarg.c:44
 msgid ""
 "  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using "
 "[arguments]"
 msgstr ""
 
-#: src/cmdarg.c:45
+#: src/cmdarg.c:46
 msgid "  -d, --device=<pty_master>               talk through [pty_master]"
 msgstr ""
 
-#: src/cmdarg.c:47
+#: src/cmdarg.c:48
 msgid ""
 "  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at "
 "startup"
 msgstr ""
 
-#: src/cmdarg.c:52
+#: src/cmdarg.c:53
 msgid "  -h, --help                              display help"
 msgstr ""
 
-#: src/cmdarg.c:49
+#: src/cmdarg.c:50
 msgid ""
 "  -s, --show                              show which device will be used"
 msgstr ""
 
-#: src/cmdarg.c:54
+#: src/cmdarg.c:55
 msgid "  -v, --version                           display version"
 msgstr ""
 
-#: src/cmdarg.c:56
+#: src/cmdarg.c:57
 msgid "  -w, --warranty                          display warranty"
 msgstr ""
 
-#: src/commx.c:22
+#: src/commx.c:20
 #, c-format
 msgid "Child returned status %d.\r\n"
 msgstr ""
 
-#: src/commx.c:21
+#: src/commx.c:19
 msgid "Comm program exited.\r\n"
 msgstr ""
 
-#: src/sock.c:181
+#: src/sock.c:188
 msgid "Connecting attempt canceled by user input.\r\n"
 msgstr ""
 
-#: src/sock.c:212
+#: src/sock.c:220
 msgid "Connection attempt timed out.\r\n"
 msgstr ""
 
-#: src/sockbuf.c:14
+#: src/sockbuf.c:7
 msgid "Connection closed by peer.\r\n"
 msgstr ""
 
-#. TRANSLATORS: reminder: do not translate any "AT" command strings
-#: src/atcmd.c:128
+#: src/atcmd.c:126
 msgid "Connection closed with ATH.\r\n"
 msgstr ""
 
-#. TRANSLATORS: reminder: do not translate any "AT" command strings
-#: src/atcmd.c:332
+#: src/atcmd.c:330
 msgid "Connection closed with ATZ.\r\n"
 msgstr ""
 
-#: src/commx.c:44
+#: src/commx.c:43
 msgid "Could not run shell.\n"
 msgstr ""
 
-#. TRANSLATORS: do not translate `at%%q`
-#: src/modemu2k.c:716
+#: src/main.c:705
 msgid ""
 "Enter 'at%q' to quit\n"
 "\n"
 msgstr ""
 
-#: src/atcmd.c:66
+#: src/atcmd.c:62
 msgid "Error in initialization commands.\r\n"
 msgstr ""
 
-#: src/sock.c:90
+#: src/sock.c:92
 #, c-format
 msgid "Host address lookup failed: %s\n"
 msgstr ""
 
-#: src/modemu2k.c:694
+#: src/main.c:682
 msgid "No more pty devices available.\n"
 msgstr ""
 
-#: src/cmdarg.c:67
+#: src/cmdarg.c:68
 msgid ""
 "Note: The  -c, -d, and -s options are exclusive of each other. If two or\n"
 "more of the options are specified, only the last one is effective."
 msgstr ""
 
-#. TRANSLATORS: do not translate "pty" or "read"
-#: src/ttybuf.c:40
+#: src/ttybuf.c:36
 #, c-format
 msgid "Pty closed. (read() returned %d)\r\n"
 msgstr ""
 
-#: src/ttybuf.c:67
+#: src/ttybuf.c:63
 #, c-format
 msgid "Pty closed. (write() returned %d)\r\n"
 msgstr ""
 
-#: src/modemu2k.c:552
+#: src/main.c:541
 msgid "Pty open error.\n"
 msgstr ""
 
-#: src/cmdarg.c:84
+#: src/cmdarg.c:85
 #, c-format
 msgid ""
 "THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n"
@@ -151,20 +146,20 @@ msgid ""
 "ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n"
 msgstr ""
 
-#: src/cmdarg.c:59
+#: src/cmdarg.c:60
 msgid ""
 "The arguments for (-c, --commprog) and (-e, --atcommands) must be enclosed "
 "in\n"
 "quotes. (eg. -c \"minicom -l -w -c\")"
 msgstr ""
 
-#: src/cmdarg.c:63
+#: src/cmdarg.c:64
 msgid ""
 "The arguments for the comm program must be native to the comm program, not\n"
 "arguments used by modemu2k."
 msgstr ""
 
-#: src/cmdarg.c:71
+#: src/cmdarg.c:72
 msgid ""
 "The modemu2k project and support site is at\n"
 "<https://github.com/theimpossibleastronaut/modemu2k>\n"
@@ -173,24 +168,23 @@ msgid ""
 "<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"
 msgstr ""
 
-#: src/modemu2k.c:465
+#: src/main.c:458
 msgid "To escape to command mode, use '+++'."
 msgstr ""
 
-#: src/modemu2k.c:466
+#: src/main.c:459
 msgid "Use ATO to return to online mode."
 msgstr ""
 
-#. TRANSLATORS: do not translate "tty" or "pty"
-#: src/modemu2k.c:640
+#: src/main.c:629
 msgid "Warning: could not change ownership of tty -- pty is insecure!\n"
 msgstr ""
 
-#: src/modemu2k.c:648
+#: src/main.c:637
 msgid "Warning: could not change permissions of tty -- pty is insecure!\n"
 msgstr ""
 
-#: src/cmdarg.c:98
+#: src/cmdarg.c:99
 #, c-format
 msgid ""
 "modemu2k %s\n"
@@ -201,15 +195,14 @@ msgid ""
 "for details.\n"
 msgstr ""
 
-#. TRANSLATORS: ignore the "&W'ed"
-#: src/atcmd.c:255
+#: src/atcmd.c:253
 msgid "modemu2k '&W'ed settings:"
 msgstr ""
 
-#: src/atcmd.c:243
+#: src/atcmd.c:241
 msgid "modemu2k current settings:"
 msgstr ""
 
-#: src/atcmd.c:188
+#: src/atcmd.c:186
 msgid "modemu2k telnet option states:"
 msgstr ""

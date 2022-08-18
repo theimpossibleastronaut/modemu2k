@@ -1,10 +1,10 @@
 project(
   'modemu2k',
   'c',
-  version: '0.0.999',
+  version: '0.1.0',
 #https://mesonbuild.com/Release-notes-for-0-56-0.html#mesonbuild_root-and-mesonsource_root-are-deprecated
   meson_version : '>= 0.56.0',
-  default_options: ['buildtype=release', 'warning_level=3']
+  default_options: ['warning_level=3']
   )
 
 add_global_arguments(

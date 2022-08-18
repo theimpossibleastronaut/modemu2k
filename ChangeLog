@@ -1,5 +1,11 @@
 modemu2k ChangeLog
 
+2022-08-09
+
+  * fix segfault when building with Slackbuild or setting buildtype to debug
+  * fix build on macos (timeval errors, see
+  https://github.com/theimpossibleastronaut/modemu2k/pull/40)
+
 2021-07-15
 
   * fix connecting to host using IP
@@ -7,11 +13,6 @@ modemu2k ChangeLog
 2021-07-14
 
   * replaced autotools build system with mesonbuild
-
-2021-05-30
-
-  * Implemented valgrind using the autoconf macro for use with 'make
-  check'
 
 2020-06-21
 
