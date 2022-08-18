@@ -1,7 +1,10 @@
 name: AppImage Build
+
 on:
   push:
-    branches: [ continuous ]
+    tags:
+      - v**
+
 jobs:
 
   # This workflow contains a single job called "build"
