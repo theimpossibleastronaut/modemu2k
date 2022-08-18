@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2018-2021 Andy Alt <andy400-dev@yahoo.com>
+ * Copyright 2018-2021 Andy Alt <arch_stanton5995@protonmail.com>
  *
  * modemu2k is a fork of modemu
  * Originally developed by Toru Egashira

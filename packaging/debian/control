@@ -1,7 +1,7 @@
 Source: modemu2k
 Section: net
 Priority: optional
-Maintainer: Andy Alt <andy400-dev@yahoo.com>
+Maintainer: Andy Alt <arch_stanton5995@protonmail.com>
 Vcs-Git: https://git.devuan.org/andy5995/modemu2k.git
 Vcs-Browser: https://git.devuan.org/andy5995/modemu2k.git
 Build-Depends: debhelper (>= 12~)

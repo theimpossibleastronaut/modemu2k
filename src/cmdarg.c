@@ -1,7 +1,7 @@
 /*
  * cmdarg.c
  *
- * Copyright 2018 Andy Alt <andy400-dev@yahoo.com>
+ * Copyright 2018 Andy Alt <arch_stanton5995@protonmail.com>
  *
  * modemu2k is a fork of modemu
  * Originally developed by Toru Egashira
@@ -73,7 +73,7 @@ more of the options are specified, only the last one is effective."));
 The modemu2k project and support site is at\n\
 <https://github.com/theimpossibleastronaut/modemu2k>\n\
 \n\
-Report bugs to <andy400-dev@yahoo.com> or\n\
+Report bugs to <arch_stanton5995@protonmail.com> or\n\
 <https://github.com/theimpossibleastronaut/modemu2k/issues>\n"));
 
   return;
@@ -98,7 +98,7 @@ version (char *const argv[])
 {
   printf (_("\
 modemu2k %s\n\
-Maintainer: Andy Alt (andy400-dev@yahoo.com)\n\
+Maintainer: Andy Alt (arch_stanton5995@protonmail.com)\n\
 This program comes with ABSOLUTELY NO WARRANTY; for details type '%s -w.'\n\
 This is free software, and you are welcome to redistribute it\n\
 under certain conditions; see <http://www.gnu.org/licenses/gpl.html>\n\

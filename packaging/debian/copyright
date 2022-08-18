@@ -3,11 +3,11 @@ Upstream-Name: modemu2k
 Source: <https://github.com/theimpossibleastronaut/modemu2k>
 
 Files: *
-Copyright: 2018-2019 Andy Alt <andy400-dev@yahoo.com>, 1995,1996 Toru Egashira
+Copyright: 2018-2019 Andy Alt <arch_stanton5995@protonmail.com>, 1995,1996 Toru Egashira
 License: GPL-3.0+
 
 Files: debian/*
-Copyright: 2019 Andy Alt <andy400-dev@yahoo.com>
+Copyright: 2019 Andy Alt <arch_stanton5995@protonmail.com>
 License: GPL-3.0+
 
 License: GPL-3.0+

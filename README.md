@@ -13,7 +13,7 @@ telnet I/O to a pty so that a comm program can handle the pty as a tty
 with a real modem, and allows you to use a comm program's scripting
 and file transfer features over telnet. Now supports IPv6 connections.
 
-Maintainer: Andy Alt <andy400-dev [at] yahoo [dot] com>
+Maintainer: Andy Alt <arch_stanton5995 at protonmail [dot] com>
 
 License: GNU GPL 3
 
