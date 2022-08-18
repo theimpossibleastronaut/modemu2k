@@ -39,5 +39,8 @@ jobs:
       with:
         allowUpdates: True
         prerelease: False
-        artifacts: "modemu2k*AppImage"
+        name: modemu2k ${GITHUB_REF}
+        artifacts: "_build/modemu2k*AppImage"
         token: ${{ secrets.GITHUB_TOKEN }}
+        omitNameDuringUpdate: True
+        omitBodyDuringUpdate: True
