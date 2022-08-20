@@ -20,26 +20,26 @@ ttyBufRReset(void)
 int
 getTty1(void)
 {
-  return ((ttyBufR.ptr >= ttyBufR.end)? -1 : *ttyBufR.ptr++);
+  return ((ttyBufR.ptr >= ttyBufR.end) ? -1 : *ttyBufR.ptr++);
 }
 
 void
-ttyBufRead (st_sock *sock)
+ttyBufRead(st_sock * sock)
 {
   int l;
 
-  l = read (tty.rfd, ttyBufR.buf, sizeof (ttyBufR.buf));
+  l = read(tty.rfd, ttyBufR.buf, sizeof(ttyBufR.buf));
   if (l <= 0)
   {
-    sockClose (sock);
+    sockClose(sock);
     /* TRANSLATORS: do not translate "pty" or "read" */
-    verboseOut (VERB_MISC, _("Pty closed. (read() returned %d)\r\n"), l);
+    verboseOut(VERB_MISC, _("Pty closed. (read() returned %d)\r\n"), l);
     if (l < 0)
-      verbosePerror (VERB_MISC, "read()");
-    exit (0);
+      verbosePerror(VERB_MISC, "read()");
+    exit(0);
   }
   ttyBufR.prevT = ttyBufR.newT;
-  gettimeofday (&ttyBufR.newT, NULL);
+  gettimeofday(&ttyBufR.newT, NULL);
   ttyBufR.ptr = ttyBufR.buf;
   ttyBufR.end = ttyBufR.buf + l;
 }
@@ -48,22 +48,22 @@ ttyBufRead (st_sock *sock)
 /* writing tty */
 
 void
-ttyBufWrite (st_sock *sock)
+ttyBufWrite(st_sock * sock)
 {
   int wl, l;
 
   wl = ttyBufW.ptr - ttyBufW.top;
   if (wl == 0)
     return;
-  l = write (tty.wfd, ttyBufW.top, wl);
+  l = write(tty.wfd, ttyBufW.top, wl);
   if (l <= 0)
   {
-    sockClose (sock);
+    sockClose(sock);
     /* TRANSLATORS do not translate "pty" or "write" */
-    verboseOut (VERB_MISC, _("Pty closed. (write() returned %d)\r\n"), l);
+    verboseOut(VERB_MISC, _("Pty closed. (write() returned %d)\r\n"), l);
     if (l < 0)
-      verbosePerror (VERB_MISC, "write()");
-    exit (0);
+      verbosePerror(VERB_MISC, "write()");
+    exit(0);
   }
   else if (l < wl)
   {
@@ -77,14 +77,14 @@ ttyBufWrite (st_sock *sock)
 }
 
 void
-putTty1 (uchar c)
+putTty1(uchar c)
 {
   if (ttyBufW.ptr >= ttyBufW.buf + TTYBUFW_SIZE)
   {                             /* limit */
     if (ttyBufW.ptr >= ttyBufW.buf + TTYBUFW_SIZE_A)
     {                           /*actual limit */
       /* TRANSLATORS: do not translate ttyBufW */
-      fputs (_("\attyBufW overrun.\n"), stderr);
+      fputs(_("\attyBufW overrun.\n"), stderr);
       return;
     }
     else
@@ -94,8 +94,8 @@ putTty1 (uchar c)
 }
 
 void
-putTtyN (const char *cp, int n)
+putTtyN(const char *cp, int n)
 {
   for (; n > 0; n--, cp++)
-    putTty1 (*cp);
+    putTty1(*cp);
 }

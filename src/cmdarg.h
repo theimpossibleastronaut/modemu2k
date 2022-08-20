@@ -37,6 +37,6 @@ struct st_cmdarg
   const char *dev;
 };
 
-void cmdargParse (const int argc, char *const argv[], struct st_cmdarg *x);
+void cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x);
 
 #endif

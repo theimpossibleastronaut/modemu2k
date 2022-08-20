@@ -4,7 +4,7 @@
 
 /* a = b [10mS] */
 void
-timevalSet10ms (struct timeval *ap, int b)
+timevalSet10ms(struct timeval *ap, int b)
 {
   ap->tv_sec = b / 100;
   ap->tv_usec = (b % 100) * 10 * 1000;
@@ -12,7 +12,7 @@ timevalSet10ms (struct timeval *ap, int b)
 
 /* a += b */
 void
-timevalAdd (struct timeval *ap, const struct timeval *bp)
+timevalAdd(struct timeval *ap, const struct timeval *bp)
 {
   ap->tv_sec += bp->tv_sec;
   ap->tv_usec += bp->tv_usec;
@@ -25,7 +25,7 @@ timevalAdd (struct timeval *ap, const struct timeval *bp)
 
 /* a -= b */
 void
-timevalSub (struct timeval *ap, const struct timeval *bp)
+timevalSub(struct timeval *ap, const struct timeval *bp)
 {
   ap->tv_sec -= bp->tv_sec;
   ap->tv_usec -= bp->tv_usec;
@@ -38,7 +38,7 @@ timevalSub (struct timeval *ap, const struct timeval *bp)
 
 /* (a < b): -1, (a==b): 0, (a > b): 1 */
 int
-timevalCmp (const struct timeval *ap, const struct timeval *bp)
+timevalCmp(const struct timeval *ap, const struct timeval *bp)
 {
   if (ap->tv_sec < bp->tv_sec)
     return -1;

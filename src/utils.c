@@ -30,11 +30,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void *chk_alloc (void *ptr)
+void *
+chk_alloc(void *ptr)
 {
   if (ptr != NULL)
     return ptr;
 
-  fprintf (stderr, "Error allocating memory\n");
+  fprintf(stderr, "Error allocating memory\n");
   return NULL;
 }

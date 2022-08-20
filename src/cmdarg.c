@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include "cmdarg.h"             /*cmdarg */
-#include "modemu2k.h"               /*VERSION_... */
+#include "modemu2k.h"           /*VERSION_... */
 #include "config.h"
 
 /* LIT(A) -> "10" */
@@ -37,39 +37,39 @@
 #define LIT(s) LIT_(s)
 
 static void
-showUsage (char *const argv[])
+showUsage(char *const argv[])
 {
-  printf (("Usage: %s [OPTION]...\n\n"), argv[0]);
+  printf(("Usage: %s [OPTION]...\n\n"), argv[0]);
 
-  puts (_("\
+  puts(_("\
   -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using [arguments]"));
-  puts (_("\
+  puts(_("\
   -d, --device=<pty_master>               talk through [pty_master]"));
-  puts (_("\
+  puts(_("\
   -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at startup"));
-  puts (_("\
+  puts(_("\
   -s, --show                              show which device will be used"));
-  puts ("");
-  puts (_("\
+  puts("");
+  puts(_("\
   -h, --help                              display help"));
-  puts (_("\
+  puts(_("\
   -v, --version                           display version"));
-  puts (_("\
+  puts(_("\
   -w, --warranty                          display warranty"));
-  puts ("");
-  puts (_("\
+  puts("");
+  puts(_("\
 The arguments for (-c, --commprog) and (-e, --atcommands) must be enclosed in\n\
 quotes. (eg. -c \"minicom -l -w -c\")"));
-  puts ("");
-  puts (_("\
+  puts("");
+  puts(_("\
 The arguments for the comm program must be native to the comm program, not\n\
 arguments used by modemu2k."));
-  puts ("");
-  puts (_("\
+  puts("");
+  puts(_("\
 Note: The  -c, -d, and -s options are exclusive of each other. If two or\n\
 more of the options are specified, only the last one is effective."));
-  puts ("");
-  puts (_("\
+  puts("");
+  puts(_("\
 The modemu2k project and support site is at\n\
 <https://github.com/theimpossibleastronaut/modemu2k>\n\
 \n\
@@ -80,9 +80,9 @@ Report bugs to <arch_stanton5995@protonmail.com> or\n\
 }
 
 static void
-warranty (void)
+warranty(void)
 {
-  printf (_("\
+  printf(_("\
 THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n\
 APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT\n\
 HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY\n\
@@ -94,9 +94,9 @@ ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n"));
 }
 
 static void
-version (char *const argv[])
+version(char *const argv[])
 {
-  printf (_("\
+  printf(_("\
 modemu2k %s\n\
 Maintainer: Andy Alt (arch_stanton5995@protonmail.com)\n\
 This program comes with ABSOLUTELY NO WARRANTY; for details type '%s -w.'\n\
@@ -106,7 +106,7 @@ for details.\n"), VERSION, argv[0]);
 }
 
 void
-cmdargParse (const int argc, char *const argv[], struct st_cmdarg *x)
+cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
 {
   const char *const short_options = "c:d:e:hsvw";
 
@@ -129,7 +129,7 @@ cmdargParse (const int argc, char *const argv[], struct st_cmdarg *x)
 
   do
   {
-    next_option = getopt_long (argc, argv, short_options, long_options, NULL);
+    next_option = getopt_long(argc, argv, short_options, long_options, NULL);
 
     switch ((char) next_option)
     {
@@ -145,21 +145,22 @@ cmdargParse (const int argc, char *const argv[], struct st_cmdarg *x)
       x->atcmd = optarg;
       break;
     case 'h':                  /* -h */
-      showUsage (argv);
-      exit (0);
+      showUsage(argv);
+      exit(0);
     case 's':                  /* -s */
       x->ttymode = CA_SHOWDEV;
       break;
     case 'v':
-      version (argv);
-      exit (0);
+      version(argv);
+      exit(0);
     case 'w':
-      warranty ();
-      exit (0);
+      warranty();
+      exit(0);
     default:
       break;
     }
-  } while (next_option != -1);
+  }
+  while (next_option != -1);
 
   return;
 }
