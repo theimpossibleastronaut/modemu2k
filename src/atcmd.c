@@ -81,7 +81,7 @@ m2k_atcmdD(const char *s, AtdAType at, AtdPType pt)
   if (*s == '"')
     s++;
   /* "%[^:\"]:%[^\"]" */
-  sscanf(s, "%" LIT(ADDR_MAX) "[^ \"] %" LIT(PORT_MAX) "[^\"]",
+  sscanf(s, "%" LIT(HOST_NAME_MAX) "[^ \"] %" LIT(PORT_MAX) "[^\"]",
          atcmd.d.addr.str, atcmd.d.port.str);
   atcmd.d.addr.type = at;
   atcmd.d.port.type = pt;

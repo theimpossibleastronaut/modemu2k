@@ -31,6 +31,8 @@
 #include <stdlib.h>             /*(getenv) */
 #include "modemu2k.h"
 
+const int DEFAULT_PORT = 23;
+
 void
 sockInit(struct st_sock *sock)
 {
@@ -65,13 +67,8 @@ sockShutdown(st_sock * sock)
 int
 m2k_sockDial(st_sock * sock)
 {
-  struct addrinfo hints;
+  struct addrinfo hints, *result;
   memset(&hints, 0, sizeof(struct addrinfo));
-
-  sockInit(sock);
-  struct addrinfo *result = NULL;
-
-  int s;
 
   hints.ai_family = AF_UNSPEC;  /* Allow IPv4 or IPv6 */
   hints.ai_socktype = SOCK_STREAM;
@@ -79,22 +76,24 @@ m2k_sockDial(st_sock * sock)
   hints.ai_protocol = 0;        /* Any protocol */
 
   char out_port[PORT_MAX + 1];
+  if ((size_t)
+      snprintf(out_port, sizeof out_port, "%d",
+               atcmd.d.port.type ==
+               ATDP_NUL ? DEFAULT_PORT : atoi(atcmd.d.port.str)) >=
+      sizeof out_port)
+    return 1;
 
-  if (atcmd.d.port.type == ATDP_NUL)
-    snprintf(out_port, sizeof out_port, "%d", DEFAULT_PORT);
-  else
-  {
-    strcpy(out_port, atcmd.d.port.str);
+  if (atcmd.d.port.type != ATDP_NUL)
     telOpt.sentReqs = 1;        /* skip sending option requests */
-  }
 
-  s = getaddrinfo(atcmd.d.addr.str, out_port, &hints, &result);
+  int s = getaddrinfo(atcmd.d.addr.str, out_port, &hints, &result);
   if (s != 0)
   {
     fprintf(stderr, _("Host address lookup failed: %s\n"), gai_strerror(s));
     return 1;
   }
 
+  sockInit(sock);
   for (sock->rp = result; sock->rp != NULL; sock->rp = sock->rp->ai_next)
   {
     sock->fd =

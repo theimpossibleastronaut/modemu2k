@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2018 Andy Alt <arch_stanton5995@protonmail.com>
+ * Copyright 2022 Andy Alt <arch_stanton5995@protonmail.com>
  *
  * modemu2k is a fork of modemu
  * Originally developed by Toru Egashira
@@ -29,11 +29,13 @@
  * @brief core modemu2k API
  */
 
+#include <limits.h>
 #include <stdio.h>              /*stderr,(sscanf,sprintf) */
 #include <string.h>             /*(strncpy) */
 #include <stdbool.h>
 #include <sys/types.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 #ifdef TERMNET
 #include <termnet.h>
@@ -46,6 +48,10 @@
 #endif
 
 #include "cmdarg.h"
+
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX 255
+#endif
 
 /* TODO: the API shouldn't be localized and really shouldn't contain any strings;
  * but rather the functions should return values to the application can print
@@ -76,7 +82,7 @@ typedef unsigned char uchar;
 #define HAVE_GRANTPT
 #endif
 
-#define DEFAULT_PORT 23
+extern const int DEFAULT_PORT;
 
 // sock
 
@@ -123,7 +129,6 @@ typedef enum
   ATDP_STR
 } AtdPType;
 
-#define ADDR_MAX 63
 #define PORT_MAX 63
 #define PT_MAX 40
 #define SREG_MAX 12
@@ -134,7 +139,7 @@ typedef struct
   {
     struct
     {
-      char str[ADDR_MAX + 1];
+      char str[HOST_NAME_MAX + 1];
       AtdAType type;
     } addr;
     struct
