@@ -94,9 +94,9 @@ typedef struct st_sock
 
 //extern st_sock sock;
 
-void sockInit (struct st_sock *sock);
-int sockClose (st_sock *sock);
-int sockShutdown (st_sock *sock);
+void sockInit(struct st_sock *sock);
+int sockClose(st_sock * sock);
+int sockShutdown(st_sock * sock);
 
 
 /**
@@ -106,7 +106,7 @@ int sockShutdown (st_sock *sock);
  * @returns 0 if completed successfully, 1 otherwise
  * @see m2k_atcmdD()
  */
-int m2k_sockDial (st_sock *sock);
+int m2k_sockDial(st_sock * sock);
 
 // atcmd
 
@@ -166,7 +166,7 @@ extern Atcmd atcmdNV;
 #define CHAR_LF (atcmd.s[4])
 #define CHAR_BS (atcmd.s[5])
 
-void atcmdInit (struct st_cmdarg *cmdarg, st_sock *sock);
+void atcmdInit(struct st_cmdarg *cmdarg, st_sock * sock);
 
 
 /**
@@ -181,30 +181,30 @@ void atcmdInit (struct st_cmdarg *cmdarg, st_sock *sock);
  * Example:
  * @code atcmdD("github.com 80", ATDA_STR, ATDP_NUM); @endcode
  */
-void m2k_atcmdD (const char *s, AtdAType at, AtdPType pt);
+void m2k_atcmdD(const char *s, AtdAType at, AtdPType pt);
 
 
-int atcmdFake (const char *s, const char *vals);
-int atcmdH (const char *s, st_sock *sock);
-int atcmdI (const char *s);
-int atcmdSQuery (const char *s);
-int atcmdSSet (const char *s);
-void atcmdZ (st_sock *sock);
-void atcmdAW (void);
-int atcmdPB (const char *s);
-int atcmdPD (const char *s);
-int atcmdPL (const char *s);
-void atcmdPQ (st_sock *sock);
-int atcmdPR (const char *s);
-int atcmdPT (const char *s);
-int atcmdPTSet (const char *s);
-int atcmdPV (const char *s);
+int atcmdFake(const char *s, const char *vals);
+int atcmdH(const char *s, st_sock * sock);
+int atcmdI(const char *s);
+int atcmdSQuery(const char *s);
+int atcmdSSet(const char *s);
+void atcmdZ(st_sock * sock);
+void atcmdAW(void);
+int atcmdPB(const char *s);
+int atcmdPD(const char *s);
+int atcmdPL(const char *s);
+void atcmdPQ(st_sock * sock);
+int atcmdPR(const char *s);
+int atcmdPT(const char *s);
+int atcmdPTSet(const char *s);
+int atcmdPV(const char *s);
 
 // commx
 #ifdef HAVE_GRANTPT
-void commxForkExec (const char *cmd, char *ptyslave);
+void commxForkExec(const char *cmd, char *ptyslave);
 #else
-void commxForkExec (const char *cmd, char c10, char c01);
+void commxForkExec(const char *cmd, char c10, char c01);
 #endif
 
 // sockbuf
@@ -220,13 +220,11 @@ extern struct st_sockBufR
 } sockBufR;
 
 
-void
-sockBufRReset(void);
+void sockBufRReset(void);
 
-int
-getSock1(void);
+int getSock1(void);
 
-void sockBufRead (st_sock *sock);
+void sockBufRead(st_sock * sock);
 
 
 /* writing socket */
@@ -242,22 +240,19 @@ extern struct st_sockBufW
   int stop;
 } sockBufW;
 
-void
-sockBufWReset(void);
+void sockBufWReset(void);
 
-bool
-sockBufWHasData(void);
+bool sockBufWHasData(void);
 
-bool
-sockBufWReady(void);
+bool sockBufWReady(void);
 
-void sockBufWrite (st_sock *sock);
-void putSock1 (uchar c);
-void putSockN (const uchar * cp, int n);
+void sockBufWrite(st_sock * sock);
+void putSock1(uchar c);
+void putSockN(const uchar * cp, int n);
 
 // stty
 
-void setTty (void);
+void setTty(void);
 
 // telopt
 
@@ -275,7 +270,7 @@ typedef enum
 typedef struct
 {
   TelOptReq req;                /* requirement for the opt */
-  int state;                      /* current state (enabled:1 or disabled:0) */
+  int state;                    /* current state (enabled:1 or disabled:0) */
   int pending;                  /* state is pending (requested but no reply yet) */
 } TelOptState;
 
@@ -298,19 +293,19 @@ extern struct st_telOpt
 
 #define putOptCmd(s,c) { putSock1(IAC); putSock1(s); putSock1(c); }
 
-void telOptReset (void);
-void telOptInit (void);
-void telOptPrintCmd (const char *str, int cmd);
-void telOptSendReqs (void);
-int telOptHandle (int cmd, int opt);
-int telOptSBHandle (int opt);
+void telOptReset(void);
+void telOptInit(void);
+void telOptPrintCmd(const char *str, int cmd);
+void telOptSendReqs(void);
+int telOptHandle(int cmd, int opt);
+int telOptSBHandle(int opt);
 
 // timeval
 
-void timevalSet10ms (struct timeval *ap, int b);
-void timevalAdd (struct timeval *ap, const struct timeval *bp);
-void timevalSub (struct timeval *ap, const struct timeval *bp);
-int timevalCmp (const struct timeval *ap, const struct timeval *bp);
+void timevalSet10ms(struct timeval *ap, int b);
+void timevalAdd(struct timeval *ap, const struct timeval *bp);
+void timevalSub(struct timeval *ap, const struct timeval *bp);
+int timevalCmp(const struct timeval *ap, const struct timeval *bp);
 
 // ttybuf
 
@@ -336,13 +331,11 @@ struct st_ttyBufR
 
 extern struct st_ttyBufR ttyBufR;
 
-void
-ttyBufRReset(void);
+void ttyBufRReset(void);
 
-int
-getTty1(void);
+int getTty1(void);
 
-void ttyBufRead (st_sock *sock);
+void ttyBufRead(st_sock * sock);
 
 
 /* writing tty */
@@ -368,21 +361,21 @@ extern struct st_ttyBufW ttyBufW;
 #define ttyBufWReady() (!ttyBufW.stop)
 #define putTtyStr(s) putTtyN(s, sizeof(s)-1)
 
-void ttyBufWrite (st_sock *sock);
-void putTty1 (unsigned char c);
-void putTtyN (const char *cp, int n);
+void ttyBufWrite(st_sock * sock);
+void putTty1(unsigned char c);
+void putTtyN(const char *cp, int n);
 
 // utils
 
-void *chk_alloc (void *ptr);
+void *chk_alloc(void *ptr);
 
 // verbose
 
 #define VERB_MISC 1
 #define VERB_TELOPT 2
 
-void verboseOut (int mask, const char *format, ...);
-void verbosePerror (int mask, const char *s);
+void verboseOut(int mask, const char *format, ...);
+void verbosePerror(int mask, const char *s);
 
 // cmdlex
 
@@ -397,5 +390,4 @@ typedef enum
   CMDST_ATO
 } Cmdstat;
 
-Cmdstat cmdLex (const char *ptr, st_sock *sock);
-
+Cmdstat cmdLex(const char *ptr, st_sock * sock);

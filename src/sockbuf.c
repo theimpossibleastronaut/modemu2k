@@ -18,25 +18,25 @@ sockBufRReset(void)
 int
 getSock1(void)
 {
-    return ((sockBufR.ptr >= sockBufR.end)? -1 : *sockBufR.ptr++);
+  return ((sockBufR.ptr >= sockBufR.end) ? -1 : *sockBufR.ptr++);
 }
 
 void
-sockBufRead (st_sock *sock)
+sockBufRead(st_sock * sock)
 {
   int l;
 
-  l = recv (sock->fd, sockBufR.buf, sizeof (sockBufR.buf), 0);
+  l = recv(sock->fd, sockBufR.buf, sizeof(sockBufR.buf), 0);
   if (l <= 0)
   {
     sock->alive = 0;
     if (l == 0)
-      verboseOut (VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
+      verboseOut(VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
     else
       /* PPP link down or something to reach here. */
       /* v0.0 exited, which comm progs don't expect. */
       /* now just NO CARRIERs. Thanks >> Rod May */
-      perror ("recv()");
+      perror("recv()");
     return;
   }
   sockBufR.ptr = sockBufR.buf;
@@ -65,21 +65,21 @@ sockBufWReady(void)
 }
 
 void
-sockBufWrite (st_sock *sock)
+sockBufWrite(st_sock * sock)
 {
   int wl, l;
 
   wl = sockBufW.ptr - sockBufW.top;
   if (wl == 0)
     return;
-  l = send (sock->fd, sockBufW.top, wl, 0);
+  l = send(sock->fd, sockBufW.top, wl, 0);
   if (l <= 0)
   {
     sock->alive = 0;
     if (l == 0)
-      verboseOut (VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
+      verboseOut(VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
     else
-      perror ("send()");
+      perror("send()");
     return;
   }
   else if (l < wl)
@@ -94,13 +94,13 @@ sockBufWrite (st_sock *sock)
 }
 
 void
-putSock1 (uchar c)
+putSock1(uchar c)
 {
   if (sockBufW.ptr >= sockBufW.buf + SOCKBUFW_SIZE)
   {                             /* limit */
     if (sockBufW.ptr >= sockBufW.buf + SOCKBUFW_SIZE_A)
     {                           /*actual limit */
-      fputs ("\asockBufW overrun.\n", stderr);
+      fputs("\asockBufW overrun.\n", stderr);
       return;
     }
     else
@@ -110,8 +110,8 @@ putSock1 (uchar c)
 }
 
 void
-putSockN (const uchar * cp, int n)
+putSockN(const uchar * cp, int n)
 {
   for (; n > 0; n--, cp++)
-    putSock1 (*cp);
+    putSock1(*cp);
 }

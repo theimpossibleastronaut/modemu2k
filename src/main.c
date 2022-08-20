@@ -41,13 +41,11 @@
 #include <pty.h>
 #endif
 #include "cmdarg.h"             /*cmdarg */
-
 #include "config.h"
 #include "modemu2k.h"
-
 /* socket input processing loop */
   static void
-sockReadLoop (st_sock *sock)
+sockReadLoop(st_sock * sock)
 {
   static enum
   {
@@ -60,12 +58,12 @@ sockReadLoop (st_sock *sock)
 
   if (atcmd.pr)
   {
-    while ((c = getSock1 ()) >= 0)
-      putTty1 (c);
+    while ((c = getSock1()) >= 0)
+      putTty1(c);
   }
   else
   {
-    while ((c = getSock1 ()) >= 0)
+    while ((c = getSock1()) >= 0)
     {
       switch (state)
       {
@@ -82,7 +80,7 @@ sockReadLoop (st_sock *sock)
         case IAC:
           /*if (telOpt.binrecv) */
           {
-            putTty1 (c);
+            putTty1(c);
             state = SRL_NORM;
           }
           break;
@@ -91,11 +89,11 @@ sockReadLoop (st_sock *sock)
           break;
         default:
           state = SRL_NORM;
-          telOptPrintCmd ("<", c);
+          telOptPrintCmd("<", c);
         }
         break;
       case SRL_CMD:
-        if (telOptHandle (cmd, c))
+        if (telOptHandle(cmd, c))
           sock->alive = 0;
         state = SRL_NORM;
         break;
@@ -110,7 +108,7 @@ sockReadLoop (st_sock *sock)
         state = (c == IAC) ? SRL_SBI : SRL_NORM;
         break;
       case SRL_SBI:
-        telOptSBHandle (opt);
+        telOptSBHandle(opt);
         state = SRL_NORM;
         break;
       default:
@@ -121,7 +119,7 @@ sockReadLoop (st_sock *sock)
         else
         {
           /*putTty1(telOpt.binrecv? c : (c & 0x7f)); */
-          putTty1 (c);
+          putTty1(c);
         }
       }
     }
@@ -149,22 +147,22 @@ escSeqReset(void)
 
 /* t1 - t2 > S12? */
 static int
-s12timePassed (const struct timeval *t1p, const struct timeval *t2p)
+s12timePassed(const struct timeval *t1p, const struct timeval *t2p)
 {
   struct timeval t;
 
-  timevalSet10ms (&t, atcmd.s[12] * 2);
-  timevalAdd (&t, t2p);
-  return (timevalCmp (t1p, &t) > 0);
+  timevalSet10ms(&t, atcmd.s[12] * 2);
+  timevalAdd(&t, t2p);
+  return (timevalCmp(t1p, &t) > 0);
 }
 
 static void
-escSeqHandle (int c)
+escSeqHandle(int c)
 {
   switch (escSeq.state)
   {
   case ESH_P1:
-    if (c == CHAR_ESC && !s12timePassed (&ttyBufR.newT, &escSeq.plus1T))
+    if (c == CHAR_ESC && !s12timePassed(&ttyBufR.newT, &escSeq.plus1T))
     {
       escSeq.state = ESH_P2;
     }
@@ -172,11 +170,11 @@ escSeqHandle (int c)
       escSeq.state = ESH_NORM;
     break;
   case ESH_P2:
-    if (c == CHAR_ESC && !s12timePassed (&ttyBufR.newT, &escSeq.plus1T))
+    if (c == CHAR_ESC && !s12timePassed(&ttyBufR.newT, &escSeq.plus1T))
     {
       escSeq.checkSilence = 1;
-      timevalSet10ms (&escSeq.expireT, atcmd.s[12] * 2);
-      timevalAdd (&escSeq.expireT, &ttyBufR.newT);
+      timevalSet10ms(&escSeq.expireT, atcmd.s[12] * 2);
+      timevalAdd(&escSeq.expireT, &ttyBufR.newT);
       escSeq.state = ESH_P3;
     }
     else
@@ -190,7 +188,7 @@ escSeqHandle (int c)
      * there a way to make it cleaner and get rid of the
      * compiler warning? */
   case ESH_NORM:
-    if (c == CHAR_ESC && s12timePassed (&ttyBufR.newT, &ttyBufR.prevT))
+    if (c == CHAR_ESC && s12timePassed(&ttyBufR.newT, &ttyBufR.prevT))
     {
       escSeq.plus1T = ttyBufR.newT;
       escSeq.state = ESH_P1;
@@ -219,44 +217,44 @@ static struct
 }
 
 static void
-ttyReadLoop (void)
+ttyReadLoop(void)
 {
   int c;
 
   if (atcmd.pr)
   {
-    while ((c = getTty1 ()) >= 0)
+    while ((c = getTty1()) >= 0)
     {
-      putSock1 (c);
-      escSeqHandle (c);
+      putSock1(c);
+      escSeqHandle(c);
     }
   }
   else if (telOpt.sgasend)
   {
-    while ((c = getTty1 ()) >= 0)
+    while ((c = getTty1()) >= 0)
     {
       /*if (telOpt.binsend) */
       {
         if (c == IAC)
-          putSock1 (IAC);
-        putSock1 (c);
+          putSock1(IAC);
+        putSock1(c);
       }                         /*else putSock1(c & 0x7f); */
-      escSeqHandle (c);
+      escSeqHandle(c);
     }
   }
   else
   {
     /* !sgasend == local echo mode, which cannot be true binmode */
-    while ((c = getTty1 ()) >= 0)
+    while ((c = getTty1()) >= 0)
     {
-      putTty1 (c);
+      putTty1(c);
       if (c == CHAR_CR)
       {
-        putTty1 (CHAR_LF);
-        putSockN (lineBuf.buf, lineBuf.ptr - lineBuf.buf);
-        putSock1 ('\r');        /* EOL = CRLF */
-        putSock1 ('\n');
-        lineBufReset ();
+        putTty1(CHAR_LF);
+        putSockN(lineBuf.buf, lineBuf.ptr - lineBuf.buf);
+        putSock1('\r');         /* EOL = CRLF */
+        putSock1('\n');
+        lineBufReset();
       }
       else if (c == CHAR_LF)
       {
@@ -264,69 +262,68 @@ ttyReadLoop (void)
       }
       else if (c == CHAR_BS)
       {
-        lineBufBS ();
+        lineBufBS();
       }
       else
       {
         /*if (telOpt.binsend) */
         {
           if (c == IAC)
-            putLine1 (IAC);
-          putLine1 (c);
+            putLine1(IAC);
+          putLine1(c);
         }                       /*else putLine1(c & 0x7f); */
       }
-      escSeqHandle (c);
+      escSeqHandle(c);
     }
   }
 }
 
 
 /* online mode main loop */
-static
-  int
-onlineMode (st_sock *sock)
+static int
+onlineMode(st_sock * sock)
 {
   fd_set rfds, wfds;
   struct timeval t;
 
-  sockBufRReset ();
-  sockBufWReset ();
-  ttyBufRReset ();
+  sockBufRReset();
+  sockBufWReset();
+  ttyBufRReset();
   /*ttyBufWReset(); */
-  lineBufReset ();
-  escSeqReset ();
+  lineBufReset();
+  escSeqReset();
 
   if (!telOpt.sentReqs && !atcmd.pr)
-    telOptSendReqs ();
+    telOptSendReqs();
 
   t.tv_sec = 0;
   while (sock->alive)
   {
     struct timeval *tp;
 
-    FD_ZERO (&rfds);
-    FD_ZERO (&wfds);
+    FD_ZERO(&rfds);
+    FD_ZERO(&wfds);
 
-    if (ttyBufWReady ())
-      FD_SET (sock->fd, &rfds);  /*flow control */
-    if (sockBufWHasData ())
-      FD_SET (sock->fd, &wfds);
-    if (sockBufWReady ())
-      FD_SET (tty.rfd, &rfds);  /*flow control */
-    if (ttyBufWHasData ())
-      FD_SET (tty.wfd, &wfds);
+    if (ttyBufWReady())
+      FD_SET(sock->fd, &rfds);  /*flow control */
+    if (sockBufWHasData())
+      FD_SET(sock->fd, &wfds);
+    if (sockBufWReady())
+      FD_SET(tty.rfd, &rfds);   /*flow control */
+    if (ttyBufWHasData())
+      FD_SET(tty.wfd, &wfds);
 
     if (escSeq.checkSilence)
     {
       struct timeval tt;
-      gettimeofday (&tt, NULL);
-      if (timevalCmp (&tt, &escSeq.expireT) >= 0)
+      gettimeofday(&tt, NULL);
+      if (timevalCmp(&tt, &escSeq.expireT) >= 0)
       {
         escSeq.checkSilence = 0;
         return 1;
       }
       t = escSeq.expireT;
-      timevalSub (&t, &tt);
+      timevalSub(&t, &tt);
       tp = &t;
     }
     else
@@ -334,33 +331,33 @@ onlineMode (st_sock *sock)
       tp = NULL;                /* infinite */
     }
 
-    if (select (sock->fd + 1, &rfds, &wfds, NULL, tp) < 0)
+    if (select(sock->fd + 1, &rfds, &wfds, NULL, tp) < 0)
     {
       if (errno != EINTR)
-        perror ("select()");
+        perror("select()");
       continue;
     }
 
-    if (FD_ISSET (sock->fd, &wfds))
+    if (FD_ISSET(sock->fd, &wfds))
     {
-      sockBufWrite (sock);
+      sockBufWrite(sock);
     }
-    if (FD_ISSET (tty.wfd, &wfds))
+    if (FD_ISSET(tty.wfd, &wfds))
     {
-      ttyBufWrite (sock);
+      ttyBufWrite(sock);
     }
-    if (FD_ISSET (sock->fd, &rfds))
+    if (FD_ISSET(sock->fd, &rfds))
     {
-      sockBufRead (sock);
-      sockReadLoop (sock);
+      sockBufRead(sock);
+      sockReadLoop(sock);
     }
-    if (FD_ISSET (tty.rfd, &rfds))
+    if (FD_ISSET(tty.rfd, &rfds))
     {
-      ttyBufRead (sock);
-      ttyReadLoop ();
+      ttyBufRead(sock);
+      ttyReadLoop();
     }
   }
-  sockShutdown (sock);
+  sockShutdown(sock);
   return 0;
 }
 
@@ -384,7 +381,7 @@ cmdBufReset(struct cmdBuf *x)
 }
 
 static void
-putCmd1 (const int c, struct cmdBuf *cmdBuf)
+putCmd1(const int c, struct cmdBuf *cmdBuf)
 {
   if (cmdBuf->ptr < cmdBuf->buf + CMDBUF_MAX)
     *cmdBuf->ptr++ = c;
@@ -394,17 +391,17 @@ static void
 cmdBufBS(struct cmdBuf *cmdBuf)
 {
   if (cmdBuf->ptr > cmdBuf->buf)
-  cmdBuf->ptr--;
+    cmdBuf->ptr--;
 }
 
 static void
-cmdReadLoop (struct cmdBuf *cmdBuf)
+cmdReadLoop(struct cmdBuf *cmdBuf)
 {
   int c;
 
-  while ((c = getTty1 ()) >= 0)
+  while ((c = getTty1()) >= 0)
   {
-    putTty1 (c);
+    putTty1(c);
     if (c == CHAR_CR)
     {
       cmdBuf->eol = 1;
@@ -413,7 +410,7 @@ cmdReadLoop (struct cmdBuf *cmdBuf)
     }
     else if (c == CHAR_BS)
     {
-      cmdBufBS (cmdBuf);
+      cmdBufBS(cmdBuf);
 #if 0
     }
     else if (c <= ' ' || c == 127)
@@ -428,7 +425,7 @@ cmdReadLoop (struct cmdBuf *cmdBuf)
     }
     else
     {
-      putCmd1 (c, cmdBuf);
+      putCmd1(c, cmdBuf);
     }
   }
 }
@@ -437,7 +434,7 @@ cmdReadLoop (struct cmdBuf *cmdBuf)
 /* command mode main loop */
 
 static void
-putTtyCmdstat (Cmdstat s)
+putTtyCmdstat(Cmdstat s)
 {
   static const char *cmdstatStr[] = {
     "OK",
@@ -449,63 +446,65 @@ putTtyCmdstat (Cmdstat s)
     "",
   };
 
-  putTty1 (CHAR_CR);
-  putTty1 (CHAR_LF);
-  putTtyN (cmdstatStr[s], strlen (cmdstatStr[s]));
+  putTty1(CHAR_CR);
+  putTty1(CHAR_LF);
+  putTtyN(cmdstatStr[s], strlen(cmdstatStr[s]));
 
   if (s == CMDST_CONNECT)
   {
-    static const char msg_escape_seq[] = gettext_noop("To escape to command mode, use '+++'.");
-    static const char msg_return_online[] = gettext_noop("Use ATO to return to online mode.");
+    static const char msg_escape_seq[] =
+      gettext_noop("To escape to command mode, use '+++'.");
+    static const char msg_return_online[] =
+      gettext_noop("Use ATO to return to online mode.");
 
-    putTty1 (CHAR_CR);
-    putTty1 (CHAR_LF);
-    putTtyN (msg_escape_seq, sizeof msg_escape_seq);
+    putTty1(CHAR_CR);
+    putTty1(CHAR_LF);
+    putTtyN(msg_escape_seq, sizeof msg_escape_seq);
 
-    putTty1 (CHAR_CR);
-    putTty1 (CHAR_LF);
-    putTtyN (msg_return_online, sizeof msg_return_online);
+    putTty1(CHAR_CR);
+    putTty1(CHAR_LF);
+    putTtyN(msg_return_online, sizeof msg_return_online);
   }
 
-  putTty1 (CHAR_CR);
-  putTty1 (CHAR_LF);
+  putTty1(CHAR_CR);
+  putTty1(CHAR_LF);
 }
 
 
 static Cmdstat
-cmdMode (struct cmdBuf *cmdBuf, st_sock *sock)
+cmdMode(struct cmdBuf *cmdBuf, st_sock * sock)
 {
   fd_set rfds, wfds;
   Cmdstat stat;
 
-  cmdBufReset (cmdBuf);
-  ttyBufRReset ();
+  cmdBufReset(cmdBuf);
+  ttyBufRReset();
   /*ttyBufWReset(); */
 
   for (;;)
   {
-    FD_ZERO (&rfds);
-    FD_ZERO (&wfds);
+    FD_ZERO(&rfds);
+    FD_ZERO(&wfds);
 
-    if (ttyBufWReady ())
-      FD_SET (tty.rfd, &rfds);  /*flow control */
-    if (ttyBufWHasData ())
-      FD_SET (tty.wfd, &wfds);
+    if (ttyBufWReady())
+      FD_SET(tty.rfd, &rfds);   /*flow control */
+    if (ttyBufWHasData())
+      FD_SET(tty.wfd, &wfds);
 
-    if (select (tty.wfd + 1, &rfds, &wfds, NULL, NULL) < 0)
+    if (select(tty.wfd + 1, &rfds, &wfds, NULL, NULL) < 0)
     {
       if (errno != EINTR)
-        perror ("select()");
+        perror("select()");
       continue;
     }
 
-    if (FD_ISSET (tty.wfd, &wfds))
+    if (FD_ISSET(tty.wfd, &wfds))
     {
-      ttyBufWrite (sock);           /* put CR before dialup */
+      ttyBufWrite(sock);        /* put CR before dialup */
       if (cmdBuf->eol)
       {
-        stat = cmdLex ((char *) cmdBuf->buf, sock);
-        cmdBufReset (cmdBuf);
+        stat = cmdLex((char *) cmdBuf->buf, sock);
+        cmdBufReset(cmdBuf);
         switch (stat)
         {
         case CMDST_ATD:
@@ -513,42 +512,40 @@ cmdMode (struct cmdBuf *cmdBuf, st_sock *sock)
           return stat;
         case CMDST_OK:
         case CMDST_ERROR:
-          putTtyCmdstat (stat);
+          putTtyCmdstat(stat);
           break;
         default:;              /*CMDST_NOCMD */
         }
       }
     }
-    if (FD_ISSET (tty.rfd, &rfds))
+    if (FD_ISSET(tty.rfd, &rfds))
     {
-      ttyBufRead (sock);
-      cmdReadLoop (cmdBuf);
+      ttyBufRead(sock);
+      cmdReadLoop(cmdBuf);
     }
   }
 }
 
 
 /* open a pty */
-static
-  int
-openPtyMaster (const char *dev)
+static int
+openPtyMaster(const char *dev)
 {
   int fd;
 
-  fd = open (dev, O_RDWR);
+  fd = open(dev, O_RDWR);
   if (fd < 0)
   {
-    fputs (_("Pty open error.\n"), stderr);
-    exit (1);
+    fputs(_("Pty open error.\n"), stderr);
+    exit(1);
   }
   return fd;
 }
 
 #ifdef HAVE_GRANTPT
 
-static
-  int
-getPtyMaster (char **line_return)
+static int
+getPtyMaster(char **line_return)
 {
   int rc;
   char name[12], *temp_line, *line = NULL;
@@ -557,38 +554,38 @@ getPtyMaster (char **line_return)
   char *p1, *p2;
 
 #ifdef HAVE_GRANTPT
-  pty = open ("/dev/ptmx", O_RDWR);
+  pty = open("/dev/ptmx", O_RDWR);
   if (pty < 0)
     goto bsd;
 
-  rc = grantpt (pty);
+  rc = grantpt(pty);
   if (rc < 0)
   {
-    close (pty);
+    close(pty);
     goto bsd;
   }
 
-  rc = unlockpt (pty);
+  rc = unlockpt(pty);
   if (rc < 0)
   {
-    close (pty);
+    close(pty);
     goto bsd;
   }
 
-  temp_line = ptsname (pty);
+  temp_line = ptsname(pty);
   if (!temp_line)
   {
-    close (pty);
+    close(pty);
     goto bsd;
   }
-  line = malloc (strlen (temp_line) + 1);
-  chk_alloc (line);
+  line = malloc(strlen(temp_line) + 1);
+  chk_alloc(line);
   if (line == NULL)
   {
-    close (pty);
+    close(pty);
     return -1;
   }
-  strcpy (line, temp_line);
+  strcpy(line, temp_line);
 
   *line_return = line;
   return pty;
@@ -596,14 +593,14 @@ getPtyMaster (char **line_return)
 
 bsd:
 
-  strcpy (name, "/dev/pty??");
+  strcpy(name, "/dev/pty??");
   for (p1 = name1; *p1; p1++)
   {
     name[8] = *p1;
     for (p2 = name2; *p2; p2++)
     {
       name[9] = *p2;
-      pty = open (name, O_RDWR);
+      pty = open(name, O_RDWR);
       if (pty >= 0)
         goto found;
       if (errno == ENOENT)
@@ -616,36 +613,36 @@ bsd:
   goto bail;
 
 found:
-  line = malloc (strlen (name) + 1);
-  chk_alloc (line);
+  line = malloc(strlen(name) + 1);
+  chk_alloc(line);
   if (line != NULL)
   {
-    strcpy (line, name);
+    strcpy(line, name);
     line[5] = 't';
-    rc = chown (line, getuid (), getgid ());
+    rc = chown(line, getuid(), getgid());
     if (rc < 0)
     {
       /* TRANSLATORS: do not translate "tty" or "pty" */
-      fputs (_("\
+      fputs(_("\
 Warning: could not change ownership of tty -- pty is insecure!\n"), stderr);
     }
-    rc = chmod (line, S_IRUSR | S_IWUSR | S_IWGRP);
+    rc = chmod(line, S_IRUSR | S_IWUSR | S_IWGRP);
     if (rc < 0)
     {
       /* TRANSLATORS: do not translate "tty" or "pty" */
-      fputs (_
-             ("Warning: could not change permissions of tty -- pty is insecure!\n"),
-             stderr);
+      fputs(_
+            ("Warning: could not change permissions of tty -- pty is insecure!\n"),
+            stderr);
     }
 
     *line_return = line;
     return pty;
   }
-  exit (EXIT_FAILURE);
+  exit(EXIT_FAILURE);
 
 bail:
   if (pty >= 0)
-    close (pty);
+    close(pty);
 
   return -1;
 }
@@ -657,7 +654,7 @@ bail:
 #define PTY01 "0123456789abcdef"
 
 static int
-getPtyMaster (char *tty10, char *tty01)
+getPtyMaster(char *tty10, char *tty01)
 {
   char *p10;
   char *p01;
@@ -670,7 +667,7 @@ getPtyMaster (char *tty10, char *tty01)
     for (p01 = PTY01; *p01 != '\0'; p01++)
     {
       dev[9] = *p01;
-      fd = open (dev, O_RDWR);
+      fd = open(dev, O_RDWR);
       if (fd >= 0)
       {
         *tty10 = *p10;
@@ -679,86 +676,86 @@ getPtyMaster (char *tty10, char *tty01)
       }
     }
   }
-  fputs (_("No more pty devices available.\n"), stderr);
-  exit (1);
+  fputs(_("No more pty devices available.\n"), stderr);
+  exit(1);
   return fd;
 }
 #endif
 
 
 int
-main (int argc, char *const argv[])
+main(int argc, char *const argv[])
 {
-  setlocale (LC_ALL, "");
+  setlocale(LC_ALL, "");
 #ifdef ENABLE_NLS
-  bindtextdomain (PACKAGE_STRING, LOCALEDIR);
-  textdomain (PACKAGE_STRING);
+  bindtextdomain(PACKAGE_STRING, LOCALEDIR);
+  textdomain(PACKAGE_STRING);
 #endif
 
 #ifdef SOCKS
-  SOCKSinit (argv[0]);
+  SOCKSinit(argv[0]);
 #endif
   struct st_cmdarg cmdarg;
-  cmdargParse (argc, argv, &cmdarg);
-  fputs (PACKAGE_STRING " " VERSION "\n", stdout);
+  cmdargParse(argc, argv, &cmdarg);
+  fputs(PACKAGE_STRING " " VERSION "\n", stdout);
   /* TRANSLATORS: do not translate `at%%q` */
-  fputs (_("Enter 'at%q' to quit\n\n"), stdout);
+  fputs(_("Enter 'at%q' to quit\n\n"), stdout);
 
   struct st_sock sock;
-  sockInit (&sock);
+  sockInit(&sock);
 
   switch (cmdarg.ttymode)
   {
 #ifdef HAVE_GRANTPT
     char *ptyslave;
   case CA_SHOWDEV:
-    tty.rfd = tty.wfd = getPtyMaster (&ptyslave);
-    puts (ptyslave);
+    tty.rfd = tty.wfd = getPtyMaster(&ptyslave);
+    puts(ptyslave);
     return 0;
   case CA_COMMX:
-    tty.rfd = tty.wfd = getPtyMaster (&ptyslave);
-    commxForkExec (cmdarg.commx, ptyslave);
+    tty.rfd = tty.wfd = getPtyMaster(&ptyslave);
+    commxForkExec(cmdarg.commx, ptyslave);
     break;
 #else
     char c10, c01;
   case CA_SHOWDEV:
-    tty.rfd = tty.wfd = getPtyMaster (&c10, &c01);
-    printf ("%c%c\n", c10, c01);
+    tty.rfd = tty.wfd = getPtyMaster(&c10, &c01);
+    printf("%c%c\n", c10, c01);
     return 0;
   case CA_COMMX:
-    tty.rfd = tty.wfd = getPtyMaster (&c10, &c01);
-    commxForkExec (cmdarg.commx, c10, c01);
+    tty.rfd = tty.wfd = getPtyMaster(&c10, &c01);
+    commxForkExec(cmdarg.commx, c10, c01);
     break;
 #endif
   case CA_STDINOUT:
     tty.rfd = 0;
     tty.wfd = 1;
-    setTty ();
+    setTty();
     break;
   case CA_DEVGIVEN:
-    tty.rfd = tty.wfd = openPtyMaster (cmdarg.dev);
+    tty.rfd = tty.wfd = openPtyMaster(cmdarg.dev);
     break;
   }
 
   struct cmdBuf cmdBuf;
-  ttyBufWReset ();
-  telOptInit ();
-  atcmdInit (&cmdarg, &sock);                 /* initialize atcmd */
+  ttyBufWReset();
+  telOptInit();
+  atcmdInit(&cmdarg, &sock);    /* initialize atcmd */
 
 CMDMODE:
-  switch (cmdMode (&cmdBuf, &sock))
+  switch (cmdMode(&cmdBuf, &sock))
   {
   case CMDST_ATD:
     if (sock.alive)
     {
-      putTtyCmdstat (CMDST_ERROR);
+      putTtyCmdstat(CMDST_ERROR);
       goto CMDMODE;
     }
     goto DIAL;
   case CMDST_ATO:
     if (!sock.alive)
     {
-      putTtyCmdstat (CMDST_NOCARRIER);
+      putTtyCmdstat(CMDST_NOCARRIER);
       goto CMDMODE;
     }
     goto ONLINE;
@@ -768,13 +765,13 @@ CMDMODE:
   return 1;
 
 DIAL:
-  telOptReset ();               /* before sockDial(), which may change telOpt.xx */
-  switch (m2k_sockDial (&sock))
+  telOptReset();                /* before sockDial(), which may change telOpt.xx */
+  switch (m2k_sockDial(&sock))
   {
   case 0:                      /* connect */
     goto ONLINE;
   case 1:                      /* error */
-    putTtyCmdstat (CMDST_NOCARRIER);
+    putTtyCmdstat(CMDST_NOCARRIER);
     goto CMDMODE;
   default:;
   }
@@ -782,14 +779,14 @@ DIAL:
   return 1;
 
 ONLINE:
-  putTtyCmdstat (CMDST_CONNECT);
-  switch (onlineMode (&sock))
+  putTtyCmdstat(CMDST_CONNECT);
+  switch (onlineMode(&sock))
   {
   case 0:                      /* connection lost */
-    putTtyCmdstat (CMDST_NOCARRIER);
+    putTtyCmdstat(CMDST_NOCARRIER);
     goto CMDMODE;
   case 1:                      /* +++ */
-    putTtyCmdstat (CMDST_OK);
+    putTtyCmdstat(CMDST_OK);
     goto CMDMODE;
   default:;
   }
