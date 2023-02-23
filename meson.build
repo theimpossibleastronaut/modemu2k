@@ -7,7 +7,7 @@ project(
   default_options: [
     'warning_level=3',
     'b_sanitize=address,undefined',
-    'lundef=false'
+    'b_lundef=false'
     ]
   )
 
