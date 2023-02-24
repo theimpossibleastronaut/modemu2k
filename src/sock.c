@@ -213,6 +213,7 @@ m2k_sockDial(st_sock * sock)
         tmp = 0;
         ioctl(sock->fd, FIONBIO, &tmp); /* blocking i/o */
         sock->alive = 1;
+        freeaddrinfo(result);
         return 0;
       }
 
