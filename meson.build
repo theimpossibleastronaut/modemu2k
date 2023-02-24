@@ -21,16 +21,11 @@ cc = meson.get_compiler('c')
 extra_flags = [
   '-fno-common',
   '-fstack-protector-strong',
-  '-fanalyzer',
   '-Wformat-security',
   '-Wformat-overflow=2'
 ]
 
-foreach cflag : extra_flags
-  if cc.has_argument(cflag)
-    add_project_arguments(cflag, language: 'c')
-  endif
-endforeach
+add_project_arguments(cc.get_supported_arguments(extra_flags), language: 'c')
 
 localedir = join_paths(get_option('prefix'), get_option('localedir'))
 
