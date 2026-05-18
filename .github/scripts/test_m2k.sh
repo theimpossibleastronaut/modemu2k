@@ -28,7 +28,3 @@ ninja -v
 if [ -n "$USE_VALGRIND" ]; then
   meson test --setup=valgrind
 fi
-
-# nls disabled
-meson configure -Dnls=false
-ninja -v
