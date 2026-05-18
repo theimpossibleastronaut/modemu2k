@@ -348,7 +348,8 @@ onlineMode(m2k_t *ctx, st_sock *sock)
     }
     if (FD_ISSET(ctx->tty.wfd, &wfds))
     {
-      ttyBufWrite(ctx, sock);
+      if (ttyBufWrite(ctx, sock) != M2K_OK)
+        break;
     }
     if (FD_ISSET(sock->fd, &rfds))
     {
@@ -357,7 +358,8 @@ onlineMode(m2k_t *ctx, st_sock *sock)
     }
     if (FD_ISSET(ctx->tty.rfd, &rfds))
     {
-      ttyBufRead(ctx, sock);
+      if (ttyBufRead(ctx, sock) != M2K_OK)
+        break;
       ttyReadLoop(ctx);
     }
   }
@@ -502,7 +504,8 @@ cmdMode(m2k_t *ctx, struct cmdBuf *cmdBuf, st_sock *sock)
 
     if (FD_ISSET(ctx->tty.wfd, &wfds))
     {
-      ttyBufWrite(ctx, sock);        /* put CR before dialup */
+      if (ttyBufWrite(ctx, sock) != M2K_OK)
+        return CMDST_PTY_CLOSED;
       if (cmdBuf->eol)
       {
         stat = cmdLex(ctx, (char *) cmdBuf->buf, sock);
@@ -522,7 +525,8 @@ cmdMode(m2k_t *ctx, struct cmdBuf *cmdBuf, st_sock *sock)
     }
     if (FD_ISSET(ctx->tty.rfd, &rfds))
     {
-      ttyBufRead(ctx, sock);
+      if (ttyBufRead(ctx, sock) != M2K_OK)
+        return CMDST_PTY_CLOSED;
       cmdReadLoop(ctx, cmdBuf);
     }
   }
@@ -539,7 +543,7 @@ openPtyMaster(const char *dev)
   if (fd < 0)
   {
     fputs("Pty open error.\n", stderr);
-    exit(1);
+    return -1;
   }
   return fd;
 }
@@ -615,28 +619,28 @@ bsd:
 
 found:
   line = malloc(strlen(name) + 1);
-  if (line != NULL)
+  if (line == NULL)
   {
-    strcpy(line, name);
-    line[5] = 't';
-    rc = chown(line, getuid(), getgid());
-    if (rc < 0)
-    {
-      /* TRANSLATORS: do not translate "tty" or "pty" */
-      fputs("Warning: could not change ownership of tty -- pty is insecure!\n", stderr);
-    }
-    rc = chmod(line, S_IRUSR | S_IWUSR | S_IWGRP);
-    if (rc < 0)
-    {
-      /* TRANSLATORS: do not translate "tty" or "pty" */
-      fputs("Warning: could not change permissions of tty -- pty is insecure!\n",
-            stderr);
-    }
-
-    *line_return = line;
-    return pty;
+    close(pty);
+    return -1;
   }
-  exit(EXIT_FAILURE);
+  strcpy(line, name);
+  line[5] = 't';
+  rc = chown(line, getuid(), getgid());
+  if (rc < 0)
+  {
+    /* TRANSLATORS: do not translate "tty" or "pty" */
+    fputs("Warning: could not change ownership of tty -- pty is insecure!\n", stderr);
+  }
+  rc = chmod(line, S_IRUSR | S_IWUSR | S_IWGRP);
+  if (rc < 0)
+  {
+    /* TRANSLATORS: do not translate "tty" or "pty" */
+    fputs("Warning: could not change permissions of tty -- pty is insecure!\n",
+          stderr);
+  }
+  *line_return = line;
+  return pty;
 
 bail:
   if (pty >= 0)
@@ -675,8 +679,7 @@ getPtyMaster(char *tty10, char *tty01)
     }
   }
   fputs("No more pty devices available.\n", stderr);
-  exit(1);
-  return fd;
+  return -1;
 }
 #endif
 
@@ -705,21 +708,29 @@ main(int argc, char *const argv[])
     char *ptyslave;
   case CA_SHOWDEV:
     ctx->tty.rfd = ctx->tty.wfd = getPtyMaster(&ptyslave);
+    if (ctx->tty.rfd < 0)
+      return EXIT_FAILURE;
     puts(ptyslave);
     return 0;
   case CA_COMMX:
     ctx->tty.rfd = ctx->tty.wfd = getPtyMaster(&ptyslave);
-    commxForkExec(ctx, cmdarg.commx, ptyslave);
+    if (ctx->tty.rfd < 0 ||
+        commxForkExec(ctx, cmdarg.commx, ptyslave) != M2K_OK)
+      return EXIT_FAILURE;
     break;
 #else
     char c10, c01;
   case CA_SHOWDEV:
     ctx->tty.rfd = ctx->tty.wfd = getPtyMaster(&c10, &c01);
+    if (ctx->tty.rfd < 0)
+      return EXIT_FAILURE;
     printf("%c%c\n", c10, c01);
     return 0;
   case CA_COMMX:
     ctx->tty.rfd = ctx->tty.wfd = getPtyMaster(&c10, &c01);
-    commxForkExec(ctx, cmdarg.commx, c10, c01);
+    if (ctx->tty.rfd < 0 ||
+        commxForkExec(ctx, cmdarg.commx, c10, c01) != M2K_OK)
+      return EXIT_FAILURE;
     break;
 #endif
   case CA_STDINOUT:
@@ -729,6 +740,8 @@ main(int argc, char *const argv[])
     break;
   case CA_DEVGIVEN:
     ctx->tty.rfd = ctx->tty.wfd = openPtyMaster(cmdarg.dev);
+    if (ctx->tty.rfd < 0)
+      return EXIT_FAILURE;
     break;
   }
 
@@ -754,6 +767,8 @@ CMDMODE:
       goto CMDMODE;
     }
     goto ONLINE;
+  case CMDST_PTY_CLOSED:
+    return 0;
   default:;
   }
 

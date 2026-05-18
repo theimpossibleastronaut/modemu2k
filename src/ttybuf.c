@@ -1,6 +1,5 @@
 
 #include <sys/time.h>   /*->ttybuf.h (timeval)*/
-#include <stdlib.h>             /*(getenv) */
 #include <unistd.h>
 #include "modemu2k.h"       /*->ttybuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 #include "m2k_ctx.h"
@@ -26,7 +25,7 @@ getTty1(m2k_t *ctx)
   return ((ctx->ttyBufR.ptr >= ctx->ttyBufR.end) ? -1 : *ctx->ttyBufR.ptr++);
 }
 
-void
+m2k_err_t
 ttyBufRead(m2k_t *ctx, st_sock *sock)
 {
   int l;
@@ -38,12 +37,13 @@ ttyBufRead(m2k_t *ctx, st_sock *sock)
     verboseOut(ctx, VERB_MISC, "Pty closed. (read() returned %d)\r\n", l);
     if (l < 0)
       verbosePerror(ctx, VERB_MISC, "read()");
-    exit(0);
+    return M2K_ERR_PTY;
   }
   ctx->ttyBufR.prevT = ctx->ttyBufR.newT;
   gettimeofday(&ctx->ttyBufR.newT, NULL);
   ctx->ttyBufR.ptr = ctx->ttyBufR.buf;
   ctx->ttyBufR.end = ctx->ttyBufR.buf + l;
+  return M2K_OK;
 }
 
 
@@ -68,14 +68,14 @@ ttyBufWReady(m2k_t *ctx)
   return !ctx->ttyBufW.stop;
 }
 
-void
+m2k_err_t
 ttyBufWrite(m2k_t *ctx, st_sock *sock)
 {
   int wl, l;
 
   wl = ctx->ttyBufW.ptr - ctx->ttyBufW.top;
   if (wl == 0)
-    return;
+    return M2K_OK;
   l = write(ctx->tty.wfd, ctx->ttyBufW.top, wl);
   if (l <= 0)
   {
@@ -83,17 +83,16 @@ ttyBufWrite(m2k_t *ctx, st_sock *sock)
     verboseOut(ctx, VERB_MISC, "Pty closed. (write() returned %d)\r\n", l);
     if (l < 0)
       verbosePerror(ctx, VERB_MISC, "write()");
-    exit(0);
+    return M2K_ERR_PTY;
   }
   else if (l < wl)
   {
     ctx->ttyBufW.top += l;
-    /*return 1; *//* needs retry */
-    return;
+    return M2K_OK;
   }
   ctx->ttyBufW.ptr = ctx->ttyBufW.top = ctx->ttyBufW.buf;
   ctx->ttyBufW.stop = 0;
-  return;
+  return M2K_OK;
 }
 
 void

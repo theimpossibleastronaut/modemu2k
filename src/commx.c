@@ -23,7 +23,7 @@ sigchld(int dummy)
   }
 }
 
-static void
+static int
 forkExec(char *s)
 {
   static char *argv[4] = { "sh", "-c", "", NULL };
@@ -34,7 +34,7 @@ forkExec(char *s)
   {
   case -1:                     /*error */
     perror("fork()");
-    exit(1);
+    return -1;
   case 0:                      /*child */
     signal(SIGCHLD, SIG_DFL);
     argv[2] = s;
@@ -44,31 +44,26 @@ forkExec(char *s)
   default:                     /*parent */
     signal(SIGINT, SIG_IGN);
     signal(SIGQUIT, SIG_IGN);
+    return 0;
   }
 }
 
 #ifdef HAVE_GRANTPT
-void
+m2k_err_t
 commxForkExec(m2k_t *ctx, const char *cmd, char *ptyslave)
 {
   char *s;
   s = malloc(strlen(cmd) + strlen(ptyslave) + 1);
   chk_alloc(ctx, s);
-  if (s != NULL)
-  {
-    if (strcmp("/dev/", ptyslave) == 0)
-      ptyslave += 5;
-    sprintf(s, cmd, ptyslave);
-    forkExec(s);
-    return;
-  }
-  else
-  {
-    return;
-  }
+  if (s == NULL)
+    return M2K_ERR_NOMEM;
+  if (strcmp("/dev/", ptyslave) == 0)
+    ptyslave += 5;
+  sprintf(s, cmd, ptyslave);
+  return forkExec(s) < 0 ? M2K_ERR_PTY : M2K_OK;
 }
 #else
-void
+m2k_err_t
 commxForkExec(m2k_t *ctx, const char *cmd, char c10, char c01)
 {
   char c[16];
@@ -80,15 +75,9 @@ commxForkExec(m2k_t *ctx, const char *cmd, char c10, char c01)
   c[5] = 0;
   s = malloc(strlen(cmd) + strlen(c) + 1);
   chk_alloc(ctx, s);
-  if (s != NULL)
-  {
-    sprintf(s, cmd, c);         /*'%s' -> 'p1' or sth */
-    forkExec(s);
-    return;
-  }
-  else
-  {
-    return;
-  }
+  if (s == NULL)
+    return M2K_ERR_NOMEM;
+  sprintf(s, cmd, c);           /*'%s' -> 'p1' or sth */
+  return forkExec(s) < 0 ? M2K_ERR_PTY : M2K_OK;
 }
 #endif

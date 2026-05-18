@@ -138,6 +138,16 @@ typedef struct
   int pv;
 } Atcmd;
 
+typedef enum {
+  M2K_OK = 0,
+  M2K_ERR_NOMEM,
+  M2K_ERR_PTY,
+  M2K_ERR_SOCKET,
+  M2K_ERR_TIMEOUT,
+  M2K_ERR_CANCELED,
+  M2K_ERR_BUG,
+} m2k_err_t;
+
 /* Forward declaration so function signatures below can use m2k_t * */
 typedef struct m2k_s m2k_t;
 
@@ -183,9 +193,9 @@ int atcmdPV(m2k_t *ctx, const char *s);
 
 // commx
 #ifdef HAVE_GRANTPT
-void commxForkExec(m2k_t *ctx, const char *cmd, char *ptyslave);
+m2k_err_t commxForkExec(m2k_t *ctx, const char *cmd, char *ptyslave);
 #else
-void commxForkExec(m2k_t *ctx, const char *cmd, char c10, char c01);
+m2k_err_t commxForkExec(m2k_t *ctx, const char *cmd, char c10, char c01);
 #endif
 
 // sockbuf
@@ -313,7 +323,7 @@ bool ttyBufRHasData(m2k_t *ctx);
 
 int getTty1(m2k_t *ctx);
 
-void ttyBufRead(m2k_t *ctx, st_sock *sock);
+m2k_err_t ttyBufRead(m2k_t *ctx, st_sock *sock);
 
 
 /* writing tty */
@@ -334,7 +344,7 @@ bool ttyBufWHasData(m2k_t *ctx);
 bool ttyBufWReady(m2k_t *ctx);
 #define putTtyStr(ctx,s) putTtyN((ctx), (s), sizeof(s)-1)
 
-void ttyBufWrite(m2k_t *ctx, st_sock *sock);
+m2k_err_t ttyBufWrite(m2k_t *ctx, st_sock *sock);
 void putTty1(m2k_t *ctx, unsigned char c);
 void putTtyN(m2k_t *ctx, const char *cp, int n);
 
@@ -360,7 +370,8 @@ typedef enum
   CMDST_NOCARRIER,
   CMDST_NOAT,
   CMDST_ATD,
-  CMDST_ATO
+  CMDST_ATO,
+  CMDST_PTY_CLOSED
 } Cmdstat;
 
 Cmdstat cmdLex(m2k_t *ctx, const char *ptr, st_sock *sock);

@@ -261,8 +261,7 @@ telOptHandle(m2k_t *ctx, int cmd, int opt)
     negaResCmd = WILL;
     break;
   default:
-    fputs("bug\r\n", stderr);
-    exit(1);
+    abort();
   }
 
   if (tostp->req == mustNegate || tostp->req == betterNegate)

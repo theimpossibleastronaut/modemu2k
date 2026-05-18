@@ -391,7 +391,6 @@ atcmdPQ(m2k_t *ctx, st_sock *sock)
   (void)ctx;
   sockShutdown(sock);           /* may discard unsent chars in kernel,
                                    or do ATH before quitting */
-  exit(0);
 }
 
 /* %Rn */
