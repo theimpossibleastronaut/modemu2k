@@ -6,6 +6,7 @@ test_cases = [
   'sockbuf',
   'atcmd',
   'ipv6',
+  'localhost',
   ]
 
 foreach case : test_cases

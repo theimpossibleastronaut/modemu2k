@@ -100,130 +100,126 @@ m2k_sockDial(st_sock * sock)
     sock->fd =
       socket(sock->rp->ai_family, sock->rp->ai_socktype,
              sock->rp->ai_protocol);
-    if (sock->fd != -1)
-      break;
-  }
+    if (sock->fd == -1)
+      continue;
 
-  if (sock->fd == -1)
-  {                             /* No address succeeded */
-    perror("socket");
-    if (result)
-      freeaddrinfo(result);
-    return 1;
-  }
-
-  int tmp = 1;
-  if (setsockopt(sock->fd, SOL_SOCKET, SO_OOBINLINE, &tmp, sizeof(tmp)) < 0)
-  {
-    sockClose(sock);
-    perror("setsockopt()");
-    return 1;
-  }
-
-#ifdef NO_DIAL_CANCELING
-  /* blocking connect. */
-  if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) != 0)
-  {
-    if (result)
-      freeaddrinfo(result);
-    sockShutdown(sock);
-    perror("connect()");
-    return 1;
-  }
-
-  sock->alive = 1;
-  return 0;
-#else /*!ifdef NO_DIAL_CANCELING */
-  {
-    /* nonblocking connect. */
-    /* SOCKS version 4.2 or higher is required for SOCKS support */
-    fd_set rfds, wfds;
-    struct timeval tv;
-    struct timeval to, t;
-
-    tmp = 1;
-    ioctl(sock->fd, FIONBIO, &tmp);     /* non-blocking i/o */
-
-    /* but Term's connect() blocks here... */
-    if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0
-        && errno != EINPROGRESS)
+    int tmp = 1;
+    if (setsockopt(sock->fd, SOL_SOCKET, SO_OOBINLINE, &tmp, sizeof(tmp)) < 0)
     {
-      perror("connect()");
-      if (result)
-        freeaddrinfo(result);
-      sockShutdown(sock);
-      return 1;
+      perror("setsockopt()");
+      sockClose(sock);
+      continue;
     }
 
-    FD_ZERO(&rfds);
-    FD_ZERO(&wfds);
-    tv.tv_sec = 0;
-
-    timevalSet10ms(&t, atcmd.s[7] * 100);       /* S7 sec */
-    gettimeofday(&to, NULL);
-    timevalAdd(&to, &t);        /* S7 sec after */
-
-    /* SOCKS Rselect() first checks if connected, then select(). */
-    /* so, select() with large timeval is inappropriate */
-    do
+#ifdef NO_DIAL_CANCELING
+    /* blocking connect. */
+    if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) == 0)
     {
-      if (!atcmd.pd)
-        FD_SET(tty.rfd, &rfds);
-      FD_SET(sock->fd, &wfds);
-      tv.tv_usec = 200 * 1000;  /* 0.2sec period */
+      sock->alive = 1;
+      freeaddrinfo(result);
+      return 0;
+    }
+    perror("connect()");
+    sockClose(sock);
+    /* try next address */
+#else /*!ifdef NO_DIAL_CANCELING */
+    {
+      /* nonblocking connect. */
+      /* SOCKS version 4.2 or higher is required for SOCKS support */
+      fd_set rfds, wfds;
+      struct timeval tv;
+      struct timeval to, t;
 
-    RETRY:
-      if (select(sock->fd + 1, &rfds, &wfds, NULL, &tv) < 0)
+      tmp = 1;
+      ioctl(sock->fd, FIONBIO, &tmp);   /* non-blocking i/o */
+
+      /* but Term's connect() blocks here... */
+      if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0
+          && errno != EINPROGRESS)
       {
-        if (errno == EINTR)
-          goto RETRY;
-        perror("select()");
-        sockShutdown(sock);
-        return 1;
+        perror("connect()");
+        sockClose(sock);
+        continue;               /* try next address */
       }
-#if 0
-      verboseOut(VERB_MISC, "tty=%d, sock=%d\r\n",
-                 FD_ISSET(tty.rfd, &rfds), FD_ISSET(sock->fd, &wfds));
-#endif
-      if (FD_ISSET(tty.rfd, &rfds))
-      {
-        sockShutdown(sock);
-        verboseOut(VERB_MISC,
-                   "Connecting attempt canceled by user input.\r\n");
-        return 1;
-      }
-      /* check if really connected or not */
 
-      /*if (FD_ISSET(sock->fd, &wfds)
-         && getpeername(sock->fd, (struct sockaddr *)&sa, &tmp) == 0) */
+      FD_ZERO(&rfds);
+      FD_ZERO(&wfds);
+      tv.tv_sec = 0;
 
-      /* SOCKS requires this check method (ref: What_SOCKS_expects) */
-      if (FD_ISSET(sock->fd, &wfds))
+      timevalSet10ms(&t, atcmd.s[7] * 100);     /* S7 sec */
+      gettimeofday(&to, NULL);
+      timevalAdd(&to, &t);      /* S7 sec after */
+
+      /* SOCKS Rselect() first checks if connected, then select(). */
+      /* so, select() with large timeval is inappropriate */
+      do
       {
-        if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0
-            && errno != EISCONN)
+        if (!atcmd.pd)
+          FD_SET(tty.rfd, &rfds);
+        FD_SET(sock->fd, &wfds);
+        tv.tv_usec = 200 * 1000;        /* 0.2sec period */
+
+      RETRY:
+        if (select(sock->fd + 1, &rfds, &wfds, NULL, &tv) < 0)
         {
-          perror("connect()-2");
-          if (result)
-            freeaddrinfo(result);
+          if (errno == EINTR)
+            goto RETRY;
+          perror("select()");
+          freeaddrinfo(result);
           sockShutdown(sock);
           return 1;
         }
+#if 0
+        verboseOut(VERB_MISC, "tty=%d, sock=%d\r\n",
+                   FD_ISSET(tty.rfd, &rfds), FD_ISSET(sock->fd, &wfds));
+#endif
+        if (FD_ISSET(tty.rfd, &rfds))
+        {
+          freeaddrinfo(result);
+          sockShutdown(sock);
+          verboseOut(VERB_MISC,
+                     "Connecting attempt canceled by user input.\r\n");
+          return 1;
+        }
+        /* check if really connected or not */
 
-        tmp = 0;
-        ioctl(sock->fd, FIONBIO, &tmp); /* blocking i/o */
-        sock->alive = 1;
-        freeaddrinfo(result);
-        return 0;
+        /*if (FD_ISSET(sock->fd, &wfds)
+           && getpeername(sock->fd, (struct sockaddr *)&sa, &tmp) == 0) */
+
+        /* SOCKS requires this check method (ref: What_SOCKS_expects) */
+        if (FD_ISSET(sock->fd, &wfds))
+        {
+          if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0
+              && errno != EISCONN)
+          {
+            perror("connect()-2");
+            sockClose(sock);
+            goto next_addr;     /* try next address */
+          }
+
+          tmp = 0;
+          ioctl(sock->fd, FIONBIO, &tmp);       /* blocking i/o */
+          sock->alive = 1;
+          freeaddrinfo(result);
+          return 0;
+        }
+
+        gettimeofday(&t, NULL);
       }
+      while (timevalCmp(&t, &to) < 0);
 
-      gettimeofday(&t, NULL);
+      freeaddrinfo(result);
+      sockShutdown(sock);
+      verboseOut(VERB_MISC, "Connection attempt timed out.\r\n");
+      return 1;                 /* timeout */
     }
-    while (timevalCmp(&t, &to) < 0);
-
-    sockShutdown(sock);
-    verboseOut(VERB_MISC, "Connection attempt timed out.\r\n");
-    return 1;                   /* timeout */
-  }
+  next_addr:
+    ;                           /* try next address in list */
 #endif /*ifdef NO_DIAL_CANCELING */
+  }
+
+  /* No address succeeded */
+  if (result)
+    freeaddrinfo(result);
+  return 1;
 }
