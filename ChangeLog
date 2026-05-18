@@ -1,6 +1,8 @@
 (in-progress):
   * Removed gettext/NLS support and translations
   * Removed valgrind test setup
+  * Expanded test suite: timeval, sockbuf, atcmd unit tests; IPv4/IPv6
+    connection tests (IPv6 skipped with exit 77 if no interface present)
 
 2022-08-18
 - modemu2k (v0.1.0)

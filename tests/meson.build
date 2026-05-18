@@ -1,16 +1,21 @@
 # TODO: Add more tests!
 
 test_cases = [
-  'test_connect',
+  'connect',
+  'timeval',
+  'sockbuf',
+  'atcmd',
+  'ipv6',
   ]
 
 foreach case : test_cases
+  name = 'test_' + case
   exe = executable(
-    case,
-    case + '.c',
+    name,
+    name + '.c',
     include_directories: '../src',
     c_args : ['-DUSE_AS_TEST_LIB'],
     dependencies: [dep_modemu2k]
     )
-  test(case, exe)
+  test(name, exe)
 endforeach
