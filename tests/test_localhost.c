@@ -6,6 +6,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "modemu2k.h"
+#include "m2k_ctx.h"
+
+static m2k_t ctx_storage;
+static m2k_t *ctx = &ctx_storage;
 
 static pid_t server_pid = -1;
 static int server_port = -1;
@@ -59,8 +63,8 @@ start_ipv4_only_server(void)
 static void
 setup(void)
 {
-  atcmd.s[7] = 5;
-  atcmd.pd = 1;
+  ctx->atcmd.s[7] = 5;
+  ctx->atcmd.pd = 1;
 }
 
 static void
@@ -69,9 +73,9 @@ test_localhost_fallback(void)
   char dialstr[32];
   snprintf(dialstr, sizeof(dialstr), "localhost %d", server_port);
   st_sock sock;
-  telOptReset();
-  m2k_atcmdD(dialstr, ATDA_STR, ATDP_NUM);
-  assert(m2k_sockDial(&sock) == 0);
+  telOptReset(ctx);
+  m2k_atcmdD(ctx, dialstr, ATDA_STR, ATDP_NUM);
+  assert(m2k_sockDial(ctx, &sock) == 0);
   assert(sockShutdown(&sock) == 0);
 }
 

@@ -30,6 +30,7 @@
 // #include <sys/time.h>   /*->ttybuf.h (timeval)*/
 #include <stdlib.h>             /*(getenv) */
 #include "modemu2k.h"
+#include "m2k_ctx.h"
 
 void
 sockInit(struct st_sock *sock)
@@ -40,7 +41,7 @@ sockInit(struct st_sock *sock)
 }
 
 int
-sockClose(st_sock * sock)
+sockClose(st_sock *sock)
 {
   if (sock->fd <= 0)
     return 0;
@@ -54,7 +55,7 @@ sockClose(st_sock * sock)
 }
 
 int
-sockShutdown(st_sock * sock)
+sockShutdown(st_sock *sock)
 {
   if (sock->fd <= 0)
     return 0;
@@ -63,7 +64,7 @@ sockShutdown(st_sock * sock)
 }
 
 int
-m2k_sockDial(st_sock * sock)
+m2k_sockDial(m2k_t *ctx, st_sock *sock)
 {
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
@@ -80,15 +81,15 @@ m2k_sockDial(st_sock * sock)
 
   char out_port[PORT_MAX + 1];
 
-  if (atcmd.d.port.type == ATDP_NUL)
+  if (ctx->atcmd.d.port.type == ATDP_NUL)
     snprintf(out_port, sizeof out_port, "%d", DEFAULT_PORT);
   else
   {
-    strcpy(out_port, atcmd.d.port.str);
-    telOpt.sentReqs = 1;        /* skip sending option requests */
+    strcpy(out_port, ctx->atcmd.d.port.str);
+    ctx->telOpt.sentReqs = 1;        /* skip sending option requests */
   }
 
-  s = getaddrinfo(atcmd.d.addr.str, out_port, &hints, &result);
+  s = getaddrinfo(ctx->atcmd.d.addr.str, out_port, &hints, &result);
   if (s != 0)
   {
     fprintf(stderr, "Host address lookup failed: %s\n", gai_strerror(s));
@@ -146,7 +147,7 @@ m2k_sockDial(st_sock * sock)
       FD_ZERO(&wfds);
       tv.tv_sec = 0;
 
-      timevalSet10ms(&t, atcmd.s[7] * 100);     /* S7 sec */
+      timevalSet10ms(&t, ctx->atcmd.s[7] * 100);     /* S7 sec */
       gettimeofday(&to, NULL);
       timevalAdd(&to, &t);      /* S7 sec after */
 
@@ -154,8 +155,8 @@ m2k_sockDial(st_sock * sock)
       /* so, select() with large timeval is inappropriate */
       do
       {
-        if (!atcmd.pd)
-          FD_SET(tty.rfd, &rfds);
+        if (!ctx->atcmd.pd)
+          FD_SET(ctx->tty.rfd, &rfds);
         FD_SET(sock->fd, &wfds);
         tv.tv_usec = 200 * 1000;        /* 0.2sec period */
 
@@ -170,14 +171,14 @@ m2k_sockDial(st_sock * sock)
           return 1;
         }
 #if 0
-        verboseOut(VERB_MISC, "tty=%d, sock=%d\r\n",
-                   FD_ISSET(tty.rfd, &rfds), FD_ISSET(sock->fd, &wfds));
+        verboseOut(ctx, VERB_MISC, "tty=%d, sock=%d\r\n",
+                   FD_ISSET(ctx->tty.rfd, &rfds), FD_ISSET(sock->fd, &wfds));
 #endif
-        if (FD_ISSET(tty.rfd, &rfds))
+        if (FD_ISSET(ctx->tty.rfd, &rfds))
         {
           freeaddrinfo(result);
           sockShutdown(sock);
-          verboseOut(VERB_MISC,
+          verboseOut(ctx, VERB_MISC,
                      "Connecting attempt canceled by user input.\r\n");
           return 1;
         }
@@ -210,7 +211,7 @@ m2k_sockDial(st_sock * sock)
 
       freeaddrinfo(result);
       sockShutdown(sock);
-      verboseOut(VERB_MISC, "Connection attempt timed out.\r\n");
+      verboseOut(ctx, VERB_MISC, "Connection attempt timed out.\r\n");
       return 1;                 /* timeout */
     }
   next_addr:

@@ -2,36 +2,34 @@
 #include <sys/socket.h>
 #include <stdbool.h>
 #include "modemu2k.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
+#include "m2k_ctx.h"
 
 /* reading socket */
 #define MSG_CONNECTION_CLOSED_BY_PEER "Connection closed by peer.\r\n"
 
-struct st_sockBufR sockBufR;
-struct st_sockBufW sockBufW;
-
 void
-sockBufRReset(void)
+sockBufRReset(m2k_t *ctx)
 {
-  sockBufR.ptr = sockBufR.end = sockBufR.buf;
+  ctx->sockBufR.ptr = ctx->sockBufR.end = ctx->sockBufR.buf;
 }
 
 int
-getSock1(void)
+getSock1(m2k_t *ctx)
 {
-  return ((sockBufR.ptr >= sockBufR.end) ? -1 : *sockBufR.ptr++);
+  return ((ctx->sockBufR.ptr >= ctx->sockBufR.end) ? -1 : *ctx->sockBufR.ptr++);
 }
 
 void
-sockBufRead(st_sock * sock)
+sockBufRead(m2k_t *ctx, st_sock *sock)
 {
   int l;
 
-  l = recv(sock->fd, sockBufR.buf, sizeof(sockBufR.buf), 0);
+  l = recv(sock->fd, ctx->sockBufR.buf, sizeof(ctx->sockBufR.buf), 0);
   if (l <= 0)
   {
     sock->alive = 0;
     if (l == 0)
-      verboseOut(VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
+      verboseOut(ctx, VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
     else
       /* PPP link down or something to reach here. */
       /* v0.0 exited, which comm progs don't expect. */
@@ -39,79 +37,79 @@ sockBufRead(st_sock * sock)
       perror("recv()");
     return;
   }
-  sockBufR.ptr = sockBufR.buf;
-  sockBufR.end = sockBufR.buf + l;
+  ctx->sockBufR.ptr = ctx->sockBufR.buf;
+  ctx->sockBufR.end = ctx->sockBufR.buf + l;
 }
 
 /* writing socket */
 
 void
-sockBufWReset(void)
+sockBufWReset(m2k_t *ctx)
 {
-  sockBufW.ptr = sockBufW.top = sockBufW.buf;
-  sockBufW.stop = 0;
+  ctx->sockBufW.ptr = ctx->sockBufW.top = ctx->sockBufW.buf;
+  ctx->sockBufW.stop = 0;
 }
 
 bool
-sockBufWHasData(void)
+sockBufWHasData(m2k_t *ctx)
 {
-  return (sockBufW.ptr > sockBufW.buf);
+  return (ctx->sockBufW.ptr > ctx->sockBufW.buf);
 }
 
 bool
-sockBufWReady(void)
+sockBufWReady(m2k_t *ctx)
 {
-  return !sockBufW.stop;
+  return !ctx->sockBufW.stop;
 }
 
 void
-sockBufWrite(st_sock * sock)
+sockBufWrite(m2k_t *ctx, st_sock *sock)
 {
   int wl, l;
 
-  wl = sockBufW.ptr - sockBufW.top;
+  wl = ctx->sockBufW.ptr - ctx->sockBufW.top;
   if (wl == 0)
     return;
-  l = send(sock->fd, sockBufW.top, wl, 0);
+  l = send(sock->fd, ctx->sockBufW.top, wl, 0);
   if (l <= 0)
   {
     sock->alive = 0;
     if (l == 0)
-      verboseOut(VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
+      verboseOut(ctx, VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
     else
       perror("send()");
     return;
   }
   else if (l < wl)
   {
-    sockBufW.top += l;
+    ctx->sockBufW.top += l;
     /*return 1; *//* needs retry */
     return;
   }
-  sockBufW.ptr = sockBufW.top = sockBufW.buf;
-  sockBufW.stop = 0;
+  ctx->sockBufW.ptr = ctx->sockBufW.top = ctx->sockBufW.buf;
+  ctx->sockBufW.stop = 0;
   return;
 }
 
 void
-putSock1(uchar c)
+putSock1(m2k_t *ctx, uchar c)
 {
-  if (sockBufW.ptr >= sockBufW.buf + SOCKBUFW_SIZE)
+  if (ctx->sockBufW.ptr >= ctx->sockBufW.buf + SOCKBUFW_SIZE)
   {                             /* limit */
-    if (sockBufW.ptr >= sockBufW.buf + SOCKBUFW_SIZE_A)
+    if (ctx->sockBufW.ptr >= ctx->sockBufW.buf + SOCKBUFW_SIZE_A)
     {                           /*actual limit */
       fputs("\asockBufW overrun.\n", stderr);
       return;
     }
     else
-      sockBufW.stop = 1;        /* flow control */
+      ctx->sockBufW.stop = 1;        /* flow control */
   }
-  *sockBufW.ptr++ = c;
+  *ctx->sockBufW.ptr++ = c;
 }
 
 void
-putSockN(const uchar * cp, int n)
+putSockN(m2k_t *ctx, const uchar *cp, int n)
 {
   for (; n > 0; n--, cp++)
-    putSock1(*cp);
+    putSock1(ctx, *cp);
 }

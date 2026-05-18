@@ -28,6 +28,7 @@
 #include <arpa/telnet.h>        /*TELOPT_xxx */
 #include "cmdarg.h"
 #include "modemu2k.h"
+#include "m2k_ctx.h"
 
 #ifdef BINMODE_AS_DEFAULT
 #define BINCMD "%B0=1%B1=1"
@@ -46,23 +47,20 @@
 	"%T1"		/* terminal-type = $TERM */ \
 	"&W"                    /* write to NVRAM */
 
-Atcmd atcmd;
-Atcmd atcmdNV;
-
 void
-atcmdInit(struct st_cmdarg *cmdarg, st_sock * sock)
+atcmdInit(m2k_t *ctx, struct st_cmdarg *cmdarg, st_sock *sock)
 {
   Cmdstat s;
 
   /*memset(atcmd, 0, sizeof(atcmd)); */
-  if (cmdLex(INITSTR, sock) != CMDST_OK
-      || ((s = cmdLex(getenv("MODEMU2k"), sock)) != CMDST_OK
+  if (cmdLex(ctx, INITSTR, sock) != CMDST_OK
+      || ((s = cmdLex(ctx, getenv("MODEMU2k"), sock)) != CMDST_OK
           && s != CMDST_NOAT)
-      || ((s = cmdLex(cmdarg->atcmd, sock)) != CMDST_OK && s != CMDST_NOAT))
+      || ((s = cmdLex(ctx, cmdarg->atcmd, sock)) != CMDST_OK && s != CMDST_NOAT))
   {
     fputs("Error in initialization commands.\r\n", stderr);
-    CHAR_CR = '\r';             /* force normal settings */
-    CHAR_LF = '\n';
+    CHAR_CR(ctx) = '\r';             /* force normal settings */
+    CHAR_LF(ctx) = '\n';
   }
 }
 
@@ -75,17 +73,17 @@ atcmdInit(struct st_cmdarg *cmdarg, st_sock * sock)
 /* D */
 /* dial command */
 void
-m2k_atcmdD(const char *s, AtdAType at, AtdPType pt)
+m2k_atcmdD(m2k_t *ctx, const char *s, AtdAType at, AtdPType pt)
 {
   // fprintf(stderr,"DEBUG: <%s>,%d,%d\r\n",s,at,pt);
   if (*s == '"')
     s++;
   /* "%[^:\"]:%[^\"]" */
   sscanf(s, "%" LIT(ADDR_MAX) "[^ \"] %" LIT(PORT_MAX) "[^\"]",
-         atcmd.d.addr.str, atcmd.d.port.str);
-  atcmd.d.addr.type = at;
-  atcmd.d.port.type = pt;
-  // fprintf(stderr,"DEBUG: <%s>:<%s>\r\n",atcmd.d.addr.str, atcmd.d.port.str);
+         ctx->atcmd.d.addr.str, ctx->atcmd.d.port.str);
+  ctx->atcmd.d.addr.type = at;
+  ctx->atcmd.d.port.type = pt;
+  // fprintf(stderr,"DEBUG: <%s>:<%s>\r\n",ctx->atcmd.d.addr.str, ctx->atcmd.d.port.str);
 }
 
 /* "x0" or "x" -> 0, "x1" -> 1, ... */
@@ -102,8 +100,9 @@ getNumArg(const char *s)
 /* fake command */
 /* ("x1","012") -> 0, ("y3","012") -> 1 (just a range check) */
 int
-atcmdFake(const char *s, const char *vals)
+atcmdFake(m2k_t *ctx, const char *s, const char *vals)
 {
+  (void)ctx;
   int i;
 
   i = getNumArg(s) + '0';
@@ -116,14 +115,14 @@ atcmdFake(const char *s, const char *vals)
 /* Hn */
 /* n: 0(disconnect) */
 int
-atcmdH(const char *s, st_sock * sock)
+atcmdH(m2k_t *ctx, const char *s, st_sock *sock)
 {
   if (getNumArg(s) != 0)
     return 1;
   if (sock->alive)
   {
     sockClose(sock);
-    verboseOut(VERB_MISC, "Connection closed with ATH.\r\n");
+    verboseOut(ctx, VERB_MISC, "Connection closed with ATH.\r\n");
   }
   return 0;
 }
@@ -134,29 +133,29 @@ atcmdH(const char *s, st_sock * sock)
 /*    6(show telnet option states) */
 
 static void
-prPercent(Atcmd * atcmdp)
+prPercent(m2k_t *ctx, Atcmd *atcmdp)
 {
   char buf[64];
 
   snprintf(buf, sizeof buf, "%c%c%%B0=%d  %%B1=%d  %%D%d  %%L%d  %%R%d",
-           CHAR_CR, CHAR_LF,
+           CHAR_CR(ctx), CHAR_LF(ctx),
            atcmdp->pb[0], atcmdp->pb[1], atcmdp->pd, atcmdp->pl, atcmdp->pr);
-  putTtyN(buf, strlen(buf));
+  putTtyN(ctx, buf, strlen(buf));
   if (atcmdp->pt.wont)
   {
-    putTtyStr("  %T0");
+    putTtyStr(ctx, "  %T0");
   }
   else
   {
     sprintf(buf, "  %%T=\"%s\"", atcmdp->pt.str);
-    putTtyN(buf, strlen(buf));
+    putTtyN(ctx, buf, strlen(buf));
   }
   sprintf(buf, "  %%V%d", atcmdp->pv);
-  putTtyN(buf, strlen(buf));
+  putTtyN(ctx, buf, strlen(buf));
 }
 
 static void
-prSreg(uchar * s)
+prSreg(m2k_t *ctx, uchar *s)
 {
   int i;
   char buf[8];
@@ -165,70 +164,70 @@ prSreg(uchar * s)
   {
     if (i % 8 == 0)
     {
-      putTty1(CHAR_CR);
-      putTty1(CHAR_LF);
+      putTty1(ctx, CHAR_CR(ctx));
+      putTty1(ctx, CHAR_LF(ctx));
     }
     else
-      putTtyStr("  ");
+      putTtyStr(ctx, "  ");
     snprintf(buf, sizeof buf, "S%02d=%03d", i, *s);
-    putTtyN(buf, 7);
+    putTtyN(ctx, buf, 7);
   }
 }
 
 static void
-prOption(void)
+prOption(m2k_t *ctx)
 {
   static char *onoff[] = { "off", "on " };
   char buf[64];
 
-  putTty1(CHAR_CR);
-  putTty1(CHAR_LF);
-  putTtyStr("modemu2k telnet option states:");
-  putTty1(CHAR_CR);
-  putTty1(CHAR_LF);
-  putTty1(CHAR_CR);
-  putTty1(CHAR_LF);
-  putTtyStr("OPTION  LOCAL  REMOTE");
+  putTty1(ctx, CHAR_CR(ctx));
+  putTty1(ctx, CHAR_LF(ctx));
+  putTtyStr(ctx, "modemu2k telnet option states:");
+  putTty1(ctx, CHAR_CR(ctx));
+  putTty1(ctx, CHAR_LF(ctx));
+  putTty1(ctx, CHAR_CR(ctx));
+  putTty1(ctx, CHAR_LF(ctx));
+  putTtyStr(ctx, "OPTION  LOCAL  REMOTE");
   sprintf(buf, "Binary   %s    %s",
-          onoff[telOpt.stTab[TELOPT_BINARY]->local.state],
-          onoff[telOpt.stTab[TELOPT_BINARY]->remote.state]);
-  putTty1(CHAR_CR);
-  putTty1(CHAR_LF);
-  putTtyN(buf, strlen(buf));
+          onoff[ctx->telOpt.stTab[TELOPT_BINARY]->local.state],
+          onoff[ctx->telOpt.stTab[TELOPT_BINARY]->remote.state]);
+  putTty1(ctx, CHAR_CR(ctx));
+  putTty1(ctx, CHAR_LF(ctx));
+  putTtyN(ctx, buf, strlen(buf));
   sprintf(buf, "Echo     %s    %s",
-          onoff[telOpt.stTab[TELOPT_ECHO]->local.state],
-          onoff[telOpt.stTab[TELOPT_ECHO]->remote.state]);
-  putTty1(CHAR_CR);
-  putTty1(CHAR_LF);
-  putTtyN(buf, strlen(buf));
+          onoff[ctx->telOpt.stTab[TELOPT_ECHO]->local.state],
+          onoff[ctx->telOpt.stTab[TELOPT_ECHO]->remote.state]);
+  putTty1(ctx, CHAR_CR(ctx));
+  putTty1(ctx, CHAR_LF(ctx));
+  putTtyN(ctx, buf, strlen(buf));
   sprintf(buf, "SGA      %s    %s",
-          onoff[telOpt.stTab[TELOPT_SGA]->local.state],
-          onoff[telOpt.stTab[TELOPT_SGA]->remote.state]);
-  putTty1(CHAR_CR);
-  putTty1(CHAR_LF);
-  putTtyN(buf, strlen(buf));
+          onoff[ctx->telOpt.stTab[TELOPT_SGA]->local.state],
+          onoff[ctx->telOpt.stTab[TELOPT_SGA]->remote.state]);
+  putTty1(ctx, CHAR_CR(ctx));
+  putTty1(ctx, CHAR_LF(ctx));
+  putTtyN(ctx, buf, strlen(buf));
   sprintf(buf, "TType    %s    %s",
-          onoff[telOpt.stTab[TELOPT_TTYPE]->local.state],
-          onoff[telOpt.stTab[TELOPT_TTYPE]->remote.state]);
-  putTty1(CHAR_CR);
-  putTty1(CHAR_LF);
-  putTtyN(buf, strlen(buf));
-  putTty1(CHAR_CR);
-  putTty1(CHAR_LF);
+          onoff[ctx->telOpt.stTab[TELOPT_TTYPE]->local.state],
+          onoff[ctx->telOpt.stTab[TELOPT_TTYPE]->remote.state]);
+  putTty1(ctx, CHAR_CR(ctx));
+  putTty1(ctx, CHAR_LF(ctx));
+  putTtyN(ctx, buf, strlen(buf));
+  putTty1(ctx, CHAR_CR(ctx));
+  putTty1(ctx, CHAR_LF(ctx));
 }
 
 static void
-prVersion(void)
+prVersion(m2k_t *ctx)
 {
-  putTty1(CHAR_CR);
-  putTty1(CHAR_LF);
-  putTtyStr("modemu2k version " MODEMU2K_VERSION);
-  putTty1(CHAR_CR);
-  putTty1(CHAR_LF);
+  putTty1(ctx, CHAR_CR(ctx));
+  putTty1(ctx, CHAR_LF(ctx));
+  putTtyStr(ctx, "modemu2k version " MODEMU2K_VERSION);
+  putTty1(ctx, CHAR_CR(ctx));
+  putTty1(ctx, CHAR_LF(ctx));
 }
 
 int
-atcmdI(const char *s)
+atcmdI(m2k_t *ctx, const char *s)
 {
   int idx;
 
@@ -236,32 +235,32 @@ atcmdI(const char *s)
   switch (idx)
   {
   case 4:
-    putTty1(CHAR_CR);
-    putTty1(CHAR_LF);
-    putTtyStr("modemu2k current settings:");
-    putTty1(CHAR_CR);
-    putTty1(CHAR_LF);
-    prPercent(&atcmd);
-    prSreg(atcmd.s);
-    putTty1(CHAR_CR);
-    putTty1(CHAR_LF);
+    putTty1(ctx, CHAR_CR(ctx));
+    putTty1(ctx, CHAR_LF(ctx));
+    putTtyStr(ctx, "modemu2k current settings:");
+    putTty1(ctx, CHAR_CR(ctx));
+    putTty1(ctx, CHAR_LF(ctx));
+    prPercent(ctx, &ctx->atcmd);
+    prSreg(ctx, ctx->atcmd.s);
+    putTty1(ctx, CHAR_CR(ctx));
+    putTty1(ctx, CHAR_LF(ctx));
     break;
   case 5:
-    putTty1(CHAR_CR);
-    putTty1(CHAR_LF);
-    putTtyStr("modemu2k '&W'ed settings:");
-    putTty1(CHAR_CR);
-    putTty1(CHAR_LF);
-    prPercent(&atcmdNV);
-    prSreg(atcmdNV.s);
-    putTty1(CHAR_CR);
-    putTty1(CHAR_LF);
+    putTty1(ctx, CHAR_CR(ctx));
+    putTty1(ctx, CHAR_LF(ctx));
+    putTtyStr(ctx, "modemu2k '&W'ed settings:");
+    putTty1(ctx, CHAR_CR(ctx));
+    putTty1(ctx, CHAR_LF(ctx));
+    prPercent(ctx, &ctx->atcmdNV);
+    prSreg(ctx, ctx->atcmdNV.s);
+    putTty1(ctx, CHAR_CR(ctx));
+    putTty1(ctx, CHAR_LF(ctx));
     break;
   case 6:
-    prOption();
+    prOption(ctx);
     break;
   case 7:
-    prVersion();
+    prVersion(ctx);
     break;
   default:
     return 1;
@@ -274,7 +273,7 @@ atcmdI(const char *s)
 /* Sn? */
 /* n: S register number */
 int
-atcmdSQuery(const char *s)
+atcmdSQuery(m2k_t *ctx, const char *s)
 {
   int idx;
   char buf[4];
@@ -282,12 +281,12 @@ atcmdSQuery(const char *s)
   idx = getNumArg(s);
   if (idx > SREG_MAX)
     return 1;
-  putTty1(CHAR_CR);
-  putTty1(CHAR_LF);
-  sprintf(buf, "%03u", atcmd.s[idx]);
-  putTtyN(buf, 3);
-  putTty1(CHAR_CR);
-  putTty1(CHAR_LF);             /*at least Courier does */
+  putTty1(ctx, CHAR_CR(ctx));
+  putTty1(ctx, CHAR_LF(ctx));
+  sprintf(buf, "%03u", ctx->atcmd.s[idx]);
+  putTtyN(ctx, buf, 3);
+  putTty1(ctx, CHAR_CR(ctx));
+  putTty1(ctx, CHAR_LF(ctx));             /*at least Courier does */
   return 0;
 }
 
@@ -305,36 +304,36 @@ getNumArg2(const char *s, int *n1p, int *n2p)
 /* n: S register number */
 /* m: value 0-255 */
 int
-atcmdSSet(const char *s)
+atcmdSSet(m2k_t *ctx, const char *s)
 {
   int idx, val;
 
   getNumArg2(s + 1, &idx, &val);
   if (idx > SREG_MAX || val > 255)
     return 1;
-  atcmd.s[idx] = val;
+  ctx->atcmd.s[idx] = val;
   return 0;
 }
 
 /* Z */
 /* recover &Wed settings and disconnect */
 void
-atcmdZ(st_sock * sock)
+atcmdZ(m2k_t *ctx, st_sock *sock)
 {
-  atcmd = atcmdNV;
+  ctx->atcmd = ctx->atcmdNV;
   if (sock->alive)
   {
     sockClose(sock);
-    verboseOut(VERB_MISC, "Connection closed with ATZ.\r\n");
+    verboseOut(ctx, VERB_MISC, "Connection closed with ATZ.\r\n");
   }
 }
 
 /* &W */
 /* save current settings */
 void
-atcmdAW(void)
+atcmdAW(m2k_t *ctx)
 {
-  atcmdNV = atcmd;
+  ctx->atcmdNV = ctx->atcmd;
 }
 
 /* %Bn=m */
@@ -342,29 +341,29 @@ atcmdAW(void)
 /* m: 0(better non-binary), 1(better binary), */
 /*    2(must non-binary) or 3(must binary) */
 int
-atcmdPB(const char *s)
+atcmdPB(m2k_t *ctx, const char *s)
 {
   int idx, val;
 
   getNumArg2(s + 2, &idx, &val);
   if (idx > 1 || val > 3)
     return 1;
-  atcmd.pb[idx] = val;
-  telOpt.sentReqs = 0;          /* renegotiate when returning online */
+  ctx->atcmd.pb[idx] = val;
+  ctx->telOpt.sentReqs = 0;          /* renegotiate when returning online */
   return 0;
 }
 
 /* %Dn */
 /* n: 0(enable dial canceling) or 1(disable dial canceling) */
 int
-atcmdPD(const char *s)
+atcmdPD(m2k_t *ctx, const char *s)
 {
   int i;
 
   i = getNumArg(s);
   if (i > 1)
     return 1;
-  atcmd.pd = i;
+  ctx->atcmd.pd = i;
   return 0;
 }
 
@@ -372,23 +371,24 @@ atcmdPD(const char *s)
 /* n: 0(better char mode), 1(better line mode), */
 /*    2(must char mode) or 3(must line mode) */
 int
-atcmdPL(const char *s)
+atcmdPL(m2k_t *ctx, const char *s)
 {
   int i;
 
   i = getNumArg(s);
   if (i > 3)
     return 1;
-  atcmd.pl = i;
-  telOpt.sentReqs = 0;          /* renegotiate when returning online */
+  ctx->atcmd.pl = i;
+  ctx->telOpt.sentReqs = 0;          /* renegotiate when returning online */
   return 0;
 }
 
 /* %Q */
 /* quit modemu */
 void
-atcmdPQ(st_sock * sock)
+atcmdPQ(m2k_t *ctx, st_sock *sock)
 {
+  (void)ctx;
   sockShutdown(sock);           /* may discard unsent chars in kernel,
                                    or do ATH before quitting */
   exit(0);
@@ -398,14 +398,14 @@ atcmdPQ(st_sock * sock)
 /* n: 0(cooked?? mode) or 1(raw mode: 8bit thru, no IAC handling) */
 /* overrides %B and %L settings */
 int
-atcmdPR(const char *s)
+atcmdPR(m2k_t *ctx, const char *s)
 {
   int i;
 
   i = getNumArg(s);
   if (i > 1)
     return 1;
-  atcmd.pr = i;
+  ctx->atcmd.pr = i;
   return 0;
 }
 
@@ -413,7 +413,7 @@ atcmdPR(const char *s)
 /* n: 0(dont support telnet term-type option) or */
 /*    1(send $TERM for term-type option request) */
 int
-atcmdPT(const char *s)
+atcmdPT(m2k_t *ctx, const char *s)
 {
   int i;
 
@@ -421,12 +421,12 @@ atcmdPT(const char *s)
   switch (i)
   {
   case 0:
-    atcmd.pt.wont = 1;
+    ctx->atcmd.pt.wont = 1;
     break;
   case 1:
-    strncpy(atcmd.pt.str, getenv("TERM"), PT_MAX);
-    atcmd.pt.len = strlen(atcmd.pt.str);
-    atcmd.pt.wont = 0;
+    strncpy(ctx->atcmd.pt.str, getenv("TERM"), PT_MAX);
+    ctx->atcmd.pt.len = strlen(ctx->atcmd.pt.str);
+    ctx->atcmd.pt.wont = 0;
     break;
   default:
     return 1;
@@ -437,13 +437,13 @@ atcmdPT(const char *s)
 /* %T="xxxx" */
 /* send xxxx for term-type option request */
 int
-atcmdPTSet(const char *s)
+atcmdPTSet(m2k_t *ctx, const char *s)
 {
-  sscanf(s + 4, "%" LIT(PT_MAX) "[^\"]", atcmd.pt.str);
-  /*strncpy(atcmd.pt.str, s+3, PT_MAX); */
-  atcmd.pt.len = strlen(atcmd.pt.str);
-  /*telOpt.sentReqs = 0; renegotiation will be of no effect */
-  atcmd.pt.wont = 0;
+  sscanf(s + 4, "%" LIT(PT_MAX) "[^\"]", ctx->atcmd.pt.str);
+  /*strncpy(ctx->atcmd.pt.str, s+3, PT_MAX); */
+  ctx->atcmd.pt.len = strlen(ctx->atcmd.pt.str);
+  /*ctx->telOpt.sentReqs = 0; renegotiation will be of no effect */
+  ctx->atcmd.pt.wont = 0;
   return 0;
 }
 
@@ -452,13 +452,13 @@ atcmdPTSet(const char *s)
 /*    bit0: output misc info to make up for less descriptive ATX0 indication */
 /*    bit1: output telnet option negotioation */
 int
-atcmdPV(const char *s)
+atcmdPV(m2k_t *ctx, const char *s)
 {
   int i;
 
   i = getNumArg(s);
   if (i > 255)
     return 1;
-  atcmd.pv = i;
+  ctx->atcmd.pv = i;
   return 0;
 }

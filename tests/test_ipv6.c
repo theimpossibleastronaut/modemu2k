@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "modemu2k.h"
+#include "m2k_ctx.h"
+
+static m2k_t ctx_storage;
+static m2k_t *ctx = &ctx_storage;
 
 static pid_t server_pid = -1;
 static int server_port = -1;
@@ -67,17 +71,17 @@ has_ipv6(void)
 static void
 setup(void)
 {
-  atcmd.s[7] = 20;
-  atcmd.pd = 1;
+  ctx->atcmd.s[7] = 20;
+  ctx->atcmd.pd = 1;
 }
 
 static void
 test_ipv4_numeric(void)
 {
   st_sock sock;
-  telOptReset();
-  m2k_atcmdD("140.82.113.3 80", ATDA_NUM, ATDP_NUM);
-  assert(m2k_sockDial(&sock) == 0);
+  telOptReset(ctx);
+  m2k_atcmdD(ctx, "140.82.113.3 80", ATDA_NUM, ATDP_NUM);
+  assert(m2k_sockDial(ctx, &sock) == 0);
   sleep(1);
   assert(sockShutdown(&sock) == 0);
 }
@@ -88,9 +92,9 @@ test_ipv6_loopback(void)
   char dialstr[32];
   snprintf(dialstr, sizeof(dialstr), "::1 %d", server_port);
   st_sock sock;
-  telOptReset();
-  m2k_atcmdD(dialstr, ATDA_NUM, ATDP_NUM);
-  assert(m2k_sockDial(&sock) == 0);
+  telOptReset(ctx);
+  m2k_atcmdD(ctx, dialstr, ATDA_NUM, ATDP_NUM);
+  assert(m2k_sockDial(ctx, &sock) == 0);
   sleep(1);
   assert(sockShutdown(&sock) == 0);
 }

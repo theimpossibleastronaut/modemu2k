@@ -1,13 +1,14 @@
 
 #include <stdarg.h>             /*va_list */
 #include "modemu2k.h"       /*->atcmd.h (uchar)*/
+#include "m2k_ctx.h"
 
 void
-verboseOut(int mask, const char *format, ...)
+verboseOut(m2k_t *ctx, int mask, const char *format, ...)
 {
   va_list vl;
 
-  if (!(atcmd.pv & mask))
+  if (!(ctx->atcmd.pv & mask))
     return;
   va_start(vl, format);
   vfprintf(stderr, format, vl);
@@ -15,9 +16,9 @@ verboseOut(int mask, const char *format, ...)
 }
 
 void
-verbosePerror(int mask, const char *s)
+verbosePerror(m2k_t *ctx, int mask, const char *s)
 {
-  if (!(atcmd.pv & mask))
+  if (!(ctx->atcmd.pv & mask))
     return;
   perror(s);
 }

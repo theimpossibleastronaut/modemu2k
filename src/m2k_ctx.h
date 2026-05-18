@@ -1,0 +1,16 @@
+#pragma once
+#include "modemu2k.h"
+
+struct m2k_s {
+    Atcmd              atcmd;
+    Atcmd              atcmdNV;
+    st_sock            sock;
+    struct st_sockBufR sockBufR;
+    struct st_sockBufW sockBufW;
+    struct st_tty      tty;
+    struct st_ttyBufR  ttyBufR;
+    struct st_ttyBufW  ttyBufW;
+    struct st_telOpt   telOpt;
+};
+
+typedef struct m2k_s m2k_t;

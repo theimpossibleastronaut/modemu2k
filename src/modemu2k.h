@@ -24,6 +24,8 @@
  *
  */
 
+#pragma once
+
 /**
  * @file
  * @brief core modemu2k API
@@ -81,21 +83,10 @@ typedef struct st_sock
   struct addrinfo *rp;
 } st_sock;
 
-//extern st_sock sock;
-
 void sockInit(struct st_sock *sock);
 int sockClose(st_sock * sock);
 int sockShutdown(st_sock * sock);
 
-
-/**
- * Initiate connection
- *
- * @param sock
- * @returns 0 if completed successfully, 1 otherwise
- * @see m2k_atcmdD()
- */
-int m2k_sockDial(st_sock * sock);
 
 // atcmd
 
@@ -147,20 +138,21 @@ typedef struct
   int pv;
 } Atcmd;
 
-extern Atcmd atcmd;
-extern Atcmd atcmdNV;
+/* Forward declaration so function signatures below can use m2k_t * */
+typedef struct m2k_s m2k_t;
 
-#define CHAR_ESC (atcmd.s[2])
-#define CHAR_CR (atcmd.s[3])
-#define CHAR_LF (atcmd.s[4])
-#define CHAR_BS (atcmd.s[5])
+#define CHAR_ESC(ctx) ((ctx)->atcmd.s[2])
+#define CHAR_CR(ctx)  ((ctx)->atcmd.s[3])
+#define CHAR_LF(ctx)  ((ctx)->atcmd.s[4])
+#define CHAR_BS(ctx)  ((ctx)->atcmd.s[5])
 
-void atcmdInit(struct st_cmdarg *cmdarg, st_sock * sock);
+void atcmdInit(m2k_t *ctx, struct st_cmdarg *cmdarg, st_sock *sock);
 
 
 /**
  * The host/ip and port number to be dialed
  *
+ * @param ctx context struct
  * @param s the host or IP
  * @param at
  * @param pt
@@ -168,32 +160,32 @@ void atcmdInit(struct st_cmdarg *cmdarg, st_sock * sock);
  * @see m2k_sockDial()
  *
  * Example:
- * @code atcmdD("github.com 80", ATDA_STR, ATDP_NUM); @endcode
+ * @code atcmdD(ctx, "github.com 80", ATDA_STR, ATDP_NUM); @endcode
  */
-void m2k_atcmdD(const char *s, AtdAType at, AtdPType pt);
+void m2k_atcmdD(m2k_t *ctx, const char *s, AtdAType at, AtdPType pt);
 
 
-int atcmdFake(const char *s, const char *vals);
-int atcmdH(const char *s, st_sock * sock);
-int atcmdI(const char *s);
-int atcmdSQuery(const char *s);
-int atcmdSSet(const char *s);
-void atcmdZ(st_sock * sock);
-void atcmdAW(void);
-int atcmdPB(const char *s);
-int atcmdPD(const char *s);
-int atcmdPL(const char *s);
-void atcmdPQ(st_sock * sock);
-int atcmdPR(const char *s);
-int atcmdPT(const char *s);
-int atcmdPTSet(const char *s);
-int atcmdPV(const char *s);
+int atcmdFake(m2k_t *ctx, const char *s, const char *vals);
+int atcmdH(m2k_t *ctx, const char *s, st_sock *sock);
+int atcmdI(m2k_t *ctx, const char *s);
+int atcmdSQuery(m2k_t *ctx, const char *s);
+int atcmdSSet(m2k_t *ctx, const char *s);
+void atcmdZ(m2k_t *ctx, st_sock *sock);
+void atcmdAW(m2k_t *ctx);
+int atcmdPB(m2k_t *ctx, const char *s);
+int atcmdPD(m2k_t *ctx, const char *s);
+int atcmdPL(m2k_t *ctx, const char *s);
+void atcmdPQ(m2k_t *ctx, st_sock *sock);
+int atcmdPR(m2k_t *ctx, const char *s);
+int atcmdPT(m2k_t *ctx, const char *s);
+int atcmdPTSet(m2k_t *ctx, const char *s);
+int atcmdPV(m2k_t *ctx, const char *s);
 
 // commx
 #ifdef HAVE_GRANTPT
-void commxForkExec(const char *cmd, char *ptyslave);
+void commxForkExec(m2k_t *ctx, const char *cmd, char *ptyslave);
 #else
-void commxForkExec(const char *cmd, char c10, char c01);
+void commxForkExec(m2k_t *ctx, const char *cmd, char c10, char c01);
 #endif
 
 // sockbuf
@@ -201,19 +193,19 @@ void commxForkExec(const char *cmd, char c10, char c01);
 
 /* reading socket */
 
-extern struct st_sockBufR
+struct st_sockBufR
 {
   uchar buf[SOCKBUFR_SIZE];
   uchar *ptr;
   uchar *end;
-} sockBufR;
+};
 
 
-void sockBufRReset(void);
+void sockBufRReset(m2k_t *ctx);
 
-int getSock1(void);
+int getSock1(m2k_t *ctx);
 
-void sockBufRead(st_sock * sock);
+void sockBufRead(m2k_t *ctx, st_sock *sock);
 
 
 /* writing socket */
@@ -221,23 +213,23 @@ void sockBufRead(st_sock * sock);
 #define SOCKBUFW_SIZE (2 * TTYBUFR_SIZE)        /* this seems to be any number */
 #define SOCKBUFW_SIZE_A (SOCKBUFW_SIZE + TTYBUFR_SIZE)  /* important */
 
-extern struct st_sockBufW
+struct st_sockBufW
 {
   uchar buf[SOCKBUFW_SIZE_A];
   uchar *top;
   uchar *ptr;
   int stop;
-} sockBufW;
+};
 
-void sockBufWReset(void);
+void sockBufWReset(m2k_t *ctx);
 
-bool sockBufWHasData(void);
+bool sockBufWHasData(m2k_t *ctx);
 
-bool sockBufWReady(void);
+bool sockBufWReady(m2k_t *ctx);
 
-void sockBufWrite(st_sock * sock);
-void putSock1(uchar c);
-void putSockN(const uchar * cp, int n);
+void sockBufWrite(m2k_t *ctx, st_sock *sock);
+void putSock1(m2k_t *ctx, uchar c);
+void putSockN(m2k_t *ctx, const uchar *cp, int n);
 
 // stty
 
@@ -270,7 +262,7 @@ typedef struct
   TelOptState remote;           /* remote state of the option */
 } TelOptStates;
 
-extern struct st_telOpt
+struct st_telOpt
 {
   int binsend;                  /* local binary opt is enabled */
   int binrecv;                  /* remote binary opt is enabled */
@@ -278,16 +270,16 @@ extern struct st_telOpt
   int sentReqs;                 /* have sent option requests to the peer
                                    or skip sending them */
   TelOptStates **stTab;         /* = stTab[] in telopt.c */
-} telOpt;
+};
 
-#define putOptCmd(s,c) { putSock1(IAC); putSock1(s); putSock1(c); }
+#define putOptCmd(ctx,s,c) { putSock1((ctx), IAC); putSock1((ctx), (s)); putSock1((ctx), (c)); }
 
-void telOptReset(void);
-void telOptInit(void);
-void telOptPrintCmd(const char *str, int cmd);
-void telOptSendReqs(void);
-int telOptHandle(int cmd, int opt);
-int telOptSBHandle(int opt);
+void telOptReset(m2k_t *ctx);
+void telOptInit(m2k_t *ctx);
+void telOptPrintCmd(m2k_t *ctx, const char *str, int cmd);
+void telOptSendReqs(m2k_t *ctx);
+int telOptHandle(m2k_t *ctx, int cmd, int opt);
+int telOptSBHandle(m2k_t *ctx, int opt);
 
 // timeval
 
@@ -304,8 +296,6 @@ struct st_tty
   int wfd;
 };
 
-extern struct st_tty tty;
-
 
 /* reading tty */
 
@@ -318,14 +308,12 @@ struct st_ttyBufR
   struct timeval prevT;
 };
 
-extern struct st_ttyBufR ttyBufR;
+void ttyBufRReset(m2k_t *ctx);
+bool ttyBufRHasData(m2k_t *ctx);
 
-void ttyBufRReset(void);
-bool ttyBufRHasData(void);
+int getTty1(m2k_t *ctx);
 
-int getTty1(void);
-
-void ttyBufRead(st_sock * sock);
+void ttyBufRead(m2k_t *ctx, st_sock *sock);
 
 
 /* writing tty */
@@ -341,31 +329,26 @@ struct st_ttyBufW
   int stop;
 };
 
-extern struct st_ttyBufW ttyBufW;
+void ttyBufWReset(m2k_t *ctx);
+bool ttyBufWHasData(m2k_t *ctx);
+bool ttyBufWReady(m2k_t *ctx);
+#define putTtyStr(ctx,s) putTtyN((ctx), (s), sizeof(s)-1)
 
-#define ttyBufWReset() { \
-    ttyBufW.ptr = ttyBufW.top = ttyBufW.buf; \
-    ttyBufW.stop = 0; \
-}
-#define ttyBufWHasData() (ttyBufW.ptr > ttyBufW.buf)
-#define ttyBufWReady() (!ttyBufW.stop)
-#define putTtyStr(s) putTtyN(s, sizeof(s)-1)
-
-void ttyBufWrite(st_sock * sock);
-void putTty1(unsigned char c);
-void putTtyN(const char *cp, int n);
+void ttyBufWrite(m2k_t *ctx, st_sock *sock);
+void putTty1(m2k_t *ctx, unsigned char c);
+void putTtyN(m2k_t *ctx, const char *cp, int n);
 
 // utils
 
-void *chk_alloc(void *ptr);
+void *chk_alloc(m2k_t *ctx, void *ptr);
 
 // verbose
 
 #define VERB_MISC 1
 #define VERB_TELOPT 2
 
-void verboseOut(int mask, const char *format, ...);
-void verbosePerror(int mask, const char *s);
+void verboseOut(m2k_t *ctx, int mask, const char *format, ...);
+void verbosePerror(m2k_t *ctx, int mask, const char *s);
 
 // cmdlex
 
@@ -380,4 +363,14 @@ typedef enum
   CMDST_ATO
 } Cmdstat;
 
-Cmdstat cmdLex(const char *ptr, st_sock * sock);
+Cmdstat cmdLex(m2k_t *ctx, const char *ptr, st_sock *sock);
+
+/**
+ * Initiate connection
+ *
+ * @param ctx context struct
+ * @param sock
+ * @returns 0 if completed successfully, 1 otherwise
+ * @see m2k_atcmdD()
+ */
+int m2k_sockDial(m2k_t *ctx, st_sock *sock);

@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <stdlib.h>             /*(getenv) */
 #include "modemu2k.h"
+#include "m2k_ctx.h"
+
 static int commxPid;
 
 static void
@@ -16,8 +18,7 @@ sigchld(int dummy)
   if (waitpid(commxPid, &s, WNOHANG) > 0)
   {
     fputs("Comm program exited.\r\n", stderr);
-    verboseOut(VERB_MISC, "Child returned status %d.\r\n", WEXITSTATUS(s));
-
+    /* Note: we don't have ctx here in the signal handler */
     _exit(0);
   }
 }
@@ -48,11 +49,11 @@ forkExec(char *s)
 
 #ifdef HAVE_GRANTPT
 void
-commxForkExec(const char *cmd, char *ptyslave)
+commxForkExec(m2k_t *ctx, const char *cmd, char *ptyslave)
 {
   char *s;
   s = malloc(strlen(cmd) + strlen(ptyslave) + 1);
-  chk_alloc(s);
+  chk_alloc(ctx, s);
   if (s != NULL)
   {
     if (strcmp("/dev/", ptyslave) == 0)
@@ -68,7 +69,7 @@ commxForkExec(const char *cmd, char *ptyslave)
 }
 #else
 void
-commxForkExec(const char *cmd, char c10, char c01)
+commxForkExec(m2k_t *ctx, const char *cmd, char c10, char c01)
 {
   char c[16];
   char *s;
@@ -78,7 +79,7 @@ commxForkExec(const char *cmd, char c10, char c01)
   c[4] = c01;
   c[5] = 0;
   s = malloc(strlen(cmd) + strlen(c) + 1);
-  chk_alloc(s);
+  chk_alloc(ctx, s);
   if (s != NULL)
   {
     sprintf(s, cmd, c);         /*'%s' -> 'p1' or sth */

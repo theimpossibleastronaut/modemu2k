@@ -29,10 +29,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "modemu2k.h"
+#include "m2k_ctx.h"
 
 void *
-chk_alloc(void *ptr)
+chk_alloc(m2k_t *ctx, void *ptr)
 {
+  (void)ctx;
   if (ptr != NULL)
     return ptr;
 
