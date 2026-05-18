@@ -5,6 +5,7 @@ project(
   meson_version : '>= 0.56.0',
   default_options: [
     'warning_level=3',
+    'c_std=gnu99',
     ]
   )
 
