@@ -1,40 +1,31 @@
-# For most projects, this workflow file will not need changing; you simply need
-# to commit it to your repository.
-#
-# You may wish to alter this file to override the set of languages analyzed,
-# or to provide custom queries or build logic.
-name: "CodeQL"
+name: "CodeQL Advanced"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: true
 
 on:
   push:
-  pull_request:
-  schedule:
-    #        ┌───────────── minute (0 - 59)
-    #        │  ┌───────────── hour (0 - 23)
-    #        │  │ ┌───────────── day of the month (1 - 31)
-    #        │  │ │ ┌───────────── month (1 - 12 or JAN-DEC)
-    #        │  │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
-    #        │  │ │ │ │
-    #        │  │ │ │ │
-    #        │  │ │ │ │
-    #        *  * * * *
-    - cron: '0 2 15 * *'
+    branches: trunk
+    paths:
+    - '**'
+    - '!**.yml'
+    - '!**.md'
+    - '**/codeql.yml'
 
 jobs:
   analyze:
-    if: contains(toJson(github.event.commits), '[skip ci]') == false
     name: Analyze
     runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      security-events: write
 
-    strategy:
-      fail-fast: false
-      matrix:
-        # Override automatic language detection by changing the below list
-        # Supported options are ['csharp', 'cpp', 'go', 'java', 'javascript', 'python']
-        language: ['cpp']
-        # Learn more...
-        # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection
+      # required to fetch internal or private CodeQL packs
+      packages: read
 
+      ## only required for workflows in private repositories
+      #actions: read
+      #contents: read
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
@@ -47,30 +38,16 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4
       with:
-        languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
-        # queries: ./path/to/local/query, your-org/your-repo/queries@main
+        languages: 'cpp'
 
-    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
-    # If this step fails, then you should remove it and run the build manually (see below)
-    #- name: Autobuild
-      #uses: github/codeql-action/autobuild@v1
+    - name: Meson setup
+      run: meson setup _build
 
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 https://git.io/JvXDl
-
-    # ✏️ If the Autobuild fails above, remove it and uncomment the following three lines
-    #    and modify them (or add more) to build your code if your project
-    #    uses a compiled language
-    - run: |
-        sudo apt-get install -y python3-pip python3-setuptools gettext
-        sudo -H python3 -m pip install meson ninja
-    - run: |
-        meson builddir
-        cd builddir
-        ninja -v
+    - name: Build
+      run: meson compile -C _build
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
+      with:
+        category: "/language:cpp"
+
