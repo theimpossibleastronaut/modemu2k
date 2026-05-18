@@ -91,7 +91,7 @@ m2k_sockDial(st_sock * sock)
   s = getaddrinfo(atcmd.d.addr.str, out_port, &hints, &result);
   if (s != 0)
   {
-    fprintf(stderr, _("Host address lookup failed: %s\n"), gai_strerror(s));
+    fprintf(stderr, "Host address lookup failed: %s\n", gai_strerror(s));
     return 1;
   }
 
@@ -189,7 +189,7 @@ m2k_sockDial(st_sock * sock)
       {
         sockShutdown(sock);
         verboseOut(VERB_MISC,
-                   _("Connecting attempt canceled by user input.\r\n"));
+                   "Connecting attempt canceled by user input.\r\n");
         return 1;
       }
       /* check if really connected or not */
@@ -222,7 +222,7 @@ m2k_sockDial(st_sock * sock)
     while (timevalCmp(&t, &to) < 0);
 
     sockShutdown(sock);
-    verboseOut(VERB_MISC, _("Connection attempt timed out.\r\n"));
+    verboseOut(VERB_MISC, "Connection attempt timed out.\r\n");
     return 1;                   /* timeout */
   }
 #endif /*ifdef NO_DIAL_CANCELING */

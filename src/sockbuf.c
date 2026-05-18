@@ -4,7 +4,7 @@
 #include "modemu2k.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 
 /* reading socket */
-#define MSG_CONNECTION_CLOSED_BY_PEER gettext ("Connection closed by peer.\r\n")
+#define MSG_CONNECTION_CLOSED_BY_PEER "Connection closed by peer.\r\n"
 
 struct st_sockBufR sockBufR;
 struct st_sockBufW sockBufW;

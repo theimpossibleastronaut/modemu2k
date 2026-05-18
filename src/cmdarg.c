@@ -41,40 +41,40 @@ showUsage(char *const argv[])
 {
   printf(("Usage: %s [OPTION]...\n\n"), argv[0]);
 
-  puts(_("\
-  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using [arguments]"));
-  puts(_("\
-  -d, --device=<pty_master>               talk through [pty_master]"));
-  puts(_("\
-  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at startup"));
-  puts(_("\
-  -s, --show                              show which device will be used"));
+  puts("\
+  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using [arguments]");
+  puts("\
+  -d, --device=<pty_master>               talk through [pty_master]");
+  puts("\
+  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at startup");
+  puts("\
+  -s, --show                              show which device will be used");
   puts("");
-  puts(_("\
-  -h, --help                              display help"));
-  puts(_("\
-  -v, --version                           display version"));
-  puts(_("\
-  -w, --warranty                          display warranty"));
+  puts("\
+  -h, --help                              display help");
+  puts("\
+  -v, --version                           display version");
+  puts("\
+  -w, --warranty                          display warranty");
   puts("");
-  puts(_("\
+  puts("\
 The arguments for (-c, --commprog) and (-e, --atcommands) must be enclosed in\n\
-quotes. (eg. -c \"minicom -l -w -c\")"));
+quotes. (eg. -c \"minicom -l -w -c\")");
   puts("");
-  puts(_("\
+  puts("\
 The arguments for the comm program must be native to the comm program, not\n\
-arguments used by modemu2k."));
+arguments used by modemu2k.");
   puts("");
-  puts(_("\
+  puts("\
 Note: The  -c, -d, and -s options are exclusive of each other. If two or\n\
-more of the options are specified, only the last one is effective."));
+more of the options are specified, only the last one is effective.");
   puts("");
-  puts(_("\
+  puts("\
 The modemu2k project and support site is at\n\
 <https://github.com/theimpossibleastronaut/modemu2k>\n\
 \n\
 Report bugs to <arch_stanton5995@protonmail.com> or\n\
-<https://github.com/theimpossibleastronaut/modemu2k/issues>\n"));
+<https://github.com/theimpossibleastronaut/modemu2k/issues>\n");
 
   return;
 }
@@ -82,7 +82,7 @@ Report bugs to <arch_stanton5995@protonmail.com> or\n\
 static void
 warranty(void)
 {
-  printf(_("\
+  printf("\
 THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n\
 APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT\n\
 HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY\n\
@@ -90,19 +90,19 @@ OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,\n\
 THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\n\
 PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM\n\
 IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF\n\
-ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n"));
+ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n");
 }
 
 static void
 version(char *const argv[])
 {
-  printf(_("\
+  printf("\
 modemu2k %s\n\
 Maintainer: Andy Alt (arch_stanton5995@protonmail.com)\n\
 This program comes with ABSOLUTELY NO WARRANTY; for details type '%s -w.'\n\
 This is free software, and you are welcome to redistribute it\n\
 under certain conditions; see <http://www.gnu.org/licenses/gpl.html>\n\
-for details.\n"), VERSION, argv[0]);
+for details.\n", VERSION, argv[0]);
 }
 
 void

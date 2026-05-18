@@ -47,17 +47,6 @@
 
 #include "cmdarg.h"
 
-/* TODO: the API shouldn't be localized and really shouldn't contain any strings;
- * but rather the functions should return values to the application can print
- * any messages to stdout or stderr
- */
-#define ENABLE_NLS 1
-#include <locale.h>
-#include "gettext.h"
-#define _(String) gettext (String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
-
 /* socket read buffer size */
 #define SOCKBUFR_SIZE	1024
 

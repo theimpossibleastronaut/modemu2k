@@ -60,7 +60,7 @@ atcmdInit(struct st_cmdarg *cmdarg, st_sock * sock)
           && s != CMDST_NOAT)
       || ((s = cmdLex(cmdarg->atcmd, sock)) != CMDST_OK && s != CMDST_NOAT))
   {
-    fputs(_("Error in initialization commands.\r\n"), stderr);
+    fputs("Error in initialization commands.\r\n", stderr);
     CHAR_CR = '\r';             /* force normal settings */
     CHAR_LF = '\n';
   }
@@ -123,8 +123,7 @@ atcmdH(const char *s, st_sock * sock)
   if (sock->alive)
   {
     sockClose(sock);
-    /* TRANSLATORS: reminder: do not translate any "AT" command strings */
-    verboseOut(VERB_MISC, _("Connection closed with ATH.\r\n"));
+    verboseOut(VERB_MISC, "Connection closed with ATH.\r\n");
   }
   return 0;
 }
@@ -184,7 +183,7 @@ prOption(void)
 
   putTty1(CHAR_CR);
   putTty1(CHAR_LF);
-  putTtyStr(_("modemu2k telnet option states:"));
+  putTtyStr("modemu2k telnet option states:");
   putTty1(CHAR_CR);
   putTty1(CHAR_LF);
   putTty1(CHAR_CR);
@@ -239,7 +238,7 @@ atcmdI(const char *s)
   case 4:
     putTty1(CHAR_CR);
     putTty1(CHAR_LF);
-    putTtyStr(_("modemu2k current settings:"));
+    putTtyStr("modemu2k current settings:");
     putTty1(CHAR_CR);
     putTty1(CHAR_LF);
     prPercent(&atcmd);
@@ -250,8 +249,7 @@ atcmdI(const char *s)
   case 5:
     putTty1(CHAR_CR);
     putTty1(CHAR_LF);
-    /* TRANSLATORS: ignore the "&W'ed" */
-    putTtyStr(_("modemu2k '&W'ed settings:"));
+    putTtyStr("modemu2k '&W'ed settings:");
     putTty1(CHAR_CR);
     putTty1(CHAR_LF);
     prPercent(&atcmdNV);
@@ -327,8 +325,7 @@ atcmdZ(st_sock * sock)
   if (sock->alive)
   {
     sockClose(sock);
-    /* TRANSLATORS: reminder: do not translate any "AT" command strings */
-    verboseOut(VERB_MISC, _("Connection closed with ATZ.\r\n"));
+    verboseOut(VERB_MISC, "Connection closed with ATZ.\r\n");
   }
 }
 

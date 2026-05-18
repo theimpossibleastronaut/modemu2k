@@ -32,8 +32,7 @@ ttyBufRead(st_sock * sock)
   if (l <= 0)
   {
     sockClose(sock);
-    /* TRANSLATORS: do not translate "pty" or "read" */
-    verboseOut(VERB_MISC, _("Pty closed. (read() returned %d)\r\n"), l);
+    verboseOut(VERB_MISC, "Pty closed. (read() returned %d)\r\n", l);
     if (l < 0)
       verbosePerror(VERB_MISC, "read()");
     exit(0);
@@ -59,8 +58,7 @@ ttyBufWrite(st_sock * sock)
   if (l <= 0)
   {
     sockClose(sock);
-    /* TRANSLATORS do not translate "pty" or "write" */
-    verboseOut(VERB_MISC, _("Pty closed. (write() returned %d)\r\n"), l);
+    verboseOut(VERB_MISC, "Pty closed. (write() returned %d)\r\n", l);
     if (l < 0)
       verbosePerror(VERB_MISC, "write()");
     exit(0);
@@ -83,8 +81,7 @@ putTty1(uchar c)
   {                             /* limit */
     if (ttyBufW.ptr >= ttyBufW.buf + TTYBUFW_SIZE_A)
     {                           /*actual limit */
-      /* TRANSLATORS: do not translate ttyBufW */
-      fputs(_("\attyBufW overrun.\n"), stderr);
+      fputs("\attyBufW overrun.\n", stderr);
       return;
     }
     else

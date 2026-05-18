@@ -25,7 +25,6 @@ Home page: <http://theimpossibleastronaut.com/modemu2k/>
 Dependencies
 ------------
 
-  * gettext (optional, for translations)
   * flex
 
 
@@ -122,7 +121,4 @@ A man page is also available.
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/modemu2k.svg)](https://repology.org/project/modemu2k/versions)
 
-## Translate
-
-See <https://github.com/theimpossibleastronaut/modemu2k/blob/master/TRANSLATE.md>
 

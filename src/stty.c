@@ -16,7 +16,7 @@ recoverTermios(void)
     return;                     /* SOCKS (at least v4.2) subprocess
                                    calls exit() (why not _exit()??) */
   tcsetattr(0, TCSADRAIN, &oldTermios);
-  printf(_("\nGoodbye.\n"));
+  printf("\nGoodbye.\n");
 }
 
 #ifdef USE_ON_EXIT

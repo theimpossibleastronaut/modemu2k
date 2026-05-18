@@ -26,7 +26,7 @@ lib_modemu2k = static_library(
   src,
   c_args : '-DMODEMU2K_VERSION="@0@"'.format(meson.project_version()),
   include_directories : '..',
-  dependencies: [gettext_deps]
+  dependencies: []
   )
 
 dep_modemu2k = declare_dependency(link_with: lib_modemu2k, include_directories : '..')

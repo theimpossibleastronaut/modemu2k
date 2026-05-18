@@ -452,10 +452,8 @@ putTtyCmdstat(Cmdstat s)
 
   if (s == CMDST_CONNECT)
   {
-    static const char msg_escape_seq[] =
-      gettext_noop("To escape to command mode, use '+++'.");
-    static const char msg_return_online[] =
-      gettext_noop("Use ATO to return to online mode.");
+    static const char msg_escape_seq[] = "To escape to command mode, use '+++'.";
+    static const char msg_return_online[] = "Use ATO to return to online mode.";
 
     putTty1(CHAR_CR);
     putTty1(CHAR_LF);
@@ -536,7 +534,7 @@ openPtyMaster(const char *dev)
   fd = open(dev, O_RDWR);
   if (fd < 0)
   {
-    fputs(_("Pty open error.\n"), stderr);
+    fputs("Pty open error.\n", stderr);
     exit(1);
   }
   return fd;
@@ -623,15 +621,13 @@ found:
     if (rc < 0)
     {
       /* TRANSLATORS: do not translate "tty" or "pty" */
-      fputs(_("\
-Warning: could not change ownership of tty -- pty is insecure!\n"), stderr);
+      fputs("Warning: could not change ownership of tty -- pty is insecure!\n", stderr);
     }
     rc = chmod(line, S_IRUSR | S_IWUSR | S_IWGRP);
     if (rc < 0)
     {
       /* TRANSLATORS: do not translate "tty" or "pty" */
-      fputs(_
-            ("Warning: could not change permissions of tty -- pty is insecure!\n"),
+      fputs("Warning: could not change permissions of tty -- pty is insecure!\n",
             stderr);
     }
 
@@ -676,7 +672,7 @@ getPtyMaster(char *tty10, char *tty01)
       }
     }
   }
-  fputs(_("No more pty devices available.\n"), stderr);
+  fputs("No more pty devices available.\n", stderr);
   exit(1);
   return fd;
 }
@@ -686,20 +682,13 @@ getPtyMaster(char *tty10, char *tty01)
 int
 main(int argc, char *const argv[])
 {
-  setlocale(LC_ALL, "");
-#ifdef ENABLE_NLS
-  bindtextdomain(PACKAGE_STRING, LOCALEDIR);
-  textdomain(PACKAGE_STRING);
-#endif
-
 #ifdef SOCKS
   SOCKSinit(argv[0]);
 #endif
   struct st_cmdarg cmdarg;
   cmdargParse(argc, argv, &cmdarg);
   fputs(PACKAGE_STRING " " VERSION "\n", stdout);
-  /* TRANSLATORS: do not translate `at%%q` */
-  fputs(_("Enter 'at%q' to quit\n\n"), stdout);
+  fputs("Enter 'at%q' to quit\n\n", stdout);
 
   struct st_sock sock;
   sockInit(&sock);

@@ -27,17 +27,11 @@ extra_flags = [
 
 add_project_arguments(cc.get_supported_arguments(extra_flags), language: 'c')
 
-localedir = join_paths(get_option('prefix'), get_option('localedir'))
-
 conf = configuration_data()
-conf.set_quoted('LOCALEDIR', localedir)
 conf.set_quoted('VERSION', meson.project_version())
 conf.set_quoted('PACKAGE_STRING', meson.project_name())
 conf.set_quoted('PACKAGE_URL', 'http://theimpossibleastronaut.com/modemu2k/')
 conf.set_quoted('PACKAGE_BUGREPORT', 'https://github.com/theimpossibleastronaut/modemu2k/issues')
-
-
-subdir('po')
 
 config_h = configure_file(output : 'config.h', configuration : conf)
 
@@ -62,19 +56,8 @@ install_data(
     'AUTHORS',
     'ChangeLog',
     'ReleaseNotes',
-    'TRANSLATE.md',
     ),
   install_dir : get_option('docdir')
   )
 
 install_subdir('docs', install_dir : get_option('docdir'))
-
-if get_option('nls')
-  ul = configuration_data()
-  ul.set('LOCALEDIR', localedir)
-  ul.set('MESON_SOURCE_ROOT', meson.current_source_dir())
-  ul.set('MESON_PROJECT_NAME', meson.project_name())
-  configure_file(input : 'uninstall_langs.sh.in',
-                 output : 'uninstall_langs.sh',
-                 configuration : ul)
-endif
