@@ -1,55 +1,52 @@
 name: C/C++ CI
 concurrency:
-  group: build-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: true
 
 on:
   push:
     branches: master
-    paths-ignore:
+    paths-ignore: &shared_paths
     - '**/*.md'
   pull_request:
     branches: master
-    paths-ignore:
-    - '**/*.md'
+    paths-ignore: *shared_paths
 
 jobs:
   gcc:
     strategy:
       fail-fast: false
       matrix:
-        arch: [x64]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm]
     runs-on: ${{ matrix.os }}
-    env:
-      MATRIX_OS: ${{ matrix.os }}
-      MATRIX_ARCH: ${{ matrix.arch }}
     steps:
     - uses: actions/checkout@v6
-    - run: sh ./.github/scripts/test_m2k.sh
 
-  clang:
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: [x64]
-        os: [ubuntu-latest]
-        compiler: [clang]
-    runs-on: ${{ matrix.os }}
-    env:
-      MAXTRIX_OS: ${{ matrix.os }}
-      MAXTRIX_ARCH: ${{ matrix.arch }}
-    steps:
-    - uses: actions/checkout@v6
-    - run: sh ./.github/scripts/test_m2k.sh
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y meson ninja-build
 
+    - name: Setup
+      run: meson setup builddir -Db_sanitize=address,undefined -Db_lundef=false
+
+    - name: Build
+      run: ninja -v -C builddir
+
+    - name: Test
+      run: meson test -C builddir --print-errorlogs
 
   macos:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v6
-    - run: brew install meson
-    - run: |
-        meson builddir
-        ninja -v -C builddir
-        # ninja -C builddir dist
+
+    - name: Install dependencies
+      run: brew install meson
+
+    - name: Setup
+      run: meson setup builddir
+
+    - name: Build
+      run: ninja -v -C builddir
+
+    - name: Test
+      run: meson test -C builddir --print-errorlogs
