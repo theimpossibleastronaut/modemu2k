@@ -1,5 +1,6 @@
 (in-progress):
   * Removed gettext/NLS support and translations
+  * Removed valgrind test setup
 
 2022-08-18
 - modemu2k (v0.1.0)
