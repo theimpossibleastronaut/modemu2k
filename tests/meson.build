@@ -7,6 +7,7 @@ test_cases = [
   'atcmd',
   'ipv6',
   'localhost',
+  'ttybuf',
   ]
 
 foreach case : test_cases

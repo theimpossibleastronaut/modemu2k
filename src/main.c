@@ -223,7 +223,7 @@ ttyReadLoop(void)
 
   if (atcmd.pr)
   {
-    while ((c = getTty1()) >= 0)
+    while (sockBufWReady() && (c = getTty1()) >= 0)
     {
       putSock1(c);
       escSeqHandle(c);
@@ -231,7 +231,7 @@ ttyReadLoop(void)
   }
   else if (telOpt.sgasend)
   {
-    while ((c = getTty1()) >= 0)
+    while (sockBufWReady() && (c = getTty1()) >= 0)
     {
       /*if (telOpt.binsend) */
       {
@@ -308,7 +308,7 @@ onlineMode(st_sock * sock)
       FD_SET(sock->fd, &rfds);  /*flow control */
     if (sockBufWHasData())
       FD_SET(sock->fd, &wfds);
-    if (sockBufWReady())
+    if (sockBufWReady() && !ttyBufRHasData())
       FD_SET(tty.rfd, &rfds);   /*flow control */
     if (ttyBufWHasData())
       FD_SET(tty.wfd, &wfds);
@@ -341,6 +341,8 @@ onlineMode(st_sock * sock)
     if (FD_ISSET(sock->fd, &wfds))
     {
       sockBufWrite(sock);
+      if (sock->alive && ttyBufRHasData() && sockBufWReady())
+        ttyReadLoop();
     }
     if (FD_ISSET(tty.wfd, &wfds))
     {

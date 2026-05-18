@@ -15,6 +15,12 @@ ttyBufRReset(void)
   ttyBufR.prevT.tv_sec = ttyBufR.prevT.tv_usec = 0;
 }
 
+bool
+ttyBufRHasData(void)
+{
+  return ttyBufR.ptr < ttyBufR.end;
+}
+
 /* reading tty */
 
 int

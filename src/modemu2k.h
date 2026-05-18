@@ -321,6 +321,7 @@ struct st_ttyBufR
 extern struct st_ttyBufR ttyBufR;
 
 void ttyBufRReset(void);
+bool ttyBufRHasData(void);
 
 int getTty1(void);
 
