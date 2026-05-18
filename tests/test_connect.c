@@ -6,6 +6,9 @@
 static void test_connect (void)
 {
   st_sock sock;
+  atcmd.s[7] = 20;  /* S7: connection timeout in seconds */
+  atcmd.pd = 1;    /* disable dial canceling; stdin is not a tty in tests */
+
   // should connect
   telOptReset ();
   m2k_atcmdD ("github.com 80", ATDA_STR, ATDP_NUM);
