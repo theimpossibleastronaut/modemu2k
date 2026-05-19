@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>modemu2k: Main Page</title>
+<title>modemu2k: modemu2k</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -15,6 +15,7 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-custom.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -71,12 +72,79 @@ $(function() {
 </div>
 </div>
 
-<div class="header">
-  <div class="headertitle"><div class="title">modemu2k Documentation</div></div>
+<div><div class="header">
+  <div class="headertitle"><div class="title">modemu2k </div></div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><p><a class="anchor" id="md__2home_2andy_2src_2modemu2k_2README"></a> <a href="https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml"><img src="https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml/badge.svg?branch=master" alt="C/C++ CI" style="pointer-events: none;" class="inline"/></a></p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md0"></a>
+modemu2k</h1>
+<p>modemu2k is a fork of modemu, originally developed by Toru Egashira</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md1"></a>
+What is modemu2k?</h2>
+<p>modemu2k adds telnet capability to a comm program. It can redirect telnet I/O to a pty so that a comm program can handle the pty as a tty with a real modem, and allows you to use a comm program's scripting and file transfer features over telnet. Now supports IPv6 connections.</p>
+<p>Maintainer: Andy Alt &lt;arch_stanton5995 at protonmail [dot] com&gt;</p>
+<p>License: GNU GPL 3</p>
+<p>Home page: <a href="http://theimpossibleastronaut.com/modemu2k/">http://theimpossibleastronaut.com/modemu2k/</a></p>
+<p><a href="https://github.com/theimpossibleastronaut/modemu2k/issues">Issues and bug reporting</a></p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md2"></a>
+Dependencies</h2>
+<ul>
+<li>flex</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
+Compilation</h2>
+<pre class="fragment">meson setup builddir
+cd builddir
+</pre><p>Use <span class="tt">meson configure</span> to see extra options </p><pre class="fragment">ninja
+</pre><p><span class="tt">ninja install</span> is optional. The binary can be run from the build directory; however, installation is required to use the translations, and to create and install a script (m2k-minicom) that can invoke minicom (see below).</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
+Sample Usage</h2>
+<p>Note: while in the program if backspace doesn't work, use CTRL+H.</p>
+<p>1) Stand alone usage</p>
+<p>Invoked with no option, </p><pre class="fragment">modemu2k
+</pre><p>modemu2k reads from standard input and writes to standard output. Input</p>
+<blockquote class="doxtable">
+<p>atd"localhost [port] </p>
+</blockquote>
+<p>(prompt "&gt;" is not shown) You will see your host's login prompt (if a server is running). When you disconnect, you will get "NO
+  CARRIER" indication. Then input</p>
+<blockquote class="doxtable">
+<p>atq </p>
+</blockquote>
+<p>to quit modemu2k.</p>
+<p>2) With a comm program</p>
+<p>(This example uses minicom as the comm program)</p>
+<p>Invoke with "-c" option, </p><pre class="fragment">modemu2k -e "AT%B0=1%B1=1&amp;W" -c "minicom -l -tansi -con -p %s"
+</pre><p>From within the comm program, if you have a server running, to connect you can enter: </p><pre class="fragment">atd"localhost
+</pre><p>You could also connect to a BBS. For some telnet addresses, see:</p>
+<ul>
+<li>The Rusty Mailbox (telnet to <a href="https://trmb.ca/">trmb.ca</a>, port 2030)</li>
+<li><a href="https://www.synchro.net/sbbslist.html">Synchronet BBS List</a></li>
+</ul>
+<p>To quit modemu2k, just quit the comm program.</p>
+<p>A script to invoke minicom as mentioned above will be installed to your bin directory when <span class="tt">make install</span> is run.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
+Escaping to command mode and returning</h2>
+<p>To escape to command mode, use '+++'. Use ATO to return to online mode.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md6"></a>
+Hanging up a call/closing a connection</h2>
+<p>If you are connected to a server where gracefully logging out isn't possible, to "hang up" or close the connection you can escape to command mode and enter 'ATH`.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
+Extra Notes</h2>
+<p>(*) Almost all file xfer protocols require 8bit through connection, which means Modemu2k must be in the binary transmission mode. See B command description in the man page.</p>
+<p>More details are in the QuickStart guide <a href="https://github.com/theimpossibleastronaut/modemu2k/blob/master/QuickStart">https://github.com/theimpossibleastronaut/modemu2k/blob/master/QuickStart</a></p>
+<p>A man page is also available.</p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md8"></a>
+Downloads</h1>
+<ul>
+<li>Release page<a href="https://github.com/theimpossibleastronaut/modemu2k/releases">https://github.com/theimpossibleastronaut/modemu2k/releases</a></li>
+</ul>
+<p><a href="https://repology.org/project/modemu2k/versions"><img src="https://repology.org/badge/vertical-allrepos/modemu2k.svg" alt="Packaging status" style="pointer-events: none;" class="inline"/></a> </p>
+</div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"></a>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.16.1-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.16.1
