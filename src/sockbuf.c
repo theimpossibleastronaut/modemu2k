@@ -1,4 +1,6 @@
 
+#include <errno.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <stdbool.h>
 #include "modemu2k.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
@@ -34,7 +36,7 @@ sockBufRead(m2k_t *ctx, st_sock *sock)
       /* PPP link down or something to reach here. */
       /* v0.0 exited, which comm progs don't expect. */
       /* now just NO CARRIERs. Thanks >> Rod May */
-      perror("recv()");
+      m2k_log(ctx, "recv(): %s\n", strerror(errno));
     return;
   }
   ctx->sockBufR.ptr = ctx->sockBufR.buf;
@@ -77,7 +79,7 @@ sockBufWrite(m2k_t *ctx, st_sock *sock)
     if (l == 0)
       verboseOut(ctx, VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
     else
-      perror("send()");
+      m2k_log(ctx, "send(): %s\n", strerror(errno));
     return;
   }
   else if (l < wl)
@@ -98,7 +100,7 @@ putSock1(m2k_t *ctx, uchar c)
   {                             /* limit */
     if (ctx->sockBufW.ptr >= ctx->sockBufW.buf + SOCKBUFW_SIZE_A)
     {                           /*actual limit */
-      fputs("\asockBufW overrun.\n", stderr);
+      m2k_log(ctx, "\asockBufW overrun.\n");
       return;
     }
     else

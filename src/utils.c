@@ -35,10 +35,9 @@
 void *
 chk_alloc(m2k_t *ctx, void *ptr)
 {
-  (void)ctx;
   if (ptr != NULL)
     return ptr;
 
-  fprintf(stderr, "Error allocating memory\n");
+  m2k_log(ctx, "Error allocating memory\n");
   return NULL;
 }

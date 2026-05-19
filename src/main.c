@@ -336,7 +336,7 @@ onlineMode(m2k_t *ctx, st_sock *sock)
     if (select(sock->fd + 1, &rfds, &wfds, NULL, tp) < 0)
     {
       if (errno != EINTR)
-        perror("select()");
+        m2k_log(ctx, "select(): %s\n", strerror(errno));
       continue;
     }
 
@@ -498,7 +498,7 @@ cmdMode(m2k_t *ctx, struct cmdBuf *cmdBuf, st_sock *sock)
     if (select(ctx->tty.wfd + 1, &rfds, &wfds, NULL, NULL) < 0)
     {
       if (errno != EINTR)
-        perror("select()");
+        m2k_log(ctx, "select(): %s\n", strerror(errno));
       continue;
     }
 
@@ -535,14 +535,14 @@ cmdMode(m2k_t *ctx, struct cmdBuf *cmdBuf, st_sock *sock)
 
 /* open a pty */
 static int
-openPtyMaster(const char *dev)
+openPtyMaster(m2k_t *ctx, const char *dev)
 {
   int fd;
 
   fd = open(dev, O_RDWR);
   if (fd < 0)
   {
-    fputs("Pty open error.\n", stderr);
+    m2k_log(ctx, "Pty open error.\n");
     return -1;
   }
   return fd;
@@ -551,7 +551,7 @@ openPtyMaster(const char *dev)
 #ifdef HAVE_GRANTPT
 
 static int
-getPtyMaster(char **line_return)
+getPtyMaster(m2k_t *ctx, char **line_return)
 {
   int rc;
   char name[12], *temp_line, *line = NULL;
@@ -630,14 +630,13 @@ found:
   if (rc < 0)
   {
     /* TRANSLATORS: do not translate "tty" or "pty" */
-    fputs("Warning: could not change ownership of tty -- pty is insecure!\n", stderr);
+    m2k_log(ctx, "Warning: could not change ownership of tty -- pty is insecure!\n");
   }
   rc = chmod(line, S_IRUSR | S_IWUSR | S_IWGRP);
   if (rc < 0)
   {
     /* TRANSLATORS: do not translate "tty" or "pty" */
-    fputs("Warning: could not change permissions of tty -- pty is insecure!\n",
-          stderr);
+    m2k_log(ctx, "Warning: could not change permissions of tty -- pty is insecure!\n");
   }
   *line_return = line;
   return pty;
@@ -656,7 +655,7 @@ bail:
 #define PTY01 "0123456789abcdef"
 
 static int
-getPtyMaster(char *tty10, char *tty01)
+getPtyMaster(m2k_t *ctx, char *tty10, char *tty01)
 {
   char *p10;
   char *p01;
@@ -678,7 +677,7 @@ getPtyMaster(char *tty10, char *tty01)
       }
     }
   }
-  fputs("No more pty devices available.\n", stderr);
+  m2k_log(ctx, "No more pty devices available.\n");
   return -1;
 }
 #endif
@@ -707,13 +706,13 @@ main(int argc, char *const argv[])
 #ifdef HAVE_GRANTPT
     char *ptyslave;
   case CA_SHOWDEV:
-    ctx->tty.rfd = ctx->tty.wfd = getPtyMaster(&ptyslave);
+    ctx->tty.rfd = ctx->tty.wfd = getPtyMaster(ctx, &ptyslave);
     if (ctx->tty.rfd < 0)
       return EXIT_FAILURE;
     puts(ptyslave);
     return 0;
   case CA_COMMX:
-    ctx->tty.rfd = ctx->tty.wfd = getPtyMaster(&ptyslave);
+    ctx->tty.rfd = ctx->tty.wfd = getPtyMaster(ctx, &ptyslave);
     if (ctx->tty.rfd < 0 ||
         commxForkExec(ctx, cmdarg.commx, ptyslave) != M2K_OK)
       return EXIT_FAILURE;
@@ -721,13 +720,13 @@ main(int argc, char *const argv[])
 #else
     char c10, c01;
   case CA_SHOWDEV:
-    ctx->tty.rfd = ctx->tty.wfd = getPtyMaster(&c10, &c01);
+    ctx->tty.rfd = ctx->tty.wfd = getPtyMaster(ctx, &c10, &c01);
     if (ctx->tty.rfd < 0)
       return EXIT_FAILURE;
     printf("%c%c\n", c10, c01);
     return 0;
   case CA_COMMX:
-    ctx->tty.rfd = ctx->tty.wfd = getPtyMaster(&c10, &c01);
+    ctx->tty.rfd = ctx->tty.wfd = getPtyMaster(ctx, &c10, &c01);
     if (ctx->tty.rfd < 0 ||
         commxForkExec(ctx, cmdarg.commx, c10, c01) != M2K_OK)
       return EXIT_FAILURE;
@@ -739,7 +738,7 @@ main(int argc, char *const argv[])
     setTty();
     break;
   case CA_DEVGIVEN:
-    ctx->tty.rfd = ctx->tty.wfd = openPtyMaster(cmdarg.dev);
+    ctx->tty.rfd = ctx->tty.wfd = openPtyMaster(ctx, cmdarg.dev);
     if (ctx->tty.rfd < 0)
       return EXIT_FAILURE;
     break;

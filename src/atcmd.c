@@ -58,7 +58,7 @@ atcmdInit(m2k_t *ctx, struct st_cmdarg *cmdarg, st_sock *sock)
           && s != CMDST_NOAT)
       || ((s = cmdLex(ctx, cmdarg->atcmd, sock)) != CMDST_OK && s != CMDST_NOAT))
   {
-    fputs("Error in initialization commands.\r\n", stderr);
+    m2k_log(ctx, "Error in initialization commands.\r\n");
     CHAR_CR(ctx) = '\r';             /* force normal settings */
     CHAR_LF(ctx) = '\n';
   }

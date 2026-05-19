@@ -1,5 +1,7 @@
 
+#include <errno.h>
 #include <signal.h> /*SIGCHLD*/
+#include <string.h>
 #include <sys/wait.h> /*WNOHANG*/
 #include <unistd.h>
 #include <stdlib.h>             /*(getenv) */
@@ -24,7 +26,7 @@ sigchld(int dummy)
 }
 
 static int
-forkExec(char *s)
+forkExec(m2k_t *ctx, char *s)
 {
   static char *argv[4] = { "sh", "-c", "", NULL };
 
@@ -33,7 +35,7 @@ forkExec(char *s)
   switch (commxPid)
   {
   case -1:                     /*error */
-    perror("fork()");
+    m2k_log(ctx, "fork(): %s\n", strerror(errno));
     return -1;
   case 0:                      /*child */
     signal(SIGCHLD, SIG_DFL);
@@ -60,7 +62,7 @@ commxForkExec(m2k_t *ctx, const char *cmd, char *ptyslave)
   if (strcmp("/dev/", ptyslave) == 0)
     ptyslave += 5;
   sprintf(s, cmd, ptyslave);
-  return forkExec(s) < 0 ? M2K_ERR_PTY : M2K_OK;
+  return forkExec(ctx, s) < 0 ? M2K_ERR_PTY : M2K_OK;
 }
 #else
 m2k_err_t
@@ -78,6 +80,6 @@ commxForkExec(m2k_t *ctx, const char *cmd, char c10, char c01)
   if (s == NULL)
     return M2K_ERR_NOMEM;
   sprintf(s, cmd, c);           /*'%s' -> 'p1' or sth */
-  return forkExec(s) < 0 ? M2K_ERR_PTY : M2K_OK;
+  return forkExec(ctx, s) < 0 ? M2K_ERR_PTY : M2K_OK;
 }
 #endif

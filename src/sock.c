@@ -26,6 +26,7 @@
 
 #include <errno.h>
 #include <netdb.h>
+#include <string.h>
 #include <unistd.h>
 // #include <sys/time.h>   /*->ttybuf.h (timeval)*/
 #include <stdlib.h>             /*(getenv) */
@@ -92,7 +93,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
   s = getaddrinfo(ctx->atcmd.d.addr.str, out_port, &hints, &result);
   if (s != 0)
   {
-    fprintf(stderr, "Host address lookup failed: %s\n", gai_strerror(s));
+    m2k_log(ctx, "Host address lookup failed: %s\n", gai_strerror(s));
     return 1;
   }
 
@@ -107,7 +108,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
     int tmp = 1;
     if (setsockopt(sock->fd, SOL_SOCKET, SO_OOBINLINE, &tmp, sizeof(tmp)) < 0)
     {
-      perror("setsockopt()");
+      m2k_log(ctx, "setsockopt(): %s\n", strerror(errno));
       sockClose(sock);
       continue;
     }
@@ -120,7 +121,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
       freeaddrinfo(result);
       return 0;
     }
-    perror("connect()");
+    m2k_log(ctx, "connect(): %s\n", strerror(errno));
     sockClose(sock);
     /* try next address */
 #else /*!ifdef NO_DIAL_CANCELING */
@@ -138,7 +139,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
       if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0
           && errno != EINPROGRESS)
       {
-        perror("connect()");
+        m2k_log(ctx, "connect(): %s\n", strerror(errno));
         sockClose(sock);
         continue;               /* try next address */
       }
@@ -165,7 +166,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
         {
           if (errno == EINTR)
             goto RETRY;
-          perror("select()");
+          m2k_log(ctx, "select(): %s\n", strerror(errno));
           freeaddrinfo(result);
           sockShutdown(sock);
           return 1;
@@ -193,7 +194,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
           if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0
               && errno != EISCONN)
           {
-            perror("connect()-2");
+            m2k_log(ctx, "connect()-2: %s\n", strerror(errno));
             sockClose(sock);
             goto next_addr;     /* try next address */
           }

@@ -148,6 +148,8 @@ typedef enum {
   M2K_ERR_BUG,
 } m2k_err_t;
 
+typedef void (*m2k_log_fn)(const char *msg, void *userdata);
+
 /* Forward declaration so function signatures below can use m2k_t * */
 typedef struct m2k_s m2k_t;
 
@@ -352,7 +354,9 @@ void putTtyN(m2k_t *ctx, const char *cp, int n);
 
 void *chk_alloc(m2k_t *ctx, void *ptr);
 
-// verbose
+// logging / verbose
+
+void m2k_log(m2k_t *ctx, const char *fmt, ...);
 
 #define VERB_MISC 1
 #define VERB_TELOPT 2
