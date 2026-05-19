@@ -425,10 +425,13 @@ atcmdPT(m2k_t *ctx, const char *s)
     ctx->atcmd.pt.wont = 1;
     break;
   case 1:
-    strncpy(ctx->atcmd.pt.str, getenv("TERM"), PT_MAX);
-    ctx->atcmd.pt.len = strlen(ctx->atcmd.pt.str);
-    ctx->atcmd.pt.wont = 0;
-    break;
+    {
+      const char *term = getenv("TERM");
+      strncpy(ctx->atcmd.pt.str, term ? term : "", PT_MAX);
+      ctx->atcmd.pt.len = strlen(ctx->atcmd.pt.str);
+      ctx->atcmd.pt.wont = 0;
+      break;
+    }
   default:
     return 1;
   }
