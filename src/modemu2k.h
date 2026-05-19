@@ -26,10 +26,7 @@
 
 #pragma once
 
-/**
- * @file
- * @brief core modemu2k internal API (private header)
- */
+/* private internal header — not installed, not part of the public API */
 
 /* Pull in the public types (m2k_t, m2k_err_t, m2k_log_fn, public functions) */
 #include "modemu2k/modemu2k.h"
@@ -151,19 +148,6 @@ typedef struct
 void atcmdInit(m2k_t *ctx, struct st_cmdarg *cmdarg, st_sock *sock);
 
 
-/**
- * The host/ip and port number to be dialed
- *
- * @param ctx context struct
- * @param s the host or IP
- * @param at
- * @param pt
- * @returns void
- * @see m2k_sockDial()
- *
- * Example:
- * @code atcmdD(ctx, "github.com 80", ATDA_STR, ATDP_NUM); @endcode
- */
 void m2k_atcmdD(m2k_t *ctx, const char *s, AtdAType at, AtdPType pt);
 
 
@@ -371,12 +355,4 @@ typedef enum
 Cmdstat cmdLex(m2k_t *ctx, const char *ptr, st_sock *sock);
 void putTtyCmdstat(m2k_t *ctx, Cmdstat s);
 
-/**
- * Initiate connection
- *
- * @param ctx context struct
- * @param sock
- * @returns 0 if completed successfully, 1 otherwise
- * @see m2k_atcmdD()
- */
 int m2k_sockDial(m2k_t *ctx, st_sock *sock);

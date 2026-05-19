@@ -66,6 +66,11 @@ void        m2k_set_log_fn(m2k_t *ctx, m2k_log_fn fn, void *userdata);
  * @param ctx Modem context.
  * @param cmd NUL-terminated AT command (e.g. @c "ATZ" or @c "ATS0=1").
  * @return M2K_OK on success.
+ *
+ * @code
+ * m2k_atcmd(ctx, "ATZ");        // reset to defaults
+ * m2k_atcmd(ctx, "ATS0=1");    // auto-answer on first ring
+ * @endcode
  */
 m2k_err_t   m2k_atcmd(m2k_t *ctx, const char *cmd);
 
@@ -79,6 +84,14 @@ m2k_err_t   m2k_atcmd(m2k_t *ctx, const char *cmd);
  * @param host Hostname or numeric IP address.
  * @param port Service name or decimal port number.
  * @return M2K_OK on success, M2K_ERR_SOCKET on failure.
+ *
+ * @code
+ * m2k_err_t err = m2k_dial(ctx, "bbs.example.com", "23");
+ * if (err != M2K_OK) {
+ *     fprintf(stderr, "%s\n", m2k_strerror(err));
+ *     return 1;
+ * }
+ * @endcode
  */
 m2k_err_t   m2k_dial(m2k_t *ctx, const char *host, const char *port);
 
@@ -90,6 +103,15 @@ m2k_err_t   m2k_dial(m2k_t *ctx, const char *host, const char *port);
  *
  * @param ctx Modem context (must have an active connection from m2k_dial()).
  * @return M2K_OK when the remote end closes, M2K_ERR_CANCELED on +++ escape.
+ *
+ * @code
+ * // Reconnect loop: re-enter online mode if the user escapes with +++
+ * m2k_err_t st;
+ * do {
+ *     st = m2k_online(ctx);
+ * } while (st == M2K_ERR_CANCELED);
+ * m2k_hangup(ctx);
+ * @endcode
  */
 m2k_err_t   m2k_online(m2k_t *ctx);
 
