@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['teloptstate_0',['TelOptState',['../structTelOptState.html',1,'']]],
-  ['teloptstates_1',['TelOptStates',['../structTelOptStates.html',1,'']]],
-  ['to_20command_20mode_20and_20returning_2',['Escaping to command mode and returning',['../index.html#autotoc_md5',1,'']]]
+  ['up_20a_20call_20closing_20a_20connection_0',['Hanging up a call/closing a connection',['../index.html#autotoc_md6',1,'']]],
+  ['usage_1',['Sample Usage',['../index.html#autotoc_md4',1,'']]]
 ];
