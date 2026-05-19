@@ -174,6 +174,20 @@ m2k_err_t   m2k_setup_commx(m2k_t *ctx, const char *cmd);
 m2k_err_t   m2k_setup_dev(m2k_t *ctx, const char *dev);
 
 /**
+ * @brief Listen for and accept a single incoming TCP connection on @p port.
+ *
+ * Binds to all interfaces on the given port, waits (blocking) for a client
+ * to connect, then uses that connection as the TTY.  Suitable for use as a
+ * plugin with programs such as dosemu2 that connect to modemu2k over TCP.
+ * Call before m2k_run().
+ *
+ * @param ctx  Modem context.
+ * @param port Service name or decimal port number to listen on.
+ * @return M2K_OK on success, M2K_ERR_SOCKET on failure.
+ */
+m2k_err_t   m2k_setup_listen(m2k_t *ctx, const char *port);
+
+/**
  * @brief Run the modem command/online loop until the PTY closes.
  *
  * Handles the full state machine: reads Hayes AT commands in command mode,

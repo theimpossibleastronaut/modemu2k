@@ -6,6 +6,8 @@ test_cases = [
   'sockbuf',
   'atcmd',
   'ipv6',
+  'listen',
+  'listen_ipv6',
   'localhost',
   'ttybuf',
   ]

@@ -31,10 +31,11 @@
 struct st_cmdarg
 {
   enum
-  { CA_STDINOUT, CA_SHOWDEV, CA_COMMX, CA_DEVGIVEN } ttymode;
+  { CA_STDINOUT, CA_SHOWDEV, CA_COMMX, CA_DEVGIVEN, CA_LISTEN } ttymode;
   const char *commx;
   const char *atcmd;
   const char *dev;
+  const char *listen_port;
 };
 
 void cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x);

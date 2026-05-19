@@ -740,6 +740,16 @@ m2k_setup_dev(m2k_t *ctx, const char *dev)
 }
 
 m2k_err_t
+m2k_setup_listen(m2k_t *ctx, const char *port)
+{
+  int fd = m2k_sockListen(ctx, port);
+  if (fd == -1)
+    return M2K_ERR_SOCKET;
+  ctx->tty.rfd = ctx->tty.wfd = fd;
+  return M2K_OK;
+}
+
+m2k_err_t
 m2k_run(m2k_t *ctx)
 {
   struct cmdBuf cmdBuf;
