@@ -47,8 +47,8 @@ executable(
 
 install_headers('include/modemu2k/modemu2k.h', subdir: 'modemu2k')
 
-doxygen = find_program('doxygen', required: false)
-if doxygen.found()
+if get_option('gen-docs')
+  doxygen = find_program('doxygen', required: true)
   doxyfile = configure_file(
     input:  'Doxyfile.in',
     output: 'Doxyfile',

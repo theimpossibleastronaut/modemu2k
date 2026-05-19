@@ -1,10 +1,8 @@
-# modemu2k v0.1.0555
+[![C/C++ CI](https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml/badge.svg?branch=master)](https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml)
+
+# modemu2k
 
 modemu2k is a fork of modemu, originally developed by Toru Egashira
-
-(Build status
-<https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml>)
-
 
 ## What is modemu2k?
 
@@ -31,7 +29,7 @@ Dependencies
 Compilation
 -----------
 
-    meson builddir
+    meson setup builddir
     cd builddir
 
 Use `meson configure` to see extra options
