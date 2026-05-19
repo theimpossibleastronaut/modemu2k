@@ -1,0 +1,40 @@
+#!/bin/sh
+# Copy generated HTML docs to the versioned gh-pages worktree directory.
+# Run from the build directory: ninja docs && ./publish-docs
+#
+# The gh-pages worktree must exist at <source_root>/gh-pages.
+# See CLAUDE.md for setup instructions.
+
+set -e
+
+VERSION="@VERSION@"
+SOURCE_ROOT="@SOURCE_ROOT@"
+DOCS_SRC="$SOURCE_ROOT/docs"
+GH_PAGES="$SOURCE_ROOT/gh-pages"
+DEST="$GH_PAGES/v$VERSION"
+
+if [ ! -d "$DOCS_SRC" ]; then
+  echo "error: docs not found at $DOCS_SRC — run 'ninja docs' first" >&2
+  exit 1
+fi
+
+if [ ! -d "$GH_PAGES" ]; then
+  echo "error: gh-pages worktree not found at $GH_PAGES" >&2
+  echo "  Set it up with: git worktree add --orphan -b gh-pages gh-pages" >&2
+  exit 1
+fi
+
+mkdir -p "$DEST"
+rsync -a --delete --exclude='.git' "$DOCS_SRC/" "$DEST/"
+echo "Copied docs to $DEST"
+
+INDEX="$GH_PAGES/index.html"
+if ! grep -qF "v$VERSION/index.html" "$INDEX"; then
+  echo ""
+  echo "Remember to add a link for v$VERSION to $INDEX"
+fi
+
+echo ""
+echo "Next steps:"
+echo "  cd $GH_PAGES"
+echo "  git add -A && git commit -m 'docs: publish v$VERSION'"

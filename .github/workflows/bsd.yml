@@ -25,10 +25,10 @@ jobs:
         include:
           - os: freebsd
             version: '15.0'
-            install: sudo pkg install -y flex meson ninja pkgconf
+            install: sudo pkg install -y meson ninja pkgconf
           - os: openbsd
             version: '7.8'
-            install: sudo pkg_add flex meson ninja pkgconf
+            install: sudo pkg_add meson ninja pkgconf
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6

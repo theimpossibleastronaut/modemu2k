@@ -6,9 +6,8 @@
 #define TELOPTS
 #include <arpa/telnet.h>        /*IAC,DO,DONT,... */
 
-#include "modemu2k.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
-
-struct st_telOpt telOpt;
+#include "m2k_private.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
+#include "m2k_ctx.h"
 
 /* telnet option negotiation module */
 
@@ -28,7 +27,7 @@ static /*const */ TelOptStates *defaultSt;      /* used when unknown options com
 
 /* must call before each telnet session begins */
 void
-telOptReset(void)
+telOptReset(m2k_t *ctx)
 {
   TelOptStates *tosp;
 
@@ -37,14 +36,14 @@ telOptReset(void)
     tosp->local.state = tosp->remote.state = 0; /* all options are disabled initially */
     tosp->local.pending = tosp->remote.pending = 0;
   }
-  telOpt.binsend = telOpt.binrecv = telOpt.sgasend = 0;
-  telOpt.sentReqs = 0;
+  ctx->telOpt.binsend = ctx->telOpt.binrecv = ctx->telOpt.sgasend = 0;
+  ctx->telOpt.sentReqs = 0;
 }
 
 
 /* must call once before using this module */
 void
-telOptInit(void)
+telOptInit(m2k_t *ctx)
 {
   TelOptStates *tosp;
   int i;
@@ -57,7 +56,7 @@ telOptInit(void)
   {
     stTab[tosp->opt] = tosp;
   }
-  telOpt.stTab = stTab;
+  ctx->telOpt.stTab = stTab;
 }
 
 
@@ -99,22 +98,22 @@ teloptStr(int opt)
 
 
 void
-telOptPrintCmd(const char *str, int cmd)
+telOptPrintCmd(m2k_t *ctx, const char *str, int cmd)
 {
-  verboseOut(VERB_TELOPT, "%s IAC %s\r\n", str, telcmdStr(cmd));
+  verboseOut(ctx, VERB_TELOPT, "%s IAC %s\r\n", str, telcmdStr(cmd));
 }
 
 
 static void
-printCmdOpt(const char *str, int cmd, int opt)
+printCmdOpt(m2k_t *ctx, const char *str, int cmd, int opt)
 {
-  verboseOut(VERB_TELOPT, "%s %s %s\r\n", str, telcmdStr(cmd),
+  verboseOut(ctx, VERB_TELOPT, "%s %s %s\r\n", str, telcmdStr(cmd),
              teloptStr(opt));
 }
 
 
 static void
-setReqs(void)
+setReqs(m2k_t *ctx)
 {
   static TelOptReq tabP[]
     = { TOR_BETTERNOT, TOR_BETTER, TOR_MUSTNOT, TOR_MUST };
@@ -122,23 +121,23 @@ setReqs(void)
     = { TOR_BETTER, TOR_BETTERNOT, TOR_MUST, TOR_MUSTNOT };
 
   /* %Bn=m (binary mode control) */
-  stTab[TELOPT_BINARY]->local.req = tabP[atcmd.pb[1]];
-  stTab[TELOPT_BINARY]->remote.req = tabP[atcmd.pb[0]];
+  stTab[TELOPT_BINARY]->local.req = tabP[ctx->atcmd.pb[1]];
+  stTab[TELOPT_BINARY]->remote.req = tabP[ctx->atcmd.pb[0]];
   /* %Ln (linemode control) */
-  stTab[TELOPT_SGA]->remote.req = tabN[atcmd.pl];
-  stTab[TELOPT_ECHO]->remote.req = tabN[atcmd.pl];
+  stTab[TELOPT_SGA]->remote.req = tabN[ctx->atcmd.pl];
+  stTab[TELOPT_ECHO]->remote.req = tabN[ctx->atcmd.pl];
   /* %Tn (terminal-type response control) */
-  stTab[TELOPT_TTYPE]->local.req = atcmd.pt.wont ? TOR_MUSTNOT : TOR_NEUTRAL;
+  stTab[TELOPT_TTYPE]->local.req = ctx->atcmd.pt.wont ? TOR_MUSTNOT : TOR_NEUTRAL;
 }
 
 
 /* tell the peer my option-state-to-be requests */
 void
-telOptSendReqs(void)
+telOptSendReqs(m2k_t *ctx)
 {
   TelOptStates *tosp;
 
-  setReqs();
+  setReqs(ctx);
 
   for (tosp = stTabMaster; tosp->opt >= 0; tosp++)
   {
@@ -148,8 +147,8 @@ telOptSendReqs(void)
     case TOR_BETTERNOT:
       if (tosp->local.state == 1)
       {
-        putOptCmd(WONT, tosp->opt);
-        printCmdOpt(">", WONT, tosp->opt);
+        putOptCmd(ctx, WONT, tosp->opt);
+        printCmdOpt(ctx, ">", WONT, tosp->opt);
         tosp->local.pending = 1;
       }
       break;
@@ -157,8 +156,8 @@ telOptSendReqs(void)
     case TOR_MUST:
       if (tosp->local.state == 0)
       {
-        putOptCmd(WILL, tosp->opt);
-        printCmdOpt(">", WILL, tosp->opt);
+        putOptCmd(ctx, WILL, tosp->opt);
+        printCmdOpt(ctx, ">", WILL, tosp->opt);
         tosp->local.pending = 1;
       }
       break;
@@ -170,8 +169,8 @@ telOptSendReqs(void)
     case TOR_BETTERNOT:
       if (tosp->remote.state == 1)
       {
-        putOptCmd(DONT, tosp->opt);
-        printCmdOpt(">", DONT, tosp->opt);
+        putOptCmd(ctx, DONT, tosp->opt);
+        printCmdOpt(ctx, ">", DONT, tosp->opt);
         tosp->remote.pending = 1;
       }
       break;
@@ -179,31 +178,31 @@ telOptSendReqs(void)
     case TOR_MUST:
       if (tosp->remote.state == 0)
       {
-        putOptCmd(DO, tosp->opt);
-        printCmdOpt(">", DO, tosp->opt);
+        putOptCmd(ctx, DO, tosp->opt);
+        printCmdOpt(ctx, ">", DO, tosp->opt);
         tosp->remote.pending = 1;
       }
       break;
     default:;
     }
   }
-  telOpt.sentReqs = 1;
+  ctx->telOpt.sentReqs = 1;
 }
 
 
 /* summarize option states into flags */
 static void
-telOptSummarize(void)
+telOptSummarize(m2k_t *ctx)
 {
-  telOpt.binsend = stTab[TELOPT_BINARY]->local.state;
-  telOpt.binrecv = stTab[TELOPT_BINARY]->remote.state;
-  telOpt.sgasend = stTab[TELOPT_SGA]->remote.state;
+  ctx->telOpt.binsend = stTab[TELOPT_BINARY]->local.state;
+  ctx->telOpt.binrecv = stTab[TELOPT_BINARY]->remote.state;
+  ctx->telOpt.sgasend = stTab[TELOPT_SGA]->remote.state;
 }
 
 
 /* telnet option request/response handling */
 int
-telOptHandle(int cmd, int opt)
+telOptHandle(m2k_t *ctx, int cmd, int opt)
 {
   TelOptState *tostp;
   TelOptStates *tosp;
@@ -215,7 +214,7 @@ telOptHandle(int cmd, int opt)
   //  TelOptReq betterAssert;       /* better assert if req is this */
   //  TelOptReq mustAssert;         /* must assert if req is this */
 
-  printCmdOpt("<", cmd, opt);
+  printCmdOpt(ctx, "<", cmd, opt);
 
   tosp = (opt < NTELOPTS) ? stTab[opt] : defaultSt;
 
@@ -262,8 +261,7 @@ telOptHandle(int cmd, int opt)
     negaResCmd = WILL;
     break;
   default:
-    fputs("bug\r\n", stderr);
-    exit(1);
+    abort();
   }
 
   if (tostp->req == mustNegate || tostp->req == betterNegate)
@@ -276,14 +274,14 @@ telOptHandle(int cmd, int opt)
       if (tostp->state == !reqState)
       {                         /* this may not happen */
         tostp->state = reqState;
-        putOptCmd(posiResCmd, opt);     /* positive response */
-        printCmdOpt(">", posiResCmd, opt);
+        putOptCmd(ctx, posiResCmd, opt);     /* positive response */
+        printCmdOpt(ctx, ">", posiResCmd, opt);
       }
     }
     else
     {
-      putOptCmd(negaResCmd, opt);       /* negative response */
-      printCmdOpt(">", negaResCmd, opt);
+      putOptCmd(ctx, negaResCmd, opt);       /* negative response */
+      printCmdOpt(ctx, ">", negaResCmd, opt);
     }
   }
   else                          /*if (tostp->req == betterAssert or mustAssert or TOR_NEUTRAL) */
@@ -297,42 +295,42 @@ telOptHandle(int cmd, int opt)
     {
       if (tostp->state == !reqState)
       {                         /* this may not happen */
-        putOptCmd(posiResCmd, opt);     /* positive response */
-        printCmdOpt(">", posiResCmd, opt);
+        putOptCmd(ctx, posiResCmd, opt);     /* positive response */
+        printCmdOpt(ctx, ">", posiResCmd, opt);
       }
     }
     tostp->state = reqState;    /* {en,dis}able option as requested */
   }
 
-  telOptSummarize();
+  telOptSummarize(ctx);
   return 0;
 }
 
 /* send term-type subnego param */
 static void
-ttypeSBHandle(void)
+ttypeSBHandle(m2k_t *ctx)
 {
-  putSock1(IAC);
-  putSock1(SB);
-  putSock1(TELOPT_TTYPE);
-  putSock1(TELQUAL_IS);
-  putSockN((uchar *) atcmd.pt.str, atcmd.pt.len);
-  putSock1(IAC);
-  putSock1(SE);
-  verboseOut(VERB_TELOPT, "> SB %s IS %s SE\r\n",
-             telopts[TELOPT_TTYPE], atcmd.pt.str);
+  putSock1(ctx, IAC);
+  putSock1(ctx, SB);
+  putSock1(ctx, TELOPT_TTYPE);
+  putSock1(ctx, TELQUAL_IS);
+  putSockN(ctx, (uchar *) ctx->atcmd.pt.str, ctx->atcmd.pt.len);
+  putSock1(ctx, IAC);
+  putSock1(ctx, SE);
+  verboseOut(ctx, VERB_TELOPT, "> SB %s IS %s SE\r\n",
+             telopts[TELOPT_TTYPE], ctx->atcmd.pt.str);
 }
 
 /* telnet option subnegotiation request handling */
 int
-telOptSBHandle(int opt)
+telOptSBHandle(m2k_t *ctx, int opt)
 {
-  verboseOut(VERB_TELOPT, "< SB %s SEND SE.\r\n", telopts[opt]);
+  verboseOut(ctx, VERB_TELOPT, "< SB %s SEND SE.\r\n", telopts[opt]);
 
   switch (opt)
   {
   case TELOPT_TTYPE:
-    ttypeSBHandle();
+    ttypeSBHandle(ctx);
     break;
   default:
     return 1;

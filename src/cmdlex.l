@@ -2,7 +2,8 @@
 %option nounput
 %{ /* -*- fundamental -*- */
 /* lexer spec. for modemu2k command mode */
-#include "modemu2k.h"	/*->atcmd.h (uchar)*/
+#include "m2k_private.h"	/*->atcmd.h (uchar)*/
+#include "m2k_ctx.h"
 
 #if 0
 static struct {
@@ -47,7 +48,7 @@ flexYyInput(char *buf,int maxsize)
 # define unput(c) (ptr--) /* can't alter the const */
 #endif /*ifdef FLEX_SCANNER*/
 
-#define YY_DECL int yylex(st_sock *sock)
+#define YY_DECL int yylex(m2k_t *ctx, st_sock *sock)
 
 static Cmdstat cmdstat;
 
@@ -87,32 +88,32 @@ TTYPE	([-/a-zA-Z0-9]*)
 <INITIAL>.|\n	{ /*ignore preceding garbage*/ }
 
 <AT>[dD]	{ BEGIN ATD; cmdstat = CMDST_ERROR; }
-<AT>[eE][0-9]?	{ if (atcmdFake(yytext,"1")) return cmdstat = CMDST_ERROR; }
-<AT>[fF][0-9]?	{ if (atcmdFake(yytext,"1")) return cmdstat = CMDST_ERROR; }
-<AT>[hH][0-9]?	{ if (atcmdH(yytext, sock)) return cmdstat = CMDST_ERROR; }
-<AT>[iI][0-9]?	{ if (atcmdI(yytext)) return cmdstat = CMDST_ERROR; }
-<AT>[oO][0-9]?	{ if (atcmdFake(yytext,"0")) return cmdstat = CMDST_ERROR;
+<AT>[eE][0-9]?	{ if (atcmdFake(ctx, yytext,"1")) return cmdstat = CMDST_ERROR; }
+<AT>[fF][0-9]?	{ if (atcmdFake(ctx, yytext,"1")) return cmdstat = CMDST_ERROR; }
+<AT>[hH][0-9]?	{ if (atcmdH(ctx, yytext, sock)) return cmdstat = CMDST_ERROR; }
+<AT>[iI][0-9]?	{ if (atcmdI(ctx, yytext)) return cmdstat = CMDST_ERROR; }
+<AT>[oO][0-9]?	{ if (atcmdFake(ctx, yytext,"0")) return cmdstat = CMDST_ERROR;
 		  cmdstat = CMDST_ATO; }
 <AT>[pPtT]	{ /* just ignore */ }
-<AT>[qQ][0-9]?	{ if (atcmdFake(yytext,"0")) return cmdstat = CMDST_ERROR; }
-<AT>[vV][0-9]?	{ if (atcmdFake(yytext,"1")) return cmdstat = CMDST_ERROR; }
-<AT>[xX][0-9]?	{ if (atcmdFake(yytext,"0")) return cmdstat = CMDST_ERROR; }
+<AT>[qQ][0-9]?	{ if (atcmdFake(ctx, yytext,"0")) return cmdstat = CMDST_ERROR; }
+<AT>[vV][0-9]?	{ if (atcmdFake(ctx, yytext,"1")) return cmdstat = CMDST_ERROR; }
+<AT>[xX][0-9]?	{ if (atcmdFake(ctx, yytext,"0")) return cmdstat = CMDST_ERROR; }
 <AT>[sS][0-9]*=[0-9]*	{ /* ATT lex:[0-9]{0,n} n=2:OK n=3:NG */
-			  if (atcmdSSet(yytext))
+			  if (atcmdSSet(ctx, yytext))
 				return cmdstat = CMDST_ERROR; }
-<AT>[sS][0-9]*\?	{ if (atcmdSQuery(yytext))
+<AT>[sS][0-9]*\?	{ if (atcmdSQuery(ctx, yytext))
 				return cmdstat = CMDST_ERROR; }
-<AT>[zZ]		{ atcmdZ(sock); }
-<AT>&[wW]		{ atcmdAW(); }
-<AT>%[bB][0-9]?=[0-9]?	{ if (atcmdPB(yytext)) return cmdstat = CMDST_ERROR; }
-<AT>%[dD][0-9]?		{ if (atcmdPD(yytext)) return cmdstat = CMDST_ERROR; }
-<AT>%[lL][0-9]?		{ if (atcmdPL(yytext)) return cmdstat = CMDST_ERROR; }
-<AT>%[qQ]		{ atcmdPQ(sock); }
-<AT>%[rR][0-9]?		{ if (atcmdPR(yytext)) return cmdstat = CMDST_ERROR; }
-<AT>%[tT][0-9]?		{ if (atcmdPT(yytext)) return cmdstat = CMDST_ERROR; }
-<AT>%[tT]=\"{TTYPE}\"?	{ if (atcmdPTSet(yytext))
+<AT>[zZ]		{ atcmdZ(ctx, sock); }
+<AT>&[wW]		{ atcmdAW(ctx); }
+<AT>%[bB][0-9]?=[0-9]?	{ if (atcmdPB(ctx, yytext)) return cmdstat = CMDST_ERROR; }
+<AT>%[dD][0-9]?		{ if (atcmdPD(ctx, yytext)) return cmdstat = CMDST_ERROR; }
+<AT>%[lL][0-9]?		{ if (atcmdPL(ctx, yytext)) return cmdstat = CMDST_ERROR; }
+<AT>%[qQ]		{ atcmdPQ(ctx, sock); }
+<AT>%[rR][0-9]?		{ if (atcmdPR(ctx, yytext)) return cmdstat = CMDST_ERROR; }
+<AT>%[tT][0-9]?		{ if (atcmdPT(ctx, yytext)) return cmdstat = CMDST_ERROR; }
+<AT>%[tT]=\"{TTYPE}\"?	{ if (atcmdPTSet(ctx, yytext))
 				return cmdstat = CMDST_ERROR; }
-<AT>%[vV][0-9]*		{ if (atcmdPV(yytext)) return cmdstat = CMDST_ERROR; }
+<AT>%[vV][0-9]*		{ if (atcmdPV(ctx, yytext)) return cmdstat = CMDST_ERROR; }
 <AT>" "			{ /*ignore spaces*/ }
 <AT>.|\n		{ return cmdstat = CMDST_ERROR; }
 
@@ -120,18 +121,18 @@ TTYPE	([-/a-zA-Z0-9]*)
 <ATD>[0-9][wW,]		{ /* ignore them */ }
 <ATD>[sS][0-9]*		{ /* use registered number (not work yet) */ }
 <ATD>{A_NUM} |
-<ATD>\"{A_NUM}\"?	{ m2k_atcmdD(yytext, ATDA_NUM, ATDP_NUL);
+<ATD>\"{A_NUM}\"?	{ m2k_atcmdD(ctx, yytext, ATDA_NUM, ATDP_NUL);
 				cmdstat = CMDST_ATD; BEGIN AT; }
 <ATD>{A_NUM}\ {P_NUM} |
-<ATD>\"{A_NUM}\ {P_NUM}\"?	{ m2k_atcmdD(yytext, ATDA_NUM, ATDP_NUM);
+<ATD>\"{A_NUM}\ {P_NUM}\"?	{ m2k_atcmdD(ctx, yytext, ATDA_NUM, ATDP_NUM);
 					cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>\"{A_NUM}\ {P_STR}\"?	{ m2k_atcmdD(yytext, ATDA_NUM, ATDP_STR);
+<ATD>\"{A_NUM}\ {P_STR}\"?	{ m2k_atcmdD(ctx, yytext, ATDA_NUM, ATDP_STR);
 					cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>\"{A_STR}\"?		{ m2k_atcmdD(yytext, ATDA_STR, ATDP_NUL);
+<ATD>\"{A_STR}\"?		{ m2k_atcmdD(ctx, yytext, ATDA_STR, ATDP_NUL);
 					cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>\"{A_STR}\ {P_NUM}\"?	{ m2k_atcmdD(yytext, ATDA_STR, ATDP_NUM);
+<ATD>\"{A_STR}\ {P_NUM}\"?	{ m2k_atcmdD(ctx, yytext, ATDA_STR, ATDP_NUM);
 					cmdstat = CMDST_ATD; BEGIN AT; }
-<ATD>\"{A_STR}\ {P_STR}\"?	{ m2k_atcmdD(yytext, ATDA_STR, ATDP_STR);
+<ATD>\"{A_STR}\ {P_STR}\"?	{ m2k_atcmdD(ctx, yytext, ATDA_STR, ATDP_STR);
 					cmdstat = CMDST_ATD; BEGIN AT; }
 <ATD>" "			{ /*ignore spaces*/ }
 <ATD>.|\n			{ return cmdstat = CMDST_ERROR; }
@@ -139,7 +140,7 @@ TTYPE	([-/a-zA-Z0-9]*)
 %%
 
 Cmdstat
-cmdLex(const char *p, st_sock *sock)
+cmdLex(m2k_t *ctx, const char *p, st_sock *sock)
 {
 	if (p == NULL) return CMDST_NOAT;
 	ptr = p;
@@ -147,6 +148,6 @@ cmdLex(const char *p, st_sock *sock)
 	yyrestart(yyin);
 #endif
 	cmdstat = CMDST_NOAT;
-	yylex(sock);
+	yylex(ctx, sock);
 	return cmdstat;
 }

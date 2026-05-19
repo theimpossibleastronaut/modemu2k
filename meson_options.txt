@@ -1,2 +1,5 @@
 option('docdir', type : 'string', value : 'share/doc/modemu2k',
        description : 'directory where the documentation should be installed to')
+
+option('gen-docs', type : 'boolean', value : false,
+       description : 'Build API documentation with Doxygen')

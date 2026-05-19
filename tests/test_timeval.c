@@ -1,6 +1,6 @@
 #include "test.h"
+#include "m2k_private.h"
 #include <sys/time.h>
-#include "modemu2k.h"
 
 static void
 test_set10ms(void)

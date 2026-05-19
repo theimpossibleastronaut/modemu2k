@@ -1,10 +1,8 @@
-# modemu2k v0.1.0555
+[![C/C++ CI](https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml/badge.svg?branch=master)](https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml)
+
+# modemu2k
 
 modemu2k is a fork of modemu, originally developed by Toru Egashira
-
-(Build status
-<https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml>)
-
 
 ## What is modemu2k?
 
@@ -17,21 +15,16 @@ Maintainer: Andy Alt <arch_stanton5995 at protonmail [dot] com>
 
 License: GNU GPL 3
 
-Home page: <http://theimpossibleastronaut.com/modemu2k/>
-
-[Issues and bug reporting](https://github.com/theimpossibleastronaut/modemu2k/issues)
-
-
-Dependencies
-------------
-
-  * flex
+* [Home page](http://theimpossibleastronaut.com/modemu2k/)
+* [Source repository](https://github.com/theimpossibleastronaut/modemu2k)
+* [API documentation](https://theimpossibleastronaut.github.io/modemu2k/)
+* [Issues and bug reporting](https://github.com/theimpossibleastronaut/modemu2k/issues)
 
 
 Compilation
 -----------
 
-    meson builddir
+    meson setup builddir
     cd builddir
 
 Use `meson configure` to see extra options
@@ -40,9 +33,8 @@ Use `meson configure` to see extra options
 
 
 `ninja install` is optional. The binary can be run from the build
-directory; however, installation is required to use the translations,
-and to create and install a script (m2k-minicom) that can invoke
-minicom (see below).
+directory; however, installation is required to create and install a
+script (m2k-minicom) that can invoke minicom (see below).
 
 
 ## Sample Usage

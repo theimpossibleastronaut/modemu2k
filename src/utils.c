@@ -29,13 +29,15 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "m2k_private.h"
+#include "m2k_ctx.h"
 
 void *
-chk_alloc(void *ptr)
+chk_alloc(m2k_t *ctx, void *ptr)
 {
   if (ptr != NULL)
     return ptr;
 
-  fprintf(stderr, "Error allocating memory\n");
+  m2k_log(ctx, "Error allocating memory\n");
   return NULL;
 }

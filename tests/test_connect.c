@@ -1,33 +1,27 @@
 #include "test.h"
 
-#include <unistd.h>
-#include "modemu2k.h"
-
-static void test_connect (void)
+static void
+test_connect(void)
 {
-  st_sock sock;
-  atcmd.s[7] = 20;  /* S7: connection timeout in seconds */
-  atcmd.pd = 1;    /* disable dial canceling; stdin is not a tty in tests */
+  m2k_t *ctx = m2k_new();
+  assert(ctx != NULL);
+  m2k_atcmd(ctx, "ATS7=20");
+  m2k_atcmd(ctx, "AT%D1");  /* disable dial canceling — stdin is not a tty */
 
-  // should connect
-  telOptReset ();
-  m2k_atcmdD ("github.com 80", ATDA_STR, ATDP_NUM);
-  assert (m2k_sockDial(&sock) == 0);
-  sleep (2);
-  assert (sockShutdown (&sock) == 0);
+  assert(m2k_dial(ctx, "github.com", "80") == M2K_OK);
+  sleep(2);
+  assert(m2k_hangup(ctx) == M2K_OK);
 
-  // should connect
-  telOptReset ();
-  m2k_atcmdD ("140.82.113.3 80", ATDA_NUM, ATDP_NUM);
-  assert (m2k_sockDial(&sock) == 0);
-  sleep (2);
-  assert (sockShutdown (&sock) == 0);
+  assert(m2k_dial(ctx, "140.82.113.3", "80") == M2K_OK);
+  sleep(2);
+  assert(m2k_hangup(ctx) == M2K_OK);
 
-  return;
+  m2k_free(ctx);
 }
 
-int main (void)
+int
+main(void)
 {
-  test_connect ();
+  test_connect();
   return 0;
 }

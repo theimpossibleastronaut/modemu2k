@@ -1,7 +1,7 @@
 project(
   'modemu2k',
   'c',
-  version: '0.1.1',
+  version: '0.2.0',
   meson_version : '>= 0.56.0',
   default_options: [
     'warning_level=3',
@@ -33,14 +33,41 @@ conf.set_quoted('PACKAGE_BUGREPORT', 'https://github.com/theimpossibleastronaut/
 
 config_h = configure_file(output : 'config.h', configuration : conf)
 
+pkg = import('pkgconfig')
+
+version_components = meson.project_version().split('.')
+version_conf = configuration_data()
+version_conf.set('MODEMU2K_VERSION_MAJOR', version_components[0])
+version_conf.set('MODEMU2K_VERSION_MINOR', version_components[1])
+version_conf.set('MODEMU2K_VERSION_PATCH', version_components[2])
+version_conf.set_quoted('MODEMU2K_VERSION', meson.project_version())
+version_h = configure_file(output: 'modemu2k_version.h', configuration: version_conf)
+
 subdir('src')
 
 executable(
   'modemu2k',
   ['src/main.c', 'src/cmdarg.c'],
+  include_directories: 'src',
   dependencies: dep_modemu2k,
   install : true
   )
+
+install_headers('modemu2k.h', version_h, subdir: 'modemu2k')
+
+if get_option('gen-docs')
+  doxygen = find_program('doxygen', required: true)
+  doxyfile = configure_file(
+    input:  'Doxyfile.in',
+    output: 'Doxyfile',
+    configuration: {
+      'PROJECT_NAME':    meson.project_name(),
+      'PROJECT_VERSION': meson.project_version(),
+      'SOURCE_ROOT':     meson.project_source_root(),
+    }
+  )
+  run_target('docs', command: [doxygen, doxyfile])
+endif
 
 subdir ('man')
 subdir ('scripts')
@@ -58,4 +85,4 @@ install_data(
   install_dir : get_option('docdir')
   )
 
-install_subdir('docs', install_dir : get_option('docdir'))
+install_subdir('docs', install_dir : get_option('docdir') / 'html', strip_directory : true)
