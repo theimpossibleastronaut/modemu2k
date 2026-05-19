@@ -1,9 +1,27 @@
 var searchData=
 [
-  ['m2k_5fatcmdd_0',['m2k_atcmdD',['../src_2modemu2k_8h.html#a7dc2591eb966987bb87ec867ad892749',1,'atcmd.c']]],
-  ['m2k_5fs_1',['m2k_s',['../structm2k__s.html',1,'']]],
-  ['m2k_5fsockdial_2',['m2k_sockDial',['../src_2modemu2k_8h.html#a1c32935e981bf8dddfb58aac23349b84',1,'sock.c']]],
-  ['mode_20and_20returning_3',['Escaping to command mode and returning',['../index.html#autotoc_md5',1,'']]],
-  ['modemu2k_4',['modemu2k',['../index.html',1,'modemu2k'],['../index.html#autotoc_md0',1,'modemu2k'],['../index.html#autotoc_md1',1,'What is modemu2k?']]],
-  ['modemu2k_2eh_5',['modemu2k.h',['../src_2modemu2k_8h.html',1,'']]]
+  ['m2k_5fatcmd_0',['m2k_atcmd',['../include_2modemu2k_2modemu2k_8h.html#a1bc9bda2db0361b73b697b781a4d8862',1,'m2k_api.c']]],
+  ['m2k_5fatcmdd_1',['m2k_atcmdD',['../src_2modemu2k_8h.html#a7dc2591eb966987bb87ec867ad892749',1,'atcmd.c']]],
+  ['m2k_5fdial_2',['m2k_dial',['../include_2modemu2k_2modemu2k_8h.html#a5d0de562057841ed5f7441fa170548a4',1,'m2k_api.c']]],
+  ['m2k_5ferr_5fbug_3',['M2K_ERR_BUG',['../include_2modemu2k_2modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19ab6e3a3046eaf47b5af62480390d270cc',1,'modemu2k.h']]],
+  ['m2k_5ferr_5fcanceled_4',['M2K_ERR_CANCELED',['../include_2modemu2k_2modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8',1,'modemu2k.h']]],
+  ['m2k_5ferr_5fnomem_5',['M2K_ERR_NOMEM',['../include_2modemu2k_2modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a2b8d2da6b85dfe9e64a41bda2943a52c',1,'modemu2k.h']]],
+  ['m2k_5ferr_5fpty_6',['M2K_ERR_PTY',['../include_2modemu2k_2modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a047dd991190ee2f4346c5bfe08c7a719',1,'modemu2k.h']]],
+  ['m2k_5ferr_5fsocket_7',['M2K_ERR_SOCKET',['../include_2modemu2k_2modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19ac6beaadf0b6e9d4a35684cb250017c25',1,'modemu2k.h']]],
+  ['m2k_5ferr_5ft_8',['m2k_err_t',['../include_2modemu2k_2modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19',1,'modemu2k.h']]],
+  ['m2k_5ferr_5ftimeout_9',['M2K_ERR_TIMEOUT',['../include_2modemu2k_2modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a4099531099a5ecc8e0eefcef3f1f9268',1,'modemu2k.h']]],
+  ['m2k_5ffree_10',['m2k_free',['../include_2modemu2k_2modemu2k_8h.html#adecfb34f9484c3a984a1fc94dbd11c90',1,'m2k_api.c']]],
+  ['m2k_5fhangup_11',['m2k_hangup',['../include_2modemu2k_2modemu2k_8h.html#a61e4922eeee52bf582ac8220c92e2fcc',1,'m2k_api.c']]],
+  ['m2k_5flog_5ffn_12',['m2k_log_fn',['../include_2modemu2k_2modemu2k_8h.html#a26868be55e10d283ed4a75e82a79409d',1,'modemu2k.h']]],
+  ['m2k_5fnew_13',['m2k_new',['../include_2modemu2k_2modemu2k_8h.html#a4876c026865cd1ecff6b8b9010b37b2c',1,'m2k_api.c']]],
+  ['m2k_5fok_14',['M2K_OK',['../include_2modemu2k_2modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe',1,'modemu2k.h']]],
+  ['m2k_5fonline_15',['m2k_online',['../include_2modemu2k_2modemu2k_8h.html#a372c11bf0cdc06d9a4a2b568e6162ff6',1,'m2k_api.c']]],
+  ['m2k_5fs_16',['m2k_s',['../structm2k__s.html',1,'']]],
+  ['m2k_5fset_5flog_5ffn_17',['m2k_set_log_fn',['../include_2modemu2k_2modemu2k_8h.html#a2b89203ec50a8d3a12d5902f9364ce74',1,'m2k_api.c']]],
+  ['m2k_5fsockdial_18',['m2k_sockDial',['../src_2modemu2k_8h.html#a1c32935e981bf8dddfb58aac23349b84',1,'sock.c']]],
+  ['m2k_5fstrerror_19',['m2k_strerror',['../include_2modemu2k_2modemu2k_8h.html#a976094e155a6c711075a4fea65c5a6eb',1,'m2k_api.c']]],
+  ['m2k_5ft_20',['m2k_t',['../include_2modemu2k_2modemu2k_8h.html#a861720925b561f9640e9e606fb6d9ec6',1,'modemu2k.h']]],
+  ['mode_20and_20returning_21',['Escaping to command mode and returning',['../index.html#autotoc_md5',1,'']]],
+  ['modemu2k_22',['modemu2k',['../index.html',1,'modemu2k'],['../index.html#autotoc_md0',1,'modemu2k'],['../index.html#autotoc_md1',1,'What is modemu2k?']]],
+  ['modemu2k_2eh_23',['modemu2k.h',['../include_2modemu2k_2modemu2k_8h.html',1,'(Global Namespace)'],['../src_2modemu2k_8h.html',1,'(Global Namespace)']]]
 ];

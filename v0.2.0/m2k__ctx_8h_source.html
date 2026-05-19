@@ -94,12 +94,14 @@ $(function() {
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structst__ttyBufR.html">st_ttyBufR</a>  ttyBufR;</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structst__ttyBufW.html">st_ttyBufW</a>  ttyBufW;</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structst__telOpt.html">st_telOpt</a>   telOpt;</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    m2k_log_fn         log_fn;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <a class="code hl_typedef" href="include_2modemu2k_2modemu2k_8h.html#a26868be55e10d283ed4a75e82a79409d">m2k_log_fn</a>         log_fn;</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordtype">void</span>              *log_userdata;</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>};</div>
 </div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structm2k__s.html">m2k_s</a> m2k_t;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structm2k__s.html">m2k_s</a> <a class="code hl_typedef" href="include_2modemu2k_2modemu2k_8h.html#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a>;</div>
+<div class="ttc" id="ainclude_2modemu2k_2modemu2k_8h_html_a26868be55e10d283ed4a75e82a79409d"><div class="ttname"><a href="include_2modemu2k_2modemu2k_8h.html#a26868be55e10d283ed4a75e82a79409d">m2k_log_fn</a></div><div class="ttdeci">void(* m2k_log_fn)(const char *msg, void *userdata)</div><div class="ttdoc">Log callback type.</div><div class="ttdef"><b>Definition</b> modemu2k.h:25</div></div>
+<div class="ttc" id="ainclude_2modemu2k_2modemu2k_8h_html_a861720925b561f9640e9e606fb6d9ec6"><div class="ttname"><a href="include_2modemu2k_2modemu2k_8h.html#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a></div><div class="ttdeci">struct m2k_s m2k_t</div><div class="ttdoc">Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free().</div><div class="ttdef"><b>Definition</b> modemu2k.h:18</div></div>
 <div class="ttc" id="asrc_2modemu2k_8h_html"><div class="ttname"><a href="src_2modemu2k_8h.html">modemu2k.h</a></div><div class="ttdoc">core modemu2k internal API (private header)</div></div>
 <div class="ttc" id="astructAtcmd_html"><div class="ttname"><a href="structAtcmd.html">Atcmd</a></div><div class="ttdef"><b>Definition</b> modemu2k.h:115</div></div>
 <div class="ttc" id="astructm2k__s_html"><div class="ttname"><a href="structm2k__s.html">m2k_s</a></div><div class="ttdef"><b>Definition</b> m2k_ctx.h:4</div></div>
