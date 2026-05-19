@@ -38,9 +38,8 @@ Use `meson configure` to see extra options
 
 
 `ninja install` is optional. The binary can be run from the build
-directory; however, installation is required to use the translations,
-and to create and install a script (m2k-minicom) that can invoke
-minicom (see below).
+directory; however, installation is required to create and install a
+script (m2k-minicom) that can invoke minicom (see below).
 
 
 ## Sample Usage
