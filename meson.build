@@ -77,4 +77,4 @@ install_data(
   install_dir : get_option('docdir')
   )
 
-install_subdir('docs', install_dir : get_option('docdir'))
+install_subdir('docs', install_dir : get_option('docdir') / 'html', strip_directory : true)
