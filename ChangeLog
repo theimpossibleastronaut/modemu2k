@@ -1,4 +1,6 @@
 (in-progress):
+  * Refactored into a proper library: core logic moved into libmodemu2k;
+    public API exposed via modemu2k.h at the project root
   * Removed gettext/NLS support and translations
   * Removed valgrind test setup
   * Expanded test suite: timeval, sockbuf, atcmd unit tests; IPv4/IPv6
