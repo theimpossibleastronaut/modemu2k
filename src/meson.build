@@ -1,14 +1,5 @@
-prog_flex = find_program('flex')
-
-cmd_lex = custom_target(
-  'cmdlex.c',
-  input : 'cmdlex.l',
-  output : 'cmdlex.c',
-  command : [prog_flex, '-o', '@OUTPUT@', '@INPUT@'],
-)
-
 src = [
-  cmd_lex,
+  'cmdlex.c',
   'atcmd.c',
   'commx.c',
   'm2k_api.c',
