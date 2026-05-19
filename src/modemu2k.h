@@ -31,6 +31,7 @@
 /* Pull in the public types (m2k_t, m2k_err_t, m2k_log_fn, public functions) */
 #include "modemu2k/modemu2k.h"
 
+#include <limits.h>
 #include <stdio.h>              /*stderr,(sscanf,sprintf) */
 #include <string.h>             /*(strncpy) */
 #include <stdbool.h>
@@ -103,7 +104,7 @@ typedef enum
   ATDP_STR
 } AtdPType;
 
-#define ADDR_MAX 63
+#define ADDR_MAX _POSIX_HOST_NAME_MAX
 #define PORT_MAX 63
 #define PT_MAX 40
 #define SREG_MAX 12
