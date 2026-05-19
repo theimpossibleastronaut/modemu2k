@@ -9,3 +9,6 @@ Dockerfile
 lex.yy.c
 cmdlex.c
 /doxywarn.log
+
+# gh-pages worktree directory
+/gh-pages/

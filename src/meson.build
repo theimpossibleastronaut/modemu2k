@@ -22,15 +22,21 @@ src = [
   'utils.c'
   ]
 
-lib_modemu2k = static_library(
+lib_modemu2k = library(
   'modemu2k',
   src,
+  version: meson.project_version(),
   c_args : '-DMODEMU2K_VERSION="@0@"'.format(meson.project_version()),
   include_directories : ['..', '../include'],
-  dependencies: []
+  install: true,
   )
 
 dep_modemu2k = declare_dependency(
   link_with: lib_modemu2k,
-  include_directories : ['..', '../include']
+  include_directories : include_directories('../include')
+  )
+
+pkg.generate(
+  lib_modemu2k,
+  description: 'PTY-based modem emulator library',
   )
