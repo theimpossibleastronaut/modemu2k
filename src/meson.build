@@ -11,6 +11,7 @@ src = [
   cmd_lex,
   'atcmd.c',
   'commx.c',
+  'm2k_api.c',
   'sockbuf.c',
   'stty.c',
   'timeval.c',
@@ -25,8 +26,11 @@ lib_modemu2k = static_library(
   'modemu2k',
   src,
   c_args : '-DMODEMU2K_VERSION="@0@"'.format(meson.project_version()),
-  include_directories : '..',
+  include_directories : ['..', '../include'],
   dependencies: []
   )
 
-dep_modemu2k = declare_dependency(link_with: lib_modemu2k, include_directories : '..')
+dep_modemu2k = declare_dependency(
+  link_with: lib_modemu2k,
+  include_directories : ['..', '../include']
+  )

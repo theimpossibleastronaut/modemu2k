@@ -28,8 +28,11 @@
 
 /**
  * @file
- * @brief core modemu2k API
+ * @brief core modemu2k internal API (private header)
  */
+
+/* Pull in the public types (m2k_t, m2k_err_t, m2k_log_fn, public functions) */
+#include "modemu2k/modemu2k.h"
 
 #include <stdio.h>              /*stderr,(sscanf,sprintf) */
 #include <string.h>             /*(strncpy) */
@@ -138,20 +141,7 @@ typedef struct
   int pv;
 } Atcmd;
 
-typedef enum {
-  M2K_OK = 0,
-  M2K_ERR_NOMEM,
-  M2K_ERR_PTY,
-  M2K_ERR_SOCKET,
-  M2K_ERR_TIMEOUT,
-  M2K_ERR_CANCELED,
-  M2K_ERR_BUG,
-} m2k_err_t;
-
-typedef void (*m2k_log_fn)(const char *msg, void *userdata);
-
-/* Forward declaration so function signatures below can use m2k_t * */
-typedef struct m2k_s m2k_t;
+/* m2k_err_t, m2k_log_fn, and m2k_t are defined in the public header above */
 
 #define CHAR_ESC(ctx) ((ctx)->atcmd.s[2])
 #define CHAR_CR(ctx)  ((ctx)->atcmd.s[3])
@@ -379,6 +369,7 @@ typedef enum
 } Cmdstat;
 
 Cmdstat cmdLex(m2k_t *ctx, const char *ptr, st_sock *sock);
+void putTtyCmdstat(m2k_t *ctx, Cmdstat s);
 
 /**
  * Initiate connection
