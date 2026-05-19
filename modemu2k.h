@@ -128,3 +128,60 @@ m2k_err_t   m2k_hangup(m2k_t *ctx);
  * @return Static string; never NULL.
  */
 const char *m2k_strerror(m2k_err_t err);
+
+/**
+ * @brief Use stdin/stdout as the TTY (standalone mode).
+ *
+ * Puts the terminal into raw mode.  Call before m2k_run().
+ *
+ * @param ctx Modem context.
+ * @return M2K_OK.
+ */
+m2k_err_t   m2k_setup_stdin(m2k_t *ctx);
+
+/**
+ * @brief Allocate a PTY master and return the slave device path.
+ *
+ * The returned string is heap-allocated; the caller must free() it.
+ * Use this when you need the slave path (e.g. to print it with --show).
+ * To fork a comm program on the slave, prefer m2k_setup_commx().
+ *
+ * @param ctx       Modem context.
+ * @param slave_out Receives a newly allocated NUL-terminated slave path.
+ * @return M2K_OK on success, M2K_ERR_PTY on failure.
+ */
+m2k_err_t   m2k_setup_pty(m2k_t *ctx, char **slave_out);
+
+/**
+ * @brief Allocate a PTY and fork/exec a comm program on the slave.
+ *
+ * The slave device path is substituted for @c %s in @p cmd.
+ * Call before m2k_run().
+ *
+ * @param ctx Modem context.
+ * @param cmd Shell command; @c %s is replaced by the slave device path.
+ * @return M2K_OK on success, M2K_ERR_PTY or M2K_ERR_NOMEM on failure.
+ */
+m2k_err_t   m2k_setup_commx(m2k_t *ctx, const char *cmd);
+
+/**
+ * @brief Open an existing PTY device as the TTY.
+ *
+ * @param ctx Modem context.
+ * @param dev Path to the PTY master device (e.g. @c "/dev/ptyp0").
+ * @return M2K_OK on success, M2K_ERR_PTY if the device cannot be opened.
+ */
+m2k_err_t   m2k_setup_dev(m2k_t *ctx, const char *dev);
+
+/**
+ * @brief Run the modem command/online loop until the PTY closes.
+ *
+ * Handles the full state machine: reads Hayes AT commands in command mode,
+ * dials on ATD, relays data in online mode, and returns to command mode on
+ * +++ escape or disconnection.  Call one of the m2k_setup_*() functions
+ * before calling m2k_run().
+ *
+ * @param ctx Modem context.
+ * @return M2K_OK when the session ends normally.
+ */
+m2k_err_t   m2k_run(m2k_t *ctx);

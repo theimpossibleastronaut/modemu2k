@@ -570,7 +570,7 @@ char *yytext;
 #define YY_NO_INPUT 1
 #line 4 "../src/cmdlex.l"
 /* lexer spec. for modemu2k command mode */
-#include "modemu2k.h"	/*->atcmd.h (uchar)*/
+#include "m2k_private.h"	/*->atcmd.h (uchar)*/
 #include "m2k_ctx.h"
 
 #if 0

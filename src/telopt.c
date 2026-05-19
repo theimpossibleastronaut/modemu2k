@@ -6,7 +6,7 @@
 #define TELOPTS
 #include <arpa/telnet.h>        /*IAC,DO,DONT,... */
 
-#include "modemu2k.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
+#include "m2k_private.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 #include "m2k_ctx.h"
 
 /* telnet option negotiation module */

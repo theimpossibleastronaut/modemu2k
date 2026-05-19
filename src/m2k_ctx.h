@@ -1,5 +1,5 @@
 #pragma once
-#include "modemu2k.h"
+#include "m2k_private.h"
 
 struct m2k_s {
     Atcmd              atcmd;

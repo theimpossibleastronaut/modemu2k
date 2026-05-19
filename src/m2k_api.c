@@ -1,12 +1,15 @@
+/* m2k_api.c — implements the documented API symbols declared in modemu2k.h */
 
 #include <arpa/telnet.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/select.h>
+#include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include "modemu2k.h"
+#include "m2k_private.h"
 #include "m2k_ctx.h"
 
 
@@ -449,4 +452,329 @@ m2k_strerror(m2k_err_t err)
   if ((unsigned) err < sizeof(strs) / sizeof(strs[0]))
     return strs[err];
   return "Unknown error";
+}
+
+
+/* ── PTY allocation (moved from main.c) ─────────────────────────── */
+
+#ifdef HAVE_GRANTPT
+static int
+getPtyMaster(m2k_t *ctx, char **line_return)
+{
+  int rc;
+  char name[12], *temp_line, *line = NULL;
+  int pty = -1;
+  char *name1 = "pqrstuvwxyzPQRST", *name2 = "0123456789abcdef";
+  char *p1, *p2;
+
+  pty = open("/dev/ptmx", O_RDWR);
+  if (pty < 0)
+    goto bsd;
+
+  rc = grantpt(pty);
+  if (rc < 0) { close(pty); goto bsd; }
+
+  rc = unlockpt(pty);
+  if (rc < 0) { close(pty); goto bsd; }
+
+  temp_line = ptsname(pty);
+  if (!temp_line) { close(pty); goto bsd; }
+
+  line = malloc(strlen(temp_line) + 1);
+  if (line == NULL) { close(pty); return -1; }
+  strcpy(line, temp_line);
+  *line_return = line;
+  return pty;
+
+bsd:
+  strcpy(name, "/dev/pty??");
+  for (p1 = name1; *p1; p1++)
+  {
+    name[8] = *p1;
+    for (p2 = name2; *p2; p2++)
+    {
+      name[9] = *p2;
+      pty = open(name, O_RDWR);
+      if (pty >= 0)
+        goto found;
+      if (errno == ENOENT)
+        goto bail;
+    }
+  }
+  goto bail;
+
+found:
+  line = malloc(strlen(name) + 1);
+  if (line == NULL) { close(pty); return -1; }
+  strcpy(line, name);
+  line[5] = 't';
+  rc = chown(line, getuid(), getgid());
+  if (rc < 0)
+    m2k_log(ctx, "Warning: could not change ownership of tty -- pty is insecure!\n");
+  rc = chmod(line, S_IRUSR | S_IWUSR | S_IWGRP);
+  if (rc < 0)
+    m2k_log(ctx, "Warning: could not change permissions of tty -- pty is insecure!\n");
+  *line_return = line;
+  return pty;
+
+bail:
+  if (pty >= 0)
+    close(pty);
+  return -1;
+}
+
+#else  /* !HAVE_GRANTPT */
+
+static int
+getPtyMaster(m2k_t *ctx, char *tty10, char *tty01)
+{
+  (void)ctx;
+  static const char *name1 = "pqrs";
+  static const char *name2 = "0123456789abcdef";
+  static char dev[] = "/dev/ptyXX";
+  const char *p10, *p01;
+  int fd;
+
+  for (p10 = name1; *p10 != '\0'; p10++)
+  {
+    dev[8] = *p10;
+    for (p01 = name2; *p01 != '\0'; p01++)
+    {
+      dev[9] = *p01;
+      fd = open(dev, O_RDWR);
+      if (fd >= 0)
+      {
+        *tty10 = *p10;
+        *tty01 = *p01;
+        return fd;
+      }
+    }
+  }
+  m2k_log(ctx, "No more pty devices available.\n");
+  return -1;
+}
+#endif  /* HAVE_GRANTPT */
+
+
+/* ── Command mode (moved from main.c) ───────────────────────────── */
+
+struct cmdBuf
+{
+  uchar buf[CMDBUF_MAX + 1];
+  uchar *ptr;
+  int eol;
+};
+
+static void
+cmdBufReset(struct cmdBuf *x)
+{
+  x->ptr = x->buf;
+  x->eol = 0;
+}
+
+static void
+putCmd1(const int c, struct cmdBuf *cmdBuf)
+{
+  if (cmdBuf->ptr < cmdBuf->buf + CMDBUF_MAX)
+    *cmdBuf->ptr++ = c;
+}
+
+static void
+cmdBufBS(struct cmdBuf *cmdBuf)
+{
+  if (cmdBuf->ptr > cmdBuf->buf)
+    cmdBuf->ptr--;
+}
+
+static void
+cmdReadLoop(m2k_t *ctx, struct cmdBuf *cmdBuf)
+{
+  int c;
+
+  while ((c = getTty1(ctx)) >= 0)
+  {
+    putTty1(ctx, c);
+    if (c == CHAR_CR(ctx))
+    {
+      cmdBuf->eol = 1;
+      *cmdBuf->ptr = '\0';
+      return;
+    }
+    else if (c == CHAR_BS(ctx))
+      cmdBufBS(cmdBuf);
+    else if (c < ' ' || c == 127)
+      ; /* ignore */
+    else
+      putCmd1(c, cmdBuf);
+  }
+}
+
+static Cmdstat
+cmdMode(m2k_t *ctx, struct cmdBuf *cmdBuf)
+{
+  st_sock *sock = &ctx->sock;
+  fd_set rfds, wfds;
+  Cmdstat stat;
+
+  cmdBufReset(cmdBuf);
+  ttyBufRReset(ctx);
+
+  for (;;)
+  {
+    FD_ZERO(&rfds);
+    FD_ZERO(&wfds);
+
+    if (ttyBufWReady(ctx))
+      FD_SET(ctx->tty.rfd, &rfds);
+    if (ttyBufWHasData(ctx))
+      FD_SET(ctx->tty.wfd, &wfds);
+
+    if (select(ctx->tty.wfd + 1, &rfds, &wfds, NULL, NULL) < 0)
+    {
+      if (errno != EINTR)
+        m2k_log(ctx, "select(): %s\n", strerror(errno));
+      continue;
+    }
+
+    if (FD_ISSET(ctx->tty.wfd, &wfds))
+    {
+      if (ttyBufWrite(ctx, sock) != M2K_OK)
+        return CMDST_PTY_CLOSED;
+      if (cmdBuf->eol)
+      {
+        stat = cmdLex(ctx, (char *) cmdBuf->buf, sock);
+        cmdBufReset(cmdBuf);
+        switch (stat)
+        {
+        case CMDST_ATD:
+        case CMDST_ATO:
+          return stat;
+        case CMDST_OK:
+        case CMDST_ERROR:
+          putTtyCmdstat(ctx, stat);
+          break;
+        default:;
+        }
+      }
+    }
+    if (FD_ISSET(ctx->tty.rfd, &rfds))
+    {
+      if (ttyBufRead(ctx, sock) != M2K_OK)
+        return CMDST_PTY_CLOSED;
+      cmdReadLoop(ctx, cmdBuf);
+    }
+  }
+}
+
+
+/* ── Setup API ───────────────────────────────────────────────────── */
+
+m2k_err_t
+m2k_setup_stdin(m2k_t *ctx)
+{
+  ctx->tty.rfd = 0;
+  ctx->tty.wfd = 1;
+  setTty();
+  return M2K_OK;
+}
+
+m2k_err_t
+m2k_setup_pty(m2k_t *ctx, char **slave_out)
+{
+#ifdef HAVE_GRANTPT
+  int fd = getPtyMaster(ctx, slave_out);
+  if (fd < 0)
+    return M2K_ERR_PTY;
+  ctx->tty.rfd = ctx->tty.wfd = fd;
+  return M2K_OK;
+#else
+  char c10, c01;
+  int fd = getPtyMaster(ctx, &c10, &c01);
+  if (fd < 0)
+    return M2K_ERR_PTY;
+  ctx->tty.rfd = ctx->tty.wfd = fd;
+  char *slave = malloc(3);
+  if (!slave)
+    return M2K_ERR_NOMEM;
+  slave[0] = c10;
+  slave[1] = c01;
+  slave[2] = '\0';
+  *slave_out = slave;
+  return M2K_OK;
+#endif
+}
+
+m2k_err_t
+m2k_setup_commx(m2k_t *ctx, const char *cmd)
+{
+#ifdef HAVE_GRANTPT
+  char *slave;
+  int fd = getPtyMaster(ctx, &slave);
+  if (fd < 0)
+    return M2K_ERR_PTY;
+  ctx->tty.rfd = ctx->tty.wfd = fd;
+  m2k_err_t err = commxForkExec(ctx, cmd, slave);
+  free(slave);
+  return err;
+#else
+  char c10, c01;
+  int fd = getPtyMaster(ctx, &c10, &c01);
+  if (fd < 0)
+    return M2K_ERR_PTY;
+  ctx->tty.rfd = ctx->tty.wfd = fd;
+  return commxForkExec(ctx, cmd, c10, c01);
+#endif
+}
+
+m2k_err_t
+m2k_setup_dev(m2k_t *ctx, const char *dev)
+{
+  int fd = open(dev, O_RDWR);
+  if (fd < 0)
+  {
+    m2k_log(ctx, "Pty open error.\n");
+    return M2K_ERR_PTY;
+  }
+  ctx->tty.rfd = ctx->tty.wfd = fd;
+  return M2K_OK;
+}
+
+m2k_err_t
+m2k_run(m2k_t *ctx)
+{
+  struct cmdBuf cmdBuf;
+
+CMDMODE:
+  switch (cmdMode(ctx, &cmdBuf))
+  {
+  case CMDST_ATD:
+    if (ctx->sock.alive) { putTtyCmdstat(ctx, CMDST_ERROR); goto CMDMODE; }
+    goto DIAL;
+  case CMDST_ATO:
+    if (!ctx->sock.alive) { putTtyCmdstat(ctx, CMDST_NOCARRIER); goto CMDMODE; }
+    goto ONLINE;
+  case CMDST_PTY_CLOSED:
+    return M2K_OK;
+  default:
+    return M2K_ERR_BUG;
+  }
+
+DIAL:
+  telOptReset(ctx);
+  if (m2k_sockDial(ctx, &ctx->sock) != 0)
+  {
+    putTtyCmdstat(ctx, CMDST_NOCARRIER);
+    goto CMDMODE;
+  }
+  goto ONLINE;
+
+ONLINE:
+  switch (m2k_online(ctx))
+  {
+  case M2K_OK:
+  case M2K_ERR_CANCELED:
+    goto CMDMODE;
+  default:
+    return M2K_ERR_BUG;
+  }
 }

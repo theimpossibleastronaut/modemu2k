@@ -1,7 +1,7 @@
 #include "test.h"
-#include <string.h>
-#include "modemu2k.h"
+#include "m2k_private.h"
 #include "m2k_ctx.h"
+#include <string.h>
 
 static m2k_t ctx_storage;
 static m2k_t *ctx = &ctx_storage;

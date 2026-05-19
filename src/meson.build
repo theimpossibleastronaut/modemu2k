@@ -19,14 +19,13 @@ lib_modemu2k = library(
   meson.project_name(),
   src,
   version: version,
-  c_args : '-DMODEMU2K_VERSION="@0@"'.format(version),
-  include_directories : ['..', '../include'],
+  include_directories : ['..'],
   install: true,
   )
 
 dep_modemu2k = declare_dependency(
   link_with: lib_modemu2k,
-  include_directories : include_directories('../include')
+  include_directories : include_directories('..')
   )
 
 pkg.generate(

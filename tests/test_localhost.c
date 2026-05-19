@@ -1,16 +1,8 @@
 #include "test.h"
-
-#include <arpa/inet.h>
-#include <netinet/in.h>
 #include <signal.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include "modemu2k.h"
-#include "m2k_ctx.h"
+#include <stdio.h>
 
-static m2k_t ctx_storage;
-static m2k_t *ctx = &ctx_storage;
-
+static m2k_t *ctx;
 static pid_t server_pid = -1;
 static int server_port = -1;
 
@@ -63,20 +55,17 @@ start_ipv4_only_server(void)
 static void
 setup(void)
 {
-  ctx->atcmd.s[7] = 5;
-  ctx->atcmd.pd = 1;
+  m2k_atcmd(ctx, "ATS7=5");
+  m2k_atcmd(ctx, "AT%D1");
 }
 
 static void
 test_localhost_fallback(void)
 {
-  char dialstr[32];
-  snprintf(dialstr, sizeof(dialstr), "localhost %d", server_port);
-  st_sock sock;
-  telOptReset(ctx);
-  m2k_atcmdD(ctx, dialstr, ATDA_STR, ATDP_NUM);
-  assert(m2k_sockDial(ctx, &sock) == 0);
-  assert(sockShutdown(&sock) == 0);
+  char dialport[8];
+  snprintf(dialport, sizeof(dialport), "%d", server_port);
+  assert(m2k_dial(ctx, "localhost", dialport) == M2K_OK);
+  assert(m2k_hangup(ctx) == M2K_OK);
 }
 
 int
@@ -85,7 +74,10 @@ main(void)
   start_ipv4_only_server();
   if (server_port < 0)
     return 77;
+  ctx = m2k_new();
+  assert(ctx != NULL);
   setup();
   test_localhost_fallback();
+  m2k_free(ctx);
   return 0;
 }

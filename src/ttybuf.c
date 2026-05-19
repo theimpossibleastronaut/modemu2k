@@ -1,7 +1,7 @@
 
 #include <sys/time.h>   /*->ttybuf.h (timeval)*/
 #include <unistd.h>
-#include "modemu2k.h"       /*->ttybuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
+#include "m2k_private.h"       /*->ttybuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 #include "m2k_ctx.h"
 
 void

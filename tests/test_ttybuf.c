@@ -1,5 +1,5 @@
 #include "test.h"
-#include "modemu2k.h"
+#include "m2k_private.h"
 #include "m2k_ctx.h"
 
 static m2k_t ctx_storage;

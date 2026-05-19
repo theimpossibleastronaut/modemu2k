@@ -3,7 +3,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <stdbool.h>
-#include "modemu2k.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
+#include "m2k_private.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 #include "m2k_ctx.h"
 
 /* reading socket */

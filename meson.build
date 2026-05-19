@@ -35,6 +35,14 @@ config_h = configure_file(output : 'config.h', configuration : conf)
 
 pkg = import('pkgconfig')
 
+version_components = meson.project_version().split('.')
+version_conf = configuration_data()
+version_conf.set('MODEMU2K_VERSION_MAJOR', version_components[0])
+version_conf.set('MODEMU2K_VERSION_MINOR', version_components[1])
+version_conf.set('MODEMU2K_VERSION_PATCH', version_components[2])
+version_conf.set_quoted('MODEMU2K_VERSION', meson.project_version())
+version_h = configure_file(output: 'modemu2k_version.h', configuration: version_conf)
+
 subdir('src')
 
 executable(
@@ -45,7 +53,7 @@ executable(
   install : true
   )
 
-install_headers('include/modemu2k/modemu2k.h', subdir: 'modemu2k')
+install_headers('modemu2k.h', version_h, subdir: 'modemu2k')
 
 if get_option('gen-docs')
   doxygen = find_program('doxygen', required: true)

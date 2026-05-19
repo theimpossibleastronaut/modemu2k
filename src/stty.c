@@ -4,7 +4,7 @@
 #include <signal.h> /*SIGTERM*/
 #include <stdlib.h>             /*(atexit) */
 #include <unistd.h>             /*(isatty) */
-#include "modemu2k.h"
+#include "m2k_private.h"
 /* stty -icannon -echo -isig -icrnl -inlcr */
 static int pid;
 static struct termios oldTermios;

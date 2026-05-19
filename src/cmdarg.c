@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include "cmdarg.h"             /*cmdarg */
-#include "modemu2k.h"           /*VERSION_... */
+#include "m2k_private.h"           /*VERSION_... */
 #include "config.h"
 
 /* LIT(A) -> "10" */

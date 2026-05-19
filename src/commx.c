@@ -5,7 +5,7 @@
 #include <sys/wait.h> /*WNOHANG*/
 #include <unistd.h>
 #include <stdlib.h>             /*(getenv) */
-#include "modemu2k.h"
+#include "m2k_private.h"
 #include "m2k_ctx.h"
 
 static int commxPid;
