@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>modemu2k: /home/andy/src/modemu2k/include/modemu2k/modemu2k.h File Reference</title>
+<title>modemu2k: /home/andy/src/modemu2k/modemu2k.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,10 +70,6 @@ $(function() {
 </div>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><b>include</b></li><li class="navelem"><b>modemu2k</b></li>  </ul>
-</div>
 </div><!-- top -->
 <div id="doc-content">
 <div class="header">
@@ -81,7 +77,7 @@ $(function() {
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">modemu2k.h File Reference</div></div>
+  <div class="headertitle"><div class="title">/home/andy/src/modemu2k/modemu2k.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -131,6 +127,16 @@ Functions</h2></td></tr>
 <tr class="memdesc:a61e4922eeee52bf582ac8220c92e2fcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tear down the active TCP connection.  <br /></td></tr>
 <tr class="memitem:a976094e155a6c711075a4fea65c5a6eb" id="r_a976094e155a6c711075a4fea65c5a6eb"><td class="memItemLeft">const char *&#160;</td><td class="memItemRight"><a class="el" href="#a976094e155a6c711075a4fea65c5a6eb">m2k_strerror</a> (<a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> err)</td></tr>
 <tr class="memdesc:a976094e155a6c711075a4fea65c5a6eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a human-readable string for <code class="param">err</code>.  <br /></td></tr>
+<tr class="memitem:a40332fcdccf5378d47ccf222ba2d0941" id="r_a40332fcdccf5378d47ccf222ba2d0941"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a40332fcdccf5378d47ccf222ba2d0941">m2k_setup_stdin</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a40332fcdccf5378d47ccf222ba2d0941"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use stdin/stdout as the TTY (standalone mode).  <br /></td></tr>
+<tr class="memitem:ae40340332bd0e3c8d6d2feaf3f5e3148" id="r_ae40340332bd0e3c8d6d2feaf3f5e3148"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae40340332bd0e3c8d6d2feaf3f5e3148">m2k_setup_pty</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, char **slave_out)</td></tr>
+<tr class="memdesc:ae40340332bd0e3c8d6d2feaf3f5e3148"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a PTY master and return the slave device path.  <br /></td></tr>
+<tr class="memitem:a0fe896c64c2623730a0aadd5b2294a76" id="r_a0fe896c64c2623730a0aadd5b2294a76"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a0fe896c64c2623730a0aadd5b2294a76">m2k_setup_commx</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *cmd)</td></tr>
+<tr class="memdesc:a0fe896c64c2623730a0aadd5b2294a76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a PTY and fork/exec a comm program on the slave.  <br /></td></tr>
+<tr class="memitem:a3a49027773e518fc5751feb29a20f48d" id="r_a3a49027773e518fc5751feb29a20f48d"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3a49027773e518fc5751feb29a20f48d">m2k_setup_dev</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *dev)</td></tr>
+<tr class="memdesc:a3a49027773e518fc5751feb29a20f48d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open an existing PTY device as the TTY.  <br /></td></tr>
+<tr class="memitem:a49e0a78c27ee140d0b76fc195107fef0" id="r_a49e0a78c27ee140d0b76fc195107fef0"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a49e0a78c27ee140d0b76fc195107fef0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the modem command/online loop until the PTY closes.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Public API for the modemu2k PTY-based modem emulator library. </p>
@@ -389,6 +395,33 @@ Functions</h2></td></tr>
 </div><!-- fragment --> 
 </div>
 </div>
+<a id="a49e0a78c27ee140d0b76fc195107fef0" name="a49e0a78c27ee140d0b76fc195107fef0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49e0a78c27ee140d0b76fc195107fef0">&#9670;&#160;</a></span>m2k_run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_run </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Run the modem command/online loop until the PTY closes. </p>
+<p>Handles the full state machine: reads Hayes AT commands in command mode, dials on ATD, relays data in online mode, and returns to command mode on +++ escape or disconnection. Call one of the m2k_setup_*() functions before calling <a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>M2K_OK when the session ends normally. </dd></dl>
+
+</div>
+</div>
 <a id="a2b89203ec50a8d3a12d5902f9364ce74" name="a2b89203ec50a8d3a12d5902f9364ce74"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2b89203ec50a8d3a12d5902f9364ce74">&#9670;&#160;</a></span>m2k_set_log_fn()</h2>
 
@@ -423,6 +456,128 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a0fe896c64c2623730a0aadd5b2294a76" name="a0fe896c64c2623730a0aadd5b2294a76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fe896c64c2623730a0aadd5b2294a76">&#9670;&#160;</a></span>m2k_setup_commx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_commx </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>cmd</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Allocate a PTY and fork/exec a comm program on the slave. </p>
+<p>The slave device path is substituted for <code>s</code> in <code class="param">cmd</code>. Call before <a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
+    <tr><td class="paramname">cmd</td><td>Shell command; <code>s</code> is replaced by the slave device path. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_PTY or M2K_ERR_NOMEM on failure. </dd></dl>
+
+</div>
+</div>
+<a id="a3a49027773e518fc5751feb29a20f48d" name="a3a49027773e518fc5751feb29a20f48d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a49027773e518fc5751feb29a20f48d">&#9670;&#160;</a></span>m2k_setup_dev()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_dev </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>dev</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Open an existing PTY device as the TTY. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
+    <tr><td class="paramname">dev</td><td>Path to the PTY master device (e.g. <code>"/dev/ptyp0"</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_PTY if the device cannot be opened. </dd></dl>
+
+</div>
+</div>
+<a id="ae40340332bd0e3c8d6d2feaf3f5e3148" name="ae40340332bd0e3c8d6d2feaf3f5e3148"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae40340332bd0e3c8d6d2feaf3f5e3148">&#9670;&#160;</a></span>m2k_setup_pty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_pty </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **</td>          <td class="paramname"><span class="paramname"><em>slave_out</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Allocate a PTY master and return the slave device path. </p>
+<p>The returned string is heap-allocated; the caller must free() it. Use this when you need the slave path (e.g. to print it with &ndash;show). To fork a comm program on the slave, prefer <a class="el" href="#a0fe896c64c2623730a0aadd5b2294a76" title="Allocate a PTY and fork/exec a comm program on the slave.">m2k_setup_commx()</a>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
+    <tr><td class="paramname">slave_out</td><td>Receives a newly allocated NUL-terminated slave path. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_PTY on failure. </dd></dl>
+
+</div>
+</div>
+<a id="a40332fcdccf5378d47ccf222ba2d0941" name="a40332fcdccf5378d47ccf222ba2d0941"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40332fcdccf5378d47ccf222ba2d0941">&#9670;&#160;</a></span>m2k_setup_stdin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_stdin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Use stdin/stdout as the TTY (standalone mode). </p>
+<p>Puts the terminal into raw mode. Call before <a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>M2K_OK. </dd></dl>
 
 </div>
 </div>

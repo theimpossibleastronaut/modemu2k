@@ -15,10 +15,15 @@ var searchData=
   ['m2k_5fnew_12',['m2k_new',['../modemu2k_8h.html#a4876c026865cd1ecff6b8b9010b37b2c',1,'modemu2k.h']]],
   ['m2k_5fok_13',['M2K_OK',['../modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe',1,'modemu2k.h']]],
   ['m2k_5fonline_14',['m2k_online',['../modemu2k_8h.html#a372c11bf0cdc06d9a4a2b568e6162ff6',1,'modemu2k.h']]],
-  ['m2k_5fset_5flog_5ffn_15',['m2k_set_log_fn',['../modemu2k_8h.html#a2b89203ec50a8d3a12d5902f9364ce74',1,'modemu2k.h']]],
-  ['m2k_5fstrerror_16',['m2k_strerror',['../modemu2k_8h.html#a976094e155a6c711075a4fea65c5a6eb',1,'modemu2k.h']]],
-  ['m2k_5ft_17',['m2k_t',['../modemu2k_8h.html#a861720925b561f9640e9e606fb6d9ec6',1,'modemu2k.h']]],
-  ['mode_20and_20returning_18',['Escaping to command mode and returning',['../index.html#autotoc_md5',1,'']]],
-  ['modemu2k_19',['modemu2k',['../index.html',1,'modemu2k'],['../index.html#autotoc_md0',1,'modemu2k'],['../index.html#autotoc_md1',1,'What is modemu2k?']]],
-  ['modemu2k_2eh_20',['modemu2k.h',['../modemu2k_8h.html',1,'']]]
+  ['m2k_5frun_15',['m2k_run',['../modemu2k_8h.html#a49e0a78c27ee140d0b76fc195107fef0',1,'modemu2k.h']]],
+  ['m2k_5fset_5flog_5ffn_16',['m2k_set_log_fn',['../modemu2k_8h.html#a2b89203ec50a8d3a12d5902f9364ce74',1,'modemu2k.h']]],
+  ['m2k_5fsetup_5fcommx_17',['m2k_setup_commx',['../modemu2k_8h.html#a0fe896c64c2623730a0aadd5b2294a76',1,'modemu2k.h']]],
+  ['m2k_5fsetup_5fdev_18',['m2k_setup_dev',['../modemu2k_8h.html#a3a49027773e518fc5751feb29a20f48d',1,'modemu2k.h']]],
+  ['m2k_5fsetup_5fpty_19',['m2k_setup_pty',['../modemu2k_8h.html#ae40340332bd0e3c8d6d2feaf3f5e3148',1,'modemu2k.h']]],
+  ['m2k_5fsetup_5fstdin_20',['m2k_setup_stdin',['../modemu2k_8h.html#a40332fcdccf5378d47ccf222ba2d0941',1,'modemu2k.h']]],
+  ['m2k_5fstrerror_21',['m2k_strerror',['../modemu2k_8h.html#a976094e155a6c711075a4fea65c5a6eb',1,'modemu2k.h']]],
+  ['m2k_5ft_22',['m2k_t',['../modemu2k_8h.html#a861720925b561f9640e9e606fb6d9ec6',1,'modemu2k.h']]],
+  ['mode_20and_20returning_23',['Escaping to command mode and returning',['../index.html#autotoc_md5',1,'']]],
+  ['modemu2k_24',['modemu2k',['../index.html',1,'modemu2k'],['../index.html#autotoc_md0',1,'modemu2k'],['../index.html#autotoc_md1',1,'What is modemu2k?']]],
+  ['modemu2k_2eh_25',['modemu2k.h',['../modemu2k_8h.html',1,'']]]
 ];
