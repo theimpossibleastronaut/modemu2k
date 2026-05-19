@@ -13,6 +13,7 @@ static int commxPid;
 static void
 sigchld(int dummy)
 {
+  (void)dummy;
   int s;
 
   /* wait() for commx exit() only */

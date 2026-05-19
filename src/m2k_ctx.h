@@ -14,5 +14,3 @@ struct m2k_s {
     m2k_log_fn         log_fn;
     void              *log_userdata;
 };
-
-typedef struct m2k_s m2k_t;
