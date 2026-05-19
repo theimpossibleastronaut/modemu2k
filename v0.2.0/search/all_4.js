@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['fd_0',['fd',['../structst__sock.html#ad658ab096bd5f62d6605564413a9b501',1,'st_sock']]]
+  ['hanging_20up_20a_20call_20closing_20a_20connection_0',['Hanging up a call/closing a connection',['../index.html#autotoc_md6',1,'']]]
 ];

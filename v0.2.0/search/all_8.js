@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['notes_0',['Extra Notes',['../index.html#autotoc_md7',1,'']]]
+  ['returning_0',['Escaping to command mode and returning',['../index.html#autotoc_md5',1,'']]]
 ];
