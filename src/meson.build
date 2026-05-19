@@ -13,11 +13,13 @@ src = [
   'utils.c'
   ]
 
+version = meson.project_version()
+
 lib_modemu2k = library(
-  'modemu2k',
+  meson.project_name(),
   src,
-  version: meson.project_version(),
-  c_args : '-DMODEMU2K_VERSION="@0@"'.format(meson.project_version()),
+  version: version,
+  c_args : '-DMODEMU2K_VERSION="@0@"'.format(version),
   include_directories : ['..', '../include'],
   install: true,
   )
