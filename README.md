@@ -15,7 +15,6 @@ Maintainer: Andy Alt <arch_stanton5995 at protonmail [dot] com>
 
 License: GNU GPL 3
 
-* [Home page](http://theimpossibleastronaut.com/modemu2k/)
 * [Source repository](https://github.com/theimpossibleastronaut/modemu2k)
 * [API documentation](https://theimpossibleastronaut.github.io/modemu2k/)
 * [Issues and bug reporting](https://github.com/theimpossibleastronaut/modemu2k/issues)
