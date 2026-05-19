@@ -17,6 +17,8 @@ License: GNU GPL 3
 
 Home page: <http://theimpossibleastronaut.com/modemu2k/>
 
+[API documentation](https://theimpossibleastronaut.github.io/modemu2k/)
+
 [Issues and bug reporting](https://github.com/theimpossibleastronaut/modemu2k/issues)
 
 
