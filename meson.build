@@ -84,7 +84,7 @@ subdir ('tests')
 install_data(
   files(
     'README.md',
-    'QuickStart',
+    'QUICKSTART.md',
     'COPYING',
     'AUTHORS',
     'ChangeLog',
