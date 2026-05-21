@@ -1,0 +1,6 @@
+services:
+  telnetd:
+    build: .
+    image: m2k-telnetd
+    ports:
+      - "2323:2323"

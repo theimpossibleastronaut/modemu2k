@@ -3,7 +3,6 @@
 /builddir/
 *.gz
 *.tgz
-Dockerfile
 
 lex.yy.c
 /doxywarn.log
