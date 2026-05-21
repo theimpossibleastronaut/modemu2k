@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['what_20is_20modemu2k_0',['What is modemu2k?',['../index.html#autotoc_md1',1,'']]]
+  ['next_0',['Where to look next',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html#autotoc_md11',1,'']]]
 ];
