@@ -82,6 +82,13 @@ main(int argc, char *const argv[])
       return EXIT_FAILURE;
     }
     break;
+  case CA_LISTEN:
+    if (m2k_setup_listen(ctx, cmdarg.listen_port) != M2K_OK)
+    {
+      m2k_free(ctx);
+      return EXIT_FAILURE;
+    }
+    break;
   }
 
   if (cmdarg.atcmd != NULL && m2k_atcmd(ctx, cmdarg.atcmd) != M2K_OK)

@@ -48,6 +48,8 @@ showUsage(char *const argv[])
   puts("\
   -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at startup");
   puts("\
+  -l, --listen=<port>                     listen for an incoming TCP connection on [port]");
+  puts("\
   -s, --show                              show which device will be used");
   puts("");
   puts("\
@@ -66,7 +68,7 @@ The arguments for the comm program must be native to the comm program, not\n\
 arguments used by modemu2k.");
   puts("");
   puts("\
-Note: The  -c, -d, and -s options are exclusive of each other. If two or\n\
+Note: The  -c, -d, -l, and -s options are exclusive of each other. If two or\n\
 more of the options are specified, only the last one is effective.");
   puts("");
   puts("\
@@ -108,14 +110,15 @@ for details.\n", VERSION, argv[0]);
 void
 cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
 {
-  const char *const short_options = "c:d:e:hsvw";
+  const char *const short_options = "c:d:e:hl:svw";
 
   const struct option long_options[] = {
     {"commprog", 1, NULL, 'c'},
     {"device", 1, NULL, 'd'},
     {"atstring", 1, NULL, 'e'},
-    {"show", 0, NULL, 's'},
     {"help", 0, NULL, 'h'},
+    {"listen", 1, NULL, 'l'},
+    {"show", 0, NULL, 's'},
     {"version", 0, NULL, 'v'},
     {"warranty", 0, NULL, 'w'},
     {NULL, 0, NULL, 0}
@@ -126,6 +129,7 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
   x->commx = NULL;
   x->atcmd = NULL;
   x->dev = NULL;
+  x->listen_port = NULL;
 
   do
   {
@@ -143,6 +147,10 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
       break;
     case 'e':                  /* -a <atcommands> */
       x->atcmd = optarg;
+      break;
+    case 'l':                  /* -l <port> */
+      x->ttymode = CA_LISTEN;
+      x->listen_port = optarg;
       break;
     case 'h':                  /* -h */
       showUsage(argv);

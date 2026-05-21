@@ -7,6 +7,9 @@
     connection tests (IPv6 skipped with exit 77 if no interface present)
   * Fix connecting via hostname when first resolved address fails (e.g.
     localhost resolving to ::1 before 127.0.0.1) (issue #44)
+  * Add listen mode (-l/--listen <port>) that accepts a single incoming
+    TCP connection and uses it as the TTY; intended for use as a plugin
+    with dosemu2 (issue #32)
 
 2022-08-18
 - modemu2k (v0.1.0)

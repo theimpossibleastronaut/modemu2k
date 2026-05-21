@@ -6,6 +6,8 @@ test_cases = [
   'sockbuf',
   'atcmd',
   'ipv6',
+  'listen',
+  'listen_ipv6',
   'localhost',
   'ttybuf',
   ]
@@ -21,3 +23,14 @@ foreach case : test_cases
     )
   test(name, exe)
 endforeach
+
+python3 = find_program('python3', required: false)
+if python3.found()
+  test(
+    'test_listen_integration',
+    python3,
+    args: [files('test_listen_integration.py'), modemu2k_exe.full_path()],
+    depends: modemu2k_exe,
+    timeout: 30,
+    )
+endif

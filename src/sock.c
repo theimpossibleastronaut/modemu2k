@@ -26,6 +26,7 @@
 
 #include <errno.h>
 #include <netdb.h>
+#include <netinet/in.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -63,6 +64,87 @@ sockShutdown(st_sock *sock)
     return 0;
   shutdown(sock->fd, 2);
   return sockClose(sock);
+}
+
+int
+m2k_sockListen(m2k_t *ctx, const char *port)
+{
+  struct addrinfo hints, *res;
+  memset(&hints, 0, sizeof hints);
+  hints.ai_family   = AF_UNSPEC;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags    = AI_PASSIVE | AI_NUMERICSERV;
+
+  int rc = getaddrinfo(NULL, port, &hints, &res);
+  if (rc != 0)
+  {
+    m2k_log(ctx, "getaddrinfo: %s\n", gai_strerror(rc));
+    return -1;
+  }
+
+  int server_fd = -1;
+  static const int families[2] = {AF_INET6, AF_INET};
+  for (int fi = 0; fi < 2 && server_fd == -1; fi++)
+  {
+    for (struct addrinfo *ai = res; ai != NULL; ai = ai->ai_next)
+    {
+      if (ai->ai_family != families[fi])
+        continue;
+      server_fd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+      if (server_fd == -1)
+        continue;
+      int one = 1;
+      setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof one);
+#ifdef IPV6_V6ONLY
+      if (ai->ai_family == AF_INET6)
+      {
+        int zero = 0;
+        setsockopt(server_fd, IPPROTO_IPV6, IPV6_V6ONLY, &zero, sizeof zero);
+        int v6only = 1;
+        socklen_t vlen = sizeof v6only;
+        getsockopt(server_fd, IPPROTO_IPV6, IPV6_V6ONLY, &v6only, &vlen);
+        if (v6only != 0)
+        {
+          close(server_fd);
+          server_fd = -1;
+          continue;
+        }
+      }
+#endif
+      if (bind(server_fd, ai->ai_addr, ai->ai_addrlen) != 0 ||
+          listen(server_fd, 1) != 0)
+      {
+        m2k_log(ctx, "bind/listen: %s\n", strerror(errno));
+        close(server_fd);
+        server_fd = -1;
+        continue;
+      }
+      break;
+    }
+  }
+
+  freeaddrinfo(res);
+
+  if (server_fd == -1)
+  {
+    m2k_log(ctx, "Failed to bind/listen on port %s\n", port);
+    return -1;
+  }
+
+  m2k_log(ctx, "Listening on port %s...\n", port);
+
+  struct sockaddr_storage addr;
+  socklen_t addrlen = sizeof addr;
+  int client_fd = accept(server_fd, (struct sockaddr *)&addr, &addrlen);
+  close(server_fd);
+
+  if (client_fd == -1)
+  {
+    m2k_log(ctx, "accept: %s\n", strerror(errno));
+    return -1;
+  }
+
+  return client_fd;
 }
 
 int

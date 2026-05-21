@@ -357,3 +357,4 @@ Cmdstat cmdLex(m2k_t *ctx, const char *ptr, st_sock *sock);
 void putTtyCmdstat(m2k_t *ctx, Cmdstat s);
 
 int m2k_sockDial(m2k_t *ctx, st_sock *sock);
+int m2k_sockListen(m2k_t *ctx, const char *port);

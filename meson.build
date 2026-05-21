@@ -45,7 +45,7 @@ version_h = configure_file(output: 'modemu2k_version.h', configuration: version_
 
 subdir('src')
 
-executable(
+modemu2k_exe = executable(
   'modemu2k',
   ['src/main.c', 'src/cmdarg.c'],
   include_directories: 'src',
