@@ -46,7 +46,8 @@ showUsage(char *const argv[])
   puts("\
   -d, --device=<pty_master>               talk through [pty_master]");
   puts("\
-  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at startup");
+  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at startup,\n\
+                                          then read AT commands interactively from stdin");
   puts("\
   -l, --listen=<port>                     listen for an incoming TCP connection on [port]");
   puts("\

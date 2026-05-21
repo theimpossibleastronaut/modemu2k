@@ -24,13 +24,26 @@ so that a comm program can handle the pty as a tty with a real modem.
 .PP
 .B Modemu2k
 has two major modes: a command mode and online mode.
-When invoked,
+Invoked with at least one option (e.g.\&
+.BR -c ,
+.BR -d ,
+.BR -e ,
+or
+.BR -l ),
 .B modemu2k
-is in the command mode, waiting for AT commands input.
+starts in command mode, waiting for AT commands input.
 Entering a D or O command will put into the online mode, in which \" <===
 .B modemu2k
 communicate with a remote host.
 Connection closing or a escape command input returns to the command mode.
+.PP
+Invoked with no arguments,
+.B modemu2k
+prints a short usage hint and exits without entering command mode.
+Use
+.B -e
+to reach standalone command mode on stdin/stdout (for example,
+.IR "modemu2k -e AT" ).
 .\"
 .\"
 .SH OPTIONS

@@ -14,13 +14,10 @@ import subprocess
 import sys
 import time
 
-
-def pick_free_port():
-    s = socket.socket()
-    s.bind(("127.0.0.1", 0))
-    port = s.getsockname()[1]
-    s.close()
-    return port
+# Fixed port to avoid the bind-race between the test's port picker and
+# modemu2k's listen(). The unit tests use 19876 (IPv4) and 19877 (IPv6);
+# the integration test reserves the next slot in that range.
+TEST_PORT = 19878
 
 
 def connect_with_retry(port, timeout=5.0):
@@ -59,7 +56,7 @@ def main():
         print(f"FAIL: {binary} is not executable", file=sys.stderr)
         return 1
 
-    port = pick_free_port()
+    port = TEST_PORT
     proc = subprocess.Popen(
         [binary, "-l", str(port)],
         stdin=subprocess.DEVNULL,
