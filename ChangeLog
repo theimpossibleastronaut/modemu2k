@@ -10,6 +10,9 @@
   * Add listen mode (-l/--listen <port>) that accepts a single incoming
     TCP connection and uses it as the TTY; intended for use as a plugin
     with dosemu2 (issue #32)
+  * Print a short usage hint and exit when invoked with no arguments;
+    standalone stdin/stdout command mode is still reachable via -e (or
+    any other flag)
 
 2022-08-18
 - modemu2k (v0.1.0)
