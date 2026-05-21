@@ -1,5 +1,5 @@
 .\" -*- nroff -*-
-.TH MODEMU2k 1 "Aug 2022" "Version 0.1.0"
+.TH MODEMU2k 1 "May 2026" "Version 0.2.0"
 .\"
 .\"
 .SH NAME
@@ -11,7 +11,7 @@ modemu2k \- dialup TCP connecting
 .\"
 .B modemu2k
 [\fB-c \fIcomm_prog\fR] [\fB-d \fIpty_master\fR] [\fB-e \fIatcmds\fR]
-[\fB-h\fR] [\fB-s\fR] [\fB-\fR]
+[\fB-l \fIport\fR] [\fB-h\fR] [\fB-s\fR] [\fB-v\fR] [\fB-w\fR]
 .\"
 .\"
 .SH DESCRIPTION
@@ -68,6 +68,15 @@ Execute a series of AT commands \fIatcmds\fP initially.
 .I Atcmds
 must have an `AT' or `at' prefix.
 D and O commands in \fIatcmds\fP are ignored.
+.\" ===== -l =====
+.TP
+.BI -l " port"
+Listen for a single incoming TCP connection on
+.IR port
+and use the accepted socket as the TTY. The connecting peer drives
+.B modemu2k
+with AT commands. Intended primarily for use as a virtual modem
+backend for emulators such as dosemu2. Dual-stack IPv4/IPv6.
 .\" ===== -h =====
 .TP
 .B -h
