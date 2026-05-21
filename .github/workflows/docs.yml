@@ -1,0 +1,76 @@
+name: Publish docs
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'modemu2k.h'
+      - 'README.md'
+      - 'Doxyfile.in'
+      - 'meson.build'
+      - 'doxygen/**'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v6
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@v6
+        with:
+          ref: gh-pages
+          path: gh-pages-out
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y meson ninja-build doxygen
+
+      - name: Generate docs
+        run: |
+          meson setup builddir -Dgen-docs=true
+          ninja -C builddir docs
+
+      - name: Read project version
+        id: ver
+        run: |
+          v=$(meson introspect builddir --projectinfo \
+              | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+
+      - name: Refresh versioned directory on gh-pages
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          set -e
+          dest="gh-pages-out/v${VERSION}"
+          rm -rf "$dest"
+          mkdir -p "$dest"
+          cp -a builddir/html/. "$dest/"
+
+      - name: Commit and push if changed
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        working-directory: gh-pages-out
+        run: |
+          set -e
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Docs unchanged — nothing to publish."
+            exit 0
+          fi
+          git add -A
+          git commit -m "docs: publish v${VERSION} (from ${GITHUB_SHA::7})"
+          git push origin gh-pages

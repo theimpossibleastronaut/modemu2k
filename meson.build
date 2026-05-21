@@ -64,9 +64,17 @@ if get_option('gen-docs')
       'PROJECT_NAME':    meson.project_name(),
       'PROJECT_VERSION': meson.project_version(),
       'SOURCE_ROOT':     meson.project_source_root(),
+      'BUILD_ROOT':      meson.project_build_root(),
     }
   )
-  run_target('docs', command: [doxygen, doxyfile])
+  docs_tgt = custom_target('doxygen-html',
+    output: 'html',
+    command: [doxygen, doxyfile],
+    install: true,
+    install_dir: get_option('docdir'),
+    build_by_default: true,
+  )
+  alias_target('docs', docs_tgt)
 endif
 
 subdir ('man')
@@ -84,5 +92,3 @@ install_data(
     ),
   install_dir : get_option('docdir')
   )
-
-install_subdir('docs', install_dir : get_option('docdir') / 'html', strip_directory : true)
