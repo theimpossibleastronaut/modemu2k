@@ -63,7 +63,9 @@ commxForkExec(m2k_t *ctx, const char *cmd, char *ptyslave)
   if (strcmp("/dev/", ptyslave) == 0)
     ptyslave += 5;
   sprintf(s, cmd, ptyslave);
-  return forkExec(ctx, s) < 0 ? M2K_ERR_PTY : M2K_OK;
+  int rc = forkExec(ctx, s);
+  free(s);
+  return rc < 0 ? M2K_ERR_PTY : M2K_OK;
 }
 #else
 m2k_err_t
@@ -81,6 +83,8 @@ commxForkExec(m2k_t *ctx, const char *cmd, char c10, char c01)
   if (s == NULL)
     return M2K_ERR_NOMEM;
   sprintf(s, cmd, c);           /*'%s' -> 'p1' or sth */
-  return forkExec(ctx, s) < 0 ? M2K_ERR_PTY : M2K_OK;
+  int rc = forkExec(ctx, s);
+  free(s);
+  return rc < 0 ? M2K_ERR_PTY : M2K_OK;
 }
 #endif
