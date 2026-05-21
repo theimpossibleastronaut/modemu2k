@@ -8,3 +8,9 @@ configure_file(input : 'm2k-minicom.in',
                configuration : ul)
 install_data(
   files(join_paths(meson.current_build_dir(), 'm2k-minicom')), install_dir : get_option('bindir'))
+
+configure_file(input : 'm2k-picocom.in',
+               output : 'm2k-picocom',
+               configuration : ul)
+install_data(
+  files(join_paths(meson.current_build_dir(), 'm2k-picocom')), install_dir : get_option('bindir'))
