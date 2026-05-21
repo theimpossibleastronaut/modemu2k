@@ -26,11 +26,27 @@ endforeach
 
 python3 = find_program('python3', required: false)
 if python3.found()
+  py_test_cases = {
+    'listen_integration': 'test_listen_integration.py',
+    'dial_integration':   'test_dial_integration.py',
+  }
+  foreach case, script : py_test_cases
+    test(
+      'test_' + case,
+      python3,
+      args: [files(script), modemu2k_exe.full_path()],
+      depends: modemu2k_exe,
+      timeout: 30,
+      )
+  endforeach
+endif
+
+sh = find_program('sh', required: false)
+if sh.found()
   test(
-    'test_listen_integration',
-    python3,
-    args: [files('test_listen_integration.py'), modemu2k_exe.full_path()],
+    'test_no_arg_usage',
+    sh,
+    args: [files('test_no_arg_usage.sh'), modemu2k_exe.full_path()],
     depends: modemu2k_exe,
-    timeout: 30,
     )
 endif
