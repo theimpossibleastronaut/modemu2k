@@ -59,6 +59,41 @@ jobs:
           mkdir -p "$dest"
           cp -a builddir/html/. "$dest/"
 
+      - name: Rebuild landing-page version list
+        run: |
+          python3 - <<'PY'
+          import pathlib, re
+
+          root = pathlib.Path("gh-pages-out")
+          index = root / "index.html"
+          if not index.exists():
+              print("no index.html on gh-pages; skipping landing-page update")
+              raise SystemExit(0)
+
+          versions = sorted(
+              (p.name for p in root.iterdir()
+               if p.is_dir() and re.fullmatch(r"v\d+\.\d+\.\d+", p.name)),
+              key=lambda v: tuple(int(x) for x in v[1:].split(".")),
+              reverse=True,
+          )
+          items = "\n".join(
+              f'    <li><a href="{v}/index.html">{v}</a></li>' for v in versions
+          )
+          html = index.read_text()
+          new_html, n = re.subn(
+              r"(<ul>)(.*?)(</ul>)",
+              lambda m: f"{m.group(1)}\n{items}\n  {m.group(3)}",
+              html, count=1, flags=re.DOTALL,
+          )
+          if n == 0:
+              print("no <ul>...</ul> block found in index.html; leaving it alone")
+          elif new_html != html:
+              index.write_text(new_html)
+              print(f"updated landing page with {len(versions)} versions")
+          else:
+              print("landing page already up to date")
+          PY
+
       - name: Commit and push if changed
         env:
           VERSION: ${{ steps.ver.outputs.version }}
