@@ -19,12 +19,11 @@ var searchData=
   ['m2k_5fset_5flog_5ffn_16',['m2k_set_log_fn',['../modemu2k_8h.html#a2b89203ec50a8d3a12d5902f9364ce74',1,'modemu2k.h']]],
   ['m2k_5fsetup_5fcommx_17',['m2k_setup_commx',['../modemu2k_8h.html#a0fe896c64c2623730a0aadd5b2294a76',1,'modemu2k.h']]],
   ['m2k_5fsetup_5fdev_18',['m2k_setup_dev',['../modemu2k_8h.html#a3a49027773e518fc5751feb29a20f48d',1,'modemu2k.h']]],
-  ['m2k_5fsetup_5flisten_19',['m2k_setup_listen',['../modemu2k_8h.html#acfa303ff386429f596340f7e69a559fa',1,'modemu2k.h']]],
-  ['m2k_5fsetup_5fpty_20',['m2k_setup_pty',['../modemu2k_8h.html#ae40340332bd0e3c8d6d2feaf3f5e3148',1,'modemu2k.h']]],
-  ['m2k_5fsetup_5fstdin_21',['m2k_setup_stdin',['../modemu2k_8h.html#a40332fcdccf5378d47ccf222ba2d0941',1,'modemu2k.h']]],
-  ['m2k_5fstrerror_22',['m2k_strerror',['../modemu2k_8h.html#a976094e155a6c711075a4fea65c5a6eb',1,'modemu2k.h']]],
-  ['m2k_5ft_23',['m2k_t',['../modemu2k_8h.html#a861720925b561f9640e9e606fb6d9ec6',1,'modemu2k.h']]],
-  ['mode_20and_20returning_24',['Escaping to command mode and returning',['../index.html#autotoc_md4',1,'']]],
-  ['modemu2k_25',['modemu2k',['../index.html',1,'modemu2k'],['../index.html#autotoc_md0',1,'modemu2k'],['../index.html#autotoc_md1',1,'What is modemu2k?']]],
-  ['modemu2k_2eh_26',['modemu2k.h',['../modemu2k_8h.html',1,'']]]
+  ['m2k_5fsetup_5fpty_19',['m2k_setup_pty',['../modemu2k_8h.html#ae40340332bd0e3c8d6d2feaf3f5e3148',1,'modemu2k.h']]],
+  ['m2k_5fsetup_5fstdin_20',['m2k_setup_stdin',['../modemu2k_8h.html#a40332fcdccf5378d47ccf222ba2d0941',1,'modemu2k.h']]],
+  ['m2k_5fstrerror_21',['m2k_strerror',['../modemu2k_8h.html#a976094e155a6c711075a4fea65c5a6eb',1,'modemu2k.h']]],
+  ['m2k_5ft_22',['m2k_t',['../modemu2k_8h.html#a861720925b561f9640e9e606fb6d9ec6',1,'modemu2k.h']]],
+  ['mode_20and_20returning_23',['Escaping to command mode and returning',['../index.html#autotoc_md4',1,'']]],
+  ['modemu2k_24',['modemu2k',['../index.html',1,'modemu2k'],['../index.html#autotoc_md0',1,'modemu2k'],['../index.html#autotoc_md1',1,'What is modemu2k?']]],
+  ['modemu2k_2eh_25',['modemu2k.h',['../modemu2k_8h.html',1,'']]]
 ];

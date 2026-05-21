@@ -135,8 +135,6 @@ Functions</h2></td></tr>
 <tr class="memdesc:a0fe896c64c2623730a0aadd5b2294a76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a PTY and fork/exec a comm program on the slave.  <br /></td></tr>
 <tr class="memitem:a3a49027773e518fc5751feb29a20f48d" id="r_a3a49027773e518fc5751feb29a20f48d"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3a49027773e518fc5751feb29a20f48d">m2k_setup_dev</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *dev)</td></tr>
 <tr class="memdesc:a3a49027773e518fc5751feb29a20f48d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open an existing PTY device as the TTY.  <br /></td></tr>
-<tr class="memitem:acfa303ff386429f596340f7e69a559fa" id="r_acfa303ff386429f596340f7e69a559fa"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#acfa303ff386429f596340f7e69a559fa">m2k_setup_listen</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *port)</td></tr>
-<tr class="memdesc:acfa303ff386429f596340f7e69a559fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Listen for and accept a single incoming TCP connection on <code class="param">port</code>.  <br /></td></tr>
 <tr class="memitem:a49e0a78c27ee140d0b76fc195107fef0" id="r_a49e0a78c27ee140d0b76fc195107fef0"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
 <tr class="memdesc:a49e0a78c27ee140d0b76fc195107fef0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the modem command/online loop until the PTY closes.  <br /></td></tr>
 </table>
@@ -521,38 +519,6 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_PTY if the device cannot be opened. </dd></dl>
-
-</div>
-</div>
-<a id="acfa303ff386429f596340f7e69a559fa" name="acfa303ff386429f596340f7e69a559fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acfa303ff386429f596340f7e69a559fa">&#9670;&#160;</a></span>m2k_setup_listen()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_listen </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>port</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Listen for and accept a single incoming TCP connection on <code class="param">port</code>. </p>
-<p>Binds to all interfaces on the given port, waits (blocking) for a client to connect, then uses that connection as the TTY. Suitable for use as a plugin with programs such as dosemu2 that connect to modemu2k over TCP. Call before <a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
-    <tr><td class="paramname">port</td><td>Service name or decimal port number to listen on. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_SOCKET on failure. </dd></dl>
 
 </div>
 </div>

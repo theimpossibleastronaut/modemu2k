@@ -10,8 +10,7 @@ var searchData=
   ['m2k_5fset_5flog_5ffn_7',['m2k_set_log_fn',['../modemu2k_8h.html#a2b89203ec50a8d3a12d5902f9364ce74',1,'modemu2k.h']]],
   ['m2k_5fsetup_5fcommx_8',['m2k_setup_commx',['../modemu2k_8h.html#a0fe896c64c2623730a0aadd5b2294a76',1,'modemu2k.h']]],
   ['m2k_5fsetup_5fdev_9',['m2k_setup_dev',['../modemu2k_8h.html#a3a49027773e518fc5751feb29a20f48d',1,'modemu2k.h']]],
-  ['m2k_5fsetup_5flisten_10',['m2k_setup_listen',['../modemu2k_8h.html#acfa303ff386429f596340f7e69a559fa',1,'modemu2k.h']]],
-  ['m2k_5fsetup_5fpty_11',['m2k_setup_pty',['../modemu2k_8h.html#ae40340332bd0e3c8d6d2feaf3f5e3148',1,'modemu2k.h']]],
-  ['m2k_5fsetup_5fstdin_12',['m2k_setup_stdin',['../modemu2k_8h.html#a40332fcdccf5378d47ccf222ba2d0941',1,'modemu2k.h']]],
-  ['m2k_5fstrerror_13',['m2k_strerror',['../modemu2k_8h.html#a976094e155a6c711075a4fea65c5a6eb',1,'modemu2k.h']]]
+  ['m2k_5fsetup_5fpty_10',['m2k_setup_pty',['../modemu2k_8h.html#ae40340332bd0e3c8d6d2feaf3f5e3148',1,'modemu2k.h']]],
+  ['m2k_5fsetup_5fstdin_11',['m2k_setup_stdin',['../modemu2k_8h.html#a40332fcdccf5378d47ccf222ba2d0941',1,'modemu2k.h']]],
+  ['m2k_5fstrerror_12',['m2k_strerror',['../modemu2k_8h.html#a976094e155a6c711075a4fea65c5a6eb',1,'modemu2k.h']]]
 ];
