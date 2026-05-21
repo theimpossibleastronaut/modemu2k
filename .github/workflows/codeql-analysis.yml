@@ -39,6 +39,14 @@ jobs:
       uses: github/codeql-action/init@v4
       with:
         languages: 'cpp'
+    - name: Install dependencies
+      run: |
+        sudo apt-get install --no-install-recommends -y meson
+
+    - name: Setup
+      run: |
+       meson setup _build
+       ninja -C _build
 
     - name: Meson setup
       run: meson setup _build
