@@ -16,6 +16,12 @@
 
 html,
 html:not(.dark-mode) {
+  /* Width cap for the centered content column. Used by #doc-content,
+     #titlearea > table, and #main-nav .sm-dox so the title bar, top
+     nav, and body content all share the same horizontal rhythm.
+     Tweak in one place to change the layout. */
+  --m2k-content-max-width: 1100px;
+
   /* Title bar: dark navy. #projectname/#projectbrief set explicitly below. */
   --title-background-color: #1a3a5c;
   --title-separator-color:  #2e86c1;
@@ -113,18 +119,19 @@ html:not(.dark-mode) {
 /* Cap line length on wide desktops so prose stays readable, and add
    breathing room on the sides. The title bar and top nav keep their
    full-width navy backgrounds, but their *inner* content (title text,
-   menu items) is centered to the same 1100px column as #doc-content
+   menu items) is centered to the same column as #doc-content (see
+   --m2k-content-max-width above)
    so the whole page has one consistent left/right rhythm.
 
    Putting the background on #main-nav lets the .sm-dox ul shrink to
    the centered column without leaving the bar's edges unpainted. */
 #doc-content {
-  max-width: 1100px;
+  max-width: var(--m2k-content-max-width);
   margin: 0 auto;
   padding: 0 32px;
 }
 #titlearea > table {
-  max-width: 1100px;
+  max-width: var(--m2k-content-max-width);
   width: 100%;
   margin: 0 auto;
   padding: 0 32px;
@@ -134,7 +141,7 @@ html:not(.dark-mode) {
 #projectalign { width: 100%; }
 #main-nav { background-color: #1a3a5c; }
 #main-nav .sm-dox {
-  max-width: 1100px;
+  max-width: var(--m2k-content-max-width);
   margin: 0 auto;
   padding-left: 32px;
   padding-right: 32px;
