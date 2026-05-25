@@ -8,10 +8,14 @@ test_connect(void)
   m2k_atcmd(ctx, "ATS7=20");
   m2k_atcmd(ctx, "AT%D1");  /* disable dial canceling — stdin is not a tty */
 
+  //! [dial]
+  /* Dial a hostname; the resolver tries each address until one connects. */
   assert(m2k_dial(ctx, "github.com", "80") == M2K_OK);
   sleep(2);
   assert(m2k_hangup(ctx) == M2K_OK);
+  //! [dial]
 
+  /* Numeric address works the same way. */
   assert(m2k_dial(ctx, "140.82.113.3", "80") == M2K_OK);
   sleep(2);
   assert(m2k_hangup(ctx) == M2K_OK);

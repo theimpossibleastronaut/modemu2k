@@ -4,14 +4,35 @@
  * @file modemu2k.h
  * @brief Public API for the modemu2k PTY-based modem emulator library.
  *
- * Typical usage:
- * @code
+ * ## Typical usage
+ *
+ * The pattern used by the bundled `modemu2k` executable (see `src/main.c`)
+ * shows the recommended way to use the library:
+ *
+ * @code{.c}
  *   m2k_t *ctx = m2k_new();
- *   m2k_set_log_fn(ctx, my_logger, NULL);
- *   m2k_dial(ctx, "bbs.example.com", "23");
- *   m2k_online(ctx);   // blocks until connection closes or +++ escape
+ *   if (!ctx) return EXIT_FAILURE;
+ *
+ *   // Choose one setup mode:
+ *   m2k_setup_stdin(ctx);                        // read/write stdin/stdout
+ *   // m2k_setup_commx(ctx, "minicom -p %s");    // fork a comm program on a PTY
+ *   // m2k_setup_listen(ctx, "5000");            // accept an incoming TCP connection
+ *
+ *   // Optional: apply AT commands before entering the command loop
+ *   m2k_atcmd(ctx, "ATS7=30");
+ *
+ *   // Run the full command/online state machine (blocks until session ends)
+ *   m2k_run(ctx);
+ *
  *   m2k_free(ctx);
  * @endcode
+ *
+ * For finer control — for example, dialling programmatically and entering
+ * online mode without the AT command loop — use m2k_dial(), m2k_online(),
+ * and m2k_hangup() directly.
+ *
+ * @example main.c
+ * The full source of the bundled `modemu2k` executable.
  */
 
 #ifdef __cplusplus
@@ -62,6 +83,10 @@ void        m2k_free(m2k_t *ctx);
  * @param ctx      Modem context.
  * @param fn       Callback to receive log messages, or NULL.
  * @param userdata Opaque pointer forwarded to every @p fn invocation.
+ *
+ * @snippet examples/m2k_set_log_fn.c set_log_fn-callback
+ *
+ * @snippet examples/m2k_set_log_fn.c set_log_fn-install
  */
 void        m2k_set_log_fn(m2k_t *ctx, m2k_log_fn fn, void *userdata);
 
@@ -89,13 +114,7 @@ m2k_err_t   m2k_atcmd(m2k_t *ctx, const char *cmd);
  * @param port Service name or decimal port number.
  * @return M2K_OK on success, M2K_ERR_SOCKET on failure.
  *
- * @code
- * m2k_err_t err = m2k_dial(ctx, "bbs.example.com", "23");
- * if (err != M2K_OK) {
- *     fprintf(stderr, "%s\n", m2k_strerror(err));
- *     return 1;
- * }
- * @endcode
+ * @snippet tests/test_connect.c dial
  */
 m2k_err_t   m2k_dial(m2k_t *ctx, const char *host, const char *port);
 
@@ -165,6 +184,8 @@ m2k_err_t   m2k_setup_pty(m2k_t *ctx, char **slave_out);
  * @param ctx Modem context.
  * @param cmd Shell command; @c %s is replaced by the slave device path.
  * @return M2K_OK on success, M2K_ERR_PTY or M2K_ERR_NOMEM on failure.
+ *
+ * @snippet examples/m2k_setup_commx.c setup_commx
  */
 m2k_err_t   m2k_setup_commx(m2k_t *ctx, const char *cmd);
 
@@ -188,6 +209,8 @@ m2k_err_t   m2k_setup_dev(m2k_t *ctx, const char *dev);
  * @param ctx  Modem context.
  * @param port Service name or decimal port number to listen on.
  * @return M2K_OK on success, M2K_ERR_SOCKET on failure.
+ *
+ * @snippet examples/m2k_setup_listen.c setup_listen
  */
 m2k_err_t   m2k_setup_listen(m2k_t *ctx, const char *port);
 
