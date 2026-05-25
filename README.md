@@ -27,8 +27,9 @@ ninja -C builddir
 ```
 
 Run `meson configure builddir` to see extra options.
-`ninja install` is optional; it also installs the `m2k-minicom`
-convenience wrapper.
+`ninja install` is optional. The `m2k-minicom` / `m2k-picocom`
+wrapper scripts are not installed by default; pass
+`-Dhelper-scripts=true` to opt in.
 
 ## Usage
 

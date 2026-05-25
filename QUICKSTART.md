@@ -59,8 +59,10 @@ For 8-bit-clean transfers, run the startup AT string at the same time:
 modemu2k -e "AT%B0=1%B1=1&W" -c "minicom -l -tansi -con -p %s"
 ```
 
-A convenience wrapper, `m2k-minicom`, ships in `$bindir` and runs the
-above invocation for you. It is installed by `ninja install`.
+A convenience wrapper, `m2k-minicom`, runs the above invocation for
+you. It's in `scripts/m2k-minicom.in`; install it by configuring with
+`-Dhelper-scripts=true` before `ninja install`. A matching
+`m2k-picocom` ships under the same option.
 
 From inside minicom (or picocom, etc.), dial in the same AT style:
 

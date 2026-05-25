@@ -1,0 +1,21 @@
+#!/bin/sh
+# m2k-picocom — launch modemu2k driving picocom. Mirrors m2k-minicom.
+# See that script's header for the binary-resolution order.
+
+set -e
+
+scriptdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+for candidate in \
+  "$scriptdir/modemu2k" \
+  "$scriptdir/../_build-debug/modemu2k" \
+  "$scriptdir/../builddir/modemu2k" \
+  "$scriptdir/../build/modemu2k"
+do
+  if [ -x "$candidate" ]; then
+    modemu2k=$candidate
+    break
+  fi
+done
+: "${modemu2k:=modemu2k}"
+
+exec "$modemu2k" -c "picocom %s"
