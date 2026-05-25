@@ -3,14 +3,6 @@ name: Publish docs
 on:
   push:
     branches: [master]
-    paths:
-      - 'modemu2k.h'
-      - 'README.md'
-      - 'Doxyfile.in'
-      - 'meson.build'
-      - 'doxygen/**'
-      - 'man/modemu2k.1'
-      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
 permissions:
