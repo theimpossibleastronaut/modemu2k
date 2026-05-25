@@ -1,10 +1,17 @@
 #!/usr/bin/make -f
 
-export DEB_BUILD_MAINT_OPTIONS=hardening=+bindnow
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
 %:
-	dh $@
+	dh $@ --buildsystem=meson
 
-# The check will probably fail if parallel jobs is > 1
-override_dh_auto_test:
-	$(MAKE) -j1 check
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		--buildtype=release \
+		--prefix=/usr \
+		-Dstrip=true \
+		-Db_sanitize=none \
+		-Db_pie=true \
+		-Db_lto=true \
+		-Dgen-docs=true \
+		-Dhelper-scripts=true

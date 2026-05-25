@@ -1,5 +1,22 @@
+modemu2k (0.2.0) UNRELEASED; urgency=medium
+
+  * New upstream release.
+  * debian/control: bump debhelper-compat to 13; add meson, ninja-build,
+    pkg-config, doxygen, and groff to Build-Depends; drop flex
+    (cmdlex.c is shipped pre-generated); drop the stale Devuan Vcs-Git
+    line; rewrite Description; bump Standards-Version to 4.6.2; add
+    Rules-Requires-Root: no.
+  * debian/rules: switch to dh --buildsystem=meson with hardening=+all
+    and -Dgen-docs=true / -Dhelper-scripts=true so the HTML API docs
+    and m2k-{minicom,picocom} wrappers ship in the package.
+  * debian/compat: dropped (replaced by debhelper-compat in control).
+  * debian/copyright: sync to GPL-2-or-later (matches the source
+    headers and the upstream COPYING).
+
+ -- Andy Alt <arch_stanton5995@proton.me>  Mon, 25 May 2026 00:00:00 +0000
+
 modemu2k (0.0.6) experimental; urgency=low
 
   * See https://github.com/theimpossibleastronaut/modemu2k/blob/v0.0.6/ChangeLog
 
- -- Andy Alt <arch_stanton5995@protonmail.com>  Fri, 19 Jun 2020 00:30:00 -0500
+ -- Andy Alt <arch_stanton5995@proton.me>  Fri, 19 Jun 2020 00:30:00 -0500
