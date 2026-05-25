@@ -18,7 +18,7 @@ if (/(^|\/)index\.html$|\/$/.test(location.pathname)) {
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>modemu2k: Globals</title>
+<title>modemu2k: Change log</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -71,7 +71,6 @@ $(function() {
 /* @license-end */
 </script>
 <div id="main-nav"></div>
-</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -93,11 +92,125 @@ $(function() {
 </div>
 </div>
 
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">Change log</div></div>
+</div><!--header-->
 <div class="contents">
-<div class="textblock">Here is a list of all documented enums with links to the documentation:</div><ul>
-<li>m2k_err_t&#160;:&#160;<a class="el" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19">modemu2k.h</a></li>
-</ul>
-</div><!-- contents -->
+<div class="textblock"><pre class="fragment">(in-progress):
+  * Refactored into a proper library: core logic moved into libmodemu2k;
+    public API exposed via modemu2k.h at the project root
+  * Removed gettext/NLS support and translations
+  * Removed valgrind test setup
+  * Expanded test suite: timeval, sockbuf, atcmd unit tests; IPv4/IPv6
+    connection tests (IPv6 skipped with exit 77 if no interface present)
+  * Fix connecting via hostname when first resolved address fails (e.g.
+    localhost resolving to ::1 before 127.0.0.1) (issue #44)
+  * Add listen mode (-l/--listen &lt;port&gt;) that accepts a single incoming
+    TCP connection and uses it as the TTY; intended for use as a plugin
+    with dosemu2 (issue #32)
+  * Print a short usage hint and exit when invoked with no arguments;
+    standalone stdin/stdout command mode is still reachable via -e (or
+    any other flag)
+
+2022-08-18
+- modemu2k (v0.1.0)
+  * fix segfault when building with Slackbuild or setting buildtype to debug
+  * fix build on macos (timeval errors, see
+    https://github.com/theimpossibleastronaut/modemu2k/pull/40)
+  * fix connecting to host using IP
+  * replaced autotools build system with mesonbuild
+  * 'm2k-minicom.sh' script renamed to 'm2k-minicom'
+
+2020-06-19
+
+  * v0.0.6 released
+
+2020-06-18
+
+  * Fix for compiling on gcc-10
+
+2019-8-23
+
+  * v0.0.5 released
+
+2019-8-22
+
+  * When making a connection, a message is printed informing the user
+  how to escape to command mode and return to online mode.
+
+
+2019-8-21
+
+  * IPv6 connections can now be made.
+
+  * To specify a non-standard port, you must use a space now instead of
+  a colon
+
+
+2019-8-19
+
+  * Replaced obsolete gethostbyname() with getaddrinfo()
+
+  * If the m2k-minicom.sh script is run from the scripts/ directory, it will
+  use the dev build of modemu2k in src/
+
+
+2019-08-18
+
+  * v0.0.4 released
+
+2019-08-17
+
+  * Fixed --version output
+
+  * Added script to invoke minicom: 'm2k-minicom.sh'
+
+  * Infrastructure to implement testing with `make check` added.
+
+
+2018-10-17
+
+  * v0.0.3 released
+
+2018-10-14
+
+  * zh_CN translation added
+  * nl_NL translation added
+
+2018-10-13
+
+  * Removed "-" option
+  * Added support for translated messages using the GNU gettext library
+  * Improved usage output
+  * Now using getopt.h to parse cmd args
+
+2018-10-11
+
+  * it_IT translation of man page added
+
+
+2018-10-08
+
+  * pt_BR translation of man page added
+
+2018-09-06
+
+  * Added quit instructions to start-up screen
+  * auto-generated config.h is now used
+  * man file will now install
+  * issue v0.0.2 release
+
+
+2018-09-05
+
+  * applied patch from https://github.com/aur-archive/modemu
+  * Added configure script, autoconf and automake file
+  * increase version to 0.0.2-dev
+  * modemu2k Fork created
+
+</pre> </div></div><!-- contents -->
+</div><!-- PageDoc -->
 <!-- HTML footer for doxygen 1.16.1-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

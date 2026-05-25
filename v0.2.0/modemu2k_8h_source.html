@@ -1,14 +1,33 @@
+<!-- modemu2k custom Doxygen header.
+     Mirrors the default doxygen 1.16 template; the only project-specific
+     addition is class="m2k" on <html>, which gives doxygen-custom.css a
+     stable specificity hook (see comments there).
+-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" class="m2k">
 <head>
+<script type="text/javascript">
+/* Flag the main page so doxygen-custom.css can hide the duplicate
+   "modemu2k" headings that come from .headertitle and the README's
+   leading H1. Scoped here so other pages keep their headings. */
+if (/(^|\/)index\.html$|\/$/.test(location.pathname)) {
+  document.documentElement.className += " m2k-mainpage";
+}
+</script>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>modemu2k: /home/runner/work/modemu2k/modemu2k/modemu2k.h Source File</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -25,6 +44,10 @@
    <div id="projectname">modemu2k<span id="projectnumber">&#160;0.2.0</span>
    </div>
    <div id="projectbrief">Library that provides telnet capability to a comm program</div>
+  </td>
+  <td id="m2k-repolink">
+    <a href="https://github.com/theimpossibleastronaut/modemu2k"
+       rel="noopener">GitHub repository</a>
   </td>
  </tr>
  </tbody>
