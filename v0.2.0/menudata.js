@@ -32,4 +32,5 @@ var menudata={children:[
 {text:"Functions",url:"globals_func.html"},
 {text:"Typedefs",url:"globals_type.html"},
 {text:"Enumerations",url:"globals_enum.html"},
-{text:"Enumerator",url:"globals_eval.html"}]}]}]}
+{text:"Enumerator",url:"globals_eval.html"}]}]},
+{text:"Examples",url:"examples.html"}]}
