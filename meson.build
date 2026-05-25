@@ -9,7 +9,7 @@ project(
     ]
   )
 
-add_global_arguments(
+add_project_arguments(
   ['-D_GNU_SOURCE'],
   language : 'c'
   )
@@ -45,15 +45,22 @@ version_h = configure_file(output: 'modemu2k_version.h', configuration: version_
 
 subdir('src')
 
-modemu2k_exe = executable(
-  'modemu2k',
-  ['src/main.c', 'src/cmdarg.c'],
-  include_directories: 'src',
-  dependencies: dep_modemu2k,
-  install : true
-  )
+# When consumed as a meson subproject, the parent project only needs
+# libmodemu2k (exposed via dep_modemu2k from src/meson.build). Skip
+# the CLI binary, the man page, the helper-script wrappers, tests,
+# and the doc data files — those are only relevant to a standalone
+# build.
+if not meson.is_subproject()
+  modemu2k_exe = executable(
+    'modemu2k',
+    ['src/main.c', 'src/cmdarg.c'],
+    include_directories: 'src',
+    dependencies: dep_modemu2k,
+    install : true
+    )
 
-install_headers('modemu2k.h', version_h, subdir: 'modemu2k')
+  install_headers('modemu2k.h', version_h, subdir: 'modemu2k')
+endif
 
 if get_option('gen-docs')
   doxygen = find_program('doxygen', required: true)
@@ -101,18 +108,20 @@ if get_option('gen-docs')
   alias_target('docs', docs_tgt)
 endif
 
-subdir ('man')
-subdir ('scripts')
-subdir ('tests')
+if not meson.is_subproject()
+  subdir ('man')
+  subdir ('scripts')
+  subdir ('tests')
 
-install_data(
-  files(
-    'README.md',
-    'QUICKSTART.md',
-    'COPYING',
-    'AUTHORS',
-    'ChangeLog',
-    'ReleaseNotes',
-    ),
-  install_dir : get_option('docdir')
-  )
+  install_data(
+    files(
+      'README.md',
+      'QUICKSTART.md',
+      'COPYING',
+      'AUTHORS',
+      'ChangeLog',
+      'ReleaseNotes',
+      ),
+    install_dir : get_option('docdir')
+    )
+endif
