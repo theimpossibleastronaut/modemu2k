@@ -45,6 +45,11 @@ version_h = configure_file(output: 'modemu2k_version.h', configuration: version_
 
 subdir('src')
 
+# examples/ exposes `example_sources` (used by the doc target's
+# depend_files below) and, in standalone mode, builds the per-example
+# executables as a signature-drift compile check.
+subdir('examples')
+
 # When consumed as a meson subproject, the parent project only needs
 # libmodemu2k (exposed via dep_modemu2k from src/meson.build). Skip
 # the CLI binary, the man page, the helper-script wrappers, tests,
@@ -98,7 +103,9 @@ if get_option('gen-docs')
         'QUICKSTART.md',
         'ChangeLog',
         'man/modemu2k.1',
+        'tests/test_connect.c',
       ),
+      example_sources,
       doxygen_inputs,
     ],
     install: true,

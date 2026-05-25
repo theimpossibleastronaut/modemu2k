@@ -1160,6 +1160,7 @@ EXCLUDE_SYMBOLS        =
 # command).
 
 EXAMPLE_PATH           = @SOURCE_ROOT@ \
+                         @SOURCE_ROOT@/src \
                          @BUILD_ROOT@
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
