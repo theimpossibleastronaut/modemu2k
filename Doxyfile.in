@@ -874,7 +874,7 @@ FILE_VERSION_FILTER    =
 # DoxygenLayout.xml, Doxygen will parse it automatically even if the LAYOUT_FILE
 # tag is left empty.
 
-LAYOUT_FILE            =
+LAYOUT_FILE            = @SOURCE_ROOT@/doxygen/DoxygenLayout.xml
 
 # The CITE_BIB_FILES tag can be used to specify one or more bib files containing
 # the reference definitions. This must be a list of .bib files. The .bib
@@ -1028,6 +1028,7 @@ WARN_LOGFILE           = doxywarn.log
 
 INPUT                  = @SOURCE_ROOT@/README.md \
                          @SOURCE_ROOT@/QUICKSTART.md \
+                         @SOURCE_ROOT@/doxygen/changelog.md \
                          @SOURCE_ROOT@/modemu2k.h
 
 # This tag can be used to specify the character encoding of the source files
@@ -1157,7 +1158,7 @@ EXCLUDE_SYMBOLS        =
 # that contain example code fragments that are included (see the \include
 # command).
 
-EXAMPLE_PATH           =
+EXAMPLE_PATH           = @SOURCE_ROOT@
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and
@@ -1447,7 +1448,7 @@ HTML_FILE_EXTENSION    = .html
 # of the possible markers and block names see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_HEADER            =
+HTML_HEADER            = @SOURCE_ROOT@/doxygen/header.html
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 # generated HTML page. If the tag is left blank Doxygen will generate a standard
