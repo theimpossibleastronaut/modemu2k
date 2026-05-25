@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y meson ninja-build
+          sudo apt-get install -y meson ninja-build groff
 
       # ubuntu-latest's apt doxygen lags upstream by several years and emits
       # a different HTML structure (no #doc-content wrapper, plain <h1>s),

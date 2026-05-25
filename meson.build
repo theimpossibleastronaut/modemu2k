@@ -57,6 +57,9 @@ install_headers('modemu2k.h', version_h, subdir: 'modemu2k')
 
 if get_option('gen-docs')
   doxygen = find_program('doxygen', required: true)
+  groff   = find_program('groff',   required: true)
+  man_to_fragment = find_program('doxygen/man-to-fragment.sh')
+  subdir('doxygen')
   doxyfile = configure_file(
     input:  'Doxyfile.in',
     output: 'Doxyfile',
@@ -67,20 +70,30 @@ if get_option('gen-docs')
       'BUILD_ROOT':      meson.project_build_root(),
     }
   )
+  # Render the man page to an HTML fragment that doxygen/manpage.md
+  # @htmlincludes into the Related Pages section. man-to-fragment.sh
+  # wraps `groff -Thtml -mandoc` and strips the standalone HTML
+  # wrapper so the result slots into doxygen's page chrome cleanly.
+  manpage_fragment = custom_target('manpage-fragment',
+    input:  'man/modemu2k.1',
+    output: 'modemu2k.1.fragment.html',
+    command: [man_to_fragment, '@INPUT@'],
+    capture: true,
+    )
   docs_tgt = custom_target('doxygen-html',
     output: 'html',
     command: [doxygen, doxyfile],
-    depend_files: files(
-      'modemu2k.h',
-      'README.md',
-      'QUICKSTART.md',
-      'ChangeLog',
-      'doxygen/changelog.md',
-      'doxygen/header.html',
-      'doxygen/footer.html',
-      'doxygen/doxygen-custom.css',
-      'doxygen/DoxygenLayout.xml',
-    ),
+    depends: manpage_fragment,
+    depend_files: [
+      files(
+        'modemu2k.h',
+        'README.md',
+        'QUICKSTART.md',
+        'ChangeLog',
+        'man/modemu2k.1',
+      ),
+      doxygen_inputs,
+    ],
     install: true,
     install_dir: get_option('docdir'),
     build_by_default: true,
