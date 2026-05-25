@@ -14,6 +14,10 @@
  * @endcode
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @brief Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free(). */
 typedef struct m2k_s m2k_t;
 
@@ -199,3 +203,7 @@ m2k_err_t   m2k_setup_listen(m2k_t *ctx, const char *port);
  * @return M2K_OK when the session ends normally.
  */
 m2k_err_t   m2k_run(m2k_t *ctx);
+
+#ifdef __cplusplus
+}
+#endif
