@@ -168,7 +168,7 @@ Functions</h2></td></tr>
 <div class="ttc" id="amodemu2k_8h_html_a372c11bf0cdc06d9a4a2b568e6162ff6"><div class="ttname"><a href="#a372c11bf0cdc06d9a4a2b568e6162ff6">m2k_online</a></div><div class="ttdeci">m2k_err_t m2k_online(m2k_t *ctx)</div><div class="ttdoc">Enter online mode and relay data between the PTY and the socket.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_a4876c026865cd1ecff6b8b9010b37b2c"><div class="ttname"><a href="#a4876c026865cd1ecff6b8b9010b37b2c">m2k_new</a></div><div class="ttdeci">m2k_t * m2k_new(void)</div><div class="ttdoc">Allocate and initialise a new modem context.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_a5d0de562057841ed5f7441fa170548a4"><div class="ttname"><a href="#a5d0de562057841ed5f7441fa170548a4">m2k_dial</a></div><div class="ttdeci">m2k_err_t m2k_dial(m2k_t *ctx, const char *host, const char *port)</div><div class="ttdoc">Open a TCP connection to host : port.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a861720925b561f9640e9e606fb6d9ec6"><div class="ttname"><a href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a></div><div class="ttdeci">struct m2k_s m2k_t</div><div class="ttdoc">Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free().</div><div class="ttdef"><b>Definition</b> modemu2k.h:18</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a861720925b561f9640e9e606fb6d9ec6"><div class="ttname"><a href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a></div><div class="ttdeci">struct m2k_s m2k_t</div><div class="ttdoc">Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free().</div><div class="ttdef"><b>Definition</b> modemu2k.h:22</div></div>
 <div class="ttc" id="amodemu2k_8h_html_adecfb34f9484c3a984a1fc94dbd11c90"><div class="ttname"><a href="#adecfb34f9484c3a984a1fc94dbd11c90">m2k_free</a></div><div class="ttdeci">void m2k_free(m2k_t *ctx)</div><div class="ttdoc">Release all resources held by ctx.</div></div>
 </div><!-- fragment --> </div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
 <a id="a26868be55e10d283ed4a75e82a79409d" name="a26868be55e10d283ed4a75e82a79409d"></a>
@@ -303,8 +303,8 @@ Functions</h2></td></tr>
 <div class="line">    <span class="keywordflow">return</span> 1;</div>
 <div class="line">}</div>
 <div class="ttc" id="amodemu2k_8h_html_a976094e155a6c711075a4fea65c5a6eb"><div class="ttname"><a href="#a976094e155a6c711075a4fea65c5a6eb">m2k_strerror</a></div><div class="ttdeci">const char * m2k_strerror(m2k_err_t err)</div><div class="ttdoc">Return a human-readable string for err.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a></div><div class="ttdeci">m2k_err_t</div><div class="ttdoc">Return codes used by all m2k_* functions.</div><div class="ttdef"><b>Definition</b> modemu2k.h:30</div></div>
-<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a></div><div class="ttdeci">@ M2K_OK</div><div class="ttdef"><b>Definition</b> modemu2k.h:31</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a></div><div class="ttdeci">m2k_err_t</div><div class="ttdoc">Return codes used by all m2k_* functions.</div><div class="ttdef"><b>Definition</b> modemu2k.h:34</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a></div><div class="ttdeci">@ M2K_OK</div><div class="ttdef"><b>Definition</b> modemu2k.h:35</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -410,7 +410,7 @@ Functions</h2></td></tr>
 <div class="line">} <span class="keywordflow">while</span> (st == <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8">M2K_ERR_CANCELED</a>);</div>
 <div class="line"><a class="code hl_function" href="#a61e4922eeee52bf582ac8220c92e2fcc">m2k_hangup</a>(ctx);</div>
 <div class="ttc" id="amodemu2k_8h_html_a61e4922eeee52bf582ac8220c92e2fcc"><div class="ttname"><a href="#a61e4922eeee52bf582ac8220c92e2fcc">m2k_hangup</a></div><div class="ttdeci">m2k_err_t m2k_hangup(m2k_t *ctx)</div><div class="ttdoc">Tear down the active TCP connection.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8">M2K_ERR_CANCELED</a></div><div class="ttdeci">@ M2K_ERR_CANCELED</div><div class="ttdef"><b>Definition</b> modemu2k.h:36</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8">M2K_ERR_CANCELED</a></div><div class="ttdeci">@ M2K_ERR_CANCELED</div><div class="ttdef"><b>Definition</b> modemu2k.h:40</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
