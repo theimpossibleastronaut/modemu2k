@@ -35,7 +35,21 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y meson ninja-build doxygen
+          sudo apt-get install -y meson ninja-build
+
+      # ubuntu-latest's apt doxygen lags upstream by several years and emits
+      # a different HTML structure (no #doc-content wrapper, plain <h1>s),
+      # which silently breaks the layout selectors in doxygen/doxygen-custom.css.
+      # Pin to the official upstream binary so live rendering matches local.
+      - name: Install Doxygen
+        env:
+          DOXYGEN_VERSION: 1.16.1
+        run: |
+          curl -fsSL -o doxygen.tar.gz \
+            "https://www.doxygen.nl/files/doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz"
+          tar xf doxygen.tar.gz
+          sudo install -m 0755 "doxygen-${DOXYGEN_VERSION}/bin/doxygen" /usr/local/bin/
+          doxygen --version
 
       - name: Generate docs
         run: |
