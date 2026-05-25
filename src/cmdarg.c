@@ -107,7 +107,7 @@ version(char *const argv[])
 {
   printf("\
 modemu2k %s\n\
-Maintainer: Andy Alt (arch_stanton5995@protonmail.com)\n\
+Maintainer: Andy Alt\n\
 This program comes with ABSOLUTELY NO WARRANTY; for details type '%s -w.'\n\
 This is free software, and you are welcome to redistribute it\n\
 under certain conditions; see <http://www.gnu.org/licenses/gpl.html>\n\
