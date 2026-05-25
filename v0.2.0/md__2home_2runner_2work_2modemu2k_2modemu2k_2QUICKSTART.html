@@ -122,7 +122,7 @@ With a comm program (the usual mode)</h1>
 <div class="fragment"><div class="line">modemu2k -c &quot;minicom -l -tansi -con -p %s&quot;</div>
 </div><!-- fragment --><p>For 8-bit-clean transfers, run the startup AT string at the same time:</p>
 <div class="fragment"><div class="line">modemu2k -e &quot;AT%B0=1%B1=1&amp;W&quot; -c &quot;minicom -l -tansi -con -p %s&quot;</div>
-</div><!-- fragment --><p>A convenience wrapper, <code>m2k-minicom</code>, ships in <code>$bindir</code> and runs the above invocation for you. It is installed by <code>ninja install</code>.</p>
+</div><!-- fragment --><p>A convenience wrapper, <code>m2k-minicom</code>, runs the above invocation for you. It's in <code>scripts/m2k-minicom.in</code>; install it by configuring with <code>-Dhelper-scripts=true</code> before <code>ninja install</code>. A matching <code>m2k-picocom</code> ships under the same option.</p>
 <p>From inside minicom (or picocom, etc.), dial in the same AT style:</p>
 <div class="fragment"><div class="line">atd&quot;trmb.ca 2030</div>
 </div><!-- fragment --><p>To quit modemu2k, just quit the comm program — modemu2k tears down with it.</p>

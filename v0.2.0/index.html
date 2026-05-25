@@ -115,7 +115,7 @@ What is modemu2k?</h2>
 Build</h2>
 <div class="fragment"><div class="line">meson setup builddir</div>
 <div class="line">ninja -C builddir</div>
-</div><!-- fragment --><p>Run <code>meson configure builddir</code> to see extra options. <code>ninja install</code> is optional; it also installs the <code>m2k-minicom</code> convenience wrapper.</p>
+</div><!-- fragment --><p>Run <code>meson configure builddir</code> to see extra options. <code>ninja install</code> is optional. The <code>m2k-minicom</code> / <code>m2k-picocom</code> wrapper scripts are not installed by default; pass <code>-Dhelper-scripts=true</code> to opt in.</p>
 <h2><a class="anchor" id="autotoc_md3"></a>
 Usage</h2>
 <p>See <b><a class="el" href="md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html">QUICKSTART.md</a></b> for the actual how-to: standalone mode, running under minicom, listen mode, the binary-mode toggle for file transfers, escaping with <code>+++</code>, and quitting cleanly.</p>
