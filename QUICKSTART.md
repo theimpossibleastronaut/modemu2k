@@ -6,7 +6,7 @@ serial-attached modem; the actual traffic flows over the network.
 
 ## Important things to know first
 
-- **`AT%Q` quits modemu2k from a command prompt.**
+- **To quit modemu2k from a command prompt, type `AT%Q`.**
   `Ctrl-C` does **not** abort modemu2k.
 - When running modemu2k *under* a comm program (e.g. minicom), use that
   program's normal quit key — modemu2k exits along with it.
