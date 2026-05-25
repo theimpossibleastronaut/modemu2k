@@ -36,7 +36,7 @@
 #define LIT_(s) #s
 #define LIT(s) LIT_(s)
 
-static void
+void
 showUsage(char *const argv[])
 {
   printf(("Usage: %s [OPTION]...\n\n"), argv[0]);

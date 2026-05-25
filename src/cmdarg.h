@@ -39,5 +39,6 @@ struct st_cmdarg
 };
 
 void cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x);
+void showUsage(char *const argv[]);
 
 #endif
