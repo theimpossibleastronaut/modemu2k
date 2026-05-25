@@ -3,3 +3,6 @@ option('docdir', type : 'string', value : 'share/doc/modemu2k',
 
 option('gen-docs', type : 'boolean', value : false,
        description : 'Build API documentation with Doxygen')
+
+option('helper-scripts', type : 'boolean', value : false,
+       description : 'Install the m2k-minicom / m2k-picocom wrapper scripts to bindir')

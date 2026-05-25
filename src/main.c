@@ -43,17 +43,7 @@ main(int argc, char *const argv[])
 
   if (argc == 1)
   {
-    fputs(
-      "modemu2k is a PTY-based modem emulator that bridges a comm program to TCP/Telnet.\n"
-      "\n"
-      "Usage with minicom:\n"
-      "  modemu2k -c \"minicom -l -tansi -con -p %s\"\n"
-      "\n"
-      "Usage with picocom:\n"
-      "  modemu2k -c \"picocom %s\"\n"
-      "\n"
-      "Run 'modemu2k --help' for full options.\n",
-      stdout);
+    showUsage(argv);
     return 0;
   }
 

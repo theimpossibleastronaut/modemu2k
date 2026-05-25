@@ -27,6 +27,7 @@
 
 #include <stdio.h>              /*stderr */
 #include <stdlib.h>
+#include <unistd.h>             /*isatty */
 #include <getopt.h>
 #include "cmdarg.h"             /*cmdarg */
 #include "m2k_private.h"           /*VERSION_... */
@@ -36,50 +37,55 @@
 #define LIT_(s) #s
 #define LIT(s) LIT_(s)
 
-static void
+void
 showUsage(char *const argv[])
 {
-  printf(("Usage: %s [OPTION]...\n\n"), argv[0]);
+  /* Emit ANSI styling only on a TTY, and honor the NO_COLOR convention
+     (https://no-color.org). Off => empty strings, leaving the layout
+     identical to the previous plain-text help.
+       sec = bold cyan   -> section labels (Usage:, Note:, Example:, ...)
+       opt = bold yellow -> option short+long flag names
+       ex  = bold green  -> concrete example commands the user might type
+       r   = reset                                                       */
+  int color = isatty(STDOUT_FILENO) && getenv("NO_COLOR") == NULL;
+  const char *sec = color ? "\033[1;36m" : "";
+  const char *opt = color ? "\033[1;33m" : "";
+  const char *ex  = color ? "\033[1;32m" : "";
+  const char *r   = color ? "\033[0m"    : "";
 
-  puts("\
-  -c, --commprog=\"<comm_prog> <args>\"     invoke a comm program using [arguments]");
-  puts("\
-  -d, --device=<pty_master>               talk through [pty_master]");
-  puts("\
-  -e, --atstring=\"<ATxxx>\"                execute [ATxxx] commands at startup,\n\
-                                          then read AT commands interactively from stdin");
-  puts("\
-  -l, --listen=<port>                     listen for an incoming TCP connection on [port]");
-  puts("\
-  -s, --show                              show which device will be used");
+  printf("%sUsage:%s %s [OPTION]...\n\n", sec, r, argv[0]);
+
+  printf("  %s-c, --commprog=%s\"<comm_prog> <args>\"     invoke a comm program using [arguments]\n", opt, r);
+  printf("  %s-d, --device=%s<pty_master>               talk through [pty_master]\n", opt, r);
+  printf("  %s-e, --atstring=%s\"<ATxxx>\"                execute [ATxxx] commands at startup,\n"
+         "                                          then read AT commands interactively from stdin\n", opt, r);
+  printf("  %s-l, --listen=%s<port>                     listen for an incoming TCP connection on [port]\n", opt, r);
+  printf("  %s-s, --show%s                              show which device will be used\n", opt, r);
   puts("");
-  puts("\
-  -h, --help                              display help");
-  puts("\
-  -v, --version                           display version");
-  puts("\
-  -w, --warranty                          display warranty");
+  printf("  %s-h, --help%s                              display help\n", opt, r);
+  printf("  %s-v, --version%s                           display version\n", opt, r);
+  printf("  %s-w, --warranty%s                          display warranty\n", opt, r);
   puts("");
-  puts("\
-The arguments for (-c, --commprog) and (-e, --atcommands) must be enclosed in\n\
-quotes. (eg. -c \"minicom -l -w -c\")");
+  printf("%sNote:%s The -c, -d, -l, and -s options are mutually exclusive; passing\n"
+         "more than one exits with an error. With none of them given but -e\n"
+         "present (e.g. 'modemu2k -e AT'), modemu2k reads AT commands from\n"
+         "stdin/stdout. Invoked with no arguments at all, it prints this help.\n", sec, r);
   puts("");
-  puts("\
-The arguments for the comm program must be native to the comm program, not\n\
-arguments used by modemu2k.");
+  printf("%sExample:%s launch minicom and enable 8-bit binary mode (same invocation\n"
+         "used by the m2k-minicom helper script):\n"
+         "\n"
+         "  %smodemu2k -e \"AT%%B0=1%%B1=1&W\" -c \"minicom -l -tansi -con -p %%s\"%s\n"
+         "\n"
+         "The arguments to -c/--commprog and -e/--atstring must be quoted, and\n"
+         "the arguments inside -c must be those of the comm program, not modemu2k.\n",
+         sec, r, ex, r);
   puts("");
-  puts("\
-Note: The  -c, -d, -l, and -s options are exclusive of each other. If two or\n\
-more of the options are specified, only the last one is effective.");
+  printf("%sDialing:%s separate host and port with a space, not a colon, e.g.\n"
+         "  %satd\"bbs.example.org 2030%s\n", sec, r, ex, r);
   puts("");
   puts("\
 The modemu2k project and support site is at\n\
-<https://github.com/theimpossibleastronaut/modemu2k>\n\
-\n\
-Report bugs to <arch_stanton5995@protonmail.com> or\n\
-<https://github.com/theimpossibleastronaut/modemu2k/issues>\n");
-
-  return;
+<https://github.com/theimpossibleastronaut/modemu2k>\n");
 }
 
 static void
@@ -132,6 +138,22 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
   x->dev = NULL;
   x->listen_port = NULL;
 
+  /* Track the first mode-setting option (-c/-d/-l/-s) seen so we can
+     reject conflicting combinations explicitly instead of silently
+     honoring the last one and surprising the user. */
+  char mode_flag = 0;
+#define SET_MODE(flag)                                                       \
+  do {                                                                       \
+    if (mode_flag && mode_flag != (flag)) {                                  \
+      fprintf(stderr,                                                        \
+              "%s: -%c conflicts with -%c; "                                 \
+              "-c, -d, -l, and -s are mutually exclusive\n",                 \
+              argv[0], (flag), mode_flag);                                   \
+      exit(2);                                                               \
+    }                                                                        \
+    mode_flag = (flag);                                                      \
+  } while (0)
+
   do
   {
     next_option = getopt_long(argc, argv, short_options, long_options, NULL);
@@ -139,10 +161,12 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
     switch ((char) next_option)
     {
     case 'c':                  /* -c <commx args> */
+      SET_MODE('c');
       x->ttymode = CA_COMMX;
       x->commx = optarg;
       break;
     case 'd':                  /* -d <pty_device> */
+      SET_MODE('d');
       x->ttymode = CA_DEVGIVEN;
       x->dev = optarg;
       break;
@@ -150,6 +174,7 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
       x->atcmd = optarg;
       break;
     case 'l':                  /* -l <port> */
+      SET_MODE('l');
       x->ttymode = CA_LISTEN;
       x->listen_port = optarg;
       break;
@@ -157,6 +182,7 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
       showUsage(argv);
       exit(0);
     case 's':                  /* -s */
+      SET_MODE('s');
       x->ttymode = CA_SHOWDEV;
       break;
     case 'v':
@@ -171,5 +197,5 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
   }
   while (next_option != -1);
 
-  return;
+#undef SET_MODE
 }

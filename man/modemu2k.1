@@ -39,7 +39,9 @@ Connection closing or a escape command input returns to the command mode.
 .PP
 Invoked with no arguments,
 .B modemu2k
-prints a short usage hint and exits without entering command mode.
+prints the same usage information as
+.B --help
+and exits without entering command mode.
 Use
 .B -e
 to reach standalone command mode on stdin/stdout (for example,
@@ -107,9 +109,9 @@ prints `p8',
 comm program must open /dev/tty\fIp8\fP.
 .\" ==========
 .PP
-Note: The -c, -d, and -s options are exclusive of each other.
-If two or more of the options are specified,
-only the last one is effective.
+Note: The -c, -d, -l, and -s options are mutually exclusive.
+Specifying more than one is rejected with an error message; the
+former silent "last one wins" behavior was removed.
 .\"
 .\"
 .SH COMMAND MODE
