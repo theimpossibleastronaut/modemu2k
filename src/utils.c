@@ -27,17 +27,35 @@
  *
  */
 
+#include <errno.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <string.h>
 #include "m2k_private.h"
 #include "m2k_ctx.h"
 
 void *
-chk_alloc(m2k_t *ctx, void *ptr)
+m2k_alloc_at(m2k_t *ctx, size_t size, const char *func, int line)
 {
-  if (ptr != NULL)
-    return ptr;
+  void *p = malloc(size);
+  if (!p)
+  {
+    int err = errno;
+    m2k_log(ctx, "malloc(%zu) failed at %s:%d: %s\n",
+            size, func, line, strerror(err));
+  }
+  return p;
+}
 
-  m2k_log(ctx, "Error allocating memory\n");
-  return NULL;
+void *
+m2k_calloc_at(m2k_t *ctx, size_t n, size_t size,
+              const char *func, int line)
+{
+  void *p = calloc(n, size);
+  if (!p)
+  {
+    int err = errno;
+    m2k_log(ctx, "calloc(%zu, %zu) failed at %s:%d: %s\n",
+            n, size, func, line, strerror(err));
+  }
+  return p;
 }

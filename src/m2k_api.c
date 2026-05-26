@@ -368,8 +368,9 @@ cmdBufReset(struct m2k_cmdbuf *x)
 m2k_t *
 m2k_new(void)
 {
-  m2k_t *ctx = calloc(1, sizeof(m2k_t));
-  if (ctx == NULL)
+  /* ctx==NULL here: m2k_calloc falls back to stderr for the failure log. */
+  m2k_t *ctx = m2k_calloc(NULL, 1, sizeof(m2k_t));
+  if (!ctx)
     return NULL;
   ctx->listen_fd = -1;
   ctx->step_state = M2K_STATE_CMD;

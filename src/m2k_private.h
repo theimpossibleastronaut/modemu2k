@@ -348,7 +348,18 @@ void putTtyN(m2k_t *ctx, const char *cp, int n);
 
 // utils
 
-void *chk_alloc(m2k_t *ctx, void *ptr);
+/* malloc/calloc with logged failure. On OOM, logs the failing call
+   site (via __func__/__LINE__ captured by the macro) and returns NULL.
+   Caller still must null-check and propagate M2K_ERR_NOMEM — a library
+   does not unilaterally exit. ctx may be NULL (logs to stderr). */
+void *m2k_alloc_at(m2k_t *ctx, size_t size, const char *func, int line);
+void *m2k_calloc_at(m2k_t *ctx, size_t n, size_t size,
+                    const char *func, int line);
+
+#define m2k_alloc(ctx, size) \
+  m2k_alloc_at((ctx), (size), __func__, __LINE__)
+#define m2k_calloc(ctx, n, size) \
+  m2k_calloc_at((ctx), (n), (size), __func__, __LINE__)
 
 // logging / verbose
 
