@@ -56,6 +56,8 @@ typedef void (*m2k_log_fn)(const char *msg, void *userdata);
 /**
  * @brief Return codes used by all m2k_* functions.
  */
+/* Note: new codes are appended; existing values must never be reordered
+   so external callers can safely cache numeric values across releases. */
 typedef enum {
   M2K_OK = 0,       /**< Success. */
   M2K_ERR_NOMEM,    /**< Memory allocation failed. */
@@ -63,8 +65,8 @@ typedef enum {
   M2K_ERR_SOCKET,   /**< TCP connect or I/O error. */
   M2K_ERR_TIMEOUT,  /**< Operation timed out. */
   M2K_ERR_CANCELED, /**< Operation canceled (e.g., +++ escape sequence). */
-  M2K_ERR_FULL,     /**< Buffer full; retry when the consumer has drained. */
   M2K_ERR_BUG,      /**< Internal assertion failure — should not happen. */
+  M2K_ERR_FULL,     /**< Buffer full; retry when the consumer has drained. */
 } m2k_err_t;
 
 /**
@@ -251,9 +253,9 @@ m2k_err_t   m2k_setup_app_io(m2k_t *ctx);
  * function returns M2K_ERR_FULL — call m2k_step() to drain, then retry.
  *
  * @param ctx      Modem context.
- * @param buf      Bytes to inject.
- * @param len      Length of @p buf in bytes.
- * @param consumed Out: bytes actually accepted (0 .. len).
+ * @param buf      Bytes to inject. Must be non-NULL when @p len > 0.
+ * @param len      Length of @p buf in bytes. May be 0.
+ * @param consumed Out: bytes actually accepted (0 .. len). Must be non-NULL.
  * @return M2K_OK if any bytes were accepted, M2K_ERR_FULL if none were,
  *         M2K_ERR_PTY if the context is not in app-I/O mode.
  */
@@ -269,9 +271,10 @@ m2k_err_t   m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len,
  * @p *len_out (which may be zero if there is nothing pending).
  *
  * @param ctx     Modem context.
- * @param buf     Destination buffer.
- * @param max     Maximum bytes to copy.
+ * @param buf     Destination buffer. Must be non-NULL when @p max > 0.
+ * @param max     Maximum bytes to copy. May be 0.
  * @param len_out Out: number of bytes actually copied (0 means no data).
+ *                Must be non-NULL.
  * @return M2K_OK on success, M2K_ERR_PTY if the context is not in
  *         app-I/O mode.
  */

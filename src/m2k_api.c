@@ -358,7 +358,12 @@ putTtyCmdstat(m2k_t *ctx, Cmdstat s)
 
 /* ── public API ──────────────────────────────────────────────────── */
 
-static void cmdBufReset(struct m2k_cmdbuf *x);
+static void
+cmdBufReset(struct m2k_cmdbuf *x)
+{
+  x->ptr = x->buf;
+  x->eol = 0;
+}
 
 m2k_t *
 m2k_new(void)
@@ -572,13 +577,6 @@ getPtyMaster(m2k_t *ctx, char *tty10, char *tty01)
    can embed one for the steppable m2k_step() API. */
 
 static void
-cmdBufReset(struct m2k_cmdbuf *x)
-{
-  x->ptr = x->buf;
-  x->eol = 0;
-}
-
-static void
 putCmd1(const int c, struct m2k_cmdbuf *cmdBuf)
 {
   if (cmdBuf->ptr < cmdBuf->buf + CMDBUF_MAX)
@@ -727,7 +725,7 @@ m2k_listen_accept(m2k_t *ctx)
 m2k_err_t
 m2k_setup_app_io(m2k_t *ctx)
 {
-  ctx->app_io = 1;
+  ctx->app_io = true;
   ctx->tty.rfd = ctx->tty.wfd = -1;
   return M2K_OK;
 }
