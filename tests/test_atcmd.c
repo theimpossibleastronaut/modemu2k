@@ -6,6 +6,17 @@
 static m2k_t ctx_storage;
 static m2k_t *ctx = &ctx_storage;
 
+/* Install telOpt state tables so the atcmd functions that read them
+   (atcmdI 6, telOptSendReqs via %B/%L) don't dereference NULL. */
+static void
+telopt_setup(void)
+{
+  static int inited = 0;
+  if (inited) return;
+  telOptInit(ctx);
+  inited = 1;
+}
+
 static void
 setup(void)
 {
@@ -158,6 +169,198 @@ test_atcmdAW(void)
   assert(ctx->atcmdNV.pv == 3);
 }
 
+/* --- atcmdH: hangup --- */
+
+static void
+test_atcmdH(void)
+{
+  st_sock sock;
+  sockInit(&sock);
+
+  /* No live socket: H0 succeeds, just a no-op. */
+  assert(atcmdH(ctx, "H0", &sock) == 0);
+  assert(atcmdH(ctx, "H", &sock) == 0);
+
+  /* Non-zero arg rejected. */
+  assert(atcmdH(ctx, "H1", &sock) == 1);
+
+  /* Simulate a live socket; H0 must call sockClose, which is wired to
+     close() on fd. Use a real pipe fd so close is harmless. */
+  int pipefd[2];
+  assert(pipe(pipefd) == 0);
+  sock.fd = pipefd[0];
+  sock.alive = 1;
+  assert(atcmdH(ctx, "H0", &sock) == 0);
+  assert(sock.alive == 0);
+  close(pipefd[1]);
+}
+
+/* --- atcmdZ: reset to NVRAM + disconnect --- */
+
+static void
+test_atcmdZ(void)
+{
+  st_sock sock;
+  sockInit(&sock);
+  setup();
+
+  /* Stash a known NV value then mutate working copy. */
+  ctx->atcmd.s[7] = 99;
+  atcmdAW(ctx);                       /* NV = working */
+  ctx->atcmd.s[7] = 1;                /* diverge */
+
+  atcmdZ(ctx, &sock);
+  assert(ctx->atcmd.s[7] == 99);      /* restored from NV */
+
+  /* With alive sock, atcmdZ closes it. */
+  int pipefd[2];
+  assert(pipe(pipefd) == 0);
+  sock.fd = pipefd[0];
+  sock.alive = 1;
+  atcmdZ(ctx, &sock);
+  assert(sock.alive == 0);
+  close(pipefd[1]);
+}
+
+/* --- atcmdI: info pages (drives prPercent / prSreg / prOption / prVersion) --- */
+
+static void
+test_atcmdI(void)
+{
+  telopt_setup();
+  setup();
+  ttyBufWReset(ctx);
+
+  /* Valid indices print to ttyBufW; we just check return code. */
+  assert(atcmdI(ctx, "I4") == 0);   /* prPercent + prSreg */
+  assert(atcmdI(ctx, "I5") == 0);   /* same but for NVRAM copy */
+  assert(atcmdI(ctx, "I6") == 0);   /* prOption */
+  assert(atcmdI(ctx, "I7") == 0);   /* prVersion */
+
+  /* Invalid index returns 1. */
+  assert(atcmdI(ctx, "I8") == 1);
+  assert(atcmdI(ctx, "I0") == 1);
+
+  /* The output buffer should now hold at least the version banner. */
+  assert(ttyBufWHasData(ctx));
+}
+
+/* --- atcmdPL, atcmdPT, atcmdPTSet --- */
+
+static void
+test_atcmdPL(void)
+{
+  assert(atcmdPL(ctx, "L0") == 0);
+  assert(ctx->atcmd.pl == 0);
+  assert(atcmdPL(ctx, "L3") == 0);
+  assert(ctx->atcmd.pl == 3);
+  assert(atcmdPL(ctx, "L4") == 1);
+}
+
+static void
+test_atcmdPT(void)
+{
+  assert(atcmdPT(ctx, "T0") == 0);
+  assert(ctx->atcmd.pt.wont == 1);
+
+  setenv("TERM", "xterm-test", 1);
+  assert(atcmdPT(ctx, "T1") == 0);
+  assert(ctx->atcmd.pt.wont == 0);
+  assert(strcmp(ctx->atcmd.pt.str, "xterm-test") == 0);
+  assert(ctx->atcmd.pt.len == (int) strlen("xterm-test"));
+
+  /* T1 with TERM unset falls through to empty string. */
+  unsetenv("TERM");
+  assert(atcmdPT(ctx, "T1") == 0);
+  assert(ctx->atcmd.pt.str[0] == '\0');
+
+  assert(atcmdPT(ctx, "T2") == 1);
+}
+
+static void
+test_atcmdPTSet(void)
+{
+  assert(atcmdPTSet(ctx, "%T=\"vt100\"") == 0);
+  assert(strcmp(ctx->atcmd.pt.str, "vt100") == 0);
+  assert(ctx->atcmd.pt.wont == 0);
+}
+
+/* --- atcmdPQ: just exercises sockShutdown (the dirty quit path) --- */
+
+static void
+test_atcmdPQ(void)
+{
+  st_sock sock;
+  sockInit(&sock);
+  /* No alive socket → shutdown is a no-op. */
+  atcmdPQ(ctx, &sock);
+  assert(sock.alive == 0);
+}
+
+/* --- cmdLex coverage for verbs hit only by extended tests --- */
+
+static void
+test_cmdlex_verbs(void)
+{
+  st_sock sock;
+  sockInit(&sock);
+  telopt_setup();
+  setup();
+  ttyBufWReset(ctx);
+
+  /* H0 — hangup; Z — reset; &W — save; I4 — info. */
+  assert(cmdLex(ctx, "ATH0", &sock) == CMDST_OK);
+  assert(cmdLex(ctx, "ATZ", &sock) == CMDST_OK);
+  assert(cmdLex(ctx, "AT&W", &sock) == CMDST_OK);
+  assert(cmdLex(ctx, "ATI4", &sock) == CMDST_OK);
+  assert(cmdLex(ctx, "ATI7", &sock) == CMDST_OK);
+  assert(cmdLex(ctx, "ATI8", &sock) == CMDST_ERROR);
+}
+
+static void
+test_cmdlex_percent(void)
+{
+  st_sock sock;
+  sockInit(&sock);
+  telopt_setup();
+  setup();
+
+  /* %B (binary mode); the side-effect is that sentReqs is cleared. */
+  ctx->telOpt.sentReqs = 1;
+  assert(cmdLex(ctx, "AT%B0=1", &sock) == CMDST_OK);
+  assert(ctx->atcmd.pb[0] == 1);
+  assert(ctx->telOpt.sentReqs == 0);
+
+  /* %L (linemode) */
+  assert(cmdLex(ctx, "AT%L2", &sock) == CMDST_OK);
+  assert(ctx->atcmd.pl == 2);
+
+  /* %T0 / %T1 */
+  assert(cmdLex(ctx, "AT%T0", &sock) == CMDST_OK);
+  assert(ctx->atcmd.pt.wont == 1);
+  setenv("TERM", "vt220", 1);
+  assert(cmdLex(ctx, "AT%T1", &sock) == CMDST_OK);
+  assert(ctx->atcmd.pt.wont == 0);
+
+  /* %T="…" */
+  assert(cmdLex(ctx, "AT%T=\"ansi\"", &sock) == CMDST_OK);
+  assert(strcmp(ctx->atcmd.pt.str, "ansi") == 0);
+}
+
+static void
+test_cmdlex_sreg_query(void)
+{
+  st_sock sock;
+  sockInit(&sock);
+  telopt_setup();
+  setup();
+  ttyBufWReset(ctx);
+
+  assert(cmdLex(ctx, "ATS7?", &sock) == CMDST_OK);
+  assert(ttyBufWHasData(ctx));
+  assert(cmdLex(ctx, "ATS13?", &sock) == CMDST_ERROR);
+}
+
 /* --- cmdLex return values --- */
 
 static void
@@ -258,5 +461,15 @@ main(void)
   test_cmdlex_dial();
   test_cmdlex_ato();
   test_cmdlex_flags();
+  test_atcmdH();
+  test_atcmdZ();
+  test_atcmdI();
+  test_atcmdPL();
+  test_atcmdPT();
+  test_atcmdPTSet();
+  test_atcmdPQ();
+  test_cmdlex_verbs();
+  test_cmdlex_percent();
+  test_cmdlex_sreg_query();
   return 0;
 }

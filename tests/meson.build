@@ -2,16 +2,18 @@
 
 test_cases = [
   'app_io',
+  'atcmd',
+  'comm_program',
   'connect',
   'dial_step',
   'error_buffer',
-  'timeval',
-  'sockbuf',
-  'atcmd',
   'ipv6',
   'listen',
   'listen_ipv6',
   'localhost',
+  'sockbuf',
+  'telopt',
+  'timeval',
   'ttybuf',
   ]
 
