@@ -1,6 +1,7 @@
 # TODO: Add more tests!
 
 test_cases = [
+  'app_io',
   'connect',
   'timeval',
   'sockbuf',

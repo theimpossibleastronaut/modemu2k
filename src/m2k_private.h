@@ -75,7 +75,6 @@ struct m2k_cmdbuf {
 
 /* Top-level state of the steppable event loop. */
 typedef enum {
-    M2K_STATE_INIT,    /* ctx has been set up but step machine not started yet */
     M2K_STATE_CMD,     /* command mode — reading AT commands from the TTY */
     M2K_STATE_ONLINE,  /* online mode — relaying between TTY and socket */
     M2K_STATE_DONE     /* PTY closed; m2k_run_done() returns true */

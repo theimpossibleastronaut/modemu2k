@@ -18,4 +18,8 @@ struct m2k_s {
                                        no listener is open. */
     m2k_step_state     step_state;  /* Steppable event-loop state machine. */
     struct m2k_cmdbuf  step_cmdbuf; /* Per-step persistent cmd-mode line buffer. */
+    int                app_io;      /* m2k_setup_app_io() flag — host supplies/
+                                       drains TTY bytes via m2k_{write_from,
+                                       read_to}_app() instead of read()/write()
+                                       on tty.{rfd,wfd}. */
 };

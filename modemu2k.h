@@ -36,6 +36,9 @@
  * The full source of the bundled `modemu2k` executable.
  */
 
+#include <poll.h>     /* struct pollfd, used by m2k_get_pollfds()/m2k_step() below */
+#include <stddef.h>   /* size_t */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -219,6 +222,56 @@ m2k_err_t   m2k_setup_dev(m2k_t *ctx, const char *dev);
 m2k_err_t   m2k_setup_listen(m2k_t *ctx, const char *port);
 
 /**
+ * @brief Embed mode: no real TTY fd; the host application supplies the
+ *        bytes a TTY would normally produce, via m2k_write_from_app(),
+ *        and consumes the bytes modemu2k would normally send to the TTY,
+ *        via m2k_read_to_app().
+ *
+ * Intended for embedding modemu2k inside a host program that already
+ * owns the terminal/serial interface (e.g. a comm program linking
+ * libmodemu2k instead of forking the standalone binary). The socket
+ * side still uses real fds and integrates with the host's event loop
+ * via m2k_get_pollfds() as usual.
+ *
+ * @param ctx Modem context.
+ * @return M2K_OK.
+ */
+m2k_err_t   m2k_setup_app_io(m2k_t *ctx);
+
+/**
+ * @brief Push bytes into the modem as if they had been read from the TTY.
+ *
+ * Only valid after m2k_setup_app_io(). The bytes are buffered and will
+ * be processed by the next m2k_step() call as input the AT-command lexer
+ * (cmd mode) or the relay loop (online mode) sees.
+ *
+ * @param ctx Modem context.
+ * @param buf Bytes to inject.
+ * @param len Length of @p buf in bytes.
+ * @return M2K_OK on success, M2K_ERR_BUG if @p len exceeds the internal
+ *         TTY read buffer (caller should split into smaller writes), or
+ *         M2K_ERR_PTY if the context is not in app-I/O mode.
+ */
+m2k_err_t   m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len);
+
+/**
+ * @brief Drain bytes from the modem that would normally have been written
+ *        to the TTY.
+ *
+ * Only valid after m2k_setup_app_io(). Copies up to @p max bytes from the
+ * internal TTY write buffer into @p buf and stores the actual length in
+ * @p *len_out (which may be zero if there is nothing pending).
+ *
+ * @param ctx     Modem context.
+ * @param buf     Destination buffer.
+ * @param max     Maximum bytes to copy.
+ * @param len_out Out: number of bytes actually copied (0 means no data).
+ * @return M2K_OK on success, M2K_ERR_PTY if the context is not in
+ *         app-I/O mode.
+ */
+m2k_err_t   m2k_read_to_app(m2k_t *ctx, void *buf, size_t max, size_t *len_out);
+
+/**
  * @brief Accept a single incoming connection on the listening socket
  *        opened by m2k_setup_listen() and adopt it as the TTY.
  *
@@ -280,9 +333,6 @@ m2k_err_t   m2k_run(m2k_t *ctx);
  * the connect() call will block your event loop briefly. That will be
  * addressed in a later, non-blocking-dial pass.
  */
-
-#include <poll.h>     /* struct pollfd */
-#include <stddef.h>   /* size_t */
 
 /** Maximum number of pollfds modemu2k will ever ask the caller to watch. */
 #define M2K_MAX_POLLFDS 3
