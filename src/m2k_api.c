@@ -512,7 +512,9 @@ getPtyMaster(m2k_t *ctx)
   char *name1 = "pqrstuvwxyzPQRST", *name2 = "0123456789abcdef";
   char *p1, *p2;
 
-  pty = open("/dev/ptmx", O_RDWR);
+  /* posix_openpt is portable across Linux/macOS/FreeBSD; FreeBSD in
+     particular doesn't reliably expose /dev/ptmx as a devnode. */
+  pty = posix_openpt(O_RDWR | O_NOCTTY);
   if (pty < 0)
     goto bsd;
 
