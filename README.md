@@ -46,3 +46,15 @@ The `modemu2k(1)` man page has the full option and AT-command reference.
 * [Release page](https://github.com/theimpossibleastronaut/modemu2k/releases)
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/modemu2k.svg)](https://repology.org/project/modemu2k/versions)
+
+## Acknowledgments
+
+Several library-API conventions in `modemu2k.h` are modeled after
+[libcurl](https://curl.se/libcurl/): the caller-supplied detailed
+error buffer (`m2k_set_error_buffer` mirrors `CURLOPT_ERRORBUFFER`),
+the `strerror`-style code-to-message helper (`m2k_strerror`), the
+log-callback pattern (`m2k_set_log_fn` mirrors `CURLOPT_DEBUGFUNCTION`),
+and the explicit-fd event-loop split between `m2k_run` (blocking) and
+`m2k_step` / `m2k_get_pollfds` (host-owned event loop, analogous to
+curl's easy vs. multi interfaces). No code is copied — the conventions
+are.
