@@ -92,12 +92,10 @@ test_full_buffer_returns_full(void)
   char big[8192];
   memset(big, 'x', sizeof(big));
 
-  size_t total_consumed = 0;
   for (int i = 0; i < 16; i++)
   {
     size_t consumed = 0;
     m2k_err_t r = m2k_write_from_app(ctx, big, sizeof(big), &consumed);
-    total_consumed += consumed;
     if (r == M2K_ERR_FULL)
     {
       assert(consumed == 0);
