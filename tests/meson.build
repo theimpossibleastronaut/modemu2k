@@ -3,6 +3,7 @@
 test_cases = [
   'app_io',
   'connect',
+  'dial_step',
   'error_buffer',
   'timeval',
   'sockbuf',

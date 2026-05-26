@@ -31,4 +31,8 @@ struct m2k_s {
                                        transition on the next m2k_step(). */
     bool               dtr;         /* m2k_set_dtr() — DTE control line. */
     bool               rts;         /* m2k_set_rts() — DTE control line. */
+    struct addrinfo   *dial_result; /* getaddrinfo() head during non-blocking
+                                       dial (M2K_STATE_DIAL); freed when the
+                                       dial resolves or is aborted. */
+    struct timeval     dial_deadline;
 };

@@ -473,13 +473,6 @@ m2k_online(m2k_t *ctx)
 }
 
 m2k_err_t
-m2k_hangup(m2k_t *ctx)
-{
-  sockShutdown(&ctx->sock);
-  return M2K_OK;
-}
-
-m2k_err_t
 m2k_escape(m2k_t *ctx)
 {
   if (ctx->step_state == M2K_STATE_ONLINE)
@@ -830,6 +823,31 @@ stepEnterOnline(m2k_t *ctx)
   ctx->step_state = M2K_STATE_ONLINE;
 }
 
+static void
+stepEnterDial(m2k_t *ctx)
+{
+  /* Drop any pending TTY input — semantics of going off-hook. */
+  ttyBufRReset(ctx);
+  cmdBufReset(&ctx->step_cmdbuf);
+  ctx->step_state = M2K_STATE_DIAL;
+}
+
+m2k_err_t
+m2k_hangup(m2k_t *ctx)
+{
+  /* Abort a dial-in-progress so the host can recover the context
+     without waiting out the S7 timeout. */
+  if (ctx->step_state == M2K_STATE_DIAL)
+  {
+    m2k_sockDialAbort(ctx, &ctx->sock);
+    putTtyCmdstat(ctx, CMDST_NOCARRIER);
+    stepEnterCmd(ctx);
+    return M2K_OK;
+  }
+  sockShutdown(&ctx->sock);
+  return M2K_OK;
+}
+
 static struct pollfd *
 findPollfd(struct pollfd *fds, size_t nfds, int fd)
 {
@@ -960,6 +978,58 @@ cmdIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
   return CMDST_OK;
 }
 
+/* Dial mode: wait on the in-progress connect socket (POLLOUT) plus the
+   TTY rfd (so a keypress can cancel the dial). Timeout is the remaining
+   time until the S7 deadline. */
+static void
+dialPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
+{
+  size_t n = 0;
+
+  fds[n].fd = ctx->sock.fd;
+  fds[n].events = POLLOUT;
+  fds[n].revents = 0;
+  n++;
+
+  /* Allow tty read so the user can cancel by typing. No write side here
+     — we have nothing to emit until the dial resolves. */
+  appendTtyPollfds(ctx, fds, &n, POLLIN, 0);
+  *nfds_inout = n;
+
+  struct timeval now, remaining;
+  gettimeofday(&now, NULL);
+  if (timevalCmp(&now, &ctx->dial_deadline) >= 0)
+  {
+    *timeout_ms = 0;
+    return;
+  }
+  remaining = ctx->dial_deadline;
+  timevalSub(&remaining, &now);
+  long ms = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
+  if (ms <= 0) ms = 1;
+  *timeout_ms = (int) ms;
+}
+
+/* Returns 1 (connected — caller transitions to ONLINE), 0 (continue
+   polling), -1 (dial failed — caller emits NOCARRIER + back to CMD). */
+static int
+dialIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
+{
+  /* User-cancel via TTY input. Only meaningful outside app_io; in
+     app_io the host can call m2k_hangup() to abort. */
+  if (!ctx->app_io)
+  {
+    struct pollfd *p = findPollfd(fds, nfds, ctx->tty.rfd);
+    if (p && (p->revents & READ_EV))
+    {
+      m2k_sockDialAbort(ctx, &ctx->sock);
+      return -1;
+    }
+  }
+  /* Whether the socket fired or the deadline elapsed, ask Progress. */
+  return m2k_sockDialProgress(ctx, &ctx->sock);
+}
+
 /* timeout_ms is driven by the +++ escape silence guard; expiry is
    detected inside onlineIter after poll returns. */
 static void
@@ -1087,6 +1157,9 @@ m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout
   case M2K_STATE_CMD:
     cmdPollfds(ctx, fds, nfds_inout, timeout_ms);
     return M2K_OK;
+  case M2K_STATE_DIAL:
+    dialPollfds(ctx, fds, nfds_inout, timeout_ms);
+    return M2K_OK;
   case M2K_STATE_ONLINE:
     onlinePollfds(ctx, fds, nfds_inout, timeout_ms);
     return M2K_OK;
@@ -1114,14 +1187,22 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
         putTtyCmdstat(ctx, CMDST_ERROR);
         return M2K_OK;
       }
-      /* Synchronous dial — connect() briefly blocks the caller's loop. */
       telOptReset(ctx);
-      if (m2k_sockDial(ctx, &ctx->sock) != 0)
       {
-        putTtyCmdstat(ctx, CMDST_NOCARRIER);
-        return M2K_OK;
+        int r = m2k_sockDialStart(ctx, &ctx->sock);
+        if (r == 1)
+        {
+          stepEnterOnline(ctx);
+        }
+        else if (r == 0)
+        {
+          stepEnterDial(ctx);
+        }
+        else
+        {
+          putTtyCmdstat(ctx, CMDST_NOCARRIER);
+        }
       }
-      stepEnterOnline(ctx);
       return M2K_OK;
     case CMDST_ATO:
       if (!ctx->sock.alive)
@@ -1137,6 +1218,20 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
     default:
       return M2K_OK;
     }
+  }
+  case M2K_STATE_DIAL:
+  {
+    int r = dialIter(ctx, fds, nfds);
+    if (r == 1)
+    {
+      stepEnterOnline(ctx);
+    }
+    else if (r == -1)
+    {
+      putTtyCmdstat(ctx, CMDST_NOCARRIER);
+      stepEnterCmd(ctx);
+    }
+    return M2K_OK;
   }
   case M2K_STATE_ONLINE:
   {

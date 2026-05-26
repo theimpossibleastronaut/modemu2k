@@ -28,6 +28,10 @@
   * Add m2k_set_dtr / m2k_set_rts / m2k_get_dtr / m2k_get_rts for DTE
     control-line state; DTR 1→0 transition while a connection is live
     hangs up (&D2-equivalent)
+  * Make ATD dialing non-blocking under m2k_step (new M2K_STATE_DIAL):
+    connect() now yields back to the host poll loop while in progress
+    instead of blocking the caller's event loop for up to S7 seconds;
+    m2k_hangup() aborts a pending dial
 
 2022-08-18
 - modemu2k (v0.1.0)

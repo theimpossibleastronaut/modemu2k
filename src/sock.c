@@ -314,3 +314,166 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
               ctx->atcmd.d.addr.str, out_port);
   return 1;
 }
+
+/* Non-blocking dial helpers used by the step-mode state machine in
+   m2k_api.c. These are split from m2k_sockDial so the dial can yield to
+   the host event loop between attempts (no more multi-second freeze
+   inside m2k_step).
+
+   State across calls is in ctx->dial_result (the getaddrinfo list head,
+   kept alive for the lifetime of the dial), sock->rp (current attempt),
+   ctx->dial_deadline (when the current attempt times out), and sock->fd
+   (the socket currently undergoing connect()).
+
+   getaddrinfo itself remains synchronous inside Start — DNS is typically
+   quick; full async resolution would need getaddrinfo_a or a worker
+   thread. The big win is moving the connect() phase out of m2k_step. */
+
+/* Internal: open a non-blocking socket on sock->rp and initiate connect.
+   Returns 1 (immediately connected), 0 (in progress, EINPROGRESS), -1
+   (this address failed — caller should advance and retry). */
+static int
+dialTryCurrent(m2k_t *ctx, st_sock *sock)
+{
+  sock->fd = socket(sock->rp->ai_family, sock->rp->ai_socktype,
+                    sock->rp->ai_protocol);
+  if (sock->fd == -1)
+    return -1;
+
+  int one = 1;
+  if (setsockopt(sock->fd, SOL_SOCKET, SO_OOBINLINE, &one, sizeof(one)) < 0)
+  {
+    m2k_log(ctx, "setsockopt(): %s\n", strerror(errno));
+    sockClose(sock);
+    return -1;
+  }
+
+  ioctl(sock->fd, FIONBIO, &one);
+
+  if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) == 0)
+  {
+    one = 0;
+    ioctl(sock->fd, FIONBIO, &one);
+    sock->alive = 1;
+    return 1;
+  }
+  if (errno == EINPROGRESS)
+  {
+    /* Compute deadline = now + S7 seconds. */
+    struct timeval t;
+    timevalSet10ms(&t, ctx->atcmd.s[7] * 100);
+    gettimeofday(&ctx->dial_deadline, NULL);
+    timevalAdd(&ctx->dial_deadline, &t);
+    return 0;
+  }
+  m2k_log(ctx, "connect(): %s\n", strerror(errno));
+  sockClose(sock);
+  return -1;
+}
+
+int
+m2k_sockDialStart(m2k_t *ctx, st_sock *sock)
+{
+  struct addrinfo hints;
+  memset(&hints, 0, sizeof hints);
+  hints.ai_family   = AF_UNSPEC;
+  hints.ai_socktype = SOCK_STREAM;
+
+  char out_port[PORT_MAX + 1];
+  if ((size_t) snprintf(out_port, sizeof out_port, "%d",
+                        ctx->atcmd.d.port.type == ATDP_NUL
+                          ? DEFAULT_PORT
+                          : atoi(ctx->atcmd.d.port.str)) >= sizeof out_port)
+    return -1;
+
+  if (ctx->atcmd.d.port.type != ATDP_NUL)
+    ctx->telOpt.sentReqs = 1;
+
+  int s = getaddrinfo(ctx->atcmd.d.addr.str, out_port, &hints,
+                      &ctx->dial_result);
+  if (s != 0)
+  {
+    m2k_err_set(ctx, "Host address lookup failed for %s: %s\n",
+                ctx->atcmd.d.addr.str, gai_strerror(s));
+    ctx->dial_result = NULL;
+    return -1;
+  }
+
+  sockInit(sock);
+  for (sock->rp = ctx->dial_result; sock->rp != NULL; sock->rp = sock->rp->ai_next)
+  {
+    int r = dialTryCurrent(ctx, sock);
+    if (r >= 0)
+      return r;     /* 0 (in progress) or 1 (done) */
+    /* this address failed — try next */
+  }
+
+  /* No address worked. */
+  freeaddrinfo(ctx->dial_result);
+  ctx->dial_result = NULL;
+  m2k_err_set(ctx, "Could not connect to %s:%s (no address worked)\n",
+              ctx->atcmd.d.addr.str, out_port);
+  return -1;
+}
+
+int
+m2k_sockDialProgress(m2k_t *ctx, st_sock *sock)
+{
+  if (!ctx->dial_result || !sock->rp)
+    return -1;
+
+  struct timeval now;
+  gettimeofday(&now, NULL);
+  bool timed_out = timevalCmp(&now, &ctx->dial_deadline) >= 0;
+
+  /* Test the current attempt. If still pending, return 0 (more polling
+     needed) unless timed_out. */
+  if (!timed_out)
+  {
+    /* SOCKS-compatible probe: re-call connect(). */
+    if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) == 0
+        || errno == EISCONN)
+    {
+      int zero = 0;
+      ioctl(sock->fd, FIONBIO, &zero);
+      sock->alive = 1;
+      freeaddrinfo(ctx->dial_result);
+      ctx->dial_result = NULL;
+      return 1;
+    }
+    if (errno == EALREADY || errno == EINPROGRESS)
+      return 0;
+    /* Hard error on this address — fall through to advance. */
+    m2k_log(ctx, "connect(): %s\n", strerror(errno));
+  }
+
+  sockClose(sock);
+
+  /* Advance to next address; loop here in case it fails outright too. */
+  while ((sock->rp = sock->rp->ai_next) != NULL)
+  {
+    int r = dialTryCurrent(ctx, sock);
+    if (r >= 0)
+      return r;
+  }
+
+  /* No more addresses. */
+  freeaddrinfo(ctx->dial_result);
+  ctx->dial_result = NULL;
+  m2k_err_set(ctx, "Could not connect to %s:%s (no address worked)\n",
+              ctx->atcmd.d.addr.str,
+              ctx->atcmd.d.port.type == ATDP_NUL ? "(default)"
+                                                  : ctx->atcmd.d.port.str);
+  return -1;
+}
+
+void
+m2k_sockDialAbort(m2k_t *ctx, st_sock *sock)
+{
+  if (ctx->dial_result)
+  {
+    freeaddrinfo(ctx->dial_result);
+    ctx->dial_result = NULL;
+  }
+  sockShutdown(sock);
+}

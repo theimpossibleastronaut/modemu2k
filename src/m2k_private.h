@@ -76,6 +76,7 @@ struct m2k_cmdbuf {
 /* Top-level state of the steppable event loop. */
 typedef enum {
     M2K_STATE_CMD,     /* command mode — reading AT commands from the TTY */
+    M2K_STATE_DIAL,    /* non-blocking dial in progress — sock.fd is mid-connect */
     M2K_STATE_ONLINE,  /* online mode — relaying between TTY and socket */
     M2K_STATE_DONE     /* PTY closed; m2k_run_done() returns true */
 } m2k_step_state;
@@ -374,5 +375,8 @@ Cmdstat cmdLex(m2k_t *ctx, const char *ptr, st_sock *sock);
 void putTtyCmdstat(m2k_t *ctx, Cmdstat s);
 
 int m2k_sockDial(m2k_t *ctx, st_sock *sock);
+int m2k_sockDialStart(m2k_t *ctx, st_sock *sock);
+int m2k_sockDialProgress(m2k_t *ctx, st_sock *sock);
+void m2k_sockDialAbort(m2k_t *ctx, st_sock *sock);
 int m2k_sockListen(m2k_t *ctx, const char *port);
 int m2k_sockAccept(m2k_t *ctx, int server_fd);
