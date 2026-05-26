@@ -468,6 +468,14 @@ m2k_hangup(m2k_t *ctx)
   return M2K_OK;
 }
 
+m2k_err_t
+m2k_escape(m2k_t *ctx)
+{
+  if (ctx->step_state == M2K_STATE_ONLINE)
+    ctx->escape_req = true;
+  return M2K_OK;
+}
+
 const char *
 m2k_strerror(m2k_err_t err)
 {
@@ -492,10 +500,10 @@ m2k_strerror(m2k_err_t err)
 
 #ifdef HAVE_GRANTPT
 static int
-getPtyMaster(m2k_t *ctx, char **line_return)
+getPtyMaster(m2k_t *ctx)
 {
   int rc;
-  char name[12], *temp_line, *line = NULL;
+  char name[12], *temp_line;
   int pty = -1;
   char *name1 = "pqrstuvwxyzPQRST", *name2 = "0123456789abcdef";
   char *p1, *p2;
@@ -513,10 +521,9 @@ getPtyMaster(m2k_t *ctx, char **line_return)
   temp_line = ptsname(pty);
   if (!temp_line) { close(pty); goto bsd; }
 
-  line = malloc(strlen(temp_line) + 1);
-  if (line == NULL) { close(pty); return -1; }
-  strcpy(line, temp_line);
-  *line_return = line;
+  if (strlen(temp_line) >= sizeof(ctx->slave_path))
+  { close(pty); return -1; }
+  strcpy(ctx->slave_path, temp_line);
   return pty;
 
 bsd:
@@ -537,17 +544,14 @@ bsd:
   goto bail;
 
 found:
-  line = malloc(strlen(name) + 1);
-  if (line == NULL) { close(pty); return -1; }
-  strcpy(line, name);
-  line[5] = 't';
-  rc = chown(line, getuid(), getgid());
+  strcpy(ctx->slave_path, name);
+  ctx->slave_path[5] = 't';
+  rc = chown(ctx->slave_path, getuid(), getgid());
   if (rc < 0)
     m2k_log(ctx, "Warning: could not change ownership of tty -- pty is insecure!\n");
-  rc = chmod(line, S_IRUSR | S_IWUSR | S_IWGRP);
+  rc = chmod(ctx->slave_path, S_IRUSR | S_IWUSR | S_IWGRP);
   if (rc < 0)
     m2k_log(ctx, "Warning: could not change permissions of tty -- pty is insecure!\n");
-  *line_return = line;
   return pty;
 
 bail:
@@ -559,9 +563,8 @@ bail:
 #else  /* !HAVE_GRANTPT */
 
 static int
-getPtyMaster(m2k_t *ctx, char *tty10, char *tty01)
+getPtyMaster(m2k_t *ctx)
 {
-  (void)ctx;
   static const char *name1 = "pqrs";
   static const char *name2 = "0123456789abcdef";
   static char dev[] = "/dev/ptyXX";
@@ -577,8 +580,9 @@ getPtyMaster(m2k_t *ctx, char *tty10, char *tty01)
       fd = open(dev, O_RDWR);
       if (fd >= 0)
       {
-        *tty10 = *p10;
-        *tty01 = *p01;
+        ctx->slave_path[0] = *p10;
+        ctx->slave_path[1] = *p01;
+        ctx->slave_path[2] = '\0';
         return fd;
       }
     }
@@ -649,50 +653,27 @@ m2k_setup_stdin(m2k_t *ctx)
 }
 
 m2k_err_t
-m2k_setup_pty(m2k_t *ctx, char **slave_out)
+m2k_setup_pty(m2k_t *ctx, const char **slave_out)
 {
-#ifdef HAVE_GRANTPT
-  int fd = getPtyMaster(ctx, slave_out);
+  int fd = getPtyMaster(ctx);
   if (fd < 0)
     return M2K_ERR_PTY;
   ctx->tty.rfd = ctx->tty.wfd = fd;
+  *slave_out = ctx->slave_path;
   return M2K_OK;
-#else
-  char c10, c01;
-  int fd = getPtyMaster(ctx, &c10, &c01);
-  if (fd < 0)
-    return M2K_ERR_PTY;
-  ctx->tty.rfd = ctx->tty.wfd = fd;
-  char *slave = malloc(3);
-  if (!slave)
-    return M2K_ERR_NOMEM;
-  slave[0] = c10;
-  slave[1] = c01;
-  slave[2] = '\0';
-  *slave_out = slave;
-  return M2K_OK;
-#endif
 }
 
 m2k_err_t
 m2k_setup_comm_program(m2k_t *ctx, const char *cmd)
 {
+  int fd = getPtyMaster(ctx);
+  if (fd < 0)
+    return M2K_ERR_PTY;
+  ctx->tty.rfd = ctx->tty.wfd = fd;
 #ifdef HAVE_GRANTPT
-  char *slave;
-  int fd = getPtyMaster(ctx, &slave);
-  if (fd < 0)
-    return M2K_ERR_PTY;
-  ctx->tty.rfd = ctx->tty.wfd = fd;
-  m2k_err_t err = commxForkExec(ctx, cmd, slave);
-  free(slave);
-  return err;
+  return commxForkExec(ctx, cmd, ctx->slave_path);
 #else
-  char c10, c01;
-  int fd = getPtyMaster(ctx, &c10, &c01);
-  if (fd < 0)
-    return M2K_ERR_PTY;
-  ctx->tty.rfd = ctx->tty.wfd = fd;
-  return commxForkExec(ctx, cmd, c10, c01);
+  return commxForkExec(ctx, cmd, ctx->slave_path[0], ctx->slave_path[1]);
 #endif
 }
 
@@ -1013,12 +994,20 @@ onlinePollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_m
   }
 }
 
-/* Returns 0 (continue), 1 (+++ escape elapsed), -1 (sock or PTY closed). */
+/* Returns 0 (continue), 1 (+++ escape elapsed or m2k_escape requested),
+   -1 (sock or PTY closed). */
 static int
 onlineIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 {
   st_sock *sock = &ctx->sock;
   struct pollfd *p;
+
+  if (ctx->escape_req)
+  {
+    ctx->escape_req = false;
+    escSeq.checkSilence = 0;
+    return 1;
+  }
 
   if (escSeq.checkSilence)
   {

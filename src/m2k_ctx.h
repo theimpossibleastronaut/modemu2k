@@ -15,6 +15,9 @@ struct m2k_s {
     void              *log_userdata;
     char              *err_buf;     /* m2k_set_error_buffer() — caller-owned. */
     size_t             err_buf_size;
+    char               slave_path[64];  /* PTY slave path filled by
+                                           m2k_setup_pty/m2k_setup_comm_program;
+                                           lifetime = ctx. */
     int                listen_fd;   /* Bound listener from m2k_setup_listen,
                                        consumed by m2k_listen_accept; -1 when
                                        no listener is open. */
@@ -24,4 +27,6 @@ struct m2k_s {
                                        drains TTY bytes via m2k_{write_from,
                                        read_to}_app() instead of read()/write()
                                        on tty.{rfd,wfd}. */
+    bool               escape_req;  /* m2k_escape() — drives one online→cmd
+                                       transition on the next m2k_step(). */
 };

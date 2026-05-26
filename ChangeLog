@@ -16,6 +16,10 @@
     poll/epoll loop with the host supplying the TTY-side bytes
   * Add m2k_set_error_buffer() for curl-style per-context detailed error
     messages, plus M2K_ERR_AT and M2K_ERR_FULL error codes
+  * Add m2k_escape() for programmatic online→command-mode transition
+    without injecting the +++ escape sequence through I/O
+  * m2k_setup_pty() now returns a const char* into ctx-owned storage
+    instead of a heap-allocated string the caller must free (breaking)
 
 2022-08-18
 - modemu2k (v0.1.0)

@@ -189,6 +189,25 @@ m2k_err_t   m2k_online(m2k_t *ctx);
 m2k_err_t   m2k_hangup(m2k_t *ctx);
 
 /**
+ * @brief Request an immediate return to command mode from online mode.
+ *
+ * Drives the same transition that the @c +++ escape sequence would —
+ * but without the silence-guard timing or sending the literal @c +++
+ * bytes through the I/O path. Useful from a host application that
+ * embeds modemu2k and wants programmatic control of the mode.
+ *
+ * The transition takes effect on the next m2k_step() / m2k_run()
+ * iteration. The underlying TCP connection is left intact; use
+ * m2k_hangup() afterward if you also want to drop it.
+ *
+ * A no-op when the context is not currently in online mode.
+ *
+ * @param ctx Modem context.
+ * @return M2K_OK.
+ */
+m2k_err_t   m2k_escape(m2k_t *ctx);
+
+/**
  * @brief Return a human-readable string for @p err.
  * @param err Error code.
  * @return Static string; never NULL.
@@ -208,15 +227,19 @@ m2k_err_t   m2k_setup_stdin(m2k_t *ctx);
 /**
  * @brief Allocate a PTY master and return the slave device path.
  *
- * The returned string is heap-allocated; the caller must free() it.
- * Use this when you need the slave path (e.g. to print it with --show).
- * To fork a comm program on the slave, prefer m2k_setup_comm_program().
+ * The returned pointer is owned by the context — do NOT free() it.
+ * It remains valid until the next m2k_setup_*() call or m2k_free(ctx).
+ *
+ * Use this when you need the slave path itself (e.g. to print it with
+ * --show). To fork a comm program on the slave, prefer
+ * m2k_setup_comm_program().
  *
  * @param ctx       Modem context.
- * @param slave_out Receives a newly allocated NUL-terminated slave path.
+ * @param slave_out Out: pointer to a NUL-terminated slave path inside @p ctx.
+ *                  Must be non-NULL.
  * @return M2K_OK on success, M2K_ERR_PTY on failure.
  */
-m2k_err_t   m2k_setup_pty(m2k_t *ctx, char **slave_out);
+m2k_err_t   m2k_setup_pty(m2k_t *ctx, const char **slave_out);
 
 /**
  * @brief Allocate a PTY and fork/exec a comm program on the slave.

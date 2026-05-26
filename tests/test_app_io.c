@@ -107,11 +107,33 @@ test_full_buffer_returns_full(void)
   assert(0 && "expected M2K_ERR_FULL before 128KB consumed");
 }
 
+/* Verify m2k_escape() is a no-op outside online mode. The full
+   online→cmd escape path is exercised indirectly by test_connect; we
+   just confirm the API doesn't crash or misbehave in the easy case. */
+static void
+test_escape_in_cmd_mode(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+
+  /* Starts in cmd mode — escape should be a no-op, return OK. */
+  assert(m2k_escape(ctx) == M2K_OK);
+
+  /* Cmd mode still works afterwards. */
+  size_t consumed = 0;
+  assert(m2k_write_from_app(ctx, "AT\r", 3, &consumed) == M2K_OK);
+  assert(consumed == 3);
+
+  m2k_free(ctx);
+}
+
 int
 main(void)
 {
   test_at_round_trip();
   test_multi_line_in_one_write();
   test_full_buffer_returns_full();
+  test_escape_in_cmd_mode();
   return 0;
 }

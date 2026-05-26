@@ -60,14 +60,13 @@ main(int argc, char *const argv[])
   {
   case CA_SHOWDEV:
   {
-    char *slave;
+    const char *slave;
     if (m2k_setup_pty(ctx, &slave) != M2K_OK)
     {
       m2k_free(ctx);
       return EXIT_FAILURE;
     }
     puts(slave);
-    free(slave);
     m2k_free(ctx);
     return 0;
   }
