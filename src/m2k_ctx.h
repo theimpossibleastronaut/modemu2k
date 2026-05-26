@@ -16,4 +16,6 @@ struct m2k_s {
     int                listen_fd;   /* Bound listener from m2k_setup_listen,
                                        consumed by m2k_listen_accept; -1 when
                                        no listener is open. */
+    m2k_step_state     step_state;  /* Steppable event-loop state machine. */
+    struct m2k_cmdbuf  step_cmdbuf; /* Per-step persistent cmd-mode line buffer. */
 };

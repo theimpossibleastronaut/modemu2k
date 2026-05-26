@@ -241,10 +241,96 @@ m2k_err_t   m2k_listen_accept(m2k_t *ctx);
  * +++ escape or disconnection.  Call one of the m2k_setup_*() functions
  * before calling m2k_run().
  *
+ * Equivalent to:
+ * @code
+ *   while (!m2k_run_done(ctx)) {
+ *     struct pollfd fds[M2K_MAX_POLLFDS];
+ *     size_t nfds = M2K_MAX_POLLFDS;
+ *     int timeout_ms;
+ *     m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms);
+ *     poll(fds, nfds, timeout_ms);
+ *     m2k_step(ctx, fds, nfds);
+ *   }
+ * @endcode
+ *
  * @param ctx Modem context.
  * @return M2K_OK when the session ends normally.
  */
 m2k_err_t   m2k_run(m2k_t *ctx);
+
+/* ── Steppable event-loop API ───────────────────────────────────────
+ *
+ * The functions below let a host application integrate modemu2k into
+ * its own event loop (poll/epoll/select/etc.) instead of handing the
+ * fds to the blocking m2k_run() above.
+ *
+ * Usage:
+ *   while (!m2k_run_done(ctx)) {
+ *       struct pollfd fds[M2K_MAX_POLLFDS];   // caller-provided buffer
+ *       size_t nfds = M2K_MAX_POLLFDS;
+ *       int timeout_ms;
+ *       m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms);
+ *       // Splice fds into your own pollset, call poll()/epoll_wait().
+ *       // On return, write back the .revents the OS reported into the
+ *       // corresponding entries of `fds`.
+ *       m2k_step(ctx, fds, nfds);
+ *   }
+ *
+ * Dialing (ATD) is still synchronous inside m2k_step() in this phase —
+ * the connect() call will block your event loop briefly. That will be
+ * addressed in a later, non-blocking-dial pass.
+ */
+
+#include <poll.h>     /* struct pollfd */
+#include <stddef.h>   /* size_t */
+
+/** Maximum number of pollfds modemu2k will ever ask the caller to watch. */
+#define M2K_MAX_POLLFDS 3
+
+/**
+ * @brief Describe the fds and timeout the caller's event loop should watch.
+ *
+ * Fills @p fds with the fds modemu2k currently wants to monitor and stores
+ * the longest acceptable wait in @p *timeout_ms (-1 = wait indefinitely,
+ * 0 = poll immediately). Each pollfd's `.fd` and `.events` are set; the
+ * caller is responsible for the `.revents` field after calling poll().
+ *
+ * @param ctx        Modem context.
+ * @param fds        Caller-provided array of at least @ref M2K_MAX_POLLFDS entries.
+ * @param nfds_inout In:  capacity of @p fds (must be >= @ref M2K_MAX_POLLFDS).
+ *                   Out: number of entries actually populated. Zero means
+ *                        the session is done; the caller should exit the loop.
+ * @param timeout_ms Out: maximum wait in milliseconds before m2k_step() needs
+ *                   to be called again. -1 means no deadline.
+ * @return M2K_OK on success, M2K_ERR_BUG if @p *nfds_inout is too small.
+ */
+m2k_err_t   m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds,
+                            size_t *nfds_inout, int *timeout_ms);
+
+/**
+ * @brief Run one non-blocking iteration of the state machine.
+ *
+ * Consumes the events the caller's poll() reported (via the `.revents`
+ * fields of @p fds) and advances the cmd-mode / online-mode state once.
+ * Does no poll() of its own. Safe to call with all `.revents == 0`
+ * (the call is then a no-op).
+ *
+ * @param ctx  Modem context.
+ * @param fds  The pollfd array previously filled by m2k_get_pollfds(),
+ *             with the OS's `.revents` values populated by the caller.
+ * @param nfds Number of entries in @p fds (the value m2k_get_pollfds
+ *             returned in @p *nfds_inout).
+ * @return M2K_OK on success.
+ */
+m2k_err_t   m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds);
+
+/**
+ * @brief Test whether the session has ended.
+ * @param ctx Modem context.
+ * @return Nonzero when the state machine has reached a terminal state
+ *         (PTY closed, etc.) and the caller's loop should stop.
+ */
+int         m2k_run_done(const m2k_t *ctx);
 
 #ifdef __cplusplus
 }

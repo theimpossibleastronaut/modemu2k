@@ -3,6 +3,7 @@
 #include <arpa/telnet.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <poll.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/select.h>
@@ -561,36 +562,32 @@ getPtyMaster(m2k_t *ctx, char *tty10, char *tty01)
 
 /* ── Command mode (moved from main.c) ───────────────────────────── */
 
-struct cmdBuf
-{
-  uchar buf[CMDBUF_MAX + 1];
-  uchar *ptr;
-  int eol;
-};
+/* struct m2k_cmdbuf is defined in m2k_private.h so the m2k_t context
+   can embed one for the steppable m2k_step() API. */
 
 static void
-cmdBufReset(struct cmdBuf *x)
+cmdBufReset(struct m2k_cmdbuf *x)
 {
   x->ptr = x->buf;
   x->eol = 0;
 }
 
 static void
-putCmd1(const int c, struct cmdBuf *cmdBuf)
+putCmd1(const int c, struct m2k_cmdbuf *cmdBuf)
 {
   if (cmdBuf->ptr < cmdBuf->buf + CMDBUF_MAX)
     *cmdBuf->ptr++ = c;
 }
 
 static void
-cmdBufBS(struct cmdBuf *cmdBuf)
+cmdBufBS(struct m2k_cmdbuf *cmdBuf)
 {
   if (cmdBuf->ptr > cmdBuf->buf)
     cmdBuf->ptr--;
 }
 
 static void
-cmdReadLoop(m2k_t *ctx, struct cmdBuf *cmdBuf)
+cmdReadLoop(m2k_t *ctx, struct m2k_cmdbuf *cmdBuf)
 {
   int c;
 
@@ -612,62 +609,10 @@ cmdReadLoop(m2k_t *ctx, struct cmdBuf *cmdBuf)
   }
 }
 
-static Cmdstat
-cmdMode(m2k_t *ctx, struct cmdBuf *cmdBuf)
-{
-  st_sock *sock = &ctx->sock;
-  fd_set rfds, wfds;
-  Cmdstat stat;
-
-  cmdBufReset(cmdBuf);
-  ttyBufRReset(ctx);
-
-  for (;;)
-  {
-    FD_ZERO(&rfds);
-    FD_ZERO(&wfds);
-
-    if (ttyBufWReady(ctx))
-      FD_SET(ctx->tty.rfd, &rfds);
-    if (ttyBufWHasData(ctx))
-      FD_SET(ctx->tty.wfd, &wfds);
-
-    if (select(ctx->tty.wfd + 1, &rfds, &wfds, NULL, NULL) < 0)
-    {
-      if (errno != EINTR)
-        m2k_log(ctx, "select(): %s\n", strerror(errno));
-      continue;
-    }
-
-    if (FD_ISSET(ctx->tty.wfd, &wfds))
-    {
-      if (ttyBufWrite(ctx, sock) != M2K_OK)
-        return CMDST_PTY_CLOSED;
-      if (cmdBuf->eol)
-      {
-        stat = cmdLex(ctx, (char *) cmdBuf->buf, sock);
-        cmdBufReset(cmdBuf);
-        switch (stat)
-        {
-        case CMDST_ATD:
-        case CMDST_ATO:
-          return stat;
-        case CMDST_OK:
-        case CMDST_ERROR:
-          putTtyCmdstat(ctx, stat);
-          break;
-        default:;
-        }
-      }
-    }
-    if (FD_ISSET(ctx->tty.rfd, &rfds))
-    {
-      if (ttyBufRead(ctx, sock) != M2K_OK)
-        return CMDST_PTY_CLOSED;
-      cmdReadLoop(ctx, cmdBuf);
-    }
-  }
-}
+/* cmdMode and onlineMode are now expressed via the cmdPollfds/cmdIter
+   and onlinePollfds/onlineIter primitives further below (used by
+   m2k_step). m2k_online() still calls the legacy onlineMode wrapper
+   because the public m2k_dial/m2k_online surface is synchronous. */
 
 
 /* ── Setup API ───────────────────────────────────────────────────── */
@@ -768,42 +713,376 @@ m2k_listen_accept(m2k_t *ctx)
   return M2K_OK;
 }
 
+/* ── Steppable event-loop API ────────────────────────────────────────
+ *
+ * m2k_get_pollfds + m2k_step let a host application embed modemu2k in
+ * its own event loop. m2k_run() below is just a poll()-driven wrapper
+ * around the same primitives.
+ *
+ * The state machine itself mirrors the goto-based logic the synchronous
+ * m2k_run used to contain:
+ *
+ *     INIT ── (enter cmd mode) ──▶ CMD
+ *      CMD  ── ATD (alive=0)   ──▶ (dial inline) ──▶ ONLINE on success
+ *                                                  ──▶ CMD     on dial fail
+ *      CMD  ── ATO (alive=1)   ──▶ ONLINE
+ *      CMD  ── PTY closed      ──▶ DONE
+ *      ONLINE ── +++ escape    ──▶ CMD
+ *      ONLINE ── sock dead     ──▶ CMD
+ *      ONLINE ── PTY closed    ──▶ DONE
+ */
+
+/* Enter cmd mode: reset the per-mode buffers. Called on every transition
+   into M2K_STATE_CMD so each entry starts fresh. */
+static void
+stepEnterCmd(m2k_t *ctx)
+{
+  cmdBufReset(&ctx->step_cmdbuf);
+  ttyBufRReset(ctx);
+  ctx->step_state = M2K_STATE_CMD;
+}
+
+/* Enter online mode: reset relay buffers, send pending telnet options. */
+static void
+stepEnterOnline(m2k_t *ctx)
+{
+  sockBufRReset(ctx);
+  sockBufWReset(ctx);
+  ttyBufRReset(ctx);
+  lineBufReset();
+  escSeqReset();
+  if (!ctx->telOpt.sentReqs && !ctx->atcmd.pr)
+    telOptSendReqs(ctx);
+  putTtyCmdstat(ctx, CMDST_CONNECT);
+  ctx->step_state = M2K_STATE_ONLINE;
+}
+
+/* Find a pollfd entry whose .fd matches, or return NULL. Used inside the
+   iter handlers so they can read .revents back from the caller-supplied
+   array regardless of slot order. */
+static struct pollfd *
+findPollfd(struct pollfd *fds, size_t nfds, int fd)
+{
+  for (size_t i = 0; i < nfds; i++)
+    if (fds[i].fd == fd)
+      return &fds[i];
+  return NULL;
+}
+
+/* POLLHUP and POLLERR are reported in .revents regardless of .events; an
+   fd that's been EOF'd or errored should drive the read path so the
+   buffer code sees the closure (read() returns 0 → ttyBufRead returns
+   M2K_ERR_PTY → step machine transitions to DONE). */
+#define READ_EV  (POLLIN  | POLLHUP | POLLERR)
+#define WRITE_EV (POLLOUT | POLLERR)
+
+/* Fill `fds` with the entries cmd mode wants to watch. timeout is always
+   -1 in cmd mode (no time-based events). */
+static void
+cmdPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
+{
+  size_t n = 0;
+  /* tty.rfd / tty.wfd may be the same fd (PTY) or different (stdin/stdout).
+     Track them separately so the caller can watch both events on one fd
+     or on two, identically. */
+  short rev = ttyBufWReady(ctx) ? POLLIN  : 0;
+  short wev = ttyBufWHasData(ctx) ? POLLOUT : 0;
+  if (ctx->tty.rfd == ctx->tty.wfd)
+  {
+    fds[n].fd = ctx->tty.rfd;
+    fds[n].events = rev | wev;
+    fds[n].revents = 0;
+    n++;
+  }
+  else
+  {
+    if (rev) { fds[n].fd = ctx->tty.rfd; fds[n].events = rev; fds[n].revents = 0; n++; }
+    if (wev) { fds[n].fd = ctx->tty.wfd; fds[n].events = wev; fds[n].revents = 0; n++; }
+  }
+  *nfds_inout = n;
+  *timeout_ms = -1;
+}
+
+/* Process one ready iteration in cmd mode. Returns:
+     CMDST_OK    — keep going (used as "no decision yet" sentinel here too)
+     CMDST_ATD   — dial requested
+     CMDST_ATO   — go online requested
+     CMDST_PTY_CLOSED — tty died, session over
+   Other Cmdstat values that the lexer might emit (e.g. CMDST_ERROR) are
+   handled inline by writing the modem response to the tty and continuing. */
+static Cmdstat
+cmdIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
+{
+  st_sock *sock = &ctx->sock;
+  struct m2k_cmdbuf *cmdBuf = &ctx->step_cmdbuf;
+  struct pollfd *p;
+
+  p = findPollfd(fds, nfds, ctx->tty.wfd);
+  if (p && (p->revents & WRITE_EV))
+  {
+    if (ttyBufWrite(ctx, sock) != M2K_OK)
+      return CMDST_PTY_CLOSED;
+    if (cmdBuf->eol)
+    {
+      Cmdstat stat = cmdLex(ctx, (char *) cmdBuf->buf, sock);
+      cmdBufReset(cmdBuf);
+      switch (stat)
+      {
+      case CMDST_ATD:
+      case CMDST_ATO:
+        return stat;
+      case CMDST_OK:
+      case CMDST_ERROR:
+        putTtyCmdstat(ctx, stat);
+        break;
+      default:;
+      }
+    }
+  }
+  p = findPollfd(fds, nfds, ctx->tty.rfd);
+  if (p && (p->revents & READ_EV))
+  {
+    if (ttyBufRead(ctx, sock) != M2K_OK)
+      return CMDST_PTY_CLOSED;
+    cmdReadLoop(ctx, cmdBuf);
+  }
+  return CMDST_OK;
+}
+
+/* Fill `fds` for online mode and compute the appropriate timeout
+   (driven by the +++ escape silence guard). Caller still polls; the
+   silence expiry is checked inside onlineIter after poll returns. */
+static void
+onlinePollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
+{
+  st_sock *sock = &ctx->sock;
+  size_t n = 0;
+
+  short sock_ev = 0;
+  if (ttyBufWReady(ctx))     sock_ev |= POLLIN;
+  if (sockBufWHasData(ctx))  sock_ev |= POLLOUT;
+  fds[n].fd = sock->fd;
+  fds[n].events = sock_ev;
+  fds[n].revents = 0;
+  n++;
+
+  short tty_rev = (sockBufWReady(ctx) && !ttyBufRHasData(ctx)) ? POLLIN : 0;
+  short tty_wev = ttyBufWHasData(ctx) ? POLLOUT : 0;
+  if (ctx->tty.rfd == ctx->tty.wfd)
+  {
+    fds[n].fd = ctx->tty.rfd;
+    fds[n].events = tty_rev | tty_wev;
+    fds[n].revents = 0;
+    n++;
+  }
+  else
+  {
+    if (tty_rev) { fds[n].fd = ctx->tty.rfd; fds[n].events = tty_rev; fds[n].revents = 0; n++; }
+    if (tty_wev) { fds[n].fd = ctx->tty.wfd; fds[n].events = tty_wev; fds[n].revents = 0; n++; }
+  }
+  *nfds_inout = n;
+
+  /* Compute timeout for the +++ silence guard. */
+  if (escSeq.checkSilence)
+  {
+    struct timeval now, remaining;
+    gettimeofday(&now, NULL);
+    if (timevalCmp(&now, &escSeq.expireT) >= 0)
+    {
+      *timeout_ms = 0;
+    }
+    else
+    {
+      remaining = escSeq.expireT;
+      timevalSub(&remaining, &now);
+      long ms = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
+      if (ms <= 0) ms = 1;
+      *timeout_ms = (int) ms;
+    }
+  }
+  else
+  {
+    *timeout_ms = -1;
+  }
+}
+
+/* Process one ready iteration in online mode. Returns:
+     0  — keep going
+     1  — +++ escape silence elapsed, return to cmd mode
+    -1  — sock closed or PTY died; tear down to cmd mode */
+static int
+onlineIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
+{
+  st_sock *sock = &ctx->sock;
+  struct pollfd *p;
+
+  /* +++ silence check first: if the silence guard has elapsed, signal
+     escape regardless of any other events that came in alongside it. */
+  if (escSeq.checkSilence)
+  {
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    if (timevalCmp(&now, &escSeq.expireT) >= 0)
+    {
+      escSeq.checkSilence = 0;
+      return 1;
+    }
+  }
+
+  p = findPollfd(fds, nfds, sock->fd);
+  if (p && (p->revents & WRITE_EV))
+  {
+    sockBufWrite(ctx, sock);
+    if (sock->alive && ttyBufRHasData(ctx) && sockBufWReady(ctx))
+      ttyReadLoop(ctx);
+  }
+  p = findPollfd(fds, nfds, ctx->tty.wfd);
+  if (p && (p->revents & WRITE_EV))
+  {
+    if (ttyBufWrite(ctx, sock) != M2K_OK)
+      return -1;
+  }
+  p = findPollfd(fds, nfds, sock->fd);
+  if (p && (p->revents & READ_EV))
+  {
+    sockBufRead(ctx, sock);
+    sockReadLoop(ctx, sock);
+  }
+  p = findPollfd(fds, nfds, ctx->tty.rfd);
+  if (p && (p->revents & READ_EV))
+  {
+    if (ttyBufRead(ctx, sock) != M2K_OK)
+      return -1;
+    ttyReadLoop(ctx);
+  }
+  if (!sock->alive)
+    return -1;
+  return 0;
+}
+
+m2k_err_t
+m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
+{
+  if (*nfds_inout < M2K_MAX_POLLFDS)
+    return M2K_ERR_BUG;
+
+  if (ctx->step_state == M2K_STATE_INIT)
+    stepEnterCmd(ctx);
+
+  switch (ctx->step_state)
+  {
+  case M2K_STATE_CMD:
+    cmdPollfds(ctx, fds, nfds_inout, timeout_ms);
+    return M2K_OK;
+  case M2K_STATE_ONLINE:
+    onlinePollfds(ctx, fds, nfds_inout, timeout_ms);
+    return M2K_OK;
+  case M2K_STATE_DONE:
+  default:
+    *nfds_inout = 0;
+    *timeout_ms = 0;
+    return M2K_OK;
+  }
+}
+
+m2k_err_t
+m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
+{
+  if (ctx->step_state == M2K_STATE_INIT)
+    stepEnterCmd(ctx);
+
+  switch (ctx->step_state)
+  {
+  case M2K_STATE_CMD:
+  {
+    Cmdstat s = cmdIter(ctx, fds, nfds);
+    switch (s)
+    {
+    case CMDST_ATD:
+      if (ctx->sock.alive)
+      {
+        putTtyCmdstat(ctx, CMDST_ERROR);
+        return M2K_OK;
+      }
+      /* Synchronous dial. The connect() will briefly block the caller's
+         event loop — Phase 1 limitation; Phase 2 turns this async. */
+      telOptReset(ctx);
+      if (m2k_sockDial(ctx, &ctx->sock) != 0)
+      {
+        putTtyCmdstat(ctx, CMDST_NOCARRIER);
+        return M2K_OK;
+      }
+      stepEnterOnline(ctx);
+      return M2K_OK;
+    case CMDST_ATO:
+      if (!ctx->sock.alive)
+      {
+        putTtyCmdstat(ctx, CMDST_NOCARRIER);
+        return M2K_OK;
+      }
+      stepEnterOnline(ctx);
+      return M2K_OK;
+    case CMDST_PTY_CLOSED:
+      ctx->step_state = M2K_STATE_DONE;
+      return M2K_OK;
+    default:
+      return M2K_OK;
+    }
+  }
+  case M2K_STATE_ONLINE:
+  {
+    int r = onlineIter(ctx, fds, nfds);
+    if (r == 1)
+    {
+      /* +++ escape: stay connected, drop back to cmd mode with OK. */
+      putTtyCmdstat(ctx, CMDST_OK);
+      stepEnterCmd(ctx);
+    }
+    else if (r == -1)
+    {
+      /* Connection or PTY ended. Tear down the socket and report. */
+      sockShutdown(&ctx->sock);
+      putTtyCmdstat(ctx, CMDST_NOCARRIER);
+      stepEnterCmd(ctx);
+    }
+    return M2K_OK;
+  }
+  case M2K_STATE_DONE:
+  default:
+    return M2K_OK;
+  }
+}
+
+int
+m2k_run_done(const m2k_t *ctx)
+{
+  return ctx->step_state == M2K_STATE_DONE;
+}
+
 m2k_err_t
 m2k_run(m2k_t *ctx)
 {
-  struct cmdBuf cmdBuf;
-
-CMDMODE:
-  switch (cmdMode(ctx, &cmdBuf))
+  while (!m2k_run_done(ctx))
   {
-  case CMDST_ATD:
-    if (ctx->sock.alive) { putTtyCmdstat(ctx, CMDST_ERROR); goto CMDMODE; }
-    goto DIAL;
-  case CMDST_ATO:
-    if (!ctx->sock.alive) { putTtyCmdstat(ctx, CMDST_NOCARRIER); goto CMDMODE; }
-    goto ONLINE;
-  case CMDST_PTY_CLOSED:
-    return M2K_OK;
-  default:
-    return M2K_ERR_BUG;
+    struct pollfd fds[M2K_MAX_POLLFDS];
+    size_t nfds = M2K_MAX_POLLFDS;
+    int timeout_ms;
+    m2k_err_t err = m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms);
+    if (err != M2K_OK)
+      return err;
+    if (nfds > 0)
+    {
+      int pr = poll(fds, nfds, timeout_ms);
+      if (pr < 0)
+      {
+        if (errno != EINTR)
+          m2k_log(ctx, "poll(): %s\n", strerror(errno));
+        continue;
+      }
+    }
+    err = m2k_step(ctx, fds, nfds);
+    if (err != M2K_OK)
+      return err;
   }
-
-DIAL:
-  telOptReset(ctx);
-  if (m2k_sockDial(ctx, &ctx->sock) != 0)
-  {
-    putTtyCmdstat(ctx, CMDST_NOCARRIER);
-    goto CMDMODE;
-  }
-  goto ONLINE;
-
-ONLINE:
-  switch (m2k_online(ctx))
-  {
-  case M2K_OK:
-  case M2K_ERR_CANCELED:
-    goto CMDMODE;
-  default:
-    return M2K_ERR_BUG;
-  }
+  return M2K_OK;
 }

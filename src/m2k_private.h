@@ -64,6 +64,23 @@
 
 typedef unsigned char uchar;
 
+/* Command-mode input line buffer. Defined here (rather than as a
+   m2k_api.c private struct) so the m2k_t context can embed one for
+   the steppable m2k_step() API. */
+struct m2k_cmdbuf {
+    uchar buf[CMDBUF_MAX + 1];
+    uchar *ptr;
+    int eol;
+};
+
+/* Top-level state of the steppable event loop. */
+typedef enum {
+    M2K_STATE_INIT,    /* ctx has been set up but step machine not started yet */
+    M2K_STATE_CMD,     /* command mode — reading AT commands from the TTY */
+    M2K_STATE_ONLINE,  /* online mode — relaying between TTY and socket */
+    M2K_STATE_DONE     /* PTY closed; m2k_run_done() returns true */
+} m2k_step_state;
+
 #if defined(__GLIBC__) || defined(SVR4)
 #define HAVE_GRANTPT
 #endif

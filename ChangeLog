@@ -1,24 +1,17 @@
 (in-progress):
-  * Refactored into a proper library: core logic moved into libmodemu2k;
-    public API exposed via modemu2k.h at the project root
-  * Removed gettext/NLS support and translations
-  * Removed valgrind test setup
-  * Expanded test suite: timeval, sockbuf, atcmd unit tests; IPv4/IPv6
-    connection tests (IPv6 skipped with exit 77 if no interface present)
-  * Fix connecting via hostname when first resolved address fails (e.g.
-    localhost resolving to ::1 before 127.0.0.1) (issue #44)
-  * Add listen mode (-l/--listen <port>) that accepts a single incoming
-    TCP connection and uses it as the TTY; intended for use as a plugin
-    with dosemu2 (issue #32)
-  * Print a short usage hint and exit when invoked with no arguments;
-    standalone stdin/stdout command mode is still reachable via -e (or
-    any other flag)
+  * Refactor core into libmodemu2k; public API in modemu2k.h at project root
+  * Remove gettext/NLS support and translations
+  * Fix connecting via hostname when the first resolved address fails, e.g.
+    localhost resolving to ::1 before 127.0.0.1 (issue #44)
+  * Add TCP listen mode (-l/--listen <port>) intended for use as a virtual
+    modem backend for emulators such as dosemu2 (issue #32)
+  * Print --help output and exit when invoked with no arguments
+  * Reject conflicting -c/-d/-l/-s combinations at parse time instead of
+    silently honoring the last one
   * Wrap modemu2k.h declarations in extern "C" guards for C++ consumers
-  * Revert COPYING / README license claim to GPL-2-or-later
-  * API: rename m2k_setup_commx() to m2k_setup_comm_program() (breaking)
-  * API: split m2k_setup_listen() into bind (m2k_setup_listen) and accept
-    (m2k_listen_accept); the bind step is now non-blocking so callers can
-    integrate the listener fd with their own event loop (breaking)
+  * Sync license claim to GPL-2-or-later (matches the source headers)
+  * Add steppable event-loop API (m2k_get_pollfds, m2k_step, m2k_run_done)
+    for embedding modemu2k in a host poll/epoll loop
 
 2022-08-18
 - modemu2k (v0.1.0)
