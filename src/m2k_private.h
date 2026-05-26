@@ -65,6 +65,22 @@
 
 typedef unsigned char uchar;
 
+/* +++ escape detection — per-ctx so two coexisting m2k_t instances
+   don't share/corrupt each other's online-mode escape timing. */
+typedef enum { ESH_NORM, ESH_P1, ESH_P2, ESH_P3 } m2k_esh_state;
+struct m2k_escseq {
+    m2k_esh_state  state;
+    struct timeval plus1T;
+    int            checkSilence;
+    struct timeval expireT;
+};
+
+/* line buffer for non-SGA telnet mode — also per-ctx. */
+struct m2k_linebuf {
+    uchar  buf[LINEBUF_SIZE];
+    uchar *ptr;
+};
+
 /* Command-mode input line buffer. Defined here (rather than as a
    m2k_api.c private struct) so the m2k_t context can embed one for
    the steppable m2k_step() API. */

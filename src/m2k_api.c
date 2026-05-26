@@ -92,21 +92,13 @@ sockReadLoop(m2k_t *ctx, st_sock *sock)
 }
 
 
-/* escape-sequence (+++) detection */
-
-static struct
-{
-  enum
-  { ESH_NORM, ESH_P1, ESH_P2, ESH_P3 } state;
-  struct timeval plus1T;
-  int checkSilence;
-  struct timeval expireT;
-} escSeq;
+/* escape-sequence (+++) detection — state lives in ctx->escSeq so two
+   coexisting m2k_t instances don't share/corrupt timing. */
 
 void
-escSeqReset(void)
+escSeqReset(m2k_t *ctx)
 {
-  escSeq.state = ESH_NORM;
+  ctx->escSeq.state = ESH_NORM;
 }
 
 static int
@@ -122,57 +114,52 @@ s12timePassed(m2k_t *ctx, const struct timeval *t1p, const struct timeval *t2p)
 static void
 escSeqHandle(m2k_t *ctx, int c)
 {
-  switch (escSeq.state)
+  struct m2k_escseq *es = &ctx->escSeq;
+  switch (es->state)
   {
   case ESH_P1:
-    if (c == CHAR_ESC(ctx) && !s12timePassed(ctx, &ctx->ttyBufR.newT, &escSeq.plus1T))
-      escSeq.state = ESH_P2;
+    if (c == CHAR_ESC(ctx) && !s12timePassed(ctx, &ctx->ttyBufR.newT, &es->plus1T))
+      es->state = ESH_P2;
     else
-      escSeq.state = ESH_NORM;
+      es->state = ESH_NORM;
     break;
   case ESH_P2:
-    if (c == CHAR_ESC(ctx) && !s12timePassed(ctx, &ctx->ttyBufR.newT, &escSeq.plus1T))
+    if (c == CHAR_ESC(ctx) && !s12timePassed(ctx, &ctx->ttyBufR.newT, &es->plus1T))
     {
-      escSeq.checkSilence = 1;
-      timevalSet10ms(&escSeq.expireT, ctx->atcmd.s[12] * 2);
-      timevalAdd(&escSeq.expireT, &ctx->ttyBufR.newT);
-      escSeq.state = ESH_P3;
+      es->checkSilence = 1;
+      timevalSet10ms(&es->expireT, ctx->atcmd.s[12] * 2);
+      timevalAdd(&es->expireT, &ctx->ttyBufR.newT);
+      es->state = ESH_P3;
     }
     else
-      escSeq.state = ESH_NORM;
+      es->state = ESH_NORM;
     break;
   case ESH_P3:
-    escSeq.checkSilence = 0;
-    escSeq.state = ESH_NORM;
+    es->checkSilence = 0;
+    es->state = ESH_NORM;
     /* fall through — same as ESH_NORM first-char logic */
     /* FALLTHROUGH */
   case ESH_NORM:
     if (c == CHAR_ESC(ctx) && s12timePassed(ctx, &ctx->ttyBufR.newT, &ctx->ttyBufR.prevT))
     {
-      escSeq.plus1T = ctx->ttyBufR.newT;
-      escSeq.state = ESH_P1;
+      es->plus1T = ctx->ttyBufR.newT;
+      es->state = ESH_P1;
     }
   }
 }
 
 
-/* line buffer (for non-SGA mode) */
+/* line buffer (for non-SGA mode) — state lives in ctx->lineBuf. */
 
-static struct
-{
-  uchar buf[LINEBUF_SIZE];
-  uchar *ptr;
-} lineBuf;
-
-#define lineBufReset() { lineBuf.ptr = lineBuf.buf; }
-#define putLine1(c) \
-{ \
-    if (lineBuf.ptr < lineBuf.buf + LINEBUF_SIZE) *lineBuf.ptr++ = (c); \
-}
-#define lineBufBS() \
-{ \
-    if (lineBuf.ptr > lineBuf.buf) lineBuf.ptr--; \
-}
+#define lineBufReset(ctx) ((ctx)->lineBuf.ptr = (ctx)->lineBuf.buf)
+#define putLine1(ctx, c) do {                                                \
+  struct m2k_linebuf *_lb = &(ctx)->lineBuf;                                 \
+  if (_lb->ptr < _lb->buf + LINEBUF_SIZE) *_lb->ptr++ = (c);                 \
+} while (0)
+#define lineBufBS(ctx) do {                                                  \
+  struct m2k_linebuf *_lb = &(ctx)->lineBuf;                                 \
+  if (_lb->ptr > _lb->buf) _lb->ptr--;                                       \
+} while (0)
 
 
 /* TTY input processing loop */
@@ -207,10 +194,10 @@ ttyReadLoop(m2k_t *ctx)
       if (c == CHAR_CR(ctx))
       {
         putTty1(ctx, CHAR_LF(ctx));
-        putSockN(ctx, lineBuf.buf, lineBuf.ptr - lineBuf.buf);
+        putSockN(ctx, ctx->lineBuf.buf, ctx->lineBuf.ptr - ctx->lineBuf.buf);
         putSock1(ctx, '\r');
         putSock1(ctx, '\n');
-        lineBufReset();
+        lineBufReset(ctx);
       }
       else if (c == CHAR_LF(ctx))
       {
@@ -218,13 +205,13 @@ ttyReadLoop(m2k_t *ctx)
       }
       else if (c == CHAR_BS(ctx))
       {
-        lineBufBS();
+        lineBufBS(ctx);
       }
       else
       {
         if (c == IAC)
-          putLine1(IAC);
-        putLine1(c);
+          putLine1(ctx, IAC);
+        putLine1(ctx, c);
       }
       escSeqHandle(ctx, c);
     }
@@ -242,8 +229,8 @@ onlineMode(m2k_t *ctx, st_sock *sock)
   sockBufRReset(ctx);
   sockBufWReset(ctx);
   ttyBufRReset(ctx);
-  lineBufReset();
-  escSeqReset();
+  lineBufReset(ctx);
+  escSeqReset(ctx);
 
   if (!ctx->telOpt.sentReqs && !ctx->atcmd.pr)
     telOptSendReqs(ctx);
@@ -265,16 +252,16 @@ onlineMode(m2k_t *ctx, st_sock *sock)
     if (ttyBufWHasData(ctx))
       FD_SET(ctx->tty.wfd, &wfds);
 
-    if (escSeq.checkSilence)
+    if (ctx->escSeq.checkSilence)
     {
       struct timeval tt;
       gettimeofday(&tt, NULL);
-      if (timevalCmp(&tt, &escSeq.expireT) >= 0)
+      if (timevalCmp(&tt, &ctx->escSeq.expireT) >= 0)
       {
-        escSeq.checkSilence = 0;
+        ctx->escSeq.checkSilence = 0;
         return 1;
       }
-      t = escSeq.expireT;
+      t = ctx->escSeq.expireT;
       timevalSub(&t, &tt);
       tp = &t;
     }
@@ -818,8 +805,8 @@ stepEnterOnline(m2k_t *ctx)
   sockBufRReset(ctx);
   sockBufWReset(ctx);
   ttyBufRReset(ctx);
-  lineBufReset();
-  escSeqReset();
+  lineBufReset(ctx);
+  escSeqReset(ctx);
   if (!ctx->telOpt.sentReqs && !ctx->atcmd.pr)
     telOptSendReqs(ctx);
   putTtyCmdstat(ctx, CMDST_CONNECT);
@@ -1055,17 +1042,17 @@ onlinePollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_m
   *nfds_inout = n;
 
   /* Compute timeout for the +++ silence guard. */
-  if (escSeq.checkSilence)
+  if (ctx->escSeq.checkSilence)
   {
     struct timeval now, remaining;
     gettimeofday(&now, NULL);
-    if (timevalCmp(&now, &escSeq.expireT) >= 0)
+    if (timevalCmp(&now, &ctx->escSeq.expireT) >= 0)
     {
       *timeout_ms = 0;
     }
     else
     {
-      remaining = escSeq.expireT;
+      remaining = ctx->escSeq.expireT;
       timevalSub(&remaining, &now);
       long ms = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
       if (ms <= 0) ms = 1;
@@ -1089,17 +1076,17 @@ onlineIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
   if (ctx->escape_req)
   {
     ctx->escape_req = false;
-    escSeq.checkSilence = 0;
+    ctx->escSeq.checkSilence = 0;
     return 1;
   }
 
-  if (escSeq.checkSilence)
+  if (ctx->escSeq.checkSilence)
   {
     struct timeval now;
     gettimeofday(&now, NULL);
-    if (timevalCmp(&now, &escSeq.expireT) >= 0)
+    if (timevalCmp(&now, &ctx->escSeq.expireT) >= 0)
     {
-      escSeq.checkSilence = 0;
+      ctx->escSeq.checkSilence = 0;
       return 1;
     }
   }

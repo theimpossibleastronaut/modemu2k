@@ -35,4 +35,6 @@ struct m2k_s {
                                        dial (M2K_STATE_DIAL); freed when the
                                        dial resolves or is aborted. */
     struct timeval     dial_deadline;
+    struct m2k_escseq  escSeq;      /* +++ escape detector (online mode). */
+    struct m2k_linebuf lineBuf;     /* Line buffer for non-SGA telnet mode. */
 };
