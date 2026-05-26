@@ -26,6 +26,35 @@ m2k_log(m2k_t *ctx, const char *fmt, ...)
   va_end(ap);
 }
 
+/* m2k_err_set: record a detailed message for the most recent error.
+   Writes to ctx->err_buf (if installed via m2k_set_error_buffer) and
+   ALSO emits through the log callback so existing log consumers still
+   see it. Used at error-return sites instead of plain m2k_log. */
+void
+m2k_err_set(m2k_t *ctx, const char *fmt, ...)
+{
+  char buf[512];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+
+  if (ctx && ctx->err_buf && ctx->err_buf_size)
+  {
+    size_t n = ctx->err_buf_size - 1;
+    strncpy(ctx->err_buf, buf, n);
+    ctx->err_buf[n] = '\0';
+    /* Strip a trailing newline — error buffer is single-line; logs keep it. */
+    size_t len = strlen(ctx->err_buf);
+    if (len && ctx->err_buf[len - 1] == '\n')
+      ctx->err_buf[len - 1] = '\0';
+  }
+  if (ctx && ctx->log_fn)
+    ctx->log_fn(buf, ctx->log_userdata);
+  else
+    fputs(buf, stderr);
+}
+
 void
 verboseOut(m2k_t *ctx, int mask, const char *format, ...)
 {

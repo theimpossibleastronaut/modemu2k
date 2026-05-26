@@ -67,6 +67,7 @@ typedef enum {
   M2K_ERR_CANCELED, /**< Operation canceled (e.g., +++ escape sequence). */
   M2K_ERR_BUG,      /**< Internal assertion failure — should not happen. */
   M2K_ERR_FULL,     /**< Buffer full; retry when the consumer has drained. */
+  M2K_ERR_AT,       /**< AT command rejected by the lexer (malformed input). */
 } m2k_err_t;
 
 /**
@@ -97,11 +98,46 @@ void        m2k_free(m2k_t *ctx);
  */
 void        m2k_set_log_fn(m2k_t *ctx, m2k_log_fn fn, void *userdata);
 
+/** Recommended minimum size for the m2k_set_error_buffer() buffer. */
+#define M2K_ERROR_BUFFER_SIZE 256
+
+/**
+ * @brief Install a buffer that receives a detailed message for the most
+ *        recent error.
+ *
+ * When @p buf is non-NULL, internal error paths write a human-readable,
+ * contextual message into @p buf (NUL-terminated, truncated to fit) in
+ * addition to any logging via m2k_set_log_fn(). The caller can then
+ * present the message after a function returns a non-OK m2k_err_t —
+ * curl-style CURLOPT_ERRORBUFFER semantics.
+ *
+ * The buffer is only updated when an error actually occurs; successful
+ * calls leave it untouched, so callers should check the function's
+ * return code first.
+ *
+ * @param ctx  Modem context.
+ * @param buf  Caller-owned buffer that outlives the context, or NULL
+ *             to detach. Recommended size: @ref M2K_ERROR_BUFFER_SIZE.
+ * @param size Capacity of @p buf in bytes (including the trailing NUL).
+ *             Ignored when @p buf is NULL.
+ */
+void        m2k_set_error_buffer(m2k_t *ctx, char *buf, size_t size);
+
 /**
  * @brief Feed a Hayes AT command string to the modem.
+ *
+ * Intended for one-shot configuration commands (S-register sets, mode
+ * toggles, etc.). Action commands like ATD/ATO are recognised by the
+ * lexer but do not drive a connection from this entry point; use
+ * m2k_dial() / m2k_online() for those.
+ *
  * @param ctx Modem context.
  * @param cmd NUL-terminated AT command (e.g. @c "ATZ" or @c "ATS0=1").
- * @return M2K_OK on success.
+ *            A string with no @c AT prefix is silently ignored.
+ * @return M2K_OK on successful execution or no-op (missing @c AT prefix),
+ *         M2K_ERR_AT if the lexer rejected the command as malformed,
+ *         M2K_ERR_BUG if the lexer returned a status this entry point
+ *         can't act on (e.g. ATD/ATO — call m2k_dial/m2k_online instead).
  *
  * @code
  * m2k_atcmd(ctx, "ATZ");        // reset to defaults

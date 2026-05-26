@@ -14,6 +14,8 @@
     plus embed-mode I/O (m2k_setup_app_io, m2k_write_from_app,
     m2k_read_to_app) so a host program can run modemu2k inside its own
     poll/epoll loop with the host supplying the TTY-side bytes
+  * Add m2k_set_error_buffer() for curl-style per-context detailed error
+    messages, plus M2K_ERR_AT and M2K_ERR_FULL error codes
 
 2022-08-18
 - modemu2k (v0.1.0)

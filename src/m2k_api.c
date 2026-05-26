@@ -400,11 +400,28 @@ m2k_set_log_fn(m2k_t *ctx, m2k_log_fn fn, void *userdata)
   ctx->log_userdata = userdata;
 }
 
+void
+m2k_set_error_buffer(m2k_t *ctx, char *buf, size_t size)
+{
+  ctx->err_buf = buf;
+  ctx->err_buf_size = buf ? size : 0;
+  if (buf && size)
+    buf[0] = '\0';
+}
+
 m2k_err_t
 m2k_atcmd(m2k_t *ctx, const char *cmd)
 {
   Cmdstat r = cmdLex(ctx, cmd, &ctx->sock);
-  return (r == CMDST_OK || r == CMDST_NOAT) ? M2K_OK : M2K_ERR_BUG;
+  if (r == CMDST_OK || r == CMDST_NOAT)
+    return M2K_OK;
+  if (r == CMDST_ERROR)
+  {
+    m2k_err_set(ctx, "AT command rejected: \"%s\"\n", cmd);
+    return M2K_ERR_AT;
+  }
+  m2k_err_set(ctx, "m2k_atcmd: unexpected lexer status %d for \"%s\"\n", r, cmd);
+  return M2K_ERR_BUG;
 }
 
 m2k_err_t
@@ -455,14 +472,15 @@ const char *
 m2k_strerror(m2k_err_t err)
 {
   static const char *strs[] = {
-    "Success",
-    "Out of memory",
-    "PTY error",
-    "Socket error",
-    "Connection timed out",
-    "Operation canceled",
-    "Buffer full",
-    "Internal bug",
+    "Success",            /* M2K_OK */
+    "Out of memory",      /* M2K_ERR_NOMEM */
+    "PTY error",          /* M2K_ERR_PTY */
+    "Socket error",       /* M2K_ERR_SOCKET */
+    "Connection timed out",  /* M2K_ERR_TIMEOUT */
+    "Operation canceled", /* M2K_ERR_CANCELED */
+    "Internal bug",       /* M2K_ERR_BUG */
+    "Buffer full",        /* M2K_ERR_FULL */
+    "AT command rejected",/* M2K_ERR_AT */
   };
   if ((unsigned) err < sizeof(strs) / sizeof(strs[0]))
     return strs[err];
@@ -684,7 +702,7 @@ m2k_setup_dev(m2k_t *ctx, const char *dev)
   int fd = open(dev, O_RDWR);
   if (fd < 0)
   {
-    m2k_log(ctx, "Pty open error.\n");
+    m2k_err_set(ctx, "open(%s): %s\n", dev, strerror(errno));
     return M2K_ERR_PTY;
   }
   ctx->tty.rfd = ctx->tty.wfd = fd;
@@ -706,7 +724,7 @@ m2k_listen_accept(m2k_t *ctx)
 {
   if (ctx->listen_fd == -1)
   {
-    m2k_log(ctx, "m2k_listen_accept: no listener (call m2k_setup_listen first)\n");
+    m2k_err_set(ctx, "m2k_listen_accept: no listener (call m2k_setup_listen first)\n");
     return M2K_ERR_SOCKET;
   }
   int client_fd = m2k_sockAccept(ctx, ctx->listen_fd);
@@ -735,14 +753,21 @@ m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len, size_t *consumed)
 {
   *consumed = 0;
   if (!ctx->app_io)
+  {
+    m2k_err_set(ctx, "m2k_write_from_app: not in app-I/O mode (call m2k_setup_app_io first)\n");
     return M2K_ERR_PTY;
+  }
   if (len == 0)
     return M2K_OK;
 
   size_t residue = ctx->ttyBufR.end - ctx->ttyBufR.ptr;
   size_t cap     = sizeof(ctx->ttyBufR.buf);
   if (residue >= cap)
+  {
+    m2k_err_set(ctx, "m2k_write_from_app: TTY read buffer full (%zu bytes pending)\n",
+                residue);
     return M2K_ERR_FULL;
+  }
   size_t room = cap - residue;
   size_t take = len < room ? len : room;
 

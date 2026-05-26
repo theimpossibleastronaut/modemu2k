@@ -348,6 +348,7 @@ void *chk_alloc(m2k_t *ctx, void *ptr);
 // logging / verbose
 
 void m2k_log(m2k_t *ctx, const char *fmt, ...);
+void m2k_err_set(m2k_t *ctx, const char *fmt, ...);
 
 #define VERB_MISC 1
 #define VERB_TELOPT 2

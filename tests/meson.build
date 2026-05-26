@@ -3,6 +3,7 @@
 test_cases = [
   'app_io',
   'connect',
+  'error_buffer',
   'timeval',
   'sockbuf',
   'atcmd',

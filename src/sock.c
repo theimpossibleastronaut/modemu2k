@@ -78,7 +78,7 @@ m2k_sockListen(m2k_t *ctx, const char *port)
   int rc = getaddrinfo(NULL, port, &hints, &res);
   if (rc != 0)
   {
-    m2k_log(ctx, "getaddrinfo: %s\n", gai_strerror(rc));
+    m2k_err_set(ctx, "getaddrinfo(port=%s): %s\n", port, gai_strerror(rc));
     return -1;
   }
 
@@ -114,6 +114,8 @@ m2k_sockListen(m2k_t *ctx, const char *port)
       if (bind(server_fd, ai->ai_addr, ai->ai_addrlen) != 0 ||
           listen(server_fd, 1) != 0)
       {
+        /* Don't write to err_buf yet — we may still find another addr;
+           only commit a message if we exit the loop without success. */
         m2k_log(ctx, "bind/listen: %s\n", strerror(errno));
         close(server_fd);
         server_fd = -1;
@@ -127,7 +129,8 @@ m2k_sockListen(m2k_t *ctx, const char *port)
 
   if (server_fd == -1)
   {
-    m2k_log(ctx, "Failed to bind/listen on port %s\n", port);
+    m2k_err_set(ctx, "Failed to bind/listen on port %s: %s\n",
+                port, strerror(errno));
     return -1;
   }
 
@@ -145,7 +148,7 @@ m2k_sockAccept(m2k_t *ctx, int server_fd)
 
   if (client_fd == -1)
   {
-    m2k_log(ctx, "accept: %s\n", strerror(errno));
+    m2k_err_set(ctx, "accept: %s\n", strerror(errno));
     return -1;
   }
   return client_fd;
@@ -175,7 +178,8 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
   int s = getaddrinfo(ctx->atcmd.d.addr.str, out_port, &hints, &result);
   if (s != 0)
   {
-    m2k_log(ctx, "Host address lookup failed: %s\n", gai_strerror(s));
+    m2k_err_set(ctx, "Host address lookup failed for %s: %s\n",
+                ctx->atcmd.d.addr.str, gai_strerror(s));
     return 1;
   }
 
@@ -306,5 +310,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
   /* No address succeeded */
   if (result)
     freeaddrinfo(result);
+  m2k_err_set(ctx, "Could not connect to %s:%s (no address worked)\n",
+              ctx->atcmd.d.addr.str, out_port);
   return 1;
 }
