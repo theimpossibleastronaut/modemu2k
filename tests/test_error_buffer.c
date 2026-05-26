@@ -23,6 +23,26 @@ test_atcmd_rejected(void)
 }
 
 static void
+test_atcmd_action_verbs_route_to_at_error(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  char errbuf[M2K_ERROR_BUFFER_SIZE];
+  m2k_set_error_buffer(ctx, errbuf, sizeof(errbuf));
+
+  /* ATD and ATO are lexable but not actionable from m2k_atcmd —
+     should return M2K_ERR_AT (not M2K_ERR_BUG) with a helpful nudge
+     toward the right entry point. */
+  assert(m2k_atcmd(ctx, "ATD\"bbs 23\"") == M2K_ERR_AT);
+  assert(contains(errbuf, "m2k_dial"));
+
+  assert(m2k_atcmd(ctx, "ATO") == M2K_ERR_AT);
+  assert(contains(errbuf, "m2k_online"));
+
+  m2k_free(ctx);
+}
+
+static void
 test_write_from_app_wrong_mode(void)
 {
   m2k_t *ctx = m2k_new();
@@ -109,6 +129,7 @@ int
 main(void)
 {
   test_atcmd_rejected();
+  test_atcmd_action_verbs_route_to_at_error();
   test_write_from_app_wrong_mode();
   test_listen_accept_without_listener();
   test_dial_bad_host();

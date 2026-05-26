@@ -120,6 +120,8 @@ void        m2k_set_log_fn(m2k_t *ctx, m2k_log_fn fn, void *userdata);
  *             to detach. Recommended size: @ref M2K_ERROR_BUFFER_SIZE.
  * @param size Capacity of @p buf in bytes (including the trailing NUL).
  *             Ignored when @p buf is NULL.
+ *
+ * @snippet examples/m2k_set_error_buffer.c set_error_buffer
  */
 void        m2k_set_error_buffer(m2k_t *ctx, char *buf, size_t size);
 
@@ -134,10 +136,11 @@ void        m2k_set_error_buffer(m2k_t *ctx, char *buf, size_t size);
  * @param ctx Modem context.
  * @param cmd NUL-terminated AT command (e.g. @c "ATZ" or @c "ATS0=1").
  *            A string with no @c AT prefix is silently ignored.
- * @return M2K_OK on successful execution or no-op (missing @c AT prefix),
- *         M2K_ERR_AT if the lexer rejected the command as malformed,
- *         M2K_ERR_BUG if the lexer returned a status this entry point
- *         can't act on (e.g. ATD/ATO — call m2k_dial/m2k_online instead).
+ * @return M2K_OK on successful execution or no-op (missing @c AT prefix);
+ *         M2K_ERR_AT if the lexer rejected the command as malformed, or
+ *         the command was an action verb that should go through a
+ *         dedicated entry point (ATD → m2k_dial, ATO → m2k_online);
+ *         M2K_ERR_BUG only for unexpected lexer states.
  *
  * @code
  * m2k_atcmd(ctx, "ATZ");        // reset to defaults
