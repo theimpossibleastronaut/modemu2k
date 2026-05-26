@@ -44,6 +44,7 @@ test_setup_listen(void)
   m2k_t *ctx = m2k_new();
   assert(ctx != NULL);
   assert(m2k_setup_listen(ctx, TEST_PORT) == M2K_OK);
+  assert(m2k_listen_accept(ctx) == M2K_OK);
   m2k_free(ctx);
 }
 

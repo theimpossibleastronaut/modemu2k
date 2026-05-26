@@ -9,7 +9,7 @@
 # projects pulling us in as a subproject don't need them.
 example_cases = [
   'm2k_set_log_fn',
-  'm2k_setup_commx',
+  'm2k_setup_comm_program',
   'm2k_setup_listen',
   ]
 example_sources = files()

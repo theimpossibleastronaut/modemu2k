@@ -13,4 +13,7 @@ struct m2k_s {
     struct st_telOpt   telOpt;
     m2k_log_fn         log_fn;
     void              *log_userdata;
+    int                listen_fd;   /* Bound listener from m2k_setup_listen,
+                                       consumed by m2k_listen_accept; -1 when
+                                       no listener is open. */
 };

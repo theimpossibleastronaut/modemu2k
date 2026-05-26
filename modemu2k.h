@@ -14,9 +14,10 @@
  *   if (!ctx) return EXIT_FAILURE;
  *
  *   // Choose one setup mode:
- *   m2k_setup_stdin(ctx);                        // read/write stdin/stdout
- *   // m2k_setup_commx(ctx, "minicom -p %s");    // fork a comm program on a PTY
- *   // m2k_setup_listen(ctx, "5000");            // accept an incoming TCP connection
+ *   m2k_setup_stdin(ctx);                              // read/write stdin/stdout
+ *   // m2k_setup_comm_program(ctx, "minicom -p %s");   // fork a comm program on a PTY
+ *   // m2k_setup_listen(ctx, "5000");                  // bind a TCP port, then
+ *   // m2k_listen_accept(ctx);                         //   wait for a client to connect
  *
  *   // Optional: apply AT commands before entering the command loop
  *   m2k_atcmd(ctx, "ATS7=30");
@@ -167,7 +168,7 @@ m2k_err_t   m2k_setup_stdin(m2k_t *ctx);
  *
  * The returned string is heap-allocated; the caller must free() it.
  * Use this when you need the slave path (e.g. to print it with --show).
- * To fork a comm program on the slave, prefer m2k_setup_commx().
+ * To fork a comm program on the slave, prefer m2k_setup_comm_program().
  *
  * @param ctx       Modem context.
  * @param slave_out Receives a newly allocated NUL-terminated slave path.
@@ -185,9 +186,9 @@ m2k_err_t   m2k_setup_pty(m2k_t *ctx, char **slave_out);
  * @param cmd Shell command; @c %s is replaced by the slave device path.
  * @return M2K_OK on success, M2K_ERR_PTY or M2K_ERR_NOMEM on failure.
  *
- * @snippet examples/m2k_setup_commx.c setup_commx
+ * @snippet examples/m2k_setup_comm_program.c setup_comm_program
  */
-m2k_err_t   m2k_setup_commx(m2k_t *ctx, const char *cmd);
+m2k_err_t   m2k_setup_comm_program(m2k_t *ctx, const char *cmd);
 
 /**
  * @brief Open an existing PTY device as the TTY.
@@ -199,12 +200,15 @@ m2k_err_t   m2k_setup_commx(m2k_t *ctx, const char *cmd);
 m2k_err_t   m2k_setup_dev(m2k_t *ctx, const char *dev);
 
 /**
- * @brief Listen for and accept a single incoming TCP connection on @p port.
+ * @brief Bind a TCP listening socket on @p port.
  *
- * Binds to all interfaces on the given port, waits (blocking) for a client
- * to connect, then uses that connection as the TTY.  Suitable for use as a
- * plugin with programs such as dosemu2 that connect to modemu2k over TCP.
- * Call before m2k_run().
+ * Binds and listens on all interfaces (dual-stack IPv4/IPv6); returns
+ * immediately without waiting for a connection. Pair with
+ * m2k_listen_accept() to accept one connection and use it as the TTY,
+ * or integrate the listener fd with the caller's own event loop.
+ *
+ * Suitable for use as a virtual-modem backend for programs that connect
+ * to modemu2k over TCP, such as dosemu2.
  *
  * @param ctx  Modem context.
  * @param port Service name or decimal port number to listen on.
@@ -213,6 +217,21 @@ m2k_err_t   m2k_setup_dev(m2k_t *ctx, const char *dev);
  * @snippet examples/m2k_setup_listen.c setup_listen
  */
 m2k_err_t   m2k_setup_listen(m2k_t *ctx, const char *port);
+
+/**
+ * @brief Accept a single incoming connection on the listening socket
+ *        opened by m2k_setup_listen() and adopt it as the TTY.
+ *
+ * Blocks until a client connects. The listening socket is closed once
+ * a connection is accepted (modemu2k handles one client per session).
+ * Call before m2k_run().
+ *
+ * @param ctx Modem context (must have an active listener from
+ *            m2k_setup_listen()).
+ * @return M2K_OK on success, M2K_ERR_SOCKET on accept failure or if no
+ *         listener has been set up.
+ */
+m2k_err_t   m2k_listen_accept(m2k_t *ctx);
 
 /**
  * @brief Run the modem command/online loop until the PTY closes.

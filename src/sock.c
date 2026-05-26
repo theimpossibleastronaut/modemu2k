@@ -132,7 +132,12 @@ m2k_sockListen(m2k_t *ctx, const char *port)
   }
 
   m2k_log(ctx, "Listening on port %s...\n", port);
+  return server_fd;
+}
 
+int
+m2k_sockAccept(m2k_t *ctx, int server_fd)
+{
   struct sockaddr_storage addr;
   socklen_t addrlen = sizeof addr;
   int client_fd = accept(server_fd, (struct sockaddr *)&addr, &addrlen);
@@ -143,7 +148,6 @@ m2k_sockListen(m2k_t *ctx, const char *port)
     m2k_log(ctx, "accept: %s\n", strerror(errno));
     return -1;
   }
-
   return client_fd;
 }
 

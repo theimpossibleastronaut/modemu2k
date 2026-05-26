@@ -363,6 +363,7 @@ m2k_new(void)
   m2k_t *ctx = calloc(1, sizeof(m2k_t));
   if (ctx == NULL)
     return NULL;
+  ctx->listen_fd = -1;
   sockInit(&ctx->sock);
   ttyBufWReset(ctx);
   telOptInit(ctx);
@@ -375,6 +376,8 @@ m2k_free(m2k_t *ctx)
 {
   if (ctx == NULL)
     return;
+  if (ctx->listen_fd != -1)
+    close(ctx->listen_fd);
   sockShutdown(&ctx->sock);
   free(ctx);
 }
@@ -705,7 +708,7 @@ m2k_setup_pty(m2k_t *ctx, char **slave_out)
 }
 
 m2k_err_t
-m2k_setup_commx(m2k_t *ctx, const char *cmd)
+m2k_setup_comm_program(m2k_t *ctx, const char *cmd)
 {
 #ifdef HAVE_GRANTPT
   char *slave;
@@ -745,7 +748,23 @@ m2k_setup_listen(m2k_t *ctx, const char *port)
   int fd = m2k_sockListen(ctx, port);
   if (fd == -1)
     return M2K_ERR_SOCKET;
-  ctx->tty.rfd = ctx->tty.wfd = fd;
+  ctx->listen_fd = fd;
+  return M2K_OK;
+}
+
+m2k_err_t
+m2k_listen_accept(m2k_t *ctx)
+{
+  if (ctx->listen_fd == -1)
+  {
+    m2k_log(ctx, "m2k_listen_accept: no listener (call m2k_setup_listen first)\n");
+    return M2K_ERR_SOCKET;
+  }
+  int client_fd = m2k_sockAccept(ctx, ctx->listen_fd);
+  ctx->listen_fd = -1;
+  if (client_fd == -1)
+    return M2K_ERR_SOCKET;
+  ctx->tty.rfd = ctx->tty.wfd = client_fd;
   return M2K_OK;
 }
 

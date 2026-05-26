@@ -72,7 +72,7 @@ main(int argc, char *const argv[])
     return 0;
   }
   case CA_COMMX:
-    if (m2k_setup_commx(ctx, cmdarg.commx) != M2K_OK)
+    if (m2k_setup_comm_program(ctx, cmdarg.commx) != M2K_OK)
     {
       m2k_free(ctx);
       return EXIT_FAILURE;
@@ -89,7 +89,8 @@ main(int argc, char *const argv[])
     }
     break;
   case CA_LISTEN:
-    if (m2k_setup_listen(ctx, cmdarg.listen_port) != M2K_OK)
+    if (m2k_setup_listen(ctx, cmdarg.listen_port) != M2K_OK
+        || m2k_listen_accept(ctx) != M2K_OK)
     {
       m2k_free(ctx);
       return EXIT_FAILURE;
