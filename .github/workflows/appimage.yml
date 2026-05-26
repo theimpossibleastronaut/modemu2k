@@ -1,46 +1,99 @@
-name: AppImage Build
+name: Build AppImage
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'version number'
+        required: false
+        type: string
   push:
     tags:
-      - v**
+      - 'v*'
+    branches: master
+
+  pull_request:
+    branches: master
+    paths:
+      - '.github/workflows/appimage.yml'
+      - 'packaging/appimage/**'
 
 jobs:
+  build-appimage:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ inputs.version }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-24.04-arm
+          - ubuntu-24.04
 
-  # This workflow contains a single job called "build"
-  build:
-    runs-on: ubuntu-18.04
     steps:
-    - uses: actions/checkout@v6
-      with:
-        submodules: true
-    # Runs a single command using the runners shell
-    - name: Install required dependencies
-      run: |
-        sudo apt-get install -y gettext
-        sudo apt-get install -y python3-pip python3-setuptools
-        sudo -H python3 -m pip install meson ninja
+      - name: Checkout
+        uses: actions/checkout@v6
 
-    # Runs a set of commands using the runners shell
-    - name: Download building tools & executing AppImage build
-      run: |
-        wget -nv -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
-        chmod +x linuxdeploy-x86_64.AppImage
-    - run: |
-        meson setup _build -Dprefix=/usr -Dstrip=true --buildtype=release
-        cd _build
-        ninja
-        DESTDIR=$PWD/AppDir ninja -v install
-        ../linuxdeploy-x86_64.AppImage --executable AppDir/usr/bin/modemu2k \
-          --icon-file=../packaging/modemu2k.png --icon-filename=modemu2k \
-          --create-desktop-file --appdir $PWD/AppDir --output appimage
-    - name: Deploy AppImage
-      uses: ncipollo/release-action@v1
-      with:
-        allowUpdates: True
-        prerelease: False
-        name: modemu2k ${GITHUB_REF}
-        artifacts: "_build/modemu2k*AppImage"
-        token: ${{ secrets.GITHUB_TOKEN }}
-        omitNameDuringUpdate: True
-        omitBodyDuringUpdate: True
+      - name: Set version
+        run: |
+          if [[ -z "${VERSION}" ]]; then
+            if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+              TAG_NAME=${GITHUB_REF#refs/tags/}
+              VERSION=${TAG_NAME}
+            else
+              VERSION=snapshot
+            fi
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+          fi
+
+      - name: Build AppImage
+        run: |
+          docker compose -f packaging/appimage/docker-compose.yml run --rm build
+
+      - name: Create sha256sum
+        run: |
+          ARCH=$(uname -m)
+          echo "ARCH=${ARCH}" >> $GITHUB_ENV
+          cd out
+          file=$(ls *.AppImage)
+          sha256sum "$file" > "$file.sha256sum";
+
+      - name: Artifact Filename
+        run: echo "ARTIFACT_NAME=modemu2k-appImage-${ARCH//\//-}" >> $GITHUB_ENV
+
+      - if: ${{ github.ref != 'refs/heads/master' }}
+        name: Upload AppImage
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ./out/*AppImage*
+          if-no-files-found: error
+
+      - name: Release (Tagged)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "./out/*AppImage*"
+          allowUpdates: true
+          prerelease: false
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - if: ${{ github.ref == 'refs/heads/master' }}
+        name: 'Prerelease'
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "./out/*AppImage*"
+          body: "modemu2k Snapshot Release"
+          allowUpdates: true
+          prerelease: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          tag: snapshot
