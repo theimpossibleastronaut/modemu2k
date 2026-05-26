@@ -20,6 +20,9 @@
     without injecting the +++ escape sequence through I/O
   * m2k_setup_pty() now returns a const char* into ctx-owned storage
     instead of a heap-allocated string the caller must free (breaking)
+  * Add m2k_is_online() and m2k_has_carrier() predicates for embed-mode
+    hosts driving mode/DCD-aware UI (informed by minicom + dosemu2
+    integration sketches)
 
 2022-08-18
 - modemu2k (v0.1.0)

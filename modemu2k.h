@@ -453,6 +453,32 @@ m2k_err_t   m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds);
  */
 int         m2k_run_done(const m2k_t *ctx);
 
+/**
+ * @brief Test whether the modem is currently in online mode.
+ *
+ * Useful for embed-mode hosts that paint mode-specific UI (status bar,
+ * local echo toggle, etc.) and need to know whether m2k is relaying
+ * bytes to/from a connected socket vs. consuming AT commands.
+ *
+ * @param ctx Modem context.
+ * @return Nonzero in online mode, zero in command mode or after the
+ *         session has ended.
+ */
+int         m2k_is_online(const m2k_t *ctx);
+
+/**
+ * @brief Test whether the modem has an active carrier (live TCP socket).
+ *
+ * Maps to the DCD (Data Carrier Detect) signal real serial modems
+ * expose. Stays true after a `+++` escape back to command mode as long
+ * as the TCP connection is still up; goes false on hangup, NO CARRIER,
+ * or before the first dial.
+ *
+ * @param ctx Modem context.
+ * @return Nonzero when a connection is alive, zero otherwise.
+ */
+int         m2k_has_carrier(const m2k_t *ctx);
+
 #ifdef __cplusplus
 }
 #endif

@@ -176,6 +176,18 @@ test_set_log_fn(void)
   m2k_free(ctx);
 }
 
+static void
+test_initial_state_predicates(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  /* Fresh ctx: not done, not online, no carrier. */
+  assert(!m2k_run_done(ctx));
+  assert(!m2k_is_online(ctx));
+  assert(!m2k_has_carrier(ctx));
+  m2k_free(ctx);
+}
+
 int
 main(void)
 {
@@ -188,5 +200,6 @@ main(void)
   test_truncates_to_buffer();
   test_strerror_mapping();
   test_set_log_fn();
+  test_initial_state_predicates();
   return 0;
 }

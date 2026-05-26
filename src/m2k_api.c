@@ -1166,6 +1166,18 @@ m2k_run_done(const m2k_t *ctx)
   return ctx->step_state == M2K_STATE_DONE;
 }
 
+int
+m2k_is_online(const m2k_t *ctx)
+{
+  return ctx->step_state == M2K_STATE_ONLINE;
+}
+
+int
+m2k_has_carrier(const m2k_t *ctx)
+{
+  return ctx->sock.alive;
+}
+
 m2k_err_t
 m2k_run(m2k_t *ctx)
 {
