@@ -1,6 +1,0 @@
-# Running Tests
-
-From the builddir:
-
-    ninja test
-
