@@ -110,6 +110,10 @@ $(function() {
     any other flag)
   * Wrap modemu2k.h declarations in extern "C" guards for C++ consumers
   * Revert COPYING / README license claim to GPL-2-or-later
+  * API: rename m2k_setup_commx() to m2k_setup_comm_program() (breaking)
+  * API: split m2k_setup_listen() into bind (m2k_setup_listen) and accept
+    (m2k_listen_accept); the bind step is now non-blocking so callers can
+    integrate the listener fd with their own event loop (breaking)
 
 2022-08-18
 - modemu2k (v0.1.0)

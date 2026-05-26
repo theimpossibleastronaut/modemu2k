@@ -168,7 +168,7 @@ $(function() {
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">  }</div>
 <div class="line">  <span class="keywordflow">case</span> CA_COMMX:</div>
-<div class="line">    <span class="keywordflow">if</span> (<a id="a5" name="a5"></a><a class="code hl_function" href="modemu2k_8h.html#a0fe896c64c2623730a0aadd5b2294a76">m2k_setup_commx</a>(ctx, cmdarg.commx) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
+<div class="line">    <span class="keywordflow">if</span> (<a id="a5" name="a5"></a><a class="code hl_function" href="modemu2k_8h.html#aecd6209b8425839fa4eef30f504a41bf">m2k_setup_comm_program</a>(ctx, cmdarg.commx) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
 <div class="line">    {</div>
 <div class="line">      <a class="code hl_function" href="modemu2k_8h.html#adecfb34f9484c3a984a1fc94dbd11c90">m2k_free</a>(ctx);</div>
 <div class="line">      <span class="keywordflow">return</span> EXIT_FAILURE;</div>
@@ -185,7 +185,8 @@ $(function() {
 <div class="line">    }</div>
 <div class="line">    <span class="keywordflow">break</span>;</div>
 <div class="line">  <span class="keywordflow">case</span> CA_LISTEN:</div>
-<div class="line">    <span class="keywordflow">if</span> (<a id="a8" name="a8"></a><a class="code hl_function" href="modemu2k_8h.html#acfa303ff386429f596340f7e69a559fa">m2k_setup_listen</a>(ctx, cmdarg.listen_port) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
+<div class="line">    <span class="keywordflow">if</span> (<a id="a8" name="a8"></a><a class="code hl_function" href="modemu2k_8h.html#acfa303ff386429f596340f7e69a559fa">m2k_setup_listen</a>(ctx, cmdarg.listen_port) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a></div>
+<div class="line">        || <a id="_a9" name="_a9"></a><a class="code hl_function" href="modemu2k_8h.html#a801b48d44c221c1fe37f5ca3e9927978">m2k_listen_accept</a>(ctx) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
 <div class="line">    {</div>
 <div class="line">      <a class="code hl_function" href="modemu2k_8h.html#adecfb34f9484c3a984a1fc94dbd11c90">m2k_free</a>(ctx);</div>
 <div class="line">      <span class="keywordflow">return</span> EXIT_FAILURE;</div>
@@ -193,25 +194,26 @@ $(function() {
 <div class="line">    <span class="keywordflow">break</span>;</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordflow">if</span> (cmdarg.atcmd != NULL &amp;&amp; <a id="_a9" name="_a9"></a><a class="code hl_function" href="modemu2k_8h.html#a1bc9bda2db0361b73b697b781a4d8862">m2k_atcmd</a>(ctx, cmdarg.atcmd) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
+<div class="line">  <span class="keywordflow">if</span> (cmdarg.atcmd != NULL &amp;&amp; <a id="_a10" name="_a10"></a><a class="code hl_function" href="modemu2k_8h.html#a1bc9bda2db0361b73b697b781a4d8862">m2k_atcmd</a>(ctx, cmdarg.atcmd) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
 <div class="line">    fprintf(stderr, <span class="stringliteral">&quot;Error in initialization commands.\r\n&quot;</span>);</div>
 <div class="line"> </div>
-<div class="line">  <a id="a10" name="a10"></a><a class="code hl_function" href="modemu2k_8h.html#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a>(ctx);</div>
+<div class="line">  <a id="a11" name="a11"></a><a class="code hl_function" href="modemu2k_8h.html#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a>(ctx);</div>
 <div class="line">  <a class="code hl_function" href="modemu2k_8h.html#adecfb34f9484c3a984a1fc94dbd11c90">m2k_free</a>(ctx);</div>
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 <div class="ttc" id="amodemu2k_8h_html"><div class="ttname"><a href="modemu2k_8h.html">modemu2k.h</a></div><div class="ttdoc">Public API for the modemu2k PTY-based modem emulator library.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a0fe896c64c2623730a0aadd5b2294a76"><div class="ttname"><a href="modemu2k_8h.html#a0fe896c64c2623730a0aadd5b2294a76">m2k_setup_commx</a></div><div class="ttdeci">m2k_err_t m2k_setup_commx(m2k_t *ctx, const char *cmd)</div><div class="ttdoc">Allocate a PTY and fork/exec a comm program on the slave.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_a1bc9bda2db0361b73b697b781a4d8862"><div class="ttname"><a href="modemu2k_8h.html#a1bc9bda2db0361b73b697b781a4d8862">m2k_atcmd</a></div><div class="ttdeci">m2k_err_t m2k_atcmd(m2k_t *ctx, const char *cmd)</div><div class="ttdoc">Feed a Hayes AT command string to the modem.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_a3a49027773e518fc5751feb29a20f48d"><div class="ttname"><a href="modemu2k_8h.html#a3a49027773e518fc5751feb29a20f48d">m2k_setup_dev</a></div><div class="ttdeci">m2k_err_t m2k_setup_dev(m2k_t *ctx, const char *dev)</div><div class="ttdoc">Open an existing PTY device as the TTY.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_a40332fcdccf5378d47ccf222ba2d0941"><div class="ttname"><a href="modemu2k_8h.html#a40332fcdccf5378d47ccf222ba2d0941">m2k_setup_stdin</a></div><div class="ttdeci">m2k_err_t m2k_setup_stdin(m2k_t *ctx)</div><div class="ttdoc">Use stdin/stdout as the TTY (standalone mode).</div></div>
 <div class="ttc" id="amodemu2k_8h_html_a4876c026865cd1ecff6b8b9010b37b2c"><div class="ttname"><a href="modemu2k_8h.html#a4876c026865cd1ecff6b8b9010b37b2c">m2k_new</a></div><div class="ttdeci">m2k_t * m2k_new(void)</div><div class="ttdoc">Allocate and initialise a new modem context.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_a49e0a78c27ee140d0b76fc195107fef0"><div class="ttname"><a href="modemu2k_8h.html#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a></div><div class="ttdeci">m2k_err_t m2k_run(m2k_t *ctx)</div><div class="ttdoc">Run the modem command/online loop until the PTY closes.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a861720925b561f9640e9e606fb6d9ec6"><div class="ttname"><a href="modemu2k_8h.html#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a></div><div class="ttdeci">struct m2k_s m2k_t</div><div class="ttdoc">Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free().</div><div class="ttdef"><b>Definition</b> modemu2k.h:43</div></div>
-<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe"><div class="ttname"><a href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a></div><div class="ttdeci">@ M2K_OK</div><div class="ttdef"><b>Definition</b> modemu2k.h:56</div></div>
-<div class="ttc" id="amodemu2k_8h_html_acfa303ff386429f596340f7e69a559fa"><div class="ttname"><a href="modemu2k_8h.html#acfa303ff386429f596340f7e69a559fa">m2k_setup_listen</a></div><div class="ttdeci">m2k_err_t m2k_setup_listen(m2k_t *ctx, const char *port)</div><div class="ttdoc">Listen for and accept a single incoming TCP connection on port.</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a801b48d44c221c1fe37f5ca3e9927978"><div class="ttname"><a href="modemu2k_8h.html#a801b48d44c221c1fe37f5ca3e9927978">m2k_listen_accept</a></div><div class="ttdeci">m2k_err_t m2k_listen_accept(m2k_t *ctx)</div><div class="ttdoc">Accept a single incoming connection on the listening socket opened by m2k_setup_listen() and adopt it...</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a861720925b561f9640e9e606fb6d9ec6"><div class="ttname"><a href="modemu2k_8h.html#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a></div><div class="ttdeci">struct m2k_s m2k_t</div><div class="ttdoc">Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free().</div><div class="ttdef"><b>Definition</b> modemu2k.h:44</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe"><div class="ttname"><a href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a></div><div class="ttdeci">@ M2K_OK</div><div class="ttdef"><b>Definition</b> modemu2k.h:57</div></div>
+<div class="ttc" id="amodemu2k_8h_html_acfa303ff386429f596340f7e69a559fa"><div class="ttname"><a href="modemu2k_8h.html#acfa303ff386429f596340f7e69a559fa">m2k_setup_listen</a></div><div class="ttdeci">m2k_err_t m2k_setup_listen(m2k_t *ctx, const char *port)</div><div class="ttdoc">Bind a TCP listening socket on port.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_adecfb34f9484c3a984a1fc94dbd11c90"><div class="ttname"><a href="modemu2k_8h.html#adecfb34f9484c3a984a1fc94dbd11c90">m2k_free</a></div><div class="ttdeci">void m2k_free(m2k_t *ctx)</div><div class="ttdoc">Release all resources held by ctx.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_ae40340332bd0e3c8d6d2feaf3f5e3148"><div class="ttname"><a href="modemu2k_8h.html#ae40340332bd0e3c8d6d2feaf3f5e3148">m2k_setup_pty</a></div><div class="ttdeci">m2k_err_t m2k_setup_pty(m2k_t *ctx, char **slave_out)</div><div class="ttdoc">Allocate a PTY master and return the slave device path.</div></div>
+<div class="ttc" id="amodemu2k_8h_html_aecd6209b8425839fa4eef30f504a41bf"><div class="ttname"><a href="modemu2k_8h.html#aecd6209b8425839fa4eef30f504a41bf">m2k_setup_comm_program</a></div><div class="ttdeci">m2k_err_t m2k_setup_comm_program(m2k_t *ctx, const char *cmd)</div><div class="ttdoc">Allocate a PTY and fork/exec a comm program on the slave.</div></div>
 </div><!-- fragment --> </div><!-- contents -->
 <!-- HTML footer for doxygen 1.16.1-->
 <!-- start footer part -->

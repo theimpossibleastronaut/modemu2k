@@ -148,12 +148,14 @@ Functions</h2></td></tr>
 <tr class="memdesc:a40332fcdccf5378d47ccf222ba2d0941"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use stdin/stdout as the TTY (standalone mode).  <br /></td></tr>
 <tr class="memitem:ae40340332bd0e3c8d6d2feaf3f5e3148" id="r_ae40340332bd0e3c8d6d2feaf3f5e3148"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae40340332bd0e3c8d6d2feaf3f5e3148">m2k_setup_pty</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, char **slave_out)</td></tr>
 <tr class="memdesc:ae40340332bd0e3c8d6d2feaf3f5e3148"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a PTY master and return the slave device path.  <br /></td></tr>
-<tr class="memitem:a0fe896c64c2623730a0aadd5b2294a76" id="r_a0fe896c64c2623730a0aadd5b2294a76"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a0fe896c64c2623730a0aadd5b2294a76">m2k_setup_commx</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *cmd)</td></tr>
-<tr class="memdesc:a0fe896c64c2623730a0aadd5b2294a76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a PTY and fork/exec a comm program on the slave.  <br /></td></tr>
+<tr class="memitem:aecd6209b8425839fa4eef30f504a41bf" id="r_aecd6209b8425839fa4eef30f504a41bf"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#aecd6209b8425839fa4eef30f504a41bf">m2k_setup_comm_program</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *cmd)</td></tr>
+<tr class="memdesc:aecd6209b8425839fa4eef30f504a41bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a PTY and fork/exec a comm program on the slave.  <br /></td></tr>
 <tr class="memitem:a3a49027773e518fc5751feb29a20f48d" id="r_a3a49027773e518fc5751feb29a20f48d"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3a49027773e518fc5751feb29a20f48d">m2k_setup_dev</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *dev)</td></tr>
 <tr class="memdesc:a3a49027773e518fc5751feb29a20f48d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open an existing PTY device as the TTY.  <br /></td></tr>
 <tr class="memitem:acfa303ff386429f596340f7e69a559fa" id="r_acfa303ff386429f596340f7e69a559fa"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#acfa303ff386429f596340f7e69a559fa">m2k_setup_listen</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *port)</td></tr>
-<tr class="memdesc:acfa303ff386429f596340f7e69a559fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Listen for and accept a single incoming TCP connection on <code class="param">port</code>.  <br /></td></tr>
+<tr class="memdesc:acfa303ff386429f596340f7e69a559fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a TCP listening socket on <code class="param">port</code>.  <br /></td></tr>
+<tr class="memitem:a801b48d44c221c1fe37f5ca3e9927978" id="r_a801b48d44c221c1fe37f5ca3e9927978"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a801b48d44c221c1fe37f5ca3e9927978">m2k_listen_accept</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a801b48d44c221c1fe37f5ca3e9927978"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a single incoming connection on the listening socket opened by <a class="el" href="#acfa303ff386429f596340f7e69a559fa" title="Bind a TCP listening socket on port.">m2k_setup_listen()</a> and adopt it as the TTY.  <br /></td></tr>
 <tr class="memitem:a49e0a78c27ee140d0b76fc195107fef0" id="r_a49e0a78c27ee140d0b76fc195107fef0"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
 <tr class="memdesc:a49e0a78c27ee140d0b76fc195107fef0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the modem command/online loop until the PTY closes.  <br /></td></tr>
 </table>
@@ -166,9 +168,10 @@ Typical usage</h2>
 <div class="line"><span class="keywordflow">if</span> (!ctx) <span class="keywordflow">return</span> EXIT_FAILURE;</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Choose one setup mode:</span></div>
-<div class="line"><a class="code hl_function" href="#a40332fcdccf5378d47ccf222ba2d0941">m2k_setup_stdin</a>(ctx);                        <span class="comment">// read/write stdin/stdout</span></div>
-<div class="line"><span class="comment">// m2k_setup_commx(ctx, &quot;minicom -p %s&quot;);    // fork a comm program on a PTY</span></div>
-<div class="line"><span class="comment">// m2k_setup_listen(ctx, &quot;5000&quot;);            // accept an incoming TCP connection</span></div>
+<div class="line"><a class="code hl_function" href="#a40332fcdccf5378d47ccf222ba2d0941">m2k_setup_stdin</a>(ctx);                              <span class="comment">// read/write stdin/stdout</span></div>
+<div class="line"><span class="comment">// m2k_setup_comm_program(ctx, &quot;minicom -p %s&quot;);   // fork a comm program on a PTY</span></div>
+<div class="line"><span class="comment">// m2k_setup_listen(ctx, &quot;5000&quot;);                  // bind a TCP port, then</span></div>
+<div class="line"><span class="comment">// m2k_listen_accept(ctx);                         //   wait for a client to connect</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Optional: apply AT commands before entering the command loop</span></div>
 <div class="line"><a class="code hl_function" href="#a1bc9bda2db0361b73b697b781a4d8862">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATS7=30&quot;</span>);</div>
@@ -181,7 +184,7 @@ Typical usage</h2>
 <div class="ttc" id="amodemu2k_8h_html_a40332fcdccf5378d47ccf222ba2d0941"><div class="ttname"><a href="#a40332fcdccf5378d47ccf222ba2d0941">m2k_setup_stdin</a></div><div class="ttdeci">m2k_err_t m2k_setup_stdin(m2k_t *ctx)</div><div class="ttdoc">Use stdin/stdout as the TTY (standalone mode).</div></div>
 <div class="ttc" id="amodemu2k_8h_html_a4876c026865cd1ecff6b8b9010b37b2c"><div class="ttname"><a href="#a4876c026865cd1ecff6b8b9010b37b2c">m2k_new</a></div><div class="ttdeci">m2k_t * m2k_new(void)</div><div class="ttdoc">Allocate and initialise a new modem context.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_a49e0a78c27ee140d0b76fc195107fef0"><div class="ttname"><a href="#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a></div><div class="ttdeci">m2k_err_t m2k_run(m2k_t *ctx)</div><div class="ttdoc">Run the modem command/online loop until the PTY closes.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a861720925b561f9640e9e606fb6d9ec6"><div class="ttname"><a href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a></div><div class="ttdeci">struct m2k_s m2k_t</div><div class="ttdoc">Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free().</div><div class="ttdef"><b>Definition</b> modemu2k.h:43</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a861720925b561f9640e9e606fb6d9ec6"><div class="ttname"><a href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a></div><div class="ttdeci">struct m2k_s m2k_t</div><div class="ttdoc">Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free().</div><div class="ttdef"><b>Definition</b> modemu2k.h:44</div></div>
 <div class="ttc" id="amodemu2k_8h_html_adecfb34f9484c3a984a1fc94dbd11c90"><div class="ttname"><a href="#adecfb34f9484c3a984a1fc94dbd11c90">m2k_free</a></div><div class="ttdeci">void m2k_free(m2k_t *ctx)</div><div class="ttdoc">Release all resources held by ctx.</div></div>
 </div><!-- fragment --><p>For finer control — for example, dialling programmatically and entering online mode without the AT command loop — use <a class="el" href="#a5d0de562057841ed5f7441fa170548a4" title="Open a TCP connection to host : port.">m2k_dial()</a>, <a class="el" href="#a372c11bf0cdc06d9a4a2b568e6162ff6" title="Enter online mode and relay data between the PTY and the socket.">m2k_online()</a>, and <a class="el" href="#a61e4922eeee52bf582ac8220c92e2fcc" title="Tear down the active TCP connection.">m2k_hangup()</a> directly. </p>
 </div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
@@ -272,7 +275,7 @@ Typical usage</h2>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on success.</dd></dl>
 <div class="fragment"><div class="line"><a class="code hl_function" href="#a1bc9bda2db0361b73b697b781a4d8862">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATZ&quot;</span>);        <span class="comment">// reset to defaults</span></div>
 <div class="line"><a class="code hl_function" href="#a1bc9bda2db0361b73b697b781a4d8862">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATS0=1&quot;</span>);    <span class="comment">// auto-answer on first ring</span></div>
-</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#_a9">main.c</a>.</dd>
+</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#_a10">main.c</a>.</dd>
 </dl>
 
 </div>
@@ -372,6 +375,35 @@ Typical usage</h2>
 
 </div>
 </div>
+<a id="a801b48d44c221c1fe37f5ca3e9927978" name="a801b48d44c221c1fe37f5ca3e9927978"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a801b48d44c221c1fe37f5ca3e9927978">&#9670;&#160;</a></span>m2k_listen_accept()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_listen_accept </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Accept a single incoming connection on the listening socket opened by <a class="el" href="#acfa303ff386429f596340f7e69a559fa" title="Bind a TCP listening socket on port.">m2k_setup_listen()</a> and adopt it as the TTY. </p>
+<p>Blocks until a client connects. The listening socket is closed once a connection is accepted (modemu2k handles one client per session). Call before <a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Modem context (must have an active listener from <a class="el" href="#acfa303ff386429f596340f7e69a559fa" title="Bind a TCP listening socket on port.">m2k_setup_listen()</a>). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_SOCKET on accept failure or if no listener has been set up. </dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#_a9">main.c</a>.</dd>
+</dl>
+
+</div>
+</div>
 <a id="a4876c026865cd1ecff6b8b9010b37b2c" name="a4876c026865cd1ecff6b8b9010b37b2c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4876c026865cd1ecff6b8b9010b37b2c">&#9670;&#160;</a></span>m2k_new()</h2>
 
@@ -426,8 +458,8 @@ Typical usage</h2>
 <div class="line"><a class="code hl_function" href="#a61e4922eeee52bf582ac8220c92e2fcc">m2k_hangup</a>(ctx);</div>
 <div class="ttc" id="amodemu2k_8h_html_a372c11bf0cdc06d9a4a2b568e6162ff6"><div class="ttname"><a href="#a372c11bf0cdc06d9a4a2b568e6162ff6">m2k_online</a></div><div class="ttdeci">m2k_err_t m2k_online(m2k_t *ctx)</div><div class="ttdoc">Enter online mode and relay data between the PTY and the socket.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_a61e4922eeee52bf582ac8220c92e2fcc"><div class="ttname"><a href="#a61e4922eeee52bf582ac8220c92e2fcc">m2k_hangup</a></div><div class="ttdeci">m2k_err_t m2k_hangup(m2k_t *ctx)</div><div class="ttdoc">Tear down the active TCP connection.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a></div><div class="ttdeci">m2k_err_t</div><div class="ttdoc">Return codes used by all m2k_* functions.</div><div class="ttdef"><b>Definition</b> modemu2k.h:55</div></div>
-<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8">M2K_ERR_CANCELED</a></div><div class="ttdeci">@ M2K_ERR_CANCELED</div><div class="ttdef"><b>Definition</b> modemu2k.h:61</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a></div><div class="ttdeci">m2k_err_t</div><div class="ttdoc">Return codes used by all m2k_* functions.</div><div class="ttdef"><b>Definition</b> modemu2k.h:56</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8">M2K_ERR_CANCELED</a></div><div class="ttdeci">@ M2K_ERR_CANCELED</div><div class="ttdef"><b>Definition</b> modemu2k.h:62</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -455,7 +487,7 @@ Typical usage</h2>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK when the session ends normally. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a10">main.c</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a11">main.c</a>.</dd>
 </dl>
 
 </div>
@@ -504,14 +536,14 @@ Typical usage</h2>
 </div><!-- fragment --> 
 </div>
 </div>
-<a id="a0fe896c64c2623730a0aadd5b2294a76" name="a0fe896c64c2623730a0aadd5b2294a76"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0fe896c64c2623730a0aadd5b2294a76">&#9670;&#160;</a></span>m2k_setup_commx()</h2>
+<a id="aecd6209b8425839fa4eef30f504a41bf" name="aecd6209b8425839fa4eef30f504a41bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecd6209b8425839fa4eef30f504a41bf">&#9670;&#160;</a></span>m2k_setup_comm_program()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_commx </td>
+          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_comm_program </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -534,9 +566,9 @@ Typical usage</h2>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_PTY or M2K_ERR_NOMEM on failure.</dd></dl>
 <div class="fragment"><div class="line">  <span class="comment">/* Fork minicom on the PTY slave; %s is substituted with the slave path. */</span></div>
-<div class="line">  <a class="code hl_enumeration" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> err = <a class="code hl_function" href="#a0fe896c64c2623730a0aadd5b2294a76">m2k_setup_commx</a>(ctx, <span class="stringliteral">&quot;minicom -l -tansi -con -p %s&quot;</span>);</div>
+<div class="line">  <a class="code hl_enumeration" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> err = <a class="code hl_function" href="#aecd6209b8425839fa4eef30f504a41bf">m2k_setup_comm_program</a>(ctx, <span class="stringliteral">&quot;minicom -l -tansi -con -p %s&quot;</span>);</div>
 <div class="line">  <span class="keywordflow">if</span> (err != <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>) {</div>
-<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;setup_commx failed: %s\n&quot;</span>, <a class="code hl_function" href="#a976094e155a6c711075a4fea65c5a6eb">m2k_strerror</a>(err));</div>
+<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;setup_comm_program failed: %s\n&quot;</span>, <a class="code hl_function" href="#a976094e155a6c711075a4fea65c5a6eb">m2k_strerror</a>(err));</div>
 <div class="line">    <a class="code hl_function" href="#adecfb34f9484c3a984a1fc94dbd11c90">m2k_free</a>(ctx);</div>
 <div class="line">    <span class="keywordflow">return</span> 1;</div>
 <div class="line">  }</div>
@@ -598,8 +630,9 @@ Typical usage</h2>
       </table>
 </div><div class="memdoc">
 
-<p>Listen for and accept a single incoming TCP connection on <code class="param">port</code>. </p>
-<p>Binds to all interfaces on the given port, waits (blocking) for a client to connect, then uses that connection as the TTY. Suitable for use as a plugin with programs such as dosemu2 that connect to modemu2k over TCP. Call before <a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
+<p>Bind a TCP listening socket on <code class="param">port</code>. </p>
+<p>Binds and listens on all interfaces (dual-stack IPv4/IPv6); returns immediately without waiting for a connection. Pair with <a class="el" href="#a801b48d44c221c1fe37f5ca3e9927978" title="Accept a single incoming connection on the listening socket opened by m2k_setup_listen() and adopt it...">m2k_listen_accept()</a> to accept one connection and use it as the TTY, or integrate the listener fd with the caller's own event loop.</p>
+<p>Suitable for use as a virtual-modem backend for programs that connect to modemu2k over TCP, such as dosemu2.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
@@ -608,13 +641,19 @@ Typical usage</h2>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_SOCKET on failure.</dd></dl>
-<div class="fragment"><div class="line"><span class="comment">/* Listen on TCP port 5000, then drive the modem state machine over the</span></div>
-<div class="line"><span class="comment">   accepted socket. Pair with -l/--listen on the CLI for the same flow. */</span></div>
+<div class="fragment"><div class="line"><span class="comment">/* Bind TCP port 5000, accept one connection, then drive the modem state</span></div>
+<div class="line"><span class="comment">   machine over the accepted socket. Pair with -l/--listen on the CLI for</span></div>
+<div class="line"><span class="comment">   the same flow. */</span></div>
 <div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> run_listener(<a class="code hl_typedef" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, <span class="keyword">const</span> <span class="keywordtype">char</span> *port)</div>
 <div class="line">{</div>
 <div class="line">  <a class="code hl_enumeration" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> err = <a class="code hl_function" href="#acfa303ff386429f596340f7e69a559fa">m2k_setup_listen</a>(ctx, port);</div>
 <div class="line">  <span class="keywordflow">if</span> (err != <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>) {</div>
 <div class="line">    fprintf(stderr, <span class="stringliteral">&quot;setup_listen: %s\n&quot;</span>, <a class="code hl_function" href="#a976094e155a6c711075a4fea65c5a6eb">m2k_strerror</a>(err));</div>
+<div class="line">    <span class="keywordflow">return</span> 1;</div>
+<div class="line">  }</div>
+<div class="line">  err = <a class="code hl_function" href="#a801b48d44c221c1fe37f5ca3e9927978">m2k_listen_accept</a>(ctx);   <span class="comment">/* blocks until a client connects */</span></div>
+<div class="line">  <span class="keywordflow">if</span> (err != <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>) {</div>
+<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;listen_accept: %s\n&quot;</span>, <a class="code hl_function" href="#a976094e155a6c711075a4fea65c5a6eb">m2k_strerror</a>(err));</div>
 <div class="line">    <span class="keywordflow">return</span> 1;</div>
 <div class="line">  }</div>
 <div class="line">  <a class="code hl_function" href="#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a>(ctx);</div>
@@ -645,7 +684,7 @@ Typical usage</h2>
 </div><div class="memdoc">
 
 <p>Allocate a PTY master and return the slave device path. </p>
-<p>The returned string is heap-allocated; the caller must free() it. Use this when you need the slave path (e.g. to print it with &ndash;show). To fork a comm program on the slave, prefer <a class="el" href="#a0fe896c64c2623730a0aadd5b2294a76" title="Allocate a PTY and fork/exec a comm program on the slave.">m2k_setup_commx()</a>.</p>
+<p>The returned string is heap-allocated; the caller must free() it. Use this when you need the slave path (e.g. to print it with &ndash;show). To fork a comm program on the slave, prefer <a class="el" href="#aecd6209b8425839fa4eef30f504a41bf" title="Allocate a PTY and fork/exec a comm program on the slave.">m2k_setup_comm_program()</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
