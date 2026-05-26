@@ -29,6 +29,7 @@
 /* private internal header — not installed, not part of the public API */
 
 /* Pull in the public types (m2k_t, m2k_err_t, m2k_log_fn, public functions) */
+#include "config.h"
 #include "modemu2k.h"
 #include "modemu2k_version.h"
 
@@ -81,7 +82,10 @@ typedef enum {
     M2K_STATE_DONE     /* PTY closed; m2k_run_done() returns true */
 } m2k_step_state;
 
-#if defined(__GLIBC__) || defined(SVR4)
+/* HAVE_GRANTPT is the legacy name; HAVE_POSIX_OPENPT is set by meson
+   at configure time after probing for posix_openpt. They mean the
+   same thing here — use the POSIX PTY allocation path. */
+#ifdef HAVE_POSIX_OPENPT
 #define HAVE_GRANTPT
 #endif
 
