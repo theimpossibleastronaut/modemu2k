@@ -115,10 +115,23 @@ test_step_dial_no_blocking(void)
      under the S7=30 second synchronous blocking window. */
   assert(elapsed < 1.0);
 
-  /* Aborting a dial-in-progress should be immediate. */
+  /* Aborting a dial-in-progress should be immediate and leave the
+     state machine back in CMD — not stuck in DIAL with a dead fd. A
+     subsequent m2k_step must not poll a closed socket. */
   assert(m2k_hangup(ctx) == M2K_OK);
   assert(!m2k_is_online(ctx));
   assert(!m2k_has_carrier(ctx));
+
+  /* In app_io mode + CMD state, get_pollfds must return zero fds with
+     an indefinite timeout (waiting for the host to push data). If
+     hangup left us in DIAL, get_pollfds would report a socket fd and
+     a finite S7 timeout instead. */
+  struct pollfd fds[M2K_MAX_POLLFDS];
+  size_t nfds = M2K_MAX_POLLFDS;
+  int timeout_ms;
+  assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
+  assert(nfds == 0);
+  assert(timeout_ms < 0);
 
   m2k_free(ctx);
 }
