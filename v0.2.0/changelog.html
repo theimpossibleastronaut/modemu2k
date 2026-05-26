@@ -106,7 +106,9 @@ $(function() {
   * Wrap modemu2k.h declarations in extern "C" guards for C++ consumers
   * Sync license claim to GPL-2-or-later (matches the source headers)
   * Add steppable event-loop API (m2k_get_pollfds, m2k_step, m2k_run_done)
-    for embedding modemu2k in a host poll/epoll loop
+    plus embed-mode I/O (m2k_setup_app_io, m2k_write_from_app,
+    m2k_read_to_app) so a host program can run modemu2k inside its own
+    poll/epoll loop with the host supplying the TTY-side bytes
 
 2022-08-18
 - modemu2k (v0.1.0)
