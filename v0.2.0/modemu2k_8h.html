@@ -128,8 +128,8 @@ Enumerations</h2></td></tr>
 , <br />
 &#160;&#160;<a class="el" href="#ab031108ada7cc3a5b255fe58041dce19a4099531099a5ecc8e0eefcef3f1f9268">M2K_ERR_TIMEOUT</a>
 , <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8">M2K_ERR_CANCELED</a>
-, <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19a0f69d06fc3bdad0d0c19c1f9a276758f">M2K_ERR_FULL</a>
 , <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19ab6e3a3046eaf47b5af62480390d270cc">M2K_ERR_BUG</a>
+, <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19a0f69d06fc3bdad0d0c19c1f9a276758f">M2K_ERR_FULL</a>
 <br />
  }</td></tr>
 <tr class="memdesc:ab031108ada7cc3a5b255fe58041dce19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return codes used by all m2k_* functions.  <a href="#ab031108ada7cc3a5b255fe58041dce19">More...</a><br /></td></tr>
@@ -274,9 +274,9 @@ Typical usage</h2>
 </td></tr>
 <tr><td class="fieldname"><a id="ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8" name="ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8"></a>M2K_ERR_CANCELED&#160;</td><td class="fielddoc"><p>Operation canceled (e.g., +++ escape sequence). </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ab031108ada7cc3a5b255fe58041dce19a0f69d06fc3bdad0d0c19c1f9a276758f" name="ab031108ada7cc3a5b255fe58041dce19a0f69d06fc3bdad0d0c19c1f9a276758f"></a>M2K_ERR_FULL&#160;</td><td class="fielddoc"><p>Buffer full; retry when the consumer has drained. </p>
-</td></tr>
 <tr><td class="fieldname"><a id="ab031108ada7cc3a5b255fe58041dce19ab6e3a3046eaf47b5af62480390d270cc" name="ab031108ada7cc3a5b255fe58041dce19ab6e3a3046eaf47b5af62480390d270cc"></a>M2K_ERR_BUG&#160;</td><td class="fielddoc"><p>Internal assertion failure — should not happen. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ab031108ada7cc3a5b255fe58041dce19a0f69d06fc3bdad0d0c19c1f9a276758f" name="ab031108ada7cc3a5b255fe58041dce19a0f69d06fc3bdad0d0c19c1f9a276758f"></a>M2K_ERR_FULL&#160;</td><td class="fielddoc"><p>Buffer full; retry when the consumer has drained. </p>
 </td></tr>
 </table>
 
@@ -540,8 +540,8 @@ Typical usage</h2>
 <div class="line"><a class="code hl_function" href="#a61e4922eeee52bf582ac8220c92e2fcc">m2k_hangup</a>(ctx);</div>
 <div class="ttc" id="amodemu2k_8h_html_a372c11bf0cdc06d9a4a2b568e6162ff6"><div class="ttname"><a href="#a372c11bf0cdc06d9a4a2b568e6162ff6">m2k_online</a></div><div class="ttdeci">m2k_err_t m2k_online(m2k_t *ctx)</div><div class="ttdoc">Enter online mode and relay data between the PTY and the socket.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_a61e4922eeee52bf582ac8220c92e2fcc"><div class="ttname"><a href="#a61e4922eeee52bf582ac8220c92e2fcc">m2k_hangup</a></div><div class="ttdeci">m2k_err_t m2k_hangup(m2k_t *ctx)</div><div class="ttdoc">Tear down the active TCP connection.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a></div><div class="ttdeci">m2k_err_t</div><div class="ttdoc">Return codes used by all m2k_* functions.</div><div class="ttdef"><b>Definition</b> modemu2k.h:59</div></div>
-<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8">M2K_ERR_CANCELED</a></div><div class="ttdeci">@ M2K_ERR_CANCELED</div><div class="ttdef"><b>Definition</b> modemu2k.h:65</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a></div><div class="ttdeci">m2k_err_t</div><div class="ttdoc">Return codes used by all m2k_* functions.</div><div class="ttdef"><b>Definition</b> modemu2k.h:61</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8">M2K_ERR_CANCELED</a></div><div class="ttdeci">@ M2K_ERR_CANCELED</div><div class="ttdef"><b>Definition</b> modemu2k.h:67</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -579,9 +579,9 @@ Typical usage</h2>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
-    <tr><td class="paramname">buf</td><td>Destination buffer. </td></tr>
-    <tr><td class="paramname">max</td><td>Maximum bytes to copy. </td></tr>
-    <tr><td class="paramname">len_out</td><td>Out: number of bytes actually copied (0 means no data). </td></tr>
+    <tr><td class="paramname">buf</td><td>Destination buffer. Must be non-NULL when <code class="param">max</code> &gt; 0. </td></tr>
+    <tr><td class="paramname">max</td><td>Maximum bytes to copy. May be 0. </td></tr>
+    <tr><td class="paramname">len_out</td><td>Out: number of bytes actually copied (0 means no data). Must be non-NULL. </td></tr>
   </table>
   </dd>
 </dl>
@@ -615,7 +615,7 @@ Typical usage</h2>
 <div class="line">  <a class="code hl_function" href="#a21b6a2e9cf2d513a31990c155d2dcfe4">m2k_step</a>(ctx, fds, nfds);</div>
 <div class="line">}</div>
 <div class="ttc" id="amodemu2k_8h_html_a21b6a2e9cf2d513a31990c155d2dcfe4"><div class="ttname"><a href="#a21b6a2e9cf2d513a31990c155d2dcfe4">m2k_step</a></div><div class="ttdeci">m2k_err_t m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)</div><div class="ttdoc">Run one non-blocking iteration of the state machine.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a83a9fe0262eb8987dd3873a32ca340db"><div class="ttname"><a href="#a83a9fe0262eb8987dd3873a32ca340db">M2K_MAX_POLLFDS</a></div><div class="ttdeci">#define M2K_MAX_POLLFDS</div><div class="ttdef"><b>Definition</b> modemu2k.h:344</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a83a9fe0262eb8987dd3873a32ca340db"><div class="ttname"><a href="#a83a9fe0262eb8987dd3873a32ca340db">M2K_MAX_POLLFDS</a></div><div class="ttdeci">#define M2K_MAX_POLLFDS</div><div class="ttdef"><b>Definition</b> modemu2k.h:347</div></div>
 <div class="ttc" id="amodemu2k_8h_html_a969057d307ae6420d6eff8f919fa80da"><div class="ttname"><a href="#a969057d307ae6420d6eff8f919fa80da">m2k_run_done</a></div><div class="ttdeci">int m2k_run_done(const m2k_t *ctx)</div><div class="ttdoc">Test whether the session has ended.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_ae938fa8390fa2669e54a7ed6b87abacb"><div class="ttname"><a href="#ae938fa8390fa2669e54a7ed6b87abacb">m2k_get_pollfds</a></div><div class="ttdeci">m2k_err_t m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)</div><div class="ttdoc">Describe the fds and timeout the caller&#39;s event loop should watch.</div></div>
 </div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
@@ -1017,9 +1017,9 @@ Typical usage</h2>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
-    <tr><td class="paramname">buf</td><td>Bytes to inject. </td></tr>
-    <tr><td class="paramname">len</td><td>Length of <code class="param">buf</code> in bytes. </td></tr>
-    <tr><td class="paramname">consumed</td><td>Out: bytes actually accepted (0 .. len). </td></tr>
+    <tr><td class="paramname">buf</td><td>Bytes to inject. Must be non-NULL when <code class="param">len</code> &gt; 0. </td></tr>
+    <tr><td class="paramname">len</td><td>Length of <code class="param">buf</code> in bytes. May be 0. </td></tr>
+    <tr><td class="paramname">consumed</td><td>Out: bytes actually accepted (0 .. len). Must be non-NULL. </td></tr>
   </table>
   </dd>
 </dl>
