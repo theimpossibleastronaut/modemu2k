@@ -185,6 +185,40 @@ test_initial_state_predicates(void)
   assert(!m2k_run_done(ctx));
   assert(!m2k_is_online(ctx));
   assert(!m2k_has_carrier(ctx));
+  /* No listener until m2k_setup_listen. */
+  assert(m2k_get_listen_fd(ctx) == -1);
+  /* DTR/RTS default asserted. */
+  assert(m2k_get_dtr(ctx) == 1);
+  assert(m2k_get_rts(ctx) == 1);
+  m2k_free(ctx);
+}
+
+static void
+test_dtr_rts_tracking(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+
+  m2k_set_dtr(ctx, 0);
+  assert(m2k_get_dtr(ctx) == 0);
+  m2k_set_dtr(ctx, 1);
+  assert(m2k_get_dtr(ctx) == 1);
+  /* Any non-zero asserts. */
+  m2k_set_dtr(ctx, 42);
+  assert(m2k_get_dtr(ctx) == 1);
+
+  m2k_set_rts(ctx, 0);
+  assert(m2k_get_rts(ctx) == 0);
+  m2k_set_rts(ctx, 1);
+  assert(m2k_get_rts(ctx) == 1);
+
+  /* DTR drop with no carrier is a no-op (no crash, state machine
+     untouched). */
+  assert(!m2k_has_carrier(ctx));
+  m2k_set_dtr(ctx, 0);
+  assert(!m2k_has_carrier(ctx));
+  assert(!m2k_run_done(ctx));
+
   m2k_free(ctx);
 }
 
@@ -201,5 +235,6 @@ main(void)
   test_strerror_mapping();
   test_set_log_fn();
   test_initial_state_predicates();
+  test_dtr_rts_tracking();
   return 0;
 }

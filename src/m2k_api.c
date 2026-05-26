@@ -373,6 +373,8 @@ m2k_new(void)
     return NULL;
   ctx->listen_fd = -1;
   ctx->step_state = M2K_STATE_CMD;
+  ctx->dtr = true;
+  ctx->rts = true;
   cmdBufReset(&ctx->step_cmdbuf);
   sockInit(&ctx->sock);
   ttyBufRReset(ctx);
@@ -1176,6 +1178,41 @@ int
 m2k_has_carrier(const m2k_t *ctx)
 {
   return ctx->sock.alive;
+}
+
+int
+m2k_get_listen_fd(const m2k_t *ctx)
+{
+  return ctx->listen_fd;
+}
+
+void
+m2k_set_dtr(m2k_t *ctx, int on)
+{
+  bool new_state = !!on;
+  bool was_asserted = ctx->dtr;
+  ctx->dtr = new_state;
+  /* &D2-equivalent: 1→0 transition while a connection is live hangs up. */
+  if (was_asserted && !new_state && ctx->sock.alive)
+    m2k_hangup(ctx);
+}
+
+void
+m2k_set_rts(m2k_t *ctx, int on)
+{
+  ctx->rts = !!on;
+}
+
+int
+m2k_get_dtr(const m2k_t *ctx)
+{
+  return ctx->dtr;
+}
+
+int
+m2k_get_rts(const m2k_t *ctx)
+{
+  return ctx->rts;
 }
 
 m2k_err_t

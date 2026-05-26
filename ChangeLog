@@ -23,6 +23,11 @@
   * Add m2k_is_online() and m2k_has_carrier() predicates for embed-mode
     hosts driving mode/DCD-aware UI (informed by minicom + dosemu2
     integration sketches)
+  * Expose m2k_get_listen_fd() so a host event loop can poll for the
+    "RING" event (incoming TCP connection) before calling m2k_listen_accept
+  * Add m2k_set_dtr / m2k_set_rts / m2k_get_dtr / m2k_get_rts for DTE
+    control-line state; DTR 1→0 transition while a connection is live
+    hangs up (&D2-equivalent)
 
 2022-08-18
 - modemu2k (v0.1.0)

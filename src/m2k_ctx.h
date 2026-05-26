@@ -29,4 +29,6 @@ struct m2k_s {
                                        on tty.{rfd,wfd}. */
     bool               escape_req;  /* m2k_escape() — drives one online→cmd
                                        transition on the next m2k_step(). */
+    bool               dtr;         /* m2k_set_dtr() — DTE control line. */
+    bool               rts;         /* m2k_set_rts() — DTE control line. */
 };

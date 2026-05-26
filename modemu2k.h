@@ -343,6 +343,21 @@ m2k_err_t   m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len,
 m2k_err_t   m2k_read_to_app(m2k_t *ctx, void *buf, size_t max, size_t *len_out);
 
 /**
+ * @brief Expose the listening socket's fd (after m2k_setup_listen,
+ *        before m2k_listen_accept).
+ *
+ * Lets a host event loop poll the fd for POLLIN — i.e. detect an
+ * incoming TCP connection (the "RING" event in modem terms) so it can
+ * call m2k_listen_accept() at the right moment instead of blocking
+ * unconditionally on it.
+ *
+ * @param ctx Modem context.
+ * @return The fd of a bound-but-not-yet-accepted listener, or -1 when
+ *         no listener is open (either never set up, or already accepted).
+ */
+int         m2k_get_listen_fd(const m2k_t *ctx);
+
+/**
  * @brief Accept a single incoming connection on the listening socket
  *        opened by m2k_setup_listen() and adopt it as the TTY.
  *
@@ -478,6 +493,40 @@ int         m2k_is_online(const m2k_t *ctx);
  * @return Nonzero when a connection is alive, zero otherwise.
  */
 int         m2k_has_carrier(const m2k_t *ctx);
+
+/**
+ * @brief Set the host's DTR (Data Terminal Ready) signal state.
+ *
+ * On the 1→0 transition while a connection is live, modemu2k hangs the
+ * connection up — matching the typical real-modem `AT&D2` default of
+ * "DTR drop terminates the call". Drop is otherwise a no-op (no carrier
+ * to drop). The DTR `&D` register is not (yet) lexable from AT command
+ * strings, so this function is the sole way to drive DTR-related
+ * behavior. Default state is asserted (1).
+ *
+ * @param ctx Modem context.
+ * @param on  Non-zero to assert DTR, zero to drop it.
+ */
+void        m2k_set_dtr(m2k_t *ctx, int on);
+
+/**
+ * @brief Set the host's RTS (Request to Send) signal state.
+ *
+ * Tracked for symmetry with real Hayes modems; modemu2k does not act on
+ * RTS state (hardware flow control is meaningless for a TCP-based
+ * virtual modem — the kernel's socket buffers and TCP windowing do
+ * that job). Default state is asserted (1).
+ *
+ * @param ctx Modem context.
+ * @param on  Non-zero to assert RTS, zero to drop it.
+ */
+void        m2k_set_rts(m2k_t *ctx, int on);
+
+/** Return the most recent value passed to m2k_set_dtr() (1 by default). */
+int         m2k_get_dtr(const m2k_t *ctx);
+
+/** Return the most recent value passed to m2k_set_rts() (1 by default). */
+int         m2k_get_rts(const m2k_t *ctx);
 
 #ifdef __cplusplus
 }
