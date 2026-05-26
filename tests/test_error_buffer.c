@@ -1,4 +1,5 @@
 #include "test.h"
+#include <stdio.h>
 #include <string.h>
 
 static int
@@ -125,6 +126,56 @@ test_truncates_to_buffer(void)
   m2k_free(ctx);
 }
 
+/* Verify m2k_strerror's table stays aligned with the m2k_err_t enum.
+   A previous reorder of the enum without an accompanying update to the
+   string table caused M2K_ERR_BUG to render as "Buffer full" and vice
+   versa — this test pins the mapping. */
+static void
+test_strerror_mapping(void)
+{
+  assert(strcmp(m2k_strerror(M2K_OK), "Success") == 0);
+  assert(strcmp(m2k_strerror(M2K_ERR_NOMEM), "Out of memory") == 0);
+  assert(strcmp(m2k_strerror(M2K_ERR_PTY), "PTY error") == 0);
+  assert(strcmp(m2k_strerror(M2K_ERR_SOCKET), "Socket error") == 0);
+  assert(strcmp(m2k_strerror(M2K_ERR_TIMEOUT), "Connection timed out") == 0);
+  assert(strcmp(m2k_strerror(M2K_ERR_CANCELED), "Operation canceled") == 0);
+  assert(strcmp(m2k_strerror(M2K_ERR_BUG), "Internal bug") == 0);
+  assert(strcmp(m2k_strerror(M2K_ERR_FULL), "Buffer full") == 0);
+  assert(strcmp(m2k_strerror(M2K_ERR_AT), "AT command rejected") == 0);
+}
+
+static int log_call_count;
+static char log_last_msg[256];
+
+static void
+test_log_callback(const char *msg, void *userdata)
+{
+  log_call_count++;
+  if (userdata)
+    *(int *)userdata = 1;
+  snprintf(log_last_msg, sizeof(log_last_msg), "%s", msg);
+}
+
+static void
+test_set_log_fn(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  int flag = 0;
+  log_call_count = 0;
+  log_last_msg[0] = '\0';
+
+  m2k_set_log_fn(ctx, test_log_callback, &flag);
+
+  /* Trigger an error path that emits a log message. */
+  assert(m2k_atcmd(ctx, "AT~rejected~thing") == M2K_ERR_AT);
+  assert(log_call_count > 0);
+  assert(flag == 1);
+  assert(strstr(log_last_msg, "rejected") != NULL);
+
+  m2k_free(ctx);
+}
+
 int
 main(void)
 {
@@ -135,5 +186,7 @@ main(void)
   test_dial_bad_host();
   test_buffer_unchanged_on_success();
   test_truncates_to_buffer();
+  test_strerror_mapping();
+  test_set_log_fn();
   return 0;
 }
