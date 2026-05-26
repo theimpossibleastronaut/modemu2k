@@ -9,9 +9,11 @@
 #include "m2k_private.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 #include "m2k_ctx.h"
 
-/* telnet option negotiation module */
+/* telnet option negotiation module — per-ctx state lives in
+   ctx->telOpt.stTabMaster[] and ctx->telOpt.stTab[]. The initial
+   requirement template below is copied into each ctx by telOptInit. */
 
-static TelOptStates stTabMaster[] = {
+static const TelOptStates stTabTemplate[M2K_TELOPT_ENTRIES] = {
   /*[opt]             [local]               [remote] */
   {TELOPT_BINARY, {TOR_BETTER, 0, 0}, {TOR_BETTER, 0, 0}},      /*0 */
   {TELOPT_ECHO, {TOR_MUSTNOT, 0, 0}, {TOR_BETTER, 0, 0}},       /*1 */
@@ -20,9 +22,8 @@ static TelOptStates stTabMaster[] = {
   {-1, {TOR_MUSTNOT, 0, 0}, {TOR_MUSTNOT, 0, 0}}        /* default state */
 };
 
-TelOptStates *stTab[NTELOPTS];  /* telOptInit() makes it usable */
-
-static /*const */ TelOptStates *defaultSt;      /* used when unknown options come */
+/* The default/unknown-option entry is the last slot of stTabMaster. */
+#define DEFAULT_ST(ctx) (&(ctx)->telOpt.stTabMaster[M2K_TELOPT_ENTRIES - 1])
 
 
 /* must call before each telnet session begins */
@@ -31,7 +32,7 @@ telOptReset(m2k_t *ctx)
 {
   TelOptStates *tosp;
 
-  for (tosp = stTabMaster; tosp->opt >= 0; tosp++)
+  for (tosp = ctx->telOpt.stTabMaster; tosp->opt >= 0; tosp++)
   {
     tosp->local.state = tosp->remote.state = 0; /* all options are disabled initially */
     tosp->local.pending = tosp->remote.pending = 0;
@@ -41,22 +42,25 @@ telOptReset(m2k_t *ctx)
 }
 
 
-/* must call once before using this module */
+/* must call once before using this ctx for telnet negotiation */
 void
 telOptInit(m2k_t *ctx)
 {
   TelOptStates *tosp;
+  TelOptStates *master = ctx->telOpt.stTabMaster;
   int i;
 
-  for (tosp = stTabMaster; tosp->opt >= 0; tosp++);
+  /* Copy the per-process template into per-ctx mutable storage. */
+  memcpy(master, stTabTemplate, sizeof(stTabTemplate));
+
+  /* Build the opt-id lookup: every slot points at the sentinel first,
+     then per-option slots get pointed at their stTabMaster entry. */
+  for (tosp = master; tosp->opt >= 0; tosp++);
+  TelOptStates *sentinel = tosp;
   for (i = 0; i < NTELOPTS; i++)
-    stTab[i] = tosp;            /* default entry */
-  defaultSt = tosp;
-  for (tosp--; tosp >= stTabMaster; tosp--)
-  {
-    stTab[tosp->opt] = tosp;
-  }
-  ctx->telOpt.stTab = stTab;
+    ctx->telOpt.stTab[i] = sentinel;
+  for (tosp--; tosp >= master; tosp--)
+    ctx->telOpt.stTab[tosp->opt] = tosp;
 }
 
 
@@ -120,14 +124,15 @@ setReqs(m2k_t *ctx)
   static TelOptReq tabN[]
     = { TOR_BETTER, TOR_BETTERNOT, TOR_MUST, TOR_MUSTNOT };
 
+  TelOptStates **st = ctx->telOpt.stTab;
   /* %Bn=m (binary mode control) */
-  stTab[TELOPT_BINARY]->local.req = tabP[ctx->atcmd.pb[1]];
-  stTab[TELOPT_BINARY]->remote.req = tabP[ctx->atcmd.pb[0]];
+  st[TELOPT_BINARY]->local.req = tabP[ctx->atcmd.pb[1]];
+  st[TELOPT_BINARY]->remote.req = tabP[ctx->atcmd.pb[0]];
   /* %Ln (linemode control) */
-  stTab[TELOPT_SGA]->remote.req = tabN[ctx->atcmd.pl];
-  stTab[TELOPT_ECHO]->remote.req = tabN[ctx->atcmd.pl];
+  st[TELOPT_SGA]->remote.req = tabN[ctx->atcmd.pl];
+  st[TELOPT_ECHO]->remote.req = tabN[ctx->atcmd.pl];
   /* %Tn (terminal-type response control) */
-  stTab[TELOPT_TTYPE]->local.req = ctx->atcmd.pt.wont ? TOR_MUSTNOT : TOR_NEUTRAL;
+  st[TELOPT_TTYPE]->local.req = ctx->atcmd.pt.wont ? TOR_MUSTNOT : TOR_NEUTRAL;
 }
 
 
@@ -139,7 +144,7 @@ telOptSendReqs(m2k_t *ctx)
 
   setReqs(ctx);
 
-  for (tosp = stTabMaster; tosp->opt >= 0; tosp++)
+  for (tosp = ctx->telOpt.stTabMaster; tosp->opt >= 0; tosp++)
   {
     switch (tosp->local.req)
     {
@@ -194,9 +199,9 @@ telOptSendReqs(m2k_t *ctx)
 static void
 telOptSummarize(m2k_t *ctx)
 {
-  ctx->telOpt.binsend = stTab[TELOPT_BINARY]->local.state;
-  ctx->telOpt.binrecv = stTab[TELOPT_BINARY]->remote.state;
-  ctx->telOpt.sgasend = stTab[TELOPT_SGA]->remote.state;
+  ctx->telOpt.binsend = ctx->telOpt.stTab[TELOPT_BINARY]->local.state;
+  ctx->telOpt.binrecv = ctx->telOpt.stTab[TELOPT_BINARY]->remote.state;
+  ctx->telOpt.sgasend = ctx->telOpt.stTab[TELOPT_SGA]->remote.state;
 }
 
 
@@ -216,7 +221,7 @@ telOptHandle(m2k_t *ctx, int cmd, int opt)
 
   printCmdOpt(ctx, "<", cmd, opt);
 
-  tosp = (opt < NTELOPTS) ? stTab[opt] : defaultSt;
+  tosp = (opt < NTELOPTS) ? ctx->telOpt.stTab[opt] : DEFAULT_ST(ctx);
 
   switch (cmd)
   {

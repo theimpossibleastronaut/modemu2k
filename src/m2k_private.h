@@ -38,6 +38,7 @@
 #include <stdbool.h>
 #include <sys/types.h>
 #include <sys/time.h>
+#include <arpa/telnet.h>        /* NTELOPTS for per-ctx telopt state */
 
 #ifdef TERMNET
 #include <termnet.h>
@@ -286,6 +287,9 @@ typedef struct
   TelOptState remote;           /* remote state of the option */
 } TelOptStates;
 
+/* 4 negotiated options (BINARY, ECHO, SGA, TTYPE) + 1 sentinel/default */
+#define M2K_TELOPT_ENTRIES 5
+
 struct st_telOpt
 {
   int binsend;                  /* local binary opt is enabled */
@@ -293,7 +297,13 @@ struct st_telOpt
   int sgasend;                  /* local SGA opt is enabled (char-at-a-time mode) */
   int sentReqs;                 /* have sent option requests to the peer
                                    or skip sending them */
-  TelOptStates **stTab;         /* = stTab[] in telopt.c */
+  /* Per-ctx telnet-option state. Was file-scope globals in telopt.c
+     until per-ctx separation. stTabMaster holds the live (mutated by
+     telOptReset) per-option negotiation state; stTab is the opt-id
+     lookup table; the last entry of stTabMaster is the default/unknown
+     fallback. */
+  TelOptStates stTabMaster[M2K_TELOPT_ENTRIES];
+  TelOptStates *stTab[NTELOPTS];
 };
 
 #define putOptCmd(ctx,s,c) { putSock1((ctx), IAC); putSock1((ctx), (s)); putSock1((ctx), (c)); }

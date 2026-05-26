@@ -171,6 +171,37 @@ test_print_cmd(void)
   telOptPrintCmd(ctx, ">", DO);
 }
 
+/* Two coexisting m2k_t contexts must not share telnet option state.
+   This used to be a real bug: stTabMaster and stTab were file-scope
+   globals, so negotiation on one ctx would visibly mutate the other. */
+static void
+test_multi_ctx_isolation(void)
+{
+  m2k_t *a = m2k_new();
+  m2k_t *b = m2k_new();
+  assert(a && b);
+  /* sockBufW is reset on online entry by stepEnterOnline; for this
+     unit test we drive telOptHandle directly so initialize manually. */
+  sockBufWReset(a);
+  sockBufWReset(b);
+
+  /* Drive negotiation only on ctx A. */
+  assert(telOptHandle(a, WILL, TELOPT_BINARY) == 0);
+  assert(a->telOpt.stTab[TELOPT_BINARY]->remote.state == 1);
+  assert(a->telOpt.binrecv == 1);
+
+  /* Ctx B must remain untouched. */
+  assert(b->telOpt.stTab[TELOPT_BINARY]->remote.state == 0);
+  assert(b->telOpt.binrecv == 0);
+
+  /* The per-ctx storage really is separate memory. */
+  assert(a->telOpt.stTabMaster != b->telOpt.stTabMaster);
+  assert(a->telOpt.stTab[TELOPT_BINARY] != b->telOpt.stTab[TELOPT_BINARY]);
+
+  m2k_free(a);
+  m2k_free(b);
+}
+
 int
 main(void)
 {
@@ -185,5 +216,6 @@ main(void)
   test_sb_handle_ttype();
   test_sb_handle_unknown();
   test_print_cmd();
+  test_multi_ctx_isolation();
   return 0;
 }
