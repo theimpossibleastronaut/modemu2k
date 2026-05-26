@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=modemu2k
+GenericName=Modem Emulator
+Comment=PTY-based modem emulator that proxies serial I/O over TCP/telnet
+Exec=modemu2k
+Icon=modemu2k
+Terminal=true
+Categories=Network;TerminalEmulator;
+Keywords=modem;telnet;serial;pty;
