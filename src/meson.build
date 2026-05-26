@@ -1,7 +1,7 @@
 src = [
   'cmdlex.c',
   'atcmd.c',
-  'commx.c',
+  'comm_program.c',
   'm2k_api.c',
   'sockbuf.c',
   'stty.c',

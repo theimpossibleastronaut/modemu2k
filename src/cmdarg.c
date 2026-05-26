@@ -133,7 +133,7 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
 
   int next_option = 0;
   x->ttymode = CA_STDINOUT;
-  x->commx = NULL;
+  x->comm_program = NULL;
   x->atcmd = NULL;
   x->dev = NULL;
   x->listen_port = NULL;
@@ -160,10 +160,10 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
 
     switch ((char) next_option)
     {
-    case 'c':                  /* -c <commx args> */
+    case 'c':                  /* -c <comm-program args> */
       SET_MODE('c');
-      x->ttymode = CA_COMMX;
-      x->commx = optarg;
+      x->ttymode = CA_COMM_PROGRAM;
+      x->comm_program = optarg;
       break;
     case 'd':                  /* -d <pty_device> */
       SET_MODE('d');

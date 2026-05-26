@@ -70,8 +70,8 @@ main(int argc, char *const argv[])
     m2k_free(ctx);
     return 0;
   }
-  case CA_COMMX:
-    if (m2k_setup_comm_program(ctx, cmdarg.commx) != M2K_OK)
+  case CA_COMM_PROGRAM:
+    if (m2k_setup_comm_program(ctx, cmdarg.comm_program) != M2K_OK)
     {
       m2k_free(ctx);
       return EXIT_FAILURE;

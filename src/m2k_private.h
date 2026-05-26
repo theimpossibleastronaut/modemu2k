@@ -185,11 +185,11 @@ int atcmdPT(m2k_t *ctx, const char *s);
 int atcmdPTSet(m2k_t *ctx, const char *s);
 int atcmdPV(m2k_t *ctx, const char *s);
 
-// commx
+// comm_program
 #ifdef HAVE_GRANTPT
-m2k_err_t commxForkExec(m2k_t *ctx, const char *cmd, char *ptyslave);
+m2k_err_t commProgramForkExec(m2k_t *ctx, const char *cmd, char *ptyslave);
 #else
-m2k_err_t commxForkExec(m2k_t *ctx, const char *cmd, char c10, char c01);
+m2k_err_t commProgramForkExec(m2k_t *ctx, const char *cmd, char c10, char c01);
 #endif
 
 // sockbuf

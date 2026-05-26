@@ -8,7 +8,7 @@
 #include "m2k_private.h"
 #include "m2k_ctx.h"
 
-static int commxPid;
+static int commProgramPid;
 
 static void
 sigchld(int dummy)
@@ -16,9 +16,9 @@ sigchld(int dummy)
   (void)dummy;
   int s;
 
-  /* wait() for commx exit() only */
+  /* wait() for comm program exit() only */
   /* waitpid(-1,,) messes SOCKS up */
-  if (waitpid(commxPid, &s, WNOHANG) > 0)
+  if (waitpid(commProgramPid, &s, WNOHANG) > 0)
   {
     fputs("Comm program exited.\r\n", stderr);
     /* Note: we don't have ctx here in the signal handler */
@@ -32,8 +32,8 @@ forkExec(m2k_t *ctx, char *s)
   static char *argv[4] = { "sh", "-c", "", NULL };
 
   signal(SIGCHLD, sigchld);
-  commxPid = fork();
-  switch (commxPid)
+  commProgramPid = fork();
+  switch (commProgramPid)
   {
   case -1:                     /*error */
     m2k_log(ctx, "fork(): %s\n", strerror(errno));
@@ -53,7 +53,7 @@ forkExec(m2k_t *ctx, char *s)
 
 #ifdef HAVE_GRANTPT
 m2k_err_t
-commxForkExec(m2k_t *ctx, const char *cmd, char *ptyslave)
+commProgramForkExec(m2k_t *ctx, const char *cmd, char *ptyslave)
 {
   char *s;
   s = malloc(strlen(cmd) + strlen(ptyslave) + 1);
@@ -69,7 +69,7 @@ commxForkExec(m2k_t *ctx, const char *cmd, char *ptyslave)
 }
 #else
 m2k_err_t
-commxForkExec(m2k_t *ctx, const char *cmd, char c10, char c01)
+commProgramForkExec(m2k_t *ctx, const char *cmd, char c10, char c01)
 {
   char c[16];
   char *s;

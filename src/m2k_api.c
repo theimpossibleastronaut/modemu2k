@@ -675,9 +675,9 @@ m2k_setup_comm_program(m2k_t *ctx, const char *cmd)
     return M2K_ERR_PTY;
   ctx->tty.rfd = ctx->tty.wfd = fd;
 #ifdef HAVE_GRANTPT
-  return commxForkExec(ctx, cmd, ctx->slave_path);
+  return commProgramForkExec(ctx, cmd, ctx->slave_path);
 #else
-  return commxForkExec(ctx, cmd, ctx->slave_path[0], ctx->slave_path[1]);
+  return commProgramForkExec(ctx, cmd, ctx->slave_path[0], ctx->slave_path[1]);
 #endif
 }
 
