@@ -63,6 +63,7 @@ typedef enum {
   M2K_ERR_SOCKET,   /**< TCP connect or I/O error. */
   M2K_ERR_TIMEOUT,  /**< Operation timed out. */
   M2K_ERR_CANCELED, /**< Operation canceled (e.g., +++ escape sequence). */
+  M2K_ERR_FULL,     /**< Buffer full; retry when the consumer has drained. */
   M2K_ERR_BUG,      /**< Internal assertion failure — should not happen. */
 } m2k_err_t;
 
@@ -241,18 +242,23 @@ m2k_err_t   m2k_setup_app_io(m2k_t *ctx);
 /**
  * @brief Push bytes into the modem as if they had been read from the TTY.
  *
- * Only valid after m2k_setup_app_io(). The bytes are buffered and will
- * be processed by the next m2k_step() call as input the AT-command lexer
- * (cmd mode) or the relay loop (online mode) sees.
+ * Only valid after m2k_setup_app_io(). Accepts as many bytes from @p buf
+ * as the internal TTY read buffer has room for (partial accept; the
+ * actual count is returned via @p *consumed). The accepted bytes are
+ * processed by the next m2k_step() call.
  *
- * @param ctx Modem context.
- * @param buf Bytes to inject.
- * @param len Length of @p buf in bytes.
- * @return M2K_OK on success, M2K_ERR_BUG if @p len exceeds the internal
- *         TTY read buffer (caller should split into smaller writes), or
+ * If the buffer is completely full, *consumed is set to 0 and the
+ * function returns M2K_ERR_FULL — call m2k_step() to drain, then retry.
+ *
+ * @param ctx      Modem context.
+ * @param buf      Bytes to inject.
+ * @param len      Length of @p buf in bytes.
+ * @param consumed Out: bytes actually accepted (0 .. len).
+ * @return M2K_OK if any bytes were accepted, M2K_ERR_FULL if none were,
  *         M2K_ERR_PTY if the context is not in app-I/O mode.
  */
-m2k_err_t   m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len);
+m2k_err_t   m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len,
+                               size_t *consumed);
 
 /**
  * @brief Drain bytes from the modem that would normally have been written

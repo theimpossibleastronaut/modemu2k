@@ -456,6 +456,7 @@ m2k_strerror(m2k_err_t err)
     "Socket error",
     "Connection timed out",
     "Operation canceled",
+    "Buffer full",
     "Internal bug",
   };
   if ((unsigned) err < sizeof(strs) / sizeof(strs[0]))
@@ -732,26 +733,29 @@ m2k_setup_app_io(m2k_t *ctx)
 }
 
 m2k_err_t
-m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len)
+m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len, size_t *consumed)
 {
+  *consumed = 0;
   if (!ctx->app_io)
     return M2K_ERR_PTY;
   if (len == 0)
     return M2K_OK;
 
-  /* Shift any residue down to the start of the buffer, then append. */
   size_t residue = ctx->ttyBufR.end - ctx->ttyBufR.ptr;
   size_t cap     = sizeof(ctx->ttyBufR.buf);
-  if (residue + len > cap)
-    return M2K_ERR_BUG;  /* caller wrote more than the read buffer can hold;
-                            split into smaller writes */
+  if (residue >= cap)
+    return M2K_ERR_FULL;
+  size_t room = cap - residue;
+  size_t take = len < room ? len : room;
+
   if (residue && ctx->ttyBufR.ptr != ctx->ttyBufR.buf)
     memmove(ctx->ttyBufR.buf, ctx->ttyBufR.ptr, residue);
-  memcpy(ctx->ttyBufR.buf + residue, buf, len);
+  memcpy(ctx->ttyBufR.buf + residue, buf, take);
   ctx->ttyBufR.ptr = ctx->ttyBufR.buf;
-  ctx->ttyBufR.end = ctx->ttyBufR.buf + residue + len;
+  ctx->ttyBufR.end = ctx->ttyBufR.buf + residue + take;
   ctx->ttyBufR.prevT = ctx->ttyBufR.newT;
   gettimeofday(&ctx->ttyBufR.newT, NULL);
+  *consumed = take;
   return M2K_OK;
 }
 
@@ -908,17 +912,17 @@ cmdIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 
   if (ctx->app_io)
   {
-    Cmdstat s = cmdDispatchIfReady(ctx, cmdBuf, sock);
-    if (s != CMDST_OK)
-      return s;
-    if (ttyBufRHasData(ctx))
+    for (;;)
     {
-      cmdReadLoop(ctx, cmdBuf);
-      s = cmdDispatchIfReady(ctx, cmdBuf, sock);
+      Cmdstat s = cmdDispatchIfReady(ctx, cmdBuf, sock);
       if (s != CMDST_OK)
         return s;
+      if (!ttyBufRHasData(ctx))
+        return CMDST_OK;
+      cmdReadLoop(ctx, cmdBuf);
+      if (!cmdBuf->eol)
+        return CMDST_OK;
     }
-    return CMDST_OK;
   }
 
   struct pollfd *p;
