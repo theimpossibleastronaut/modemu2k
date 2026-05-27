@@ -26,11 +26,21 @@ else
   cmdlex_c = files('cmdlex.c')
 endif
 
+# Isolate the generated lexer so we can relax warnings flex's output
+# trips (e.g. clang's -Wsign-compare on yy_size_t vs int). The rest of
+# the library keeps the project's strict flags.
+cmdlex_lib = static_library('m2k-cmdlex', cmdlex_c,
+  c_args: ['-Wno-sign-compare'],
+  include_directories: ['..'],
+  pic: true,
+  )
+
 version = meson.project_version()
 
 lib_modemu2k = library(
   meson.project_name(),
-  src, cmdlex_c,
+  src,
+  link_with: cmdlex_lib,
   version: version,
   include_directories : ['..'],
   install: true,
