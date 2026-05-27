@@ -35,6 +35,13 @@ if python3.found()
     'listen_integration',
     'dial_integration',
     ]
+  # The docker test brings up a real container; opt-in via -Ddocker-test=true
+  # so the default `meson test` doesn't depend on the docker daemon or
+  # silently skip a test the user didn't ask to run. The script itself
+  # still skips at runtime if docker is unavailable.
+  if get_option('docker-test')
+    py_test_cases += 'docker_telnet'
+  endif
   foreach case : py_test_cases
     name = 'test_' + case
     test(
@@ -42,7 +49,7 @@ if python3.found()
       python3,
       args: [files(name + '.py'), modemu2k_exe.full_path()],
       depends: modemu2k_exe,
-      timeout: 30,
+      timeout: 60,
       )
   endforeach
 endif

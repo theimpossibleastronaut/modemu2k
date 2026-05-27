@@ -38,6 +38,33 @@ Examples under `examples/` are the opposite: they link against the
 installed API surface. They are not run as tests but they *are* built,
 which catches API signature drift.
 
+## Docker-based integration test
+
+`test_docker_telnet.py` brings the `docker/` busybox `telnetd` container
+up automatically and dials it through the `modemu2k` binary.
+
+**Opt in at configure time:**
+
+```sh
+meson configure builddir -Ddocker-test=true
+meson test -C builddir test_docker_telnet
+```
+
+The test is disabled by default so the standard `meson test` run
+doesn't depend on the docker daemon being available. When the option
+is enabled, the test still skips itself (exit 77, which meson treats
+as SKIP per the autotools convention) when:
+
+- the `docker` binary isn't on `PATH`, or
+- `docker info` returns non-zero — meaning the daemon is down, or the
+  current user isn't in the `docker` group and would need `sudo`.
+
+The skip-check probes `docker info` as the unprivileged user; it never
+attempts `sudo docker`, since that would touch the sudo timestamp /
+auth log and silently elevate the test runner. If you want the test
+to run on your machine, configure docker to work without sudo (add
+yourself to the `docker` group, or use rootless docker).
+
 ## Manual testing against a real telnet peer
 
 `docker/` ships a throwaway busybox `telnetd` container that performs
