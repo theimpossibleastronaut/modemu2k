@@ -29,7 +29,11 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y meson ninja-build
 
     - name: Setup
-      run: meson setup builddir -Db_sanitize=address,undefined -Db_lundef=false
+      # docker-test=true is safe to pass: ubuntu-latest and ubuntu-24.04-arm
+      # both ship docker pre-installed and the runner user is in the docker
+      # group, so test_docker_telnet actually runs (rather than skipping
+      # itself via the exit-77 path it would take on a machine without docker).
+      run: meson setup builddir -Db_sanitize=address,undefined -Db_lundef=false -Ddocker-test=true
 
     - name: Build
       run: ninja -v -C builddir
