@@ -8,9 +8,6 @@ In-tree edits (before tagging)
 ------------------------------
 [x] ChangeLog: replace `(in-progress):` with `YYYY-MM-DD` + `- modemu2k (vX.Y.Z)`
     v0.2.0 sealed in commit 4b6702c (2026-05-27).
-[ ] ReleaseNotes: prepend a vX.Y.Z stanza highlighting end-user-visible changes
-    (breaking renames, new flags, new docs). Don't repeat ChangeLog verbatim;
-    this is the short-form release summary.
 [ ] packaging/debian/changelog: change `UNRELEASED` → `unstable` (or the
     relevant Debian distribution) and refresh the date stamp.
 [ ] meson.build: confirm `version:` matches the planned tag.
@@ -39,7 +36,7 @@ GitHub Release
 --------------
 [ ] gh release create vX.Y.Z modemu2k-X.Y.Z.tar.xz \
         --title "modemu2k vX.Y.Z" \
-        --notes-file <(awk '/^vX.Y.Z/,/^$/' ReleaseNotes)
+        --notes "<release summary; pull bullets from the ChangeLog stanza>"
 [ ] Attach the AppImage(s) from the appimage workflow run.
 
 gh-pages

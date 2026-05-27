@@ -28,7 +28,7 @@ flex isn't a build-time requirement either.
 * `/usr/include/modemu2k/modemu2k.h` — public C API header
 * `/usr/include/modemu2k/modemu2k_version.h` — generated version macros
 * `/usr/man/man1/modemu2k.1.gz`
-* `/usr/doc/modemu2k-<version>/` — README, QUICKSTART, HACKING, ChangeLog, AUTHORS, COPYING, ReleaseNotes
+* `/usr/doc/modemu2k-<version>/` — README, QUICKSTART, HACKING, ChangeLog, AUTHORS, COPYING
 * `/usr/doc/modemu2k-<version>/html/` — Doxygen API reference (built with `-Dgen-docs=true`)
 
 

@@ -140,7 +140,6 @@ if not meson.is_subproject()
       'COPYING',
       'AUTHORS',
       'ChangeLog',
-      'ReleaseNotes',
       ),
     install_dir : get_option('docdir')
     )
