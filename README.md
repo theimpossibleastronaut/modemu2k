@@ -43,6 +43,9 @@ The `modemu2k(1)` man page has the full option and AT-command reference.
 
 ## Live Telnet Boards
 
+(BBSes in this list may also be capable of ssh or web-based protocols;
+look them up in your browser if you would like more info.)
+
 * The Rusty Mailbox — [trmb.ca](https://trmb.ca/) on port 2030
 * [Synchronet BBS List](https://www.synchro.net/sbbslist.html) — a
   directory of currently-reachable telnet BBSes
