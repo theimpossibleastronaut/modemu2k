@@ -23,7 +23,10 @@ foreach case : test_cases
     name,
     name + '.c',
     include_directories: '../src',
-    c_args : ['-DUSE_AS_TEST_LIB'],
+    # M2K_SUPPRESS_DEPRECATED keeps tests that still exercise the
+    # deprecated synchronous API (m2k_dial / m2k_online) compiling
+    # clean. Drop it once those functions are removed.
+    c_args : ['-DUSE_AS_TEST_LIB', '-DM2K_SUPPRESS_DEPRECATED'],
     dependencies: [dep_modemu2k]
     )
   test(name, exe)

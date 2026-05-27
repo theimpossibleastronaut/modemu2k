@@ -68,6 +68,20 @@
 # endif
 #endif
 
+/* Deprecation marker. Consumers see a -Wdeprecated-declarations
+ * warning at the call site. modemu2k's own build defines
+ * M2K_SUPPRESS_DEPRECATED so the in-tree tests that still exercise
+ * the deprecated path build clean. */
+#if defined(M2K_SUPPRESS_DEPRECATED)
+# define M2K_DEPRECATED(msg)
+#elif defined(__GNUC__) || defined(__clang__)
+# define M2K_DEPRECATED(msg) __attribute__((deprecated(msg)))
+#elif defined(_MSC_VER)
+# define M2K_DEPRECATED(msg) __declspec(deprecated(msg))
+#else
+# define M2K_DEPRECATED(msg)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -196,6 +210,10 @@ M2K_API m2k_err_t   m2k_atcmd(m2k_t *ctx, const char *cmd);
 /**
  * @brief Open a TCP connection to @p host : @p port.
  *
+ * @deprecated Slated for removal in 0.3.0. Drive the state machine via
+ *             m2k_run() or the step API (m2k_get_pollfds + m2k_step)
+ *             and let the AT lexer dispatch the dial.
+ *
  * Transitions the modem from idle to connected state.  Call m2k_online() after
  * this to start relaying data.
  *
@@ -206,27 +224,24 @@ M2K_API m2k_err_t   m2k_atcmd(m2k_t *ctx, const char *cmd);
  *
  * @snippet tests/test_connect.c dial
  */
-M2K_API m2k_err_t   m2k_dial(m2k_t *ctx, const char *host, const char *port);
+M2K_API M2K_DEPRECATED("use m2k_run() or the step API instead")
+m2k_err_t           m2k_dial(m2k_t *ctx, const char *host, const char *port);
 
 /**
  * @brief Enter online mode and relay data between the PTY and the socket.
+ *
+ * @deprecated Slated for removal in 0.3.0. Use m2k_run() or the step API
+ *             (m2k_get_pollfds + m2k_step) instead — they share one
+ *             state-machine implementation with the rest of the library.
  *
  * Blocks until the connection closes or the @c +++ escape sequence is detected.
  * Returns M2K_ERR_CANCELED when the caller escapes back to command mode.
  *
  * @param ctx Modem context (must have an active connection from m2k_dial()).
  * @return M2K_OK when the remote end closes, M2K_ERR_CANCELED on +++ escape.
- *
- * @code
- * // Reconnect loop: re-enter online mode if the user escapes with +++
- * m2k_err_t st;
- * do {
- *     st = m2k_online(ctx);
- * } while (st == M2K_ERR_CANCELED);
- * m2k_hangup(ctx);
- * @endcode
  */
-M2K_API m2k_err_t   m2k_online(m2k_t *ctx);
+M2K_API M2K_DEPRECATED("use m2k_run() or the step API instead")
+m2k_err_t           m2k_online(m2k_t *ctx);
 
 /**
  * @brief Tear down the active TCP connection.

@@ -14,7 +14,7 @@ int main(void)
   char errbuf[M2K_ERROR_BUFFER_SIZE];
   m2k_set_error_buffer(ctx, errbuf, sizeof(errbuf));
 
-  if (m2k_dial(ctx, "nonexistent.invalid", "23") != M2K_OK)
+  if (m2k_atcmd(ctx, "AT~not~a~real~command") != M2K_OK)
     fprintf(stderr, "modemu2k: %s\n", errbuf);
   //! [set_error_buffer]
 
