@@ -84,7 +84,7 @@ if get_option('gen-docs')
   man_to_fragment = find_program('doxygen/man-to-fragment.sh')
   subdir('doxygen')
   doxyfile = configure_file(
-    input:  'Doxyfile.in',
+    input:  'doxygen/Doxyfile.in',
     output: 'Doxyfile',
     configuration: {
       'PROJECT_NAME':    meson.project_name(),
