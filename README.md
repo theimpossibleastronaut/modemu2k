@@ -41,7 +41,7 @@ file transfers, escaping with `+++`, and quitting cleanly.
 
 The `modemu2k(1)` man page has the full option and AT-command reference.
 
-## Real BBSes to connect to
+## Live Telnet Boards
 
 * The Rusty Mailbox — [trmb.ca](https://trmb.ca/) on port 2030
 * [Synchronet BBS List](https://www.synchro.net/sbbslist.html) — a
