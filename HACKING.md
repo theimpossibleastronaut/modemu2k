@@ -185,6 +185,17 @@ embed mode side-steps that, but the existing minicom code paths
 that call `m_sethwf` / `m_break` / `m_flush` would become no-ops
 and need either stubs or compile-time gating.
 
+**File transfer (lrzsz) is the real architectural gap.** Minicom's
+`updown.c` spawns the transfer process with `dup2(portfd, 0)` and
+`dup2(portfd, 1)`, giving the child its stdin/stdout. With `portfd`
+sentinel'd to `/dev/null` in embed mode, lrzsz reads EOF and writes
+go nowhere — transfer times out. A real fix needs a PTY-pair bridge:
+allocate `openpty()`, give the child the slave, and have the parent
+pump bytes between the master and `m2k_{write_from,read_to}_app` —
+roughly 50 lines of new code. Until then, file transfer requires the
+standalone-modemu2k-plus-system-minicom path (the `m2k-minicom`
+helper script), which gives lrzsz a real PTY end-to-end.
+
 ## Cross-references
 
 - **Building, testing, coverage:** `tests/README.md` covers the
