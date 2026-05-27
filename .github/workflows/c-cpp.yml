@@ -16,17 +16,20 @@ env:
   CFLAGS: -Werror
 
 jobs:
-  gcc:
+  linux:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm]
+        cc: [gcc, clang]
     runs-on: ${{ matrix.os }}
+    env:
+      CC: ${{ matrix.cc }}
     steps:
     - uses: actions/checkout@v6
 
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y meson ninja-build
+      run: sudo apt-get update && sudo apt-get install -y meson ninja-build ${{ matrix.cc }}
 
     - name: Setup
       # docker-test=true is safe to pass: ubuntu-latest and ubuntu-24.04-arm
