@@ -26,8 +26,10 @@ flex isn't a build-time requirement either.
 * `/usr/bin/m2k-minicom`, `/usr/bin/m2k-picocom` — convenience wrappers
 * `/usr/lib*/libmodemu2k.{a,so*}` — static and shared library
 * `/usr/include/modemu2k/modemu2k.h` — public C API header
+* `/usr/include/modemu2k/modemu2k_version.h` — generated version macros
 * `/usr/man/man1/modemu2k.1.gz`
-* `/usr/doc/modemu2k-<version>/` — README, QUICKSTART, ChangeLog, COPYING
+* `/usr/doc/modemu2k-<version>/` — README, QUICKSTART, HACKING, ChangeLog, AUTHORS, COPYING, ReleaseNotes
+* `/usr/doc/modemu2k-<version>/html/` — Doxygen API reference (built with `-Dgen-docs=true`)
 
 
 ## Quick start
