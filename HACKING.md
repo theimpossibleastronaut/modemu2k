@@ -196,14 +196,3 @@ roughly 50 lines of new code. Until then, file transfer requires the
 standalone-modemu2k-plus-system-minicom path (the `m2k-minicom`
 helper script), which gives lrzsz a real PTY end-to-end.
 
-## Cross-references
-
-- **Building, testing, coverage:** `tests/README.md` covers the
-  C/Python/shell layout, the `USE_AS_TEST_LIB` white-box pattern,
-  the docker telnetd container for manual negotiation testing, and
-  how to take a `gcovr` snapshot.
-- **Build options, doxygen workflow, packaging gates:** see the
-  top-level `README.md` and the `packaging/` directory.
-- **API conventions borrowed from other libraries:** README's
-  Acknowledgments section credits libcurl, libuv, libssh2, SQLite,
-  and stb for the specific patterns adopted.
