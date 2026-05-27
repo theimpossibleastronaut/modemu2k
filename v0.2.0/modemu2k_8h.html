@@ -103,11 +103,14 @@ $(function() {
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;poll.h&gt;</code><br />
 <code>#include &lt;stddef.h&gt;</code><br />
+<code>#include &quot;modemu2k_version.h&quot;</code><br />
 </div>
 <p><a href="modemu2k_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:af827f32b40d60938ee7fa1c73cbb9d29" id="r_af827f32b40d60938ee7fa1c73cbb9d29"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a></td></tr>
+<tr class="memdesc:af827f32b40d60938ee7fa1c73cbb9d29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Public-symbol visibility/export marker.  <br /></td></tr>
 <tr class="memitem:a9d6963fa86a18c42223486d7049ed914" id="r_a9d6963fa86a18c42223486d7049ed914"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a9d6963fa86a18c42223486d7049ed914">M2K_ERROR_BUFFER_SIZE</a>&#160;&#160;&#160;256</td></tr>
 <tr class="memitem:a83a9fe0262eb8987dd3873a32ca340db" id="r_a83a9fe0262eb8987dd3873a32ca340db"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a83a9fe0262eb8987dd3873a32ca340db">M2K_MAX_POLLFDS</a>&#160;&#160;&#160;3</td></tr>
 </table><table class="memberdecls">
@@ -115,7 +118,7 @@ Macros</h2></td></tr>
 Typedefs</h2></td></tr>
 <tr class="memitem:a861720925b561f9640e9e606fb6d9ec6" id="r_a861720925b561f9640e9e606fb6d9ec6"><td class="memItemLeft"><a id="a861720925b561f9640e9e606fb6d9ec6" name="a861720925b561f9640e9e606fb6d9ec6"></a>
 typedef struct m2k_s&#160;</td><td class="memItemRight"><b>m2k_t</b></td></tr>
-<tr class="memdesc:a861720925b561f9640e9e606fb6d9ec6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque modem emulator context. Create with <a class="el" href="#a4876c026865cd1ecff6b8b9010b37b2c" title="Allocate and initialise a new modem context.">m2k_new()</a>, destroy with <a class="el" href="#adecfb34f9484c3a984a1fc94dbd11c90" title="Release all resources held by ctx.">m2k_free()</a>. <br /></td></tr>
+<tr class="memdesc:a861720925b561f9640e9e606fb6d9ec6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque modem emulator context. Create with <a class="el" href="#aa0c4543e93fa6c87b50c3ce31acc1223" title="Allocate and initialise a new modem context.">m2k_new()</a>, destroy with <a class="el" href="#a5d75b20e6984cc904b69bdc7949e0f1d" title="Release all resources held by ctx.">m2k_free()</a>. <br /></td></tr>
 <tr class="memitem:a26868be55e10d283ed4a75e82a79409d" id="r_a26868be55e10d283ed4a75e82a79409d"><td class="memItemLeft">typedef void(*&#160;</td><td class="memItemRight"><a class="el" href="#a26868be55e10d283ed4a75e82a79409d">m2k_log_fn</a>) (const char *msg, void *userdata)</td></tr>
 <tr class="memdesc:a26868be55e10d283ed4a75e82a79409d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Log callback type.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -130,7 +133,7 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="#ab031108ada7cc3a5b255fe58041dce19a4099531099a5ecc8e0eefcef3f1f9268">M2K_ERR_TIMEOUT</a>
 , <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8">M2K_ERR_CANCELED</a>
 , <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19ab6e3a3046eaf47b5af62480390d270cc">M2K_ERR_BUG</a>
-, <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19a0f69d06fc3bdad0d0c19c1f9a276758f">M2K_ERR_FULL</a>
+, <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19a2fb9df08e88d3db15f4663bb84686e35">M2K_ERR_WOULDBLOCK</a>
 , <br />
 &#160;&#160;<a class="el" href="#ab031108ada7cc3a5b255fe58041dce19aed2f5ca8a7861022565ece4f79f956e5">M2K_ERR_AT</a>
 <br />
@@ -139,94 +142,114 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a4876c026865cd1ecff6b8b9010b37b2c" id="r_a4876c026865cd1ecff6b8b9010b37b2c"><td class="memItemLeft"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a4876c026865cd1ecff6b8b9010b37b2c">m2k_new</a> (void)</td></tr>
-<tr class="memdesc:a4876c026865cd1ecff6b8b9010b37b2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate and initialise a new modem context.  <br /></td></tr>
-<tr class="memitem:adecfb34f9484c3a984a1fc94dbd11c90" id="r_adecfb34f9484c3a984a1fc94dbd11c90"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#adecfb34f9484c3a984a1fc94dbd11c90">m2k_free</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memdesc:adecfb34f9484c3a984a1fc94dbd11c90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release all resources held by <code class="param">ctx</code>.  <br /></td></tr>
-<tr class="memitem:a2b89203ec50a8d3a12d5902f9364ce74" id="r_a2b89203ec50a8d3a12d5902f9364ce74"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2b89203ec50a8d3a12d5902f9364ce74">m2k_set_log_fn</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, <a class="el" href="#a26868be55e10d283ed4a75e82a79409d">m2k_log_fn</a> fn, void *userdata)</td></tr>
-<tr class="memdesc:a2b89203ec50a8d3a12d5902f9364ce74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install a log callback.  <br /></td></tr>
-<tr class="memitem:a303bf2f93ee3fa492148cd5ddb8f8f4c" id="r_a303bf2f93ee3fa492148cd5ddb8f8f4c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a303bf2f93ee3fa492148cd5ddb8f8f4c">m2k_set_error_buffer</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, char *buf, size_t size)</td></tr>
-<tr class="memdesc:a303bf2f93ee3fa492148cd5ddb8f8f4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install a buffer that receives a detailed message for the most recent error.  <br /></td></tr>
-<tr class="memitem:a1bc9bda2db0361b73b697b781a4d8862" id="r_a1bc9bda2db0361b73b697b781a4d8862"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a1bc9bda2db0361b73b697b781a4d8862">m2k_atcmd</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *cmd)</td></tr>
-<tr class="memdesc:a1bc9bda2db0361b73b697b781a4d8862"><td class="mdescLeft">&#160;</td><td class="mdescRight">Feed a Hayes AT command string to the modem.  <br /></td></tr>
-<tr class="memitem:a5d0de562057841ed5f7441fa170548a4" id="r_a5d0de562057841ed5f7441fa170548a4"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5d0de562057841ed5f7441fa170548a4">m2k_dial</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *host, const char *port)</td></tr>
-<tr class="memdesc:a5d0de562057841ed5f7441fa170548a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open a TCP connection to <code class="param">host</code> : <code class="param">port</code>.  <br /></td></tr>
-<tr class="memitem:a372c11bf0cdc06d9a4a2b568e6162ff6" id="r_a372c11bf0cdc06d9a4a2b568e6162ff6"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a372c11bf0cdc06d9a4a2b568e6162ff6">m2k_online</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memdesc:a372c11bf0cdc06d9a4a2b568e6162ff6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enter online mode and relay data between the PTY and the socket.  <br /></td></tr>
-<tr class="memitem:a61e4922eeee52bf582ac8220c92e2fcc" id="r_a61e4922eeee52bf582ac8220c92e2fcc"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a61e4922eeee52bf582ac8220c92e2fcc">m2k_hangup</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memdesc:a61e4922eeee52bf582ac8220c92e2fcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tear down the active TCP connection.  <br /></td></tr>
-<tr class="memitem:a410e43de416109bc7a2b65f19cf0c6d2" id="r_a410e43de416109bc7a2b65f19cf0c6d2"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a410e43de416109bc7a2b65f19cf0c6d2">m2k_escape</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memdesc:a410e43de416109bc7a2b65f19cf0c6d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request an immediate return to command mode from online mode.  <br /></td></tr>
-<tr class="memitem:a976094e155a6c711075a4fea65c5a6eb" id="r_a976094e155a6c711075a4fea65c5a6eb"><td class="memItemLeft">const char *&#160;</td><td class="memItemRight"><a class="el" href="#a976094e155a6c711075a4fea65c5a6eb">m2k_strerror</a> (<a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> err)</td></tr>
-<tr class="memdesc:a976094e155a6c711075a4fea65c5a6eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a human-readable string for <code class="param">err</code>.  <br /></td></tr>
-<tr class="memitem:a40332fcdccf5378d47ccf222ba2d0941" id="r_a40332fcdccf5378d47ccf222ba2d0941"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a40332fcdccf5378d47ccf222ba2d0941">m2k_setup_stdin</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memdesc:a40332fcdccf5378d47ccf222ba2d0941"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use stdin/stdout as the TTY (standalone mode).  <br /></td></tr>
-<tr class="memitem:a279451134b208dec1304b8bbfff4b97a" id="r_a279451134b208dec1304b8bbfff4b97a"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a279451134b208dec1304b8bbfff4b97a">m2k_setup_pty</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char **slave_out)</td></tr>
-<tr class="memdesc:a279451134b208dec1304b8bbfff4b97a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a PTY master and return the slave device path.  <br /></td></tr>
-<tr class="memitem:aecd6209b8425839fa4eef30f504a41bf" id="r_aecd6209b8425839fa4eef30f504a41bf"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#aecd6209b8425839fa4eef30f504a41bf">m2k_setup_comm_program</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *cmd)</td></tr>
-<tr class="memdesc:aecd6209b8425839fa4eef30f504a41bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a PTY and fork/exec a comm program on the slave.  <br /></td></tr>
-<tr class="memitem:a3a49027773e518fc5751feb29a20f48d" id="r_a3a49027773e518fc5751feb29a20f48d"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3a49027773e518fc5751feb29a20f48d">m2k_setup_dev</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *dev)</td></tr>
-<tr class="memdesc:a3a49027773e518fc5751feb29a20f48d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open an existing PTY device as the TTY.  <br /></td></tr>
-<tr class="memitem:acfa303ff386429f596340f7e69a559fa" id="r_acfa303ff386429f596340f7e69a559fa"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#acfa303ff386429f596340f7e69a559fa">m2k_setup_listen</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *port)</td></tr>
-<tr class="memdesc:acfa303ff386429f596340f7e69a559fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a TCP listening socket on <code class="param">port</code>.  <br /></td></tr>
-<tr class="memitem:a62f8ccbb4258ffb32e2b2c6882fe43a0" id="r_a62f8ccbb4258ffb32e2b2c6882fe43a0"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a62f8ccbb4258ffb32e2b2c6882fe43a0">m2k_setup_app_io</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memdesc:a62f8ccbb4258ffb32e2b2c6882fe43a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Embed mode: no real TTY fd; the host application supplies the bytes a TTY would normally produce, via <a class="el" href="#a73fd2428badbed2010367a9070e8e019" title="Push bytes into the modem as if they had been read from the TTY.">m2k_write_from_app()</a>, and consumes the bytes modemu2k would normally send to the TTY, via <a class="el" href="#a666b50c2427136c51d3a8907b3078199" title="Drain bytes from the modem that would normally have been written to the TTY.">m2k_read_to_app()</a>.  <br /></td></tr>
-<tr class="memitem:a73fd2428badbed2010367a9070e8e019" id="r_a73fd2428badbed2010367a9070e8e019"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a73fd2428badbed2010367a9070e8e019">m2k_write_from_app</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const void *buf, size_t len, size_t *consumed)</td></tr>
-<tr class="memdesc:a73fd2428badbed2010367a9070e8e019"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push bytes into the modem as if they had been read from the TTY.  <br /></td></tr>
-<tr class="memitem:a666b50c2427136c51d3a8907b3078199" id="r_a666b50c2427136c51d3a8907b3078199"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a666b50c2427136c51d3a8907b3078199">m2k_read_to_app</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, void *buf, size_t max, size_t *len_out)</td></tr>
-<tr class="memdesc:a666b50c2427136c51d3a8907b3078199"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drain bytes from the modem that would normally have been written to the TTY.  <br /></td></tr>
-<tr class="memitem:a590f6c64b18a213f8db1b3d34e3c6c69" id="r_a590f6c64b18a213f8db1b3d34e3c6c69"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a590f6c64b18a213f8db1b3d34e3c6c69">m2k_get_listen_fd</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memdesc:a590f6c64b18a213f8db1b3d34e3c6c69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expose the listening socket's fd (after m2k_setup_listen, before m2k_listen_accept).  <br /></td></tr>
-<tr class="memitem:a801b48d44c221c1fe37f5ca3e9927978" id="r_a801b48d44c221c1fe37f5ca3e9927978"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a801b48d44c221c1fe37f5ca3e9927978">m2k_listen_accept</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memdesc:a801b48d44c221c1fe37f5ca3e9927978"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a single incoming connection on the listening socket opened by <a class="el" href="#acfa303ff386429f596340f7e69a559fa" title="Bind a TCP listening socket on port.">m2k_setup_listen()</a> and adopt it as the TTY.  <br /></td></tr>
-<tr class="memitem:a49e0a78c27ee140d0b76fc195107fef0" id="r_a49e0a78c27ee140d0b76fc195107fef0"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memdesc:a49e0a78c27ee140d0b76fc195107fef0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the modem command/online loop until the PTY closes.  <br /></td></tr>
-<tr class="memitem:ae938fa8390fa2669e54a7ed6b87abacb" id="r_ae938fa8390fa2669e54a7ed6b87abacb"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae938fa8390fa2669e54a7ed6b87abacb">m2k_get_pollfds</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)</td></tr>
-<tr class="memdesc:ae938fa8390fa2669e54a7ed6b87abacb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the fds and timeout the caller's event loop should watch.  <br /></td></tr>
-<tr class="memitem:a21b6a2e9cf2d513a31990c155d2dcfe4" id="r_a21b6a2e9cf2d513a31990c155d2dcfe4"><td class="memItemLeft"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a21b6a2e9cf2d513a31990c155d2dcfe4">m2k_step</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, struct pollfd *fds, size_t nfds)</td></tr>
-<tr class="memdesc:a21b6a2e9cf2d513a31990c155d2dcfe4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run one non-blocking iteration of the state machine.  <br /></td></tr>
-<tr class="memitem:a969057d307ae6420d6eff8f919fa80da" id="r_a969057d307ae6420d6eff8f919fa80da"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a969057d307ae6420d6eff8f919fa80da">m2k_run_done</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memdesc:a969057d307ae6420d6eff8f919fa80da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether the session has ended.  <br /></td></tr>
-<tr class="memitem:a134cd0f94ffe05afff6f5132002ddb10" id="r_a134cd0f94ffe05afff6f5132002ddb10"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a134cd0f94ffe05afff6f5132002ddb10">m2k_is_online</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memdesc:a134cd0f94ffe05afff6f5132002ddb10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether the modem is currently in online mode.  <br /></td></tr>
-<tr class="memitem:a493fb8d3942c9ac322128c3e5437eb52" id="r_a493fb8d3942c9ac322128c3e5437eb52"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a493fb8d3942c9ac322128c3e5437eb52">m2k_has_carrier</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memdesc:a493fb8d3942c9ac322128c3e5437eb52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether the modem has an active carrier (live TCP socket).  <br /></td></tr>
-<tr class="memitem:af5b0fb45f5ca401388eaea2a03bcca9a" id="r_af5b0fb45f5ca401388eaea2a03bcca9a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af5b0fb45f5ca401388eaea2a03bcca9a">m2k_set_dtr</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, int on)</td></tr>
-<tr class="memdesc:af5b0fb45f5ca401388eaea2a03bcca9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the host's DTR (Data Terminal Ready) signal state.  <br /></td></tr>
-<tr class="memitem:af3e16a44317f9d51b13b2a714263b650" id="r_af3e16a44317f9d51b13b2a714263b650"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af3e16a44317f9d51b13b2a714263b650">m2k_set_rts</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, int on)</td></tr>
-<tr class="memdesc:af3e16a44317f9d51b13b2a714263b650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the host's RTS (Request to Send) signal state.  <br /></td></tr>
-<tr class="memitem:a11c934fd1181828a0fe0d6d235b97a60" id="r_a11c934fd1181828a0fe0d6d235b97a60"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a11c934fd1181828a0fe0d6d235b97a60">m2k_get_dtr</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
-<tr class="memitem:a28565167ef0c18420b215745d5955c85" id="r_a28565167ef0c18420b215745d5955c85"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a28565167ef0c18420b215745d5955c85">m2k_get_rts</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memitem:a84e0b75d119d8bbd1e79780e10867c4f" id="r_a84e0b75d119d8bbd1e79780e10867c4f"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> const char *&#160;</td><td class="memItemRight"><a class="el" href="#a84e0b75d119d8bbd1e79780e10867c4f">m2k_version</a> (void)</td></tr>
+<tr class="memdesc:a84e0b75d119d8bbd1e79780e10867c4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runtime version string of the linked libmodemu2k.  <br /></td></tr>
+<tr class="memitem:aa0c4543e93fa6c87b50c3ce31acc1223" id="r_aa0c4543e93fa6c87b50c3ce31acc1223"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *&#160;</td><td class="memItemRight"><a class="el" href="#aa0c4543e93fa6c87b50c3ce31acc1223">m2k_new</a> (void)</td></tr>
+<tr class="memdesc:aa0c4543e93fa6c87b50c3ce31acc1223"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate and initialise a new modem context.  <br /></td></tr>
+<tr class="memitem:a5d75b20e6984cc904b69bdc7949e0f1d" id="r_a5d75b20e6984cc904b69bdc7949e0f1d"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void&#160;</td><td class="memItemRight"><a class="el" href="#a5d75b20e6984cc904b69bdc7949e0f1d">m2k_free</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a5d75b20e6984cc904b69bdc7949e0f1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release all resources held by <code class="param">ctx</code>.  <br /></td></tr>
+<tr class="memitem:a7cc7ea598158c6d6d92646af1e0c66f9" id="r_a7cc7ea598158c6d6d92646af1e0c66f9"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void&#160;</td><td class="memItemRight"><a class="el" href="#a7cc7ea598158c6d6d92646af1e0c66f9">m2k_set_log_fn</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, <a class="el" href="#a26868be55e10d283ed4a75e82a79409d">m2k_log_fn</a> fn, void *userdata)</td></tr>
+<tr class="memdesc:a7cc7ea598158c6d6d92646af1e0c66f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install a log callback.  <br /></td></tr>
+<tr class="memitem:a5b9165ff6b68e463e486eb410f677944" id="r_a5b9165ff6b68e463e486eb410f677944"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void&#160;</td><td class="memItemRight"><a class="el" href="#a5b9165ff6b68e463e486eb410f677944">m2k_set_error_buffer</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, char *buf, size_t size)</td></tr>
+<tr class="memdesc:a5b9165ff6b68e463e486eb410f677944"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install a buffer that receives a detailed message for the most recent error.  <br /></td></tr>
+<tr class="memitem:a9db3de10144ae6dfed16e43d037568bd" id="r_a9db3de10144ae6dfed16e43d037568bd"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *cmd)</td></tr>
+<tr class="memdesc:a9db3de10144ae6dfed16e43d037568bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Feed a Hayes AT command string to the modem.  <br /></td></tr>
+<tr class="memitem:ac29121f4520ee5547c490105de0c1f9d" id="r_ac29121f4520ee5547c490105de0c1f9d"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac29121f4520ee5547c490105de0c1f9d">m2k_dial</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *host, const char *port)</td></tr>
+<tr class="memdesc:ac29121f4520ee5547c490105de0c1f9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open a TCP connection to <code class="param">host</code> : <code class="param">port</code>.  <br /></td></tr>
+<tr class="memitem:ab076e8bc1f0fd42a7a49f79a6961873b" id="r_ab076e8bc1f0fd42a7a49f79a6961873b"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab076e8bc1f0fd42a7a49f79a6961873b">m2k_online</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:ab076e8bc1f0fd42a7a49f79a6961873b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enter online mode and relay data between the PTY and the socket.  <br /></td></tr>
+<tr class="memitem:a9dc773771965394574f89b3eef68c977" id="r_a9dc773771965394574f89b3eef68c977"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a9dc773771965394574f89b3eef68c977">m2k_hangup</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a9dc773771965394574f89b3eef68c977"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tear down the active TCP connection.  <br /></td></tr>
+<tr class="memitem:a8497dabd96dab585f2e6255bd9414a0a" id="r_a8497dabd96dab585f2e6255bd9414a0a"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a8497dabd96dab585f2e6255bd9414a0a">m2k_escape</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a8497dabd96dab585f2e6255bd9414a0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request an immediate return to command mode from online mode.  <br /></td></tr>
+<tr class="memitem:ac68560914e8d83ca8998de26e5b9e8c3" id="r_ac68560914e8d83ca8998de26e5b9e8c3"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> const char *&#160;</td><td class="memItemRight"><a class="el" href="#ac68560914e8d83ca8998de26e5b9e8c3">m2k_strerror</a> (<a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> err)</td></tr>
+<tr class="memdesc:ac68560914e8d83ca8998de26e5b9e8c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a human-readable string for <code class="param">err</code>.  <br /></td></tr>
+<tr class="memitem:a77b3b99414d43ae9aa8475429a8ece74" id="r_a77b3b99414d43ae9aa8475429a8ece74"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a77b3b99414d43ae9aa8475429a8ece74">m2k_setup_stdin</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a77b3b99414d43ae9aa8475429a8ece74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use stdin/stdout as the TTY (standalone mode).  <br /></td></tr>
+<tr class="memitem:ab77f3daab4a6f38d7739cf5da27476cf" id="r_ab77f3daab4a6f38d7739cf5da27476cf"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab77f3daab4a6f38d7739cf5da27476cf">m2k_setup_pty</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char **slave_out)</td></tr>
+<tr class="memdesc:ab77f3daab4a6f38d7739cf5da27476cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a PTY master and return the slave device path.  <br /></td></tr>
+<tr class="memitem:a71488162aeb202f18b44dbf71d47539b" id="r_a71488162aeb202f18b44dbf71d47539b"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a71488162aeb202f18b44dbf71d47539b">m2k_setup_comm_program</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *cmd)</td></tr>
+<tr class="memdesc:a71488162aeb202f18b44dbf71d47539b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a PTY and fork/exec a comm program on the slave.  <br /></td></tr>
+<tr class="memitem:a8322015cb87514367612cb5a3b6d05af" id="r_a8322015cb87514367612cb5a3b6d05af"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a8322015cb87514367612cb5a3b6d05af">m2k_setup_dev</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *dev)</td></tr>
+<tr class="memdesc:a8322015cb87514367612cb5a3b6d05af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open an existing PTY device as the TTY.  <br /></td></tr>
+<tr class="memitem:ad7f6c25b8be4f0e633175d426db925d8" id="r_ad7f6c25b8be4f0e633175d426db925d8"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad7f6c25b8be4f0e633175d426db925d8">m2k_setup_listen</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const char *port)</td></tr>
+<tr class="memdesc:ad7f6c25b8be4f0e633175d426db925d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a TCP listening socket on <code class="param">port</code>.  <br /></td></tr>
+<tr class="memitem:a24a9dfd9bd5872cd3b94d3b71878d4e5" id="r_a24a9dfd9bd5872cd3b94d3b71878d4e5"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a24a9dfd9bd5872cd3b94d3b71878d4e5">m2k_setup_app_io</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a24a9dfd9bd5872cd3b94d3b71878d4e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Embed mode: no real TTY fd; the host application supplies the bytes a TTY would normally produce, via <a class="el" href="#ab0800ff35135cf932b508c41bb42bed7" title="Push bytes into the modem as if they had been read from the TTY.">m2k_write_from_app()</a>, and consumes the bytes modemu2k would normally send to the TTY, via <a class="el" href="#ac0c99a7b4195f817956429d35ababf80" title="Drain bytes from the modem that would normally have been written to the TTY.">m2k_read_to_app()</a>.  <br /></td></tr>
+<tr class="memitem:ab0800ff35135cf932b508c41bb42bed7" id="r_ab0800ff35135cf932b508c41bb42bed7"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab0800ff35135cf932b508c41bb42bed7">m2k_write_from_app</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, const void *buf, size_t len, size_t *consumed)</td></tr>
+<tr class="memdesc:ab0800ff35135cf932b508c41bb42bed7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push bytes into the modem as if they had been read from the TTY.  <br /></td></tr>
+<tr class="memitem:ac0c99a7b4195f817956429d35ababf80" id="r_ac0c99a7b4195f817956429d35ababf80"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac0c99a7b4195f817956429d35ababf80">m2k_read_to_app</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, void *buf, size_t max, size_t *len_out)</td></tr>
+<tr class="memdesc:ac0c99a7b4195f817956429d35ababf80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drain bytes from the modem that would normally have been written to the TTY.  <br /></td></tr>
+<tr class="memitem:afce831817901d6602f4a430f8eaa728b" id="r_afce831817901d6602f4a430f8eaa728b"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#afce831817901d6602f4a430f8eaa728b">m2k_get_listen_fd</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:afce831817901d6602f4a430f8eaa728b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expose the listening socket's fd (after m2k_setup_listen, before m2k_listen_accept).  <br /></td></tr>
+<tr class="memitem:a3f20db8d832b116f49dcbe9b8e41ce48" id="r_a3f20db8d832b116f49dcbe9b8e41ce48"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3f20db8d832b116f49dcbe9b8e41ce48">m2k_listen_accept</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a3f20db8d832b116f49dcbe9b8e41ce48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a single incoming connection on the listening socket opened by <a class="el" href="#ad7f6c25b8be4f0e633175d426db925d8" title="Bind a TCP listening socket on port.">m2k_setup_listen()</a> and adopt it as the TTY.  <br /></td></tr>
+<tr class="memitem:a53bda9fcaa8c027a446b9ce19549cfa3" id="r_a53bda9fcaa8c027a446b9ce19549cfa3"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a53bda9fcaa8c027a446b9ce19549cfa3">m2k_run</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a53bda9fcaa8c027a446b9ce19549cfa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the modem command/online loop until the PTY closes.  <br /></td></tr>
+<tr class="memitem:ac5b18ee79f93f53d862beae6a719a7f2" id="r_ac5b18ee79f93f53d862beae6a719a7f2"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac5b18ee79f93f53d862beae6a719a7f2">m2k_get_pollfds</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)</td></tr>
+<tr class="memdesc:ac5b18ee79f93f53d862beae6a719a7f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the fds and timeout the caller's event loop should watch.  <br /></td></tr>
+<tr class="memitem:aa65c8ca18be730d3ea347c59a969dd2a" id="r_aa65c8ca18be730d3ea347c59a969dd2a"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa65c8ca18be730d3ea347c59a969dd2a">m2k_step</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, struct pollfd *fds, size_t nfds)</td></tr>
+<tr class="memdesc:aa65c8ca18be730d3ea347c59a969dd2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run one non-blocking iteration of the state machine.  <br /></td></tr>
+<tr class="memitem:a73e7663351359d6537023e1c94d043c3" id="r_a73e7663351359d6537023e1c94d043c3"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#a73e7663351359d6537023e1c94d043c3">m2k_run_done</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a73e7663351359d6537023e1c94d043c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether the session has ended.  <br /></td></tr>
+<tr class="memitem:a39b416897d3718145945526703b81c5b" id="r_a39b416897d3718145945526703b81c5b"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#a39b416897d3718145945526703b81c5b">m2k_is_online</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a39b416897d3718145945526703b81c5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether the modem is currently in online mode.  <br /></td></tr>
+<tr class="memitem:ac4737dc8597b34c735dd8b54a539aa90" id="r_ac4737dc8597b34c735dd8b54a539aa90"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#ac4737dc8597b34c735dd8b54a539aa90">m2k_has_carrier</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:ac4737dc8597b34c735dd8b54a539aa90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether the modem has an active carrier (live TCP socket).  <br /></td></tr>
+<tr class="memitem:ae9f1b813716263592afd965e37cc5703" id="r_ae9f1b813716263592afd965e37cc5703"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void&#160;</td><td class="memItemRight"><a class="el" href="#ae9f1b813716263592afd965e37cc5703">m2k_set_dtr</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, int on)</td></tr>
+<tr class="memdesc:ae9f1b813716263592afd965e37cc5703"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the host's DTR (Data Terminal Ready) signal state.  <br /></td></tr>
+<tr class="memitem:ac7c4ec21a02fba2794af4d2c51fb9603" id="r_ac7c4ec21a02fba2794af4d2c51fb9603"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void&#160;</td><td class="memItemRight"><a class="el" href="#ac7c4ec21a02fba2794af4d2c51fb9603">m2k_set_rts</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, int on)</td></tr>
+<tr class="memdesc:ac7c4ec21a02fba2794af4d2c51fb9603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the host's RTS (Request to Send) signal state.  <br /></td></tr>
+<tr class="memitem:a3b1ed5ada130124884cb3d4082a80bb1" id="r_a3b1ed5ada130124884cb3d4082a80bb1"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#a3b1ed5ada130124884cb3d4082a80bb1">m2k_get_dtr</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memitem:aa8104482881dc715489f7830b882012b" id="r_aa8104482881dc715489f7830b882012b"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#aa8104482881dc715489f7830b882012b">m2k_get_rts</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Public API for the modemu2k PTY-based modem emulator library. </p>
 <h2 class="doxsection"><a class="anchor" id="autotoc_md13"></a>
 Typical usage</h2>
 <p>The pattern used by the bundled <span class="tt">modemu2k</span> executable (see <span class="tt">src/main.c</span>) shows the recommended way to use the library:</p>
-<div class="fragment"><div class="line"><a class="code hl_typedef" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx = <a class="code hl_function" href="#a4876c026865cd1ecff6b8b9010b37b2c">m2k_new</a>();</div>
+<div class="fragment"><div class="line"><a class="code hl_typedef" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx = <a class="code hl_function" href="#aa0c4543e93fa6c87b50c3ce31acc1223">m2k_new</a>();</div>
 <div class="line"><span class="keywordflow">if</span> (!ctx) <span class="keywordflow">return</span> EXIT_FAILURE;</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Choose one setup mode:</span></div>
-<div class="line"><a class="code hl_function" href="#a40332fcdccf5378d47ccf222ba2d0941">m2k_setup_stdin</a>(ctx);                              <span class="comment">// read/write stdin/stdout</span></div>
+<div class="line"><a class="code hl_function" href="#a77b3b99414d43ae9aa8475429a8ece74">m2k_setup_stdin</a>(ctx);                              <span class="comment">// read/write stdin/stdout</span></div>
 <div class="line"><span class="comment">// m2k_setup_comm_program(ctx, &quot;minicom -p %s&quot;);   // fork a comm program on a PTY</span></div>
 <div class="line"><span class="comment">// m2k_setup_listen(ctx, &quot;5000&quot;);                  // bind a TCP port, then</span></div>
 <div class="line"><span class="comment">// m2k_listen_accept(ctx);                         //   wait for a client to connect</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Optional: apply AT commands before entering the command loop</span></div>
-<div class="line"><a class="code hl_function" href="#a1bc9bda2db0361b73b697b781a4d8862">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATS7=30&quot;</span>);</div>
+<div class="line"><a class="code hl_function" href="#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATS7=30&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Run the full command/online state machine (blocks until session ends)</span></div>
-<div class="line"><a class="code hl_function" href="#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a>(ctx);</div>
+<div class="line"><a class="code hl_function" href="#a53bda9fcaa8c027a446b9ce19549cfa3">m2k_run</a>(ctx);</div>
 <div class="line"> </div>
-<div class="line"><a class="code hl_function" href="#adecfb34f9484c3a984a1fc94dbd11c90">m2k_free</a>(ctx);</div>
-<div class="ttc" id="amodemu2k_8h_html_a1bc9bda2db0361b73b697b781a4d8862"><div class="ttname"><a href="#a1bc9bda2db0361b73b697b781a4d8862">m2k_atcmd</a></div><div class="ttdeci">m2k_err_t m2k_atcmd(m2k_t *ctx, const char *cmd)</div><div class="ttdoc">Feed a Hayes AT command string to the modem.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a40332fcdccf5378d47ccf222ba2d0941"><div class="ttname"><a href="#a40332fcdccf5378d47ccf222ba2d0941">m2k_setup_stdin</a></div><div class="ttdeci">m2k_err_t m2k_setup_stdin(m2k_t *ctx)</div><div class="ttdoc">Use stdin/stdout as the TTY (standalone mode).</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a4876c026865cd1ecff6b8b9010b37b2c"><div class="ttname"><a href="#a4876c026865cd1ecff6b8b9010b37b2c">m2k_new</a></div><div class="ttdeci">m2k_t * m2k_new(void)</div><div class="ttdoc">Allocate and initialise a new modem context.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a49e0a78c27ee140d0b76fc195107fef0"><div class="ttname"><a href="#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a></div><div class="ttdeci">m2k_err_t m2k_run(m2k_t *ctx)</div><div class="ttdoc">Run the modem command/online loop until the PTY closes.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a861720925b561f9640e9e606fb6d9ec6"><div class="ttname"><a href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a></div><div class="ttdeci">struct m2k_s m2k_t</div><div class="ttdoc">Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free().</div><div class="ttdef"><b>Definition</b> modemu2k.h:47</div></div>
-<div class="ttc" id="amodemu2k_8h_html_adecfb34f9484c3a984a1fc94dbd11c90"><div class="ttname"><a href="#adecfb34f9484c3a984a1fc94dbd11c90">m2k_free</a></div><div class="ttdeci">void m2k_free(m2k_t *ctx)</div><div class="ttdoc">Release all resources held by ctx.</div></div>
-</div><!-- fragment --><p>For finer control — for example, dialling programmatically and entering online mode without the AT command loop — use <a class="el" href="#a5d0de562057841ed5f7441fa170548a4" title="Open a TCP connection to host : port.">m2k_dial()</a>, <a class="el" href="#a372c11bf0cdc06d9a4a2b568e6162ff6" title="Enter online mode and relay data between the PTY and the socket.">m2k_online()</a>, and <a class="el" href="#a61e4922eeee52bf582ac8220c92e2fcc" title="Tear down the active TCP connection.">m2k_hangup()</a> directly. </p>
+<div class="line"><a class="code hl_function" href="#a5d75b20e6984cc904b69bdc7949e0f1d">m2k_free</a>(ctx);</div>
+<div class="ttc" id="amodemu2k_8h_html_a53bda9fcaa8c027a446b9ce19549cfa3"><div class="ttname"><a href="#a53bda9fcaa8c027a446b9ce19549cfa3">m2k_run</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_run(m2k_t *ctx)</div><div class="ttdoc">Run the modem command/online loop until the PTY closes.</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a5d75b20e6984cc904b69bdc7949e0f1d"><div class="ttname"><a href="#a5d75b20e6984cc904b69bdc7949e0f1d">m2k_free</a></div><div class="ttdeci">M2K_API void m2k_free(m2k_t *ctx)</div><div class="ttdoc">Release all resources held by ctx.</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a77b3b99414d43ae9aa8475429a8ece74"><div class="ttname"><a href="#a77b3b99414d43ae9aa8475429a8ece74">m2k_setup_stdin</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_setup_stdin(m2k_t *ctx)</div><div class="ttdoc">Use stdin/stdout as the TTY (standalone mode).</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a861720925b561f9640e9e606fb6d9ec6"><div class="ttname"><a href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a></div><div class="ttdeci">struct m2k_s m2k_t</div><div class="ttdoc">Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free().</div><div class="ttdef"><b>Definition</b> modemu2k.h:76</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a9db3de10144ae6dfed16e43d037568bd"><div class="ttname"><a href="#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_atcmd(m2k_t *ctx, const char *cmd)</div><div class="ttdoc">Feed a Hayes AT command string to the modem.</div></div>
+<div class="ttc" id="amodemu2k_8h_html_aa0c4543e93fa6c87b50c3ce31acc1223"><div class="ttname"><a href="#aa0c4543e93fa6c87b50c3ce31acc1223">m2k_new</a></div><div class="ttdeci">M2K_API m2k_t * m2k_new(void)</div><div class="ttdoc">Allocate and initialise a new modem context.</div></div>
+</div><!-- fragment --><p>For finer control — for example, dialling programmatically and entering online mode without the AT command loop — use <a class="el" href="#ac29121f4520ee5547c490105de0c1f9d" title="Open a TCP connection to host : port.">m2k_dial()</a>, <a class="el" href="#ab076e8bc1f0fd42a7a49f79a6961873b" title="Enter online mode and relay data between the PTY and the socket.">m2k_online()</a>, and <a class="el" href="#a9dc773771965394574f89b3eef68c977" title="Tear down the active TCP connection.">m2k_hangup()</a> directly. </p>
 </div><a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
+<a id="af827f32b40d60938ee7fa1c73cbb9d29" name="af827f32b40d60938ee7fa1c73cbb9d29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af827f32b40d60938ee7fa1c73cbb9d29">&#9670;&#160;</a></span>M2K_API</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define M2K_API</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Public-symbol visibility/export marker. </p>
+<p>On platforms where it matters (Windows DLLs, ELF builds with <span class="tt">-fvisibility=hidden</span>) this macro decorates every documented public function below. Defaults to nothing on Unix-default builds, where symbols are visible already. Define M2K_BUILDING_DLL before including this header inside the modemu2k source tree on Windows to flip the dllimport/dllexport direction; consumers leave it undefined.</p>
+<p>Borrowed from libuv (UV_EXTERN) / libcurl (CURL_EXTERN) / libssh2 (LIBSSH2_API). </p>
+
+</div>
+</div>
 <a id="a9d6963fa86a18c42223486d7049ed914" name="a9d6963fa86a18c42223486d7049ed914"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9d6963fa86a18c42223486d7049ed914">&#9670;&#160;</a></span>M2K_ERROR_BUFFER_SIZE</h2>
 
@@ -238,7 +261,7 @@ Typical usage</h2>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Recommended minimum size for the <a class="el" href="#a303bf2f93ee3fa492148cd5ddb8f8f4c" title="Install a buffer that receives a detailed message for the most recent error.">m2k_set_error_buffer()</a> buffer. </p>
+<p>Recommended minimum size for the <a class="el" href="#a5b9165ff6b68e463e486eb410f677944" title="Install a buffer that receives a detailed message for the most recent error.">m2k_set_error_buffer()</a> buffer. </p>
 
 </div>
 </div>
@@ -274,7 +297,7 @@ Typical usage</h2>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">msg</td><td>NUL-terminated log message. </td></tr>
-    <tr><td class="paramname">userdata</td><td>Caller-supplied pointer passed unchanged from <a class="el" href="#a2b89203ec50a8d3a12d5902f9364ce74" title="Install a log callback.">m2k_set_log_fn()</a>. </td></tr>
+    <tr><td class="paramname">userdata</td><td>Caller-supplied pointer passed unchanged from <a class="el" href="#a7cc7ea598158c6d6d92646af1e0c66f9" title="Install a log callback.">m2k_set_log_fn()</a>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -310,7 +333,7 @@ Typical usage</h2>
 </td></tr>
 <tr><td class="fieldname"><a id="ab031108ada7cc3a5b255fe58041dce19ab6e3a3046eaf47b5af62480390d270cc" name="ab031108ada7cc3a5b255fe58041dce19ab6e3a3046eaf47b5af62480390d270cc"></a>M2K_ERR_BUG&#160;</td><td class="fielddoc"><p>Internal assertion failure — should not happen. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ab031108ada7cc3a5b255fe58041dce19a0f69d06fc3bdad0d0c19c1f9a276758f" name="ab031108ada7cc3a5b255fe58041dce19a0f69d06fc3bdad0d0c19c1f9a276758f"></a>M2K_ERR_FULL&#160;</td><td class="fielddoc"><p>Buffer full; retry when the consumer has drained. </p>
+<tr><td class="fieldname"><a id="ab031108ada7cc3a5b255fe58041dce19a2fb9df08e88d3db15f4663bb84686e35" name="ab031108ada7cc3a5b255fe58041dce19a2fb9df08e88d3db15f4663bb84686e35"></a>M2K_ERR_WOULDBLOCK&#160;</td><td class="fielddoc"><p>Operation would block; call <a class="el" href="#aa65c8ca18be730d3ea347c59a969dd2a" title="Run one non-blocking iteration of the state machine.">m2k_step()</a> (or wait for the relevant fd to become ready) and retry. Mirrors libssh2's LIBSSH2_ERROR_EAGAIN. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ab031108ada7cc3a5b255fe58041dce19aed2f5ca8a7861022565ece4f79f956e5" name="ab031108ada7cc3a5b255fe58041dce19aed2f5ca8a7861022565ece4f79f956e5"></a>M2K_ERR_AT&#160;</td><td class="fielddoc"><p>AT command rejected by the lexer (malformed input). </p>
 </td></tr>
@@ -319,14 +342,14 @@ Typical usage</h2>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
-<a id="a1bc9bda2db0361b73b697b781a4d8862" name="a1bc9bda2db0361b73b697b781a4d8862"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1bc9bda2db0361b73b697b781a4d8862">&#9670;&#160;</a></span>m2k_atcmd()</h2>
+<a id="a9db3de10144ae6dfed16e43d037568bd" name="a9db3de10144ae6dfed16e43d037568bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9db3de10144ae6dfed16e43d037568bd">&#9670;&#160;</a></span>m2k_atcmd()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_atcmd </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_atcmd </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -339,7 +362,7 @@ Typical usage</h2>
 </div><div class="memdoc">
 
 <p>Feed a Hayes AT command string to the modem. </p>
-<p>Intended for one-shot configuration commands (S-register sets, mode toggles, etc.). Action commands like ATD/ATO are recognised by the lexer but do not drive a connection from this entry point; use <a class="el" href="#a5d0de562057841ed5f7441fa170548a4" title="Open a TCP connection to host : port.">m2k_dial()</a> / <a class="el" href="#a372c11bf0cdc06d9a4a2b568e6162ff6" title="Enter online mode and relay data between the PTY and the socket.">m2k_online()</a> for those.</p>
+<p>Intended for one-shot configuration commands (S-register sets, mode toggles, etc.). Action commands like ATD/ATO are recognised by the lexer but do not drive a connection from this entry point; use <a class="el" href="#ac29121f4520ee5547c490105de0c1f9d" title="Open a TCP connection to host : port.">m2k_dial()</a> / <a class="el" href="#ab076e8bc1f0fd42a7a49f79a6961873b" title="Enter online mode and relay data between the PTY and the socket.">m2k_online()</a> for those.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
@@ -348,21 +371,21 @@ Typical usage</h2>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on successful execution or no-op (missing <code>AT</code> prefix); M2K_ERR_AT if the lexer rejected the command as malformed, or the command was an action verb that should go through a dedicated entry point (ATD → m2k_dial, ATO → m2k_online); M2K_ERR_BUG only for unexpected lexer states.</dd></dl>
-<div class="fragment"><div class="line"><a class="code hl_function" href="#a1bc9bda2db0361b73b697b781a4d8862">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATZ&quot;</span>);        <span class="comment">// reset to defaults</span></div>
-<div class="line"><a class="code hl_function" href="#a1bc9bda2db0361b73b697b781a4d8862">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATS0=1&quot;</span>);    <span class="comment">// auto-answer on first ring</span></div>
+<div class="fragment"><div class="line"><a class="code hl_function" href="#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATZ&quot;</span>);        <span class="comment">// reset to defaults</span></div>
+<div class="line"><a class="code hl_function" href="#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATS0=1&quot;</span>);    <span class="comment">// auto-answer on first ring</span></div>
 </div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#_a10">main.c</a>.</dd>
 </dl>
 
 </div>
 </div>
-<a id="a5d0de562057841ed5f7441fa170548a4" name="a5d0de562057841ed5f7441fa170548a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d0de562057841ed5f7441fa170548a4">&#9670;&#160;</a></span>m2k_dial()</h2>
+<a id="ac29121f4520ee5547c490105de0c1f9d" name="ac29121f4520ee5547c490105de0c1f9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac29121f4520ee5547c490105de0c1f9d">&#9670;&#160;</a></span>m2k_dial()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_dial </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_dial </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -380,7 +403,7 @@ Typical usage</h2>
 </div><div class="memdoc">
 
 <p>Open a TCP connection to <code class="param">host</code> : <code class="param">port</code>. </p>
-<p>Transitions the modem from idle to connected state. Call <a class="el" href="#a372c11bf0cdc06d9a4a2b568e6162ff6" title="Enter online mode and relay data between the PTY and the socket.">m2k_online()</a> after this to start relaying data.</p>
+<p>Transitions the modem from idle to connected state. Call <a class="el" href="#ab076e8bc1f0fd42a7a49f79a6961873b" title="Enter online mode and relay data between the PTY and the socket.">m2k_online()</a> after this to start relaying data.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
@@ -391,20 +414,20 @@ Typical usage</h2>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_SOCKET on failure.</dd></dl>
 <div class="fragment"><div class="line">  <span class="comment">/* Dial a hostname; the resolver tries each address until one connects. */</span></div>
-<div class="line">  assert(<a class="code hl_function" href="#a5d0de562057841ed5f7441fa170548a4">m2k_dial</a>(ctx, <span class="stringliteral">&quot;github.com&quot;</span>, <span class="stringliteral">&quot;80&quot;</span>) == <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>);</div>
+<div class="line">  assert(<a class="code hl_function" href="#ac29121f4520ee5547c490105de0c1f9d">m2k_dial</a>(ctx, <span class="stringliteral">&quot;github.com&quot;</span>, <span class="stringliteral">&quot;80&quot;</span>) == <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>);</div>
 <div class="line">  sleep(2);</div>
-<div class="line">  assert(<a class="code hl_function" href="#a61e4922eeee52bf582ac8220c92e2fcc">m2k_hangup</a>(ctx) == <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>);</div>
+<div class="line">  assert(<a class="code hl_function" href="#a9dc773771965394574f89b3eef68c977">m2k_hangup</a>(ctx) == <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>);</div>
 </div><!-- fragment --> 
 </div>
 </div>
-<a id="a410e43de416109bc7a2b65f19cf0c6d2" name="a410e43de416109bc7a2b65f19cf0c6d2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a410e43de416109bc7a2b65f19cf0c6d2">&#9670;&#160;</a></span>m2k_escape()</h2>
+<a id="a8497dabd96dab585f2e6255bd9414a0a" name="a8497dabd96dab585f2e6255bd9414a0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8497dabd96dab585f2e6255bd9414a0a">&#9670;&#160;</a></span>m2k_escape()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_escape </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_escape </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
@@ -414,7 +437,7 @@ Typical usage</h2>
 
 <p>Request an immediate return to command mode from online mode. </p>
 <p>Drives the same transition that the <code>+++</code> escape sequence would — but without the silence-guard timing or sending the literal <code>+++</code> bytes through the I/O path. Useful from a host application that embeds modemu2k and wants programmatic control of the mode.</p>
-<p>The transition takes effect on the next <a class="el" href="#a21b6a2e9cf2d513a31990c155d2dcfe4" title="Run one non-blocking iteration of the state machine.">m2k_step()</a> / <a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a> iteration. The underlying TCP connection is left intact; use <a class="el" href="#a61e4922eeee52bf582ac8220c92e2fcc" title="Tear down the active TCP connection.">m2k_hangup()</a> afterward if you also want to drop it.</p>
+<p>The transition takes effect on the next <a class="el" href="#aa65c8ca18be730d3ea347c59a969dd2a" title="Run one non-blocking iteration of the state machine.">m2k_step()</a> / <a class="el" href="#a53bda9fcaa8c027a446b9ce19549cfa3" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a> iteration. The underlying TCP connection is left intact; use <a class="el" href="#a9dc773771965394574f89b3eef68c977" title="Tear down the active TCP connection.">m2k_hangup()</a> afterward if you also want to drop it.</p>
 <p>A no-op when the context is not currently in online mode.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -426,14 +449,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="adecfb34f9484c3a984a1fc94dbd11c90" name="adecfb34f9484c3a984a1fc94dbd11c90"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adecfb34f9484c3a984a1fc94dbd11c90">&#9670;&#160;</a></span>m2k_free()</h2>
+<a id="a5d75b20e6984cc904b69bdc7949e0f1d" name="a5d75b20e6984cc904b69bdc7949e0f1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d75b20e6984cc904b69bdc7949e0f1d">&#9670;&#160;</a></span>m2k_free()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void m2k_free </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void m2k_free </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
@@ -453,32 +476,32 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a11c934fd1181828a0fe0d6d235b97a60" name="a11c934fd1181828a0fe0d6d235b97a60"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a11c934fd1181828a0fe0d6d235b97a60">&#9670;&#160;</a></span>m2k_get_dtr()</h2>
+<a id="a3b1ed5ada130124884cb3d4082a80bb1" name="a3b1ed5ada130124884cb3d4082a80bb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b1ed5ada130124884cb3d4082a80bb1">&#9670;&#160;</a></span>m2k_get_dtr()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int m2k_get_dtr </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int m2k_get_dtr </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Return the most recent value passed to <a class="el" href="#af5b0fb45f5ca401388eaea2a03bcca9a" title="Set the host&#39;s DTR (Data Terminal Ready) signal state.">m2k_set_dtr()</a> (1 by default). </p>
+<p>Return the most recent value passed to <a class="el" href="#ae9f1b813716263592afd965e37cc5703" title="Set the host&#39;s DTR (Data Terminal Ready) signal state.">m2k_set_dtr()</a> (1 by default). </p>
 
 </div>
 </div>
-<a id="a590f6c64b18a213f8db1b3d34e3c6c69" name="a590f6c64b18a213f8db1b3d34e3c6c69"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a590f6c64b18a213f8db1b3d34e3c6c69">&#9670;&#160;</a></span>m2k_get_listen_fd()</h2>
+<a id="afce831817901d6602f4a430f8eaa728b" name="afce831817901d6602f4a430f8eaa728b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afce831817901d6602f4a430f8eaa728b">&#9670;&#160;</a></span>m2k_get_listen_fd()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int m2k_get_listen_fd </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int m2k_get_listen_fd </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
@@ -487,7 +510,7 @@ Typical usage</h2>
 </div><div class="memdoc">
 
 <p>Expose the listening socket's fd (after m2k_setup_listen, before m2k_listen_accept). </p>
-<p>Lets a host event loop poll the fd for POLLIN — i.e. detect an incoming TCP connection (the "RING" event in modem terms) so it can call <a class="el" href="#a801b48d44c221c1fe37f5ca3e9927978" title="Accept a single incoming connection on the listening socket opened by m2k_setup_listen() and adopt it...">m2k_listen_accept()</a> at the right moment instead of blocking unconditionally on it.</p>
+<p>Lets a host event loop poll the fd for POLLIN — i.e. detect an incoming TCP connection (the "RING" event in modem terms) so it can call <a class="el" href="#a3f20db8d832b116f49dcbe9b8e41ce48" title="Accept a single incoming connection on the listening socket opened by m2k_setup_listen() and adopt it...">m2k_listen_accept()</a> at the right moment instead of blocking unconditionally on it.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
@@ -498,14 +521,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="ae938fa8390fa2669e54a7ed6b87abacb" name="ae938fa8390fa2669e54a7ed6b87abacb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae938fa8390fa2669e54a7ed6b87abacb">&#9670;&#160;</a></span>m2k_get_pollfds()</h2>
+<a id="ac5b18ee79f93f53d862beae6a719a7f2" name="ac5b18ee79f93f53d862beae6a719a7f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5b18ee79f93f53d862beae6a719a7f2">&#9670;&#160;</a></span>m2k_get_pollfds()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_get_pollfds </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_get_pollfds </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -534,7 +557,7 @@ Typical usage</h2>
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
     <tr><td class="paramname">fds</td><td>Caller-provided array of at least <a class="el" href="#a83a9fe0262eb8987dd3873a32ca340db" title="M2K_MAX_POLLFDS">M2K_MAX_POLLFDS</a> entries. </td></tr>
     <tr><td class="paramname">nfds_inout</td><td>In: capacity of <code class="param">fds</code> (must be &gt;= <a class="el" href="#a83a9fe0262eb8987dd3873a32ca340db" title="M2K_MAX_POLLFDS">M2K_MAX_POLLFDS</a>). Out: number of entries actually populated. Zero means the session is done; the caller should exit the loop. </td></tr>
-    <tr><td class="paramname">timeout_ms</td><td>Out: maximum wait in milliseconds before <a class="el" href="#a21b6a2e9cf2d513a31990c155d2dcfe4" title="Run one non-blocking iteration of the state machine.">m2k_step()</a> needs to be called again. -1 means no deadline. </td></tr>
+    <tr><td class="paramname">timeout_ms</td><td>Out: maximum wait in milliseconds before <a class="el" href="#aa65c8ca18be730d3ea347c59a969dd2a" title="Run one non-blocking iteration of the state machine.">m2k_step()</a> needs to be called again. -1 means no deadline. </td></tr>
   </table>
   </dd>
 </dl>
@@ -542,32 +565,32 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a28565167ef0c18420b215745d5955c85" name="a28565167ef0c18420b215745d5955c85"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28565167ef0c18420b215745d5955c85">&#9670;&#160;</a></span>m2k_get_rts()</h2>
+<a id="aa8104482881dc715489f7830b882012b" name="aa8104482881dc715489f7830b882012b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8104482881dc715489f7830b882012b">&#9670;&#160;</a></span>m2k_get_rts()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int m2k_get_rts </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int m2k_get_rts </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Return the most recent value passed to <a class="el" href="#af3e16a44317f9d51b13b2a714263b650" title="Set the host&#39;s RTS (Request to Send) signal state.">m2k_set_rts()</a> (1 by default). </p>
+<p>Return the most recent value passed to <a class="el" href="#ac7c4ec21a02fba2794af4d2c51fb9603" title="Set the host&#39;s RTS (Request to Send) signal state.">m2k_set_rts()</a> (1 by default). </p>
 
 </div>
 </div>
-<a id="a61e4922eeee52bf582ac8220c92e2fcc" name="a61e4922eeee52bf582ac8220c92e2fcc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a61e4922eeee52bf582ac8220c92e2fcc">&#9670;&#160;</a></span>m2k_hangup()</h2>
+<a id="a9dc773771965394574f89b3eef68c977" name="a9dc773771965394574f89b3eef68c977"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dc773771965394574f89b3eef68c977">&#9670;&#160;</a></span>m2k_hangup()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_hangup </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_hangup </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
@@ -586,14 +609,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a493fb8d3942c9ac322128c3e5437eb52" name="a493fb8d3942c9ac322128c3e5437eb52"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a493fb8d3942c9ac322128c3e5437eb52">&#9670;&#160;</a></span>m2k_has_carrier()</h2>
+<a id="ac4737dc8597b34c735dd8b54a539aa90" name="ac4737dc8597b34c735dd8b54a539aa90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4737dc8597b34c735dd8b54a539aa90">&#9670;&#160;</a></span>m2k_has_carrier()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int m2k_has_carrier </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int m2k_has_carrier </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
@@ -613,14 +636,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a134cd0f94ffe05afff6f5132002ddb10" name="a134cd0f94ffe05afff6f5132002ddb10"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a134cd0f94ffe05afff6f5132002ddb10">&#9670;&#160;</a></span>m2k_is_online()</h2>
+<a id="a39b416897d3718145945526703b81c5b" name="a39b416897d3718145945526703b81c5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39b416897d3718145945526703b81c5b">&#9670;&#160;</a></span>m2k_is_online()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int m2k_is_online </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int m2k_is_online </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
@@ -640,14 +663,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a801b48d44c221c1fe37f5ca3e9927978" name="a801b48d44c221c1fe37f5ca3e9927978"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a801b48d44c221c1fe37f5ca3e9927978">&#9670;&#160;</a></span>m2k_listen_accept()</h2>
+<a id="a3f20db8d832b116f49dcbe9b8e41ce48" name="a3f20db8d832b116f49dcbe9b8e41ce48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f20db8d832b116f49dcbe9b8e41ce48">&#9670;&#160;</a></span>m2k_listen_accept()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_listen_accept </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_listen_accept </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
@@ -655,11 +678,11 @@ Typical usage</h2>
       </table>
 </div><div class="memdoc">
 
-<p>Accept a single incoming connection on the listening socket opened by <a class="el" href="#acfa303ff386429f596340f7e69a559fa" title="Bind a TCP listening socket on port.">m2k_setup_listen()</a> and adopt it as the TTY. </p>
-<p>Blocks until a client connects. The listening socket is closed once a connection is accepted (modemu2k handles one client per session). Call before <a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
+<p>Accept a single incoming connection on the listening socket opened by <a class="el" href="#ad7f6c25b8be4f0e633175d426db925d8" title="Bind a TCP listening socket on port.">m2k_setup_listen()</a> and adopt it as the TTY. </p>
+<p>Blocks until a client connects. The listening socket is closed once a connection is accepted (modemu2k handles one client per session). Call before <a class="el" href="#a53bda9fcaa8c027a446b9ce19549cfa3" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ctx</td><td>Modem context (must have an active listener from <a class="el" href="#acfa303ff386429f596340f7e69a559fa" title="Bind a TCP listening socket on port.">m2k_setup_listen()</a>). </td></tr>
+    <tr><td class="paramname">ctx</td><td>Modem context (must have an active listener from <a class="el" href="#ad7f6c25b8be4f0e633175d426db925d8" title="Bind a TCP listening socket on port.">m2k_setup_listen()</a>). </td></tr>
   </table>
   </dd>
 </dl>
@@ -669,14 +692,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a4876c026865cd1ecff6b8b9010b37b2c" name="a4876c026865cd1ecff6b8b9010b37b2c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4876c026865cd1ecff6b8b9010b37b2c">&#9670;&#160;</a></span>m2k_new()</h2>
+<a id="aa0c4543e93fa6c87b50c3ce31acc1223" name="aa0c4543e93fa6c87b50c3ce31acc1223"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0c4543e93fa6c87b50c3ce31acc1223">&#9670;&#160;</a></span>m2k_new()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> * m2k_new </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> * m2k_new </td>
           <td>(</td>
           <td class="paramtype">void</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -691,14 +714,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a372c11bf0cdc06d9a4a2b568e6162ff6" name="a372c11bf0cdc06d9a4a2b568e6162ff6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a372c11bf0cdc06d9a4a2b568e6162ff6">&#9670;&#160;</a></span>m2k_online()</h2>
+<a id="ab076e8bc1f0fd42a7a49f79a6961873b" name="ab076e8bc1f0fd42a7a49f79a6961873b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab076e8bc1f0fd42a7a49f79a6961873b">&#9670;&#160;</a></span>m2k_online()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_online </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_online </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
@@ -710,7 +733,7 @@ Typical usage</h2>
 <p>Blocks until the connection closes or the <code>+++</code> escape sequence is detected. Returns M2K_ERR_CANCELED when the caller escapes back to command mode.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ctx</td><td>Modem context (must have an active connection from <a class="el" href="#a5d0de562057841ed5f7441fa170548a4" title="Open a TCP connection to host : port.">m2k_dial()</a>). </td></tr>
+    <tr><td class="paramname">ctx</td><td>Modem context (must have an active connection from <a class="el" href="#ac29121f4520ee5547c490105de0c1f9d" title="Open a TCP connection to host : port.">m2k_dial()</a>). </td></tr>
   </table>
   </dd>
 </dl>
@@ -718,24 +741,24 @@ Typical usage</h2>
 <div class="fragment"><div class="line"><span class="comment">// Reconnect loop: re-enter online mode if the user escapes with +++</span></div>
 <div class="line"><a class="code hl_enumeration" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> st;</div>
 <div class="line"><span class="keywordflow">do</span> {</div>
-<div class="line">    st = <a class="code hl_function" href="#a372c11bf0cdc06d9a4a2b568e6162ff6">m2k_online</a>(ctx);</div>
+<div class="line">    st = <a class="code hl_function" href="#ab076e8bc1f0fd42a7a49f79a6961873b">m2k_online</a>(ctx);</div>
 <div class="line">} <span class="keywordflow">while</span> (st == <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8">M2K_ERR_CANCELED</a>);</div>
-<div class="line"><a class="code hl_function" href="#a61e4922eeee52bf582ac8220c92e2fcc">m2k_hangup</a>(ctx);</div>
-<div class="ttc" id="amodemu2k_8h_html_a372c11bf0cdc06d9a4a2b568e6162ff6"><div class="ttname"><a href="#a372c11bf0cdc06d9a4a2b568e6162ff6">m2k_online</a></div><div class="ttdeci">m2k_err_t m2k_online(m2k_t *ctx)</div><div class="ttdoc">Enter online mode and relay data between the PTY and the socket.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a61e4922eeee52bf582ac8220c92e2fcc"><div class="ttname"><a href="#a61e4922eeee52bf582ac8220c92e2fcc">m2k_hangup</a></div><div class="ttdeci">m2k_err_t m2k_hangup(m2k_t *ctx)</div><div class="ttdoc">Tear down the active TCP connection.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a></div><div class="ttdeci">m2k_err_t</div><div class="ttdoc">Return codes used by all m2k_* functions.</div><div class="ttdef"><b>Definition</b> modemu2k.h:61</div></div>
-<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8">M2K_ERR_CANCELED</a></div><div class="ttdeci">@ M2K_ERR_CANCELED</div><div class="ttdef"><b>Definition</b> modemu2k.h:67</div></div>
+<div class="line"><a class="code hl_function" href="#a9dc773771965394574f89b3eef68c977">m2k_hangup</a>(ctx);</div>
+<div class="ttc" id="amodemu2k_8h_html_a9dc773771965394574f89b3eef68c977"><div class="ttname"><a href="#a9dc773771965394574f89b3eef68c977">m2k_hangup</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_hangup(m2k_t *ctx)</div><div class="ttdoc">Tear down the active TCP connection.</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a></div><div class="ttdeci">m2k_err_t</div><div class="ttdoc">Return codes used by all m2k_* functions.</div><div class="ttdef"><b>Definition</b> modemu2k.h:103</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8"><div class="ttname"><a href="#ab031108ada7cc3a5b255fe58041dce19aa9950c678e008df91226a66e3df6e1f8">M2K_ERR_CANCELED</a></div><div class="ttdeci">@ M2K_ERR_CANCELED</div><div class="ttdef"><b>Definition</b> modemu2k.h:109</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ab076e8bc1f0fd42a7a49f79a6961873b"><div class="ttname"><a href="#ab076e8bc1f0fd42a7a49f79a6961873b">m2k_online</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_online(m2k_t *ctx)</div><div class="ttdoc">Enter online mode and relay data between the PTY and the socket.</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
-<a id="a666b50c2427136c51d3a8907b3078199" name="a666b50c2427136c51d3a8907b3078199"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a666b50c2427136c51d3a8907b3078199">&#9670;&#160;</a></span>m2k_read_to_app()</h2>
+<a id="ac0c99a7b4195f817956429d35ababf80" name="ac0c99a7b4195f817956429d35ababf80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0c99a7b4195f817956429d35ababf80">&#9670;&#160;</a></span>m2k_read_to_app()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_read_to_app </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_read_to_app </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -758,7 +781,7 @@ Typical usage</h2>
 </div><div class="memdoc">
 
 <p>Drain bytes from the modem that would normally have been written to the TTY. </p>
-<p>Only valid after <a class="el" href="#a62f8ccbb4258ffb32e2b2c6882fe43a0" title="Embed mode: no real TTY fd; the host application supplies the bytes a TTY would normally produce,...">m2k_setup_app_io()</a>. Copies up to <code class="param">max</code> bytes from the internal TTY write buffer into <code class="param">buf</code> and stores the actual length in <code class="param">*len_out</code> (which may be zero if there is nothing pending).</p>
+<p>Only valid after <a class="el" href="#a24a9dfd9bd5872cd3b94d3b71878d4e5" title="Embed mode: no real TTY fd; the host application supplies the bytes a TTY would normally produce,...">m2k_setup_app_io()</a>. Copies up to <code class="param">max</code> bytes from the internal TTY write buffer into <code class="param">buf</code> and stores the actual length in <code class="param">*len_out</code> (which may be zero if there is nothing pending).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
@@ -772,14 +795,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a49e0a78c27ee140d0b76fc195107fef0" name="a49e0a78c27ee140d0b76fc195107fef0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a49e0a78c27ee140d0b76fc195107fef0">&#9670;&#160;</a></span>m2k_run()</h2>
+<a id="a53bda9fcaa8c027a446b9ce19549cfa3" name="a53bda9fcaa8c027a446b9ce19549cfa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53bda9fcaa8c027a446b9ce19549cfa3">&#9670;&#160;</a></span>m2k_run()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_run </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_run </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
@@ -788,19 +811,19 @@ Typical usage</h2>
 </div><div class="memdoc">
 
 <p>Run the modem command/online loop until the PTY closes. </p>
-<p>Handles the full state machine: reads Hayes AT commands in command mode, dials on ATD, relays data in online mode, and returns to command mode on +++ escape or disconnection. Call one of the m2k_setup_*() functions before calling <a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
-<p>Equivalent to: </p><div class="fragment"><div class="line"><span class="keywordflow">while</span> (!<a class="code hl_function" href="#a969057d307ae6420d6eff8f919fa80da">m2k_run_done</a>(ctx)) {</div>
+<p>Handles the full state machine: reads Hayes AT commands in command mode, dials on ATD, relays data in online mode, and returns to command mode on +++ escape or disconnection. Call one of the m2k_setup_*() functions before calling <a class="el" href="#a53bda9fcaa8c027a446b9ce19549cfa3" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
+<p>Equivalent to: </p><div class="fragment"><div class="line"><span class="keywordflow">while</span> (!<a class="code hl_function" href="#a73e7663351359d6537023e1c94d043c3">m2k_run_done</a>(ctx)) {</div>
 <div class="line">  <span class="keyword">struct </span>pollfd fds[<a class="code hl_define" href="#a83a9fe0262eb8987dd3873a32ca340db">M2K_MAX_POLLFDS</a>];</div>
 <div class="line">  <span class="keywordtype">size_t</span> nfds = <a class="code hl_define" href="#a83a9fe0262eb8987dd3873a32ca340db">M2K_MAX_POLLFDS</a>;</div>
 <div class="line">  <span class="keywordtype">int</span> timeout_ms;</div>
-<div class="line">  <a class="code hl_function" href="#ae938fa8390fa2669e54a7ed6b87abacb">m2k_get_pollfds</a>(ctx, fds, &amp;nfds, &amp;timeout_ms);</div>
+<div class="line">  <a class="code hl_function" href="#ac5b18ee79f93f53d862beae6a719a7f2">m2k_get_pollfds</a>(ctx, fds, &amp;nfds, &amp;timeout_ms);</div>
 <div class="line">  poll(fds, nfds, timeout_ms);</div>
-<div class="line">  <a class="code hl_function" href="#a21b6a2e9cf2d513a31990c155d2dcfe4">m2k_step</a>(ctx, fds, nfds);</div>
+<div class="line">  <a class="code hl_function" href="#aa65c8ca18be730d3ea347c59a969dd2a">m2k_step</a>(ctx, fds, nfds);</div>
 <div class="line">}</div>
-<div class="ttc" id="amodemu2k_8h_html_a21b6a2e9cf2d513a31990c155d2dcfe4"><div class="ttname"><a href="#a21b6a2e9cf2d513a31990c155d2dcfe4">m2k_step</a></div><div class="ttdeci">m2k_err_t m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)</div><div class="ttdoc">Run one non-blocking iteration of the state machine.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a83a9fe0262eb8987dd3873a32ca340db"><div class="ttname"><a href="#a83a9fe0262eb8987dd3873a32ca340db">M2K_MAX_POLLFDS</a></div><div class="ttdeci">#define M2K_MAX_POLLFDS</div><div class="ttdef"><b>Definition</b> modemu2k.h:424</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a969057d307ae6420d6eff8f919fa80da"><div class="ttname"><a href="#a969057d307ae6420d6eff8f919fa80da">m2k_run_done</a></div><div class="ttdeci">int m2k_run_done(const m2k_t *ctx)</div><div class="ttdoc">Test whether the session has ended.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_ae938fa8390fa2669e54a7ed6b87abacb"><div class="ttname"><a href="#ae938fa8390fa2669e54a7ed6b87abacb">m2k_get_pollfds</a></div><div class="ttdeci">m2k_err_t m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)</div><div class="ttdoc">Describe the fds and timeout the caller&#39;s event loop should watch.</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a73e7663351359d6537023e1c94d043c3"><div class="ttname"><a href="#a73e7663351359d6537023e1c94d043c3">m2k_run_done</a></div><div class="ttdeci">M2K_API int m2k_run_done(const m2k_t *ctx)</div><div class="ttdoc">Test whether the session has ended.</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a83a9fe0262eb8987dd3873a32ca340db"><div class="ttname"><a href="#a83a9fe0262eb8987dd3873a32ca340db">M2K_MAX_POLLFDS</a></div><div class="ttdeci">#define M2K_MAX_POLLFDS</div><div class="ttdef"><b>Definition</b> modemu2k.h:469</div></div>
+<div class="ttc" id="amodemu2k_8h_html_aa65c8ca18be730d3ea347c59a969dd2a"><div class="ttname"><a href="#aa65c8ca18be730d3ea347c59a969dd2a">m2k_step</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)</div><div class="ttdoc">Run one non-blocking iteration of the state machine.</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ac5b18ee79f93f53d862beae6a719a7f2"><div class="ttname"><a href="#ac5b18ee79f93f53d862beae6a719a7f2">m2k_get_pollfds</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)</div><div class="ttdoc">Describe the fds and timeout the caller&#39;s event loop should watch.</div></div>
 </div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
@@ -813,14 +836,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a969057d307ae6420d6eff8f919fa80da" name="a969057d307ae6420d6eff8f919fa80da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a969057d307ae6420d6eff8f919fa80da">&#9670;&#160;</a></span>m2k_run_done()</h2>
+<a id="a73e7663351359d6537023e1c94d043c3" name="a73e7663351359d6537023e1c94d043c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73e7663351359d6537023e1c94d043c3">&#9670;&#160;</a></span>m2k_run_done()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int m2k_run_done </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int m2k_run_done </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
@@ -839,14 +862,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="af5b0fb45f5ca401388eaea2a03bcca9a" name="af5b0fb45f5ca401388eaea2a03bcca9a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af5b0fb45f5ca401388eaea2a03bcca9a">&#9670;&#160;</a></span>m2k_set_dtr()</h2>
+<a id="ae9f1b813716263592afd965e37cc5703" name="ae9f1b813716263592afd965e37cc5703"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9f1b813716263592afd965e37cc5703">&#9670;&#160;</a></span>m2k_set_dtr()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void m2k_set_dtr </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void m2k_set_dtr </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -870,14 +893,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a303bf2f93ee3fa492148cd5ddb8f8f4c" name="a303bf2f93ee3fa492148cd5ddb8f8f4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a303bf2f93ee3fa492148cd5ddb8f8f4c">&#9670;&#160;</a></span>m2k_set_error_buffer()</h2>
+<a id="a5b9165ff6b68e463e486eb410f677944" name="a5b9165ff6b68e463e486eb410f677944"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b9165ff6b68e463e486eb410f677944">&#9670;&#160;</a></span>m2k_set_error_buffer()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void m2k_set_error_buffer </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void m2k_set_error_buffer </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -895,7 +918,7 @@ Typical usage</h2>
 </div><div class="memdoc">
 
 <p>Install a buffer that receives a detailed message for the most recent error. </p>
-<p>When <code class="param">buf</code> is non-NULL, internal error paths write a human-readable, contextual message into <code class="param">buf</code> (NUL-terminated, truncated to fit) in addition to any logging via <a class="el" href="#a2b89203ec50a8d3a12d5902f9364ce74" title="Install a log callback.">m2k_set_log_fn()</a>. The caller can then present the message after a function returns a non-OK <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19" title="Return codes used by all m2k_* functions.">m2k_err_t</a> — curl-style CURLOPT_ERRORBUFFER semantics.</p>
+<p>When <code class="param">buf</code> is non-NULL, internal error paths write a human-readable, contextual message into <code class="param">buf</code> (NUL-terminated, truncated to fit) in addition to any logging via <a class="el" href="#a7cc7ea598158c6d6d92646af1e0c66f9" title="Install a log callback.">m2k_set_log_fn()</a>. The caller can then present the message after a function returns a non-OK <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19" title="Return codes used by all m2k_* functions.">m2k_err_t</a> — curl-style CURLOPT_ERRORBUFFER semantics.</p>
 <p>The buffer is only updated when an error actually occurs; successful calls leave it untouched, so callers should check the function's return code first.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -906,21 +929,21 @@ Typical usage</h2>
   </dd>
 </dl>
 <div class="fragment"><div class="line">  <span class="keywordtype">char</span> errbuf[<a class="code hl_define" href="#a9d6963fa86a18c42223486d7049ed914">M2K_ERROR_BUFFER_SIZE</a>];</div>
-<div class="line">  <a class="code hl_function" href="#a303bf2f93ee3fa492148cd5ddb8f8f4c">m2k_set_error_buffer</a>(ctx, errbuf, <span class="keyword">sizeof</span>(errbuf));</div>
+<div class="line">  <a class="code hl_function" href="#a5b9165ff6b68e463e486eb410f677944">m2k_set_error_buffer</a>(ctx, errbuf, <span class="keyword">sizeof</span>(errbuf));</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a5d0de562057841ed5f7441fa170548a4">m2k_dial</a>(ctx, <span class="stringliteral">&quot;nonexistent.invalid&quot;</span>, <span class="stringliteral">&quot;23&quot;</span>) != <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
+<div class="line">  <span class="keywordflow">if</span> (<a class="code hl_function" href="#ac29121f4520ee5547c490105de0c1f9d">m2k_dial</a>(ctx, <span class="stringliteral">&quot;nonexistent.invalid&quot;</span>, <span class="stringliteral">&quot;23&quot;</span>) != <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
 <div class="line">    fprintf(stderr, <span class="stringliteral">&quot;modemu2k: %s\n&quot;</span>, errbuf);</div>
 </div><!-- fragment --> 
 </div>
 </div>
-<a id="a2b89203ec50a8d3a12d5902f9364ce74" name="a2b89203ec50a8d3a12d5902f9364ce74"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b89203ec50a8d3a12d5902f9364ce74">&#9670;&#160;</a></span>m2k_set_log_fn()</h2>
+<a id="a7cc7ea598158c6d6d92646af1e0c66f9" name="a7cc7ea598158c6d6d92646af1e0c66f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cc7ea598158c6d6d92646af1e0c66f9">&#9670;&#160;</a></span>m2k_set_log_fn()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void m2k_set_log_fn </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void m2k_set_log_fn </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -953,18 +976,18 @@ Typical usage</h2>
 <div class="line">  FILE *log = userdata;</div>
 <div class="line">  fputs(msg, log);</div>
 <div class="line">}</div>
-</div><!-- fragment --><div class="fragment"><div class="line">  <a class="code hl_function" href="#a2b89203ec50a8d3a12d5902f9364ce74">m2k_set_log_fn</a>(ctx, my_logger, stderr);</div>
+</div><!-- fragment --><div class="fragment"><div class="line">  <a class="code hl_function" href="#a7cc7ea598158c6d6d92646af1e0c66f9">m2k_set_log_fn</a>(ctx, my_logger, stderr);</div>
 </div><!-- fragment --> 
 </div>
 </div>
-<a id="af3e16a44317f9d51b13b2a714263b650" name="af3e16a44317f9d51b13b2a714263b650"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af3e16a44317f9d51b13b2a714263b650">&#9670;&#160;</a></span>m2k_set_rts()</h2>
+<a id="ac7c4ec21a02fba2794af4d2c51fb9603" name="ac7c4ec21a02fba2794af4d2c51fb9603"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7c4ec21a02fba2794af4d2c51fb9603">&#9670;&#160;</a></span>m2k_set_rts()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void m2k_set_rts </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void m2k_set_rts </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -988,14 +1011,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a62f8ccbb4258ffb32e2b2c6882fe43a0" name="a62f8ccbb4258ffb32e2b2c6882fe43a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a62f8ccbb4258ffb32e2b2c6882fe43a0">&#9670;&#160;</a></span>m2k_setup_app_io()</h2>
+<a id="a24a9dfd9bd5872cd3b94d3b71878d4e5" name="a24a9dfd9bd5872cd3b94d3b71878d4e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24a9dfd9bd5872cd3b94d3b71878d4e5">&#9670;&#160;</a></span>m2k_setup_app_io()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_app_io </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_app_io </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
@@ -1003,8 +1026,8 @@ Typical usage</h2>
       </table>
 </div><div class="memdoc">
 
-<p>Embed mode: no real TTY fd; the host application supplies the bytes a TTY would normally produce, via <a class="el" href="#a73fd2428badbed2010367a9070e8e019" title="Push bytes into the modem as if they had been read from the TTY.">m2k_write_from_app()</a>, and consumes the bytes modemu2k would normally send to the TTY, via <a class="el" href="#a666b50c2427136c51d3a8907b3078199" title="Drain bytes from the modem that would normally have been written to the TTY.">m2k_read_to_app()</a>. </p>
-<p>Intended for embedding modemu2k inside a host program that already owns the terminal/serial interface (e.g. a comm program linking libmodemu2k instead of forking the standalone binary). The socket side still uses real fds and integrates with the host's event loop via <a class="el" href="#ae938fa8390fa2669e54a7ed6b87abacb" title="Describe the fds and timeout the caller&#39;s event loop should watch.">m2k_get_pollfds()</a> as usual.</p>
+<p>Embed mode: no real TTY fd; the host application supplies the bytes a TTY would normally produce, via <a class="el" href="#ab0800ff35135cf932b508c41bb42bed7" title="Push bytes into the modem as if they had been read from the TTY.">m2k_write_from_app()</a>, and consumes the bytes modemu2k would normally send to the TTY, via <a class="el" href="#ac0c99a7b4195f817956429d35ababf80" title="Drain bytes from the modem that would normally have been written to the TTY.">m2k_read_to_app()</a>. </p>
+<p>Intended for embedding modemu2k inside a host program that already owns the terminal/serial interface (e.g. a comm program linking libmodemu2k instead of forking the standalone binary). The socket side still uses real fds and integrates with the host's event loop via <a class="el" href="#ac5b18ee79f93f53d862beae6a719a7f2" title="Describe the fds and timeout the caller&#39;s event loop should watch.">m2k_get_pollfds()</a> as usual.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
@@ -1015,14 +1038,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="aecd6209b8425839fa4eef30f504a41bf" name="aecd6209b8425839fa4eef30f504a41bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aecd6209b8425839fa4eef30f504a41bf">&#9670;&#160;</a></span>m2k_setup_comm_program()</h2>
+<a id="a71488162aeb202f18b44dbf71d47539b" name="a71488162aeb202f18b44dbf71d47539b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71488162aeb202f18b44dbf71d47539b">&#9670;&#160;</a></span>m2k_setup_comm_program()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_comm_program </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_comm_program </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -1035,7 +1058,7 @@ Typical usage</h2>
 </div><div class="memdoc">
 
 <p>Allocate a PTY and fork/exec a comm program on the slave. </p>
-<p>The slave device path is substituted for <code>s</code> in <code class="param">cmd</code>. Call before <a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
+<p>The slave device path is substituted for <code>s</code> in <code class="param">cmd</code>. Call before <a class="el" href="#a53bda9fcaa8c027a446b9ce19549cfa3" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
@@ -1045,26 +1068,26 @@ Typical usage</h2>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_PTY or M2K_ERR_NOMEM on failure.</dd></dl>
 <div class="fragment"><div class="line">  <span class="comment">/* Fork minicom on the PTY slave; %s is substituted with the slave path. */</span></div>
-<div class="line">  <a class="code hl_enumeration" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> err = <a class="code hl_function" href="#aecd6209b8425839fa4eef30f504a41bf">m2k_setup_comm_program</a>(ctx, <span class="stringliteral">&quot;minicom -l -tansi -con -p %s&quot;</span>);</div>
+<div class="line">  <a class="code hl_enumeration" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> err = <a class="code hl_function" href="#a71488162aeb202f18b44dbf71d47539b">m2k_setup_comm_program</a>(ctx, <span class="stringliteral">&quot;minicom -l -tansi -con -p %s&quot;</span>);</div>
 <div class="line">  <span class="keywordflow">if</span> (err != <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>) {</div>
-<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;setup_comm_program failed: %s\n&quot;</span>, <a class="code hl_function" href="#a976094e155a6c711075a4fea65c5a6eb">m2k_strerror</a>(err));</div>
-<div class="line">    <a class="code hl_function" href="#adecfb34f9484c3a984a1fc94dbd11c90">m2k_free</a>(ctx);</div>
+<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;setup_comm_program failed: %s\n&quot;</span>, <a class="code hl_function" href="#ac68560914e8d83ca8998de26e5b9e8c3">m2k_strerror</a>(err));</div>
+<div class="line">    <a class="code hl_function" href="#a5d75b20e6984cc904b69bdc7949e0f1d">m2k_free</a>(ctx);</div>
 <div class="line">    <span class="keywordflow">return</span> 1;</div>
 <div class="line">  }</div>
-<div class="line">  <a class="code hl_function" href="#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a>(ctx);   <span class="comment">/* blocks until the comm program exits */</span></div>
+<div class="line">  <a class="code hl_function" href="#a53bda9fcaa8c027a446b9ce19549cfa3">m2k_run</a>(ctx);   <span class="comment">/* blocks until the comm program exits */</span></div>
 </div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a5">main.c</a>.</dd>
 </dl>
 
 </div>
 </div>
-<a id="a3a49027773e518fc5751feb29a20f48d" name="a3a49027773e518fc5751feb29a20f48d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3a49027773e518fc5751feb29a20f48d">&#9670;&#160;</a></span>m2k_setup_dev()</h2>
+<a id="a8322015cb87514367612cb5a3b6d05af" name="a8322015cb87514367612cb5a3b6d05af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8322015cb87514367612cb5a3b6d05af">&#9670;&#160;</a></span>m2k_setup_dev()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_dev </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_dev </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -1090,14 +1113,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="acfa303ff386429f596340f7e69a559fa" name="acfa303ff386429f596340f7e69a559fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acfa303ff386429f596340f7e69a559fa">&#9670;&#160;</a></span>m2k_setup_listen()</h2>
+<a id="ad7f6c25b8be4f0e633175d426db925d8" name="ad7f6c25b8be4f0e633175d426db925d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7f6c25b8be4f0e633175d426db925d8">&#9670;&#160;</a></span>m2k_setup_listen()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_listen </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_listen </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -1110,7 +1133,7 @@ Typical usage</h2>
 </div><div class="memdoc">
 
 <p>Bind a TCP listening socket on <code class="param">port</code>. </p>
-<p>Binds and listens on all interfaces (dual-stack IPv4/IPv6); returns immediately without waiting for a connection. Pair with <a class="el" href="#a801b48d44c221c1fe37f5ca3e9927978" title="Accept a single incoming connection on the listening socket opened by m2k_setup_listen() and adopt it...">m2k_listen_accept()</a> to accept one connection and use it as the TTY, or integrate the listener fd with the caller's own event loop.</p>
+<p>Binds and listens on all interfaces (dual-stack IPv4/IPv6); returns immediately without waiting for a connection. Pair with <a class="el" href="#a3f20db8d832b116f49dcbe9b8e41ce48" title="Accept a single incoming connection on the listening socket opened by m2k_setup_listen() and adopt it...">m2k_listen_accept()</a> to accept one connection and use it as the TTY, or integrate the listener fd with the caller's own event loop.</p>
 <p>Suitable for use as a virtual-modem backend for programs that connect to modemu2k over TCP, such as dosemu2.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -1125,17 +1148,17 @@ Typical usage</h2>
 <div class="line"><span class="comment">   the same flow. */</span></div>
 <div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> run_listener(<a class="code hl_typedef" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, <span class="keyword">const</span> <span class="keywordtype">char</span> *port)</div>
 <div class="line">{</div>
-<div class="line">  <a class="code hl_enumeration" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> err = <a class="code hl_function" href="#acfa303ff386429f596340f7e69a559fa">m2k_setup_listen</a>(ctx, port);</div>
+<div class="line">  <a class="code hl_enumeration" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> err = <a class="code hl_function" href="#ad7f6c25b8be4f0e633175d426db925d8">m2k_setup_listen</a>(ctx, port);</div>
 <div class="line">  <span class="keywordflow">if</span> (err != <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>) {</div>
-<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;setup_listen: %s\n&quot;</span>, <a class="code hl_function" href="#a976094e155a6c711075a4fea65c5a6eb">m2k_strerror</a>(err));</div>
+<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;setup_listen: %s\n&quot;</span>, <a class="code hl_function" href="#ac68560914e8d83ca8998de26e5b9e8c3">m2k_strerror</a>(err));</div>
 <div class="line">    <span class="keywordflow">return</span> 1;</div>
 <div class="line">  }</div>
-<div class="line">  err = <a class="code hl_function" href="#a801b48d44c221c1fe37f5ca3e9927978">m2k_listen_accept</a>(ctx);   <span class="comment">/* blocks until a client connects */</span></div>
+<div class="line">  err = <a class="code hl_function" href="#a3f20db8d832b116f49dcbe9b8e41ce48">m2k_listen_accept</a>(ctx);   <span class="comment">/* blocks until a client connects */</span></div>
 <div class="line">  <span class="keywordflow">if</span> (err != <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>) {</div>
-<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;listen_accept: %s\n&quot;</span>, <a class="code hl_function" href="#a976094e155a6c711075a4fea65c5a6eb">m2k_strerror</a>(err));</div>
+<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;listen_accept: %s\n&quot;</span>, <a class="code hl_function" href="#ac68560914e8d83ca8998de26e5b9e8c3">m2k_strerror</a>(err));</div>
 <div class="line">    <span class="keywordflow">return</span> 1;</div>
 <div class="line">  }</div>
-<div class="line">  <a class="code hl_function" href="#a49e0a78c27ee140d0b76fc195107fef0">m2k_run</a>(ctx);</div>
+<div class="line">  <a class="code hl_function" href="#a53bda9fcaa8c027a446b9ce19549cfa3">m2k_run</a>(ctx);</div>
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 </div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a8">main.c</a>.</dd>
@@ -1143,14 +1166,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a279451134b208dec1304b8bbfff4b97a" name="a279451134b208dec1304b8bbfff4b97a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a279451134b208dec1304b8bbfff4b97a">&#9670;&#160;</a></span>m2k_setup_pty()</h2>
+<a id="ab77f3daab4a6f38d7739cf5da27476cf" name="ab77f3daab4a6f38d7739cf5da27476cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab77f3daab4a6f38d7739cf5da27476cf">&#9670;&#160;</a></span>m2k_setup_pty()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_pty </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_pty </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -1164,7 +1187,7 @@ Typical usage</h2>
 
 <p>Allocate a PTY master and return the slave device path. </p>
 <p>The returned pointer is owned by the context — do NOT free() it. It remains valid until the next m2k_setup_*() call or m2k_free(ctx).</p>
-<p>Use this when you need the slave path itself (e.g. to print it with &ndash;show). To fork a comm program on the slave, prefer <a class="el" href="#aecd6209b8425839fa4eef30f504a41bf" title="Allocate a PTY and fork/exec a comm program on the slave.">m2k_setup_comm_program()</a>.</p>
+<p>Use this when you need the slave path itself (e.g. to print it with &ndash;show). To fork a comm program on the slave, prefer <a class="el" href="#a71488162aeb202f18b44dbf71d47539b" title="Allocate a PTY and fork/exec a comm program on the slave.">m2k_setup_comm_program()</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
@@ -1178,14 +1201,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a40332fcdccf5378d47ccf222ba2d0941" name="a40332fcdccf5378d47ccf222ba2d0941"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a40332fcdccf5378d47ccf222ba2d0941">&#9670;&#160;</a></span>m2k_setup_stdin()</h2>
+<a id="a77b3b99414d43ae9aa8475429a8ece74" name="a77b3b99414d43ae9aa8475429a8ece74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77b3b99414d43ae9aa8475429a8ece74">&#9670;&#160;</a></span>m2k_setup_stdin()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_stdin </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_setup_stdin </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
           <td></td>
@@ -1194,7 +1217,7 @@ Typical usage</h2>
 </div><div class="memdoc">
 
 <p>Use stdin/stdout as the TTY (standalone mode). </p>
-<p>Puts the terminal into raw mode. Call before <a class="el" href="#a49e0a78c27ee140d0b76fc195107fef0" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
+<p>Puts the terminal into raw mode. Call before <a class="el" href="#a53bda9fcaa8c027a446b9ce19549cfa3" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
@@ -1207,14 +1230,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a21b6a2e9cf2d513a31990c155d2dcfe4" name="a21b6a2e9cf2d513a31990c155d2dcfe4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a21b6a2e9cf2d513a31990c155d2dcfe4">&#9670;&#160;</a></span>m2k_step()</h2>
+<a id="aa65c8ca18be730d3ea347c59a969dd2a" name="aa65c8ca18be730d3ea347c59a969dd2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa65c8ca18be730d3ea347c59a969dd2a">&#9670;&#160;</a></span>m2k_step()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_step </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_step </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -1236,7 +1259,7 @@ Typical usage</h2>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
-    <tr><td class="paramname">fds</td><td>The pollfd array previously filled by <a class="el" href="#ae938fa8390fa2669e54a7ed6b87abacb" title="Describe the fds and timeout the caller&#39;s event loop should watch.">m2k_get_pollfds()</a>, with the OS's <span class="tt">.revents</span> values populated by the caller. </td></tr>
+    <tr><td class="paramname">fds</td><td>The pollfd array previously filled by <a class="el" href="#ac5b18ee79f93f53d862beae6a719a7f2" title="Describe the fds and timeout the caller&#39;s event loop should watch.">m2k_get_pollfds()</a>, with the OS's <span class="tt">.revents</span> values populated by the caller. </td></tr>
     <tr><td class="paramname">nfds</td><td>Number of entries in <code class="param">fds</code> (the value m2k_get_pollfds returned in <code class="param">*nfds_inout</code>). </td></tr>
   </table>
   </dd>
@@ -1245,14 +1268,14 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a976094e155a6c711075a4fea65c5a6eb" name="a976094e155a6c711075a4fea65c5a6eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a976094e155a6c711075a4fea65c5a6eb">&#9670;&#160;</a></span>m2k_strerror()</h2>
+<a id="ac68560914e8d83ca8998de26e5b9e8c3" name="ac68560914e8d83ca8998de26e5b9e8c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac68560914e8d83ca8998de26e5b9e8c3">&#9670;&#160;</a></span>m2k_strerror()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const char * m2k_strerror </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> const char * m2k_strerror </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a></td>          <td class="paramname"><span class="paramname"><em>err</em></span></td><td>)</td>
           <td></td>
@@ -1271,14 +1294,35 @@ Typical usage</h2>
 
 </div>
 </div>
-<a id="a73fd2428badbed2010367a9070e8e019" name="a73fd2428badbed2010367a9070e8e019"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73fd2428badbed2010367a9070e8e019">&#9670;&#160;</a></span>m2k_write_from_app()</h2>
+<a id="a84e0b75d119d8bbd1e79780e10867c4f" name="a84e0b75d119d8bbd1e79780e10867c4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84e0b75d119d8bbd1e79780e10867c4f">&#9670;&#160;</a></span>m2k_version()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_write_from_app </td>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> const char * m2k_version </td>
+          <td>(</td>
+          <td class="paramtype">void</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Runtime version string of the linked libmodemu2k. </p>
+<p>Lets a caller detect a header/library version mismatch by comparing M2K_VERSION (the value at the time the caller's translation unit was compiled) against <a class="el" href="#a84e0b75d119d8bbd1e79780e10867c4f" title="Runtime version string of the linked libmodemu2k.">m2k_version()</a> (the value the linked library was built with).</p>
+<dl class="section return"><dt>Returns</dt><dd>Static "MAJOR.MINOR.PATCH" string; never NULL, never owned by the caller. </dd></dl>
+
+</div>
+</div>
+<a id="ab0800ff35135cf932b508c41bb42bed7" name="ab0800ff35135cf932b508c41bb42bed7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0800ff35135cf932b508c41bb42bed7">&#9670;&#160;</a></span>m2k_write_from_app()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> m2k_write_from_app </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
         </tr>
@@ -1301,8 +1345,8 @@ Typical usage</h2>
 </div><div class="memdoc">
 
 <p>Push bytes into the modem as if they had been read from the TTY. </p>
-<p>Only valid after <a class="el" href="#a62f8ccbb4258ffb32e2b2c6882fe43a0" title="Embed mode: no real TTY fd; the host application supplies the bytes a TTY would normally produce,...">m2k_setup_app_io()</a>. Accepts as many bytes from <code class="param">buf</code> as the internal TTY read buffer has room for (partial accept; the actual count is returned via <code class="param">*consumed</code>). The accepted bytes are processed by the next <a class="el" href="#a21b6a2e9cf2d513a31990c155d2dcfe4" title="Run one non-blocking iteration of the state machine.">m2k_step()</a> call.</p>
-<p>If the buffer is completely full, *consumed is set to 0 and the function returns M2K_ERR_FULL — call <a class="el" href="#a21b6a2e9cf2d513a31990c155d2dcfe4" title="Run one non-blocking iteration of the state machine.">m2k_step()</a> to drain, then retry.</p>
+<p>Only valid after <a class="el" href="#a24a9dfd9bd5872cd3b94d3b71878d4e5" title="Embed mode: no real TTY fd; the host application supplies the bytes a TTY would normally produce,...">m2k_setup_app_io()</a>. Accepts as many bytes from <code class="param">buf</code> as the internal TTY read buffer has room for (partial accept; the actual count is returned via <code class="param">*consumed</code>). The accepted bytes are processed by the next <a class="el" href="#aa65c8ca18be730d3ea347c59a969dd2a" title="Run one non-blocking iteration of the state machine.">m2k_step()</a> call.</p>
+<p>If the buffer is completely full, *consumed is set to 0 and the function returns M2K_ERR_WOULDBLOCK — call <a class="el" href="#aa65c8ca18be730d3ea347c59a969dd2a" title="Run one non-blocking iteration of the state machine.">m2k_step()</a> to drain, then retry.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
@@ -1312,7 +1356,7 @@ Typical usage</h2>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>M2K_OK if any bytes were accepted, M2K_ERR_FULL if none were, M2K_ERR_PTY if the context is not in app-I/O mode. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>M2K_OK if any bytes were accepted, M2K_ERR_WOULDBLOCK if none were, M2K_ERR_PTY if the context is not in app-I/O mode. </dd></dl>
 
 </div>
 </div>

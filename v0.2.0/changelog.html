@@ -127,6 +127,15 @@ $(function() {
     connect() now yields back to the host poll loop while in progress
     instead of blocking the caller's event loop for up to S7 seconds;
     m2k_hangup() aborts a pending dial
+  * Add M2K_API visibility/export marker on every public function
+    (libuv UV_EXTERN / libcurl CURL_EXTERN / libssh2 LIBSSH2_API
+    convention); prep for Windows DLL builds and visibility=hidden
+  * Add M2K_VERSION_MAJOR/MINOR/PATCH macros and m2k_version()
+    runtime function (SQLite/libssh2/stb convention) so consumers can
+    detect header/library version skew
+  * Rename M2K_ERR_FULL → M2K_ERR_WOULDBLOCK to reflect the
+    flow-control vs hard-error distinction (libssh2 LIBSSH2_ERROR_EAGAIN
+    convention); breaking enum-name change, numeric position unchanged
 
 2022-08-18
 - modemu2k (v0.1.0)
