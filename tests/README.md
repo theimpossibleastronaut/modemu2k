@@ -79,33 +79,3 @@ ATD"localhost 2323"
 
 See `docker/README.md` for details.
 
-## Coverage
-
-The suite ships no coverage configuration in `meson.build` because
-`b_coverage` is a built-in meson option, set per build directory at
-configure time. Treat it as a periodic snapshot tool, not a default
-build mode — instrumentation slows the build and isn't useful unless
-you're about to look at the numbers.
-
-```sh
-meson setup _build-cov -Db_coverage=true
-meson test -C _build-cov
-gcovr --root . --filter src/ --filter modemu2k.h --print-summary
-```
-
-For an HTML report:
-
-```sh
-gcovr --root . --filter src/ --filter modemu2k.h --html-details _build-cov/coverage.html
-```
-
-`gcovr` is the recommended frontend; raw `gcov` also works but emits
-per-file `.gcov` files rather than a roll-up. On Debian/Ubuntu install
-`gcovr`; on Arch it's in the `extra` repo. Fall back to
-`pip install --user gcovr` if your distro lags.
-
-To target a specific weakness, filter to one file:
-
-```sh
-gcovr --root . --filter src/telopt.c --print-summary
-```
