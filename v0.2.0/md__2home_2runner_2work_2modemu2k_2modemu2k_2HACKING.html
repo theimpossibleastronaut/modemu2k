@@ -126,9 +126,6 @@ $(function() {
       </li>
     </ul>
   </li>
-  <li class="level1">
-    <a href="#cross-references">Cross-references </a>
-  </li>
 </ul>
 </div>
 <div class="textblock"><p><a class="anchor" id="hacking-on-modemu2k"></a></p>
@@ -233,14 +230,7 @@ Linking libmodemu2k into minicom</h2>
 <li>The dial UI talks AT commands directly today; in modemu2k mode it'd still work, since modemu2k accepts AT commands from the app-supplied byte stream the same way it would from a real serial connection.</li>
 </ul>
 <p>The harder questions: minicom's terminal state (raw mode, hardware flow control) presumes a real TTY behind <span class="tt">portfd</span>. Modemu2k's embed mode side-steps that, but the existing minicom code paths that call <span class="tt">m_sethwf</span> / <span class="tt">m_break</span> / <span class="tt">m_flush</span> would become no-ops and need either stubs or compile-time gating.</p>
-<p><b>File transfer (lrzsz) is the real architectural gap.</b> Minicom's <span class="tt">updown.c</span> spawns the transfer process with <span class="tt">dup2(portfd, 0)</span> and <span class="tt">dup2(portfd, 1)</span>, giving the child its stdin/stdout. With <span class="tt">portfd</span> sentinel'd to <span class="tt">/dev/null</span> in embed mode, lrzsz reads EOF and writes go nowhere — transfer times out. A real fix needs a PTY-pair bridge: allocate <span class="tt">openpty()</span>, give the child the slave, and have the parent pump bytes between the master and <span class="tt">m2k_{write_from,read_to}_app</span> — roughly 50 lines of new code. Until then, file transfer requires the standalone-modemu2k-plus-system-minicom path (the <span class="tt">m2k-minicom</span> helper script), which gives lrzsz a real PTY end-to-end.</p>
-<h1 class="doxsection"><a class="anchor" id="cross-references"></a>
-Cross-references</h1>
-<ul>
-<li><b>Building, testing, coverage:</b> <span class="tt">tests/README.md</span> covers the C/Python/shell layout, the <span class="tt">USE_AS_TEST_LIB</span> white-box pattern, the docker telnetd container for manual negotiation testing, and how to take a <span class="tt">gcovr</span> snapshot.</li>
-<li><b>Build options, doxygen workflow, packaging gates:</b> see the top-level <span class="tt">README.md</span> and the <span class="tt">packaging/</span> directory.</li>
-<li><b>API conventions borrowed from other libraries:</b> README's Acknowledgments section credits libcurl, libuv, libssh2, SQLite, and stb for the specific patterns adopted. </li>
-</ul>
+<p><b>File transfer (lrzsz) is the real architectural gap.</b> Minicom's <span class="tt">updown.c</span> spawns the transfer process with <span class="tt">dup2(portfd, 0)</span> and <span class="tt">dup2(portfd, 1)</span>, giving the child its stdin/stdout. With <span class="tt">portfd</span> sentinel'd to <span class="tt">/dev/null</span> in embed mode, lrzsz reads EOF and writes go nowhere — transfer times out. A real fix needs a PTY-pair bridge: allocate <span class="tt">openpty()</span>, give the child the slave, and have the parent pump bytes between the master and <span class="tt">m2k_{write_from,read_to}_app</span> — roughly 50 lines of new code. Until then, file transfer requires the standalone-modemu2k-plus-system-minicom path (the <span class="tt">m2k-minicom</span> helper script), which gives lrzsz a real PTY end-to-end. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- HTML footer for doxygen 1.16.1-->
