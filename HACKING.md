@@ -60,7 +60,7 @@ the public contract.
 3. Add at least one case in `tests/test_atcmd.c` exercising the
    happy path and the range-check rejection. White-box style; you
    can call the handler directly.
-4. If the command is user-facing, mention it in `man/modemu2k.1`.
+4. If the command is user-facing, mention it in `modemu2k.1`.
 
 ### A new public API function
 

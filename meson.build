@@ -98,7 +98,7 @@ if get_option('gen-docs')
   # wraps `groff -Thtml -mandoc` and strips the standalone HTML
   # wrapper so the result slots into doxygen's page chrome cleanly.
   manpage_fragment = custom_target('manpage-fragment',
-    input:  'man/modemu2k.1',
+    input:  'modemu2k.1',
     output: 'modemu2k.1.fragment.html',
     command: [man_to_fragment, '@INPUT@'],
     capture: true,
@@ -114,7 +114,7 @@ if get_option('gen-docs')
         'QUICKSTART.md',
         'HACKING.md',
         'ChangeLog',
-        'man/modemu2k.1',
+        'modemu2k.1',
         'tests/test_connect.c',
       ),
       example_sources,
@@ -128,7 +128,7 @@ if get_option('gen-docs')
 endif
 
 if not meson.is_subproject()
-  subdir ('man')
+  install_man('modemu2k.1')
   subdir ('scripts')
   subdir ('tests')
 
