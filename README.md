@@ -68,9 +68,8 @@ mature C libraries — the patterns, not the code:
   macro (mirrors `UV_EXTERN` / `CURL_EXTERN` / `LIBSSH2_API`) for
   Windows DLL support and ELF visibility hardening.
 - **[SQLite](https://www.sqlite.org/) /
-  [libssh2](https://www.libssh2.org/) / [stb](https://github.com/nothings/stb)**
-  — versioned header + runtime `m2k_version()` for header/library
-  skew detection.
+  [libssh2](https://www.libssh2.org/)** — versioned header (macros)
+  + runtime `m2k_version()` for header/library skew detection.
 - **[libssh2](https://www.libssh2.org/)** — `M2K_ERR_WOULDBLOCK`
   return code for non-blocking flow control (mirrors
   `LIBSSH2_ERROR_EAGAIN`), distinguishing flow-control from hard
