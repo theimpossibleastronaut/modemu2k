@@ -1168,10 +1168,11 @@ m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout
     onlinePollfds(ctx, fds, nfds_inout, timeout_ms);
     return M2K_OK;
   case M2K_STATE_DONE:
-  default:
     *nfds_inout = 0;
     *timeout_ms = 0;
     return M2K_OK;
+  default:
+    return M2K_ERR_BUG;
   }
 }
 
@@ -1256,8 +1257,9 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
     return M2K_OK;
   }
   case M2K_STATE_DONE:
-  default:
     return M2K_OK;
+  default:
+    return M2K_ERR_BUG;
   }
 }
 
