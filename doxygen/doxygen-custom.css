@@ -189,3 +189,53 @@ a[href*="/actions/workflows/"] { display: none; }
    The .m2k-mainpage class is set by a script in header.html. */
 html.m2k-mainpage .header { display: none; }
 html.m2k-mainpage .textblock > h1.doxsection:first-of-type { display: none; }
+
+/* Floating Table of Contents.
+   Doxygen emits the [TOC] directive as <div class="contents"> wrapping
+   a <div class="toc"> followed by the page body. We give the TOC its
+   own grid column inside .contents and let it stick to the top of the
+   viewport while scrolling. The body content narrows to make room
+   rather than the TOC sitting on top of it.
+
+   The breakpoint uses `em` so a user who zooms text up keeps the
+   layout intact — pixel breakpoints break when the viewport shrinks
+   below them at higher zoom levels. Below the breakpoint the TOC
+   falls back to a normal block at the top of the page. */
+@media (min-width: 60em) {
+  div.contents {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 14em;
+    column-gap: 1.5em;
+  }
+  /* Every direct child of .contents lands in the left column by default;
+     only the TOC opts into the right column. */
+  div.contents > * {
+    grid-column: 1;
+    min-width: 0;
+  }
+  div.contents > div.toc {
+    grid-column: 2;
+    grid-row: 1 / span 99;
+    position: sticky;
+    top: 1em;
+    align-self: start;
+    max-height: calc(100vh - 2em);
+    overflow-y: auto;
+    margin: 0;
+    background: #f5f5f5;
+    border: 1px solid #d0d0d0;
+    border-radius: 3px;
+    padding: 0.75em 1em;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  div.contents > div.toc h3 {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    font-size: 14px;
+  }
+  div.contents > div.toc ul {
+    padding-left: 1.2em;
+    margin: 0.25em 0;
+  }
+}

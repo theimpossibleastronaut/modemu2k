@@ -1,5 +1,7 @@
 # Hacking on modemu2k
 
+[TOC]
+
 Practical notes for working on the codebase — entry points, the
 contracts the public API depends on, and sketches of how a host
 program could embed `libmodemu2k`. The build and test instructions

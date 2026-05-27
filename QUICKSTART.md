@@ -1,5 +1,7 @@
 # Getting started with modemu2k
 
+[TOC]
+
 modemu2k is a Hayes-style AT-command modem emulator that bridges a comm
 program to a TCP or Telnet endpoint. To a comm program it looks like a
 serial-attached modem; the actual traffic flows over the network.
