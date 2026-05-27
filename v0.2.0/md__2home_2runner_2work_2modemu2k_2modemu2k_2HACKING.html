@@ -179,7 +179,7 @@ A new AT command</h2>
 <li>Add a lex rule in <span class="tt">src/cmdlex.l</span> matching the verb and returning a <span class="tt">Cmdstat</span> (or dispatching to a handler that returns one).</li>
 <li>Add the handler in <span class="tt">src/atcmd.c</span> if it's non-trivial. Handlers return <span class="tt">0</span> on success, <span class="tt">1</span> on rejection — the lexer turns that into <span class="tt">CMDST_OK</span> / <span class="tt">CMDST_ERROR</span>.</li>
 <li>Add at least one case in <span class="tt">tests/test_atcmd.c</span> exercising the happy path and the range-check rejection. White-box style; you can call the handler directly.</li>
-<li>If the command is user-facing, mention it in <span class="tt">man/modemu2k.1</span>.</li>
+<li>If the command is user-facing, mention it in <span class="tt">modemu2k.1</span>.</li>
 </ol>
 <h2 class="doxsection"><a class="anchor" id="a-new-public-api-function"></a>
 A new public API function</h2>

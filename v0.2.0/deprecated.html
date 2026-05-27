@@ -18,7 +18,7 @@ if (/(^|\/)index\.html$|\/$/.test(location.pathname)) {
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>modemu2k: Related Pages</title>
+<title>modemu2k: Deprecated List</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -66,8 +66,6 @@ $(function() {
 });
 </script>
 <div id="main-nav"></div>
-</div><!-- top -->
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -89,20 +87,20 @@ $(function() {
 </div>
 </div>
 
-<div class="header">
-  <div class="headertitle"><div class="title">Related Pages</div></div>
+</div><!-- top -->
+<div id="doc-content">
+<div><div class="header">
+  <div class="headertitle"><div class="title">Deprecated List </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock">Here is a list of all related documentation pages:</div><div class="directory">
-<table class="directory">
-<tr id="row_0_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html" target="_self">Getting started with modemu2k</a></td><td class="desc"></td></tr>
-<tr id="row_1_" class="odd"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md__2home_2runner_2work_2modemu2k_2modemu2k_2HACKING.html" target="_self">Hacking on modemu2k</a></td><td class="desc"></td></tr>
-<tr id="row_2_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="changelog.html" target="_self">Change log</a></td><td class="desc"></td></tr>
-<tr id="row_3_" class="odd"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="manpage.html" target="_self">modemu2k(1) man page</a></td><td class="desc"></td></tr>
-<tr id="row_4_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="deprecated.html" target="_self">Deprecated List</a></td><td class="desc"></td></tr>
-</table>
-</div><!-- directory -->
-</div><!-- contents -->
+<div class="textblock"><dl class="reflist">
+<dt>Global <a class="el" href="modemu2k_8h.html#a0d5a850819f363c2f8d3293cfc7ae28a">M2K_DEPRECATED</a>  ("use m2k_run() or the step API instead") <a class="el" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19" title="Return codes used by all m2k_* functions.">m2k_err_t</a> m2k_dial(<a class="el" href="modemu2k_8h.html#a861720925b561f9640e9e606fb6d9ec6" title="Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free().">m2k_t</a> *ctx</dt>
+<dd><p class="startdd"><a class="anchor" id="_deprecated000001"></a>Slated for removal in 0.3.0. Drive the state machine via <a class="el" href="modemu2k_8h.html#a53bda9fcaa8c027a446b9ce19549cfa3" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a> or the step API (m2k_get_pollfds + m2k_step) and let the AT lexer dispatch the dial.</p>
+<p class="enddd"><a class="anchor" id="_deprecated000002"></a>Slated for removal in 0.3.0. Use <a class="el" href="modemu2k_8h.html#a53bda9fcaa8c027a446b9ce19549cfa3" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a> or the step API (m2k_get_pollfds + m2k_step) instead — they share one state-machine implementation with the rest of the library.</p>
+</dd>
+</dl>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
 <!-- HTML footer for doxygen 1.16.1-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
