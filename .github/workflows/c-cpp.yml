@@ -35,8 +35,18 @@ jobs:
       # itself via the exit-77 path it would take on a machine without docker).
       run: meson setup builddir -Db_sanitize=address,undefined -Db_lundef=false -Ddocker-test=true
 
-    - name: Build
-      run: ninja -v -C builddir
+    - name: Build (and pre-warm docker image in parallel)
+      # Kick off the busybox-telnetd image build in the background so
+      # ninja runs concurrently — when meson test reaches
+      # test_docker_telnet, its own `docker build --load -q` is a cache
+      # hit (~1s) instead of the cold pull-and-install (~30s) we'd
+      # otherwise pay. `wait` surfaces the docker build's exit code so
+      # a Dockerfile regression fails this step rather than the test.
+      run: |
+        docker build --load -q -t m2k-telnetd-test docker > /tmp/docker-build.log 2>&1 &
+        docker_pid=$!
+        ninja -v -C builddir
+        wait $docker_pid || { echo '--- docker build log ---'; cat /tmp/docker-build.log; exit 1; }
 
     - name: Test
       run: meson test -C builddir --print-errorlogs
