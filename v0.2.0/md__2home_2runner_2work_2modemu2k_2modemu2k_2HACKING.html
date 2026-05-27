@@ -93,9 +93,47 @@ $(function() {
   <div class="headertitle"><div class="title">Hacking on modemu2k </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md13"></a></p>
+<div class="toc"><h3>Table of Contents</h3>
+<ul>
+  <li class="level1">
+    <a href="#where-to-start-reading">Where to start reading </a>
+  </li>
+  <li class="level1">
+    <a href="#code-map">Code map </a>
+  </li>
+  <li class="level1">
+    <a href="#adding-things">Adding things </a>
+    <ul>
+      <li class="level2">
+        <a href="#a-new-at-command">A new AT command </a>
+      </li>
+      <li class="level2">
+        <a href="#a-new-public-api-function">A new public API function </a>
+      </li>
+    </ul>
+  </li>
+  <li class="level1">
+    <a href="#contracts-to-preserve">Contracts to preserve </a>
+  </li>
+  <li class="level1">
+    <a href="#integration-sketches-aspirational">Integration sketches (aspirational) </a>
+    <ul>
+      <li class="level2">
+        <a href="#replacing-the-modemu-plugin-in-dosemu2">Replacing the modemu plugin in dosemu2 </a>
+      </li>
+      <li class="level2">
+        <a href="#linking-libmodemu2k-into-minicom">Linking libmodemu2k into minicom </a>
+      </li>
+    </ul>
+  </li>
+  <li class="level1">
+    <a href="#cross-references">Cross-references </a>
+  </li>
+</ul>
+</div>
+<div class="textblock"><p><a class="anchor" id="hacking-on-modemu2k"></a></p>
 <p>Practical notes for working on the codebase — entry points, the contracts the public API depends on, and sketches of how a host program could embed <span class="tt">libmodemu2k</span>. The build and test instructions live in <span class="tt">README.md</span> and <span class="tt">tests/README.md</span>; this file is for what those don't cover.</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md14"></a>
+<h1 class="doxsection"><a class="anchor" id="where-to-start-reading"></a>
 Where to start reading</h1>
 <p>If you've never read the code before, this order keeps the surface manageable:</p>
 <ol type="1">
@@ -105,7 +143,7 @@ Where to start reading</h1>
 <li><b><span class="tt">src/cmdlex.l</span></b> + <b><span class="tt">src/atcmd.c</span></b> — the AT command set. The lexer (Flex) produces a <span class="tt">Cmdstat</span> enum; <span class="tt">atcmd.c</span> has the per-verb handlers (<span class="tt">atcmdH</span>, <span class="tt">atcmdZ</span>, S-register ops, etc.).</li>
 </ol>
 <p>The internal headers <span class="tt">src/m2k_private.h</span> and <span class="tt">src/m2k_ctx.h</span> define everything that lives in the opaque <span class="tt"><a class="el" href="modemu2k_8h.html#a861720925b561f9640e9e606fb6d9ec6" title="Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free().">m2k_t</a></span>. Read them when you need to know what state the context carries; don't read them to understand the public contract.</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md15"></a>
+<h1 class="doxsection"><a class="anchor" id="code-map"></a>
 Code map</h1>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -133,9 +171,9 @@ Code map</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><span class="tt">src/utils.c</span>  </td><td class="markdownTableBodyNone"><span class="tt">m2k_alloc</span> / <span class="tt">m2k_calloc</span> macros with call-site logging  </td></tr>
 </table>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md16"></a>
+<h1 class="doxsection"><a class="anchor" id="adding-things"></a>
 Adding things</h1>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md17"></a>
+<h2 class="doxsection"><a class="anchor" id="a-new-at-command"></a>
 A new AT command</h2>
 <ol type="1">
 <li>Add a lex rule in <span class="tt">src/cmdlex.l</span> matching the verb and returning a <span class="tt">Cmdstat</span> (or dispatching to a handler that returns one).</li>
@@ -143,7 +181,7 @@ A new AT command</h2>
 <li>Add at least one case in <span class="tt">tests/test_atcmd.c</span> exercising the happy path and the range-check rejection. White-box style; you can call the handler directly.</li>
 <li>If the command is user-facing, mention it in <span class="tt">man/modemu2k.1</span>.</li>
 </ol>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md18"></a>
+<h2 class="doxsection"><a class="anchor" id="a-new-public-api-function"></a>
 A new public API function</h2>
 <ol type="1">
 <li>Declare in <span class="tt"><a class="el" href="modemu2k_8h.html" title="Public API for the modemu2k PTY-based modem emulator library.">modemu2k.h</a></span> with the <span class="tt"><a class="el" href="modemu2k_8h.html#af827f32b40d60938ee7fa1c73cbb9d29" title="Public-symbol visibility/export marker.">M2K_API</a></span> prefix and a docblock.</li>
@@ -152,7 +190,7 @@ A new public API function</h2>
 <li>Add a <span class="tt">tests/test_*.c</span> case. White-box tests can include <span class="tt">m2k_private.h</span>/<span class="tt">m2k_ctx.h</span> to reach into context state.</li>
 <li>Add a one-line entry to <span class="tt">ChangeLog</span> under the (in-progress) section at the top.</li>
 </ol>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md19"></a>
+<h1 class="doxsection"><a class="anchor" id="contracts-to-preserve"></a>
 Contracts to preserve</h1>
 <p>These constraints are load-bearing for callers; breaking them silently will surprise someone.</p>
 <ul>
@@ -162,12 +200,12 @@ Contracts to preserve</h1>
 <li><b>Opaque types.</b> <span class="tt"><a class="el" href="modemu2k_8h.html#a861720925b561f9640e9e606fb6d9ec6" title="Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free().">m2k_t</a></span> is opaque to consumers. They should never <span class="tt">#include</span> <span class="tt">m2k_ctx.h</span> or peek at struct layout. The test suite does, on purpose, via <span class="tt">-DUSE_AS_TEST_LIB</span>.</li>
 <li><b>The <span class="tt"><a class="el" href="modemu2k_8h.html#af827f32b40d60938ee7fa1c73cbb9d29" title="Public-symbol visibility/export marker.">M2K_API</a></span> marker is required on every public function</b>, so that a future <span class="tt">-fvisibility=hidden</span> build (or a Windows DLL build) keeps internals internal.</li>
 </ul>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md20"></a>
+<h1 class="doxsection"><a class="anchor" id="integration-sketches-aspirational"></a>
 Integration sketches (aspirational)</h1>
 <blockquote class="doxtable">
 <p><b>These are approach sketches, not validated implementations.</b> They describe what an integration <em>would</em> look like, based on reading the upstream code and <span class="tt">libmodemu2k</span>'s current API. Neither sketch has been built end-to-end against a real upstream tree. If you're considering doing the work, treat these as starting points for design, not as instructions. </p>
 </blockquote>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md21"></a>
+<h2 class="doxsection"><a class="anchor" id="replacing-the-modemu-plugin-in-dosemu2"></a>
 Replacing the modemu plugin in dosemu2</h2>
 <p>dosemu2 currently bundles a vendored copy of the original <span class="tt">modemu</span> under <span class="tt">src/plugin/modemu/</span> (~10 source files: <span class="tt">modemu.c</span>, <span class="tt">atcmd.c</span>, <span class="tt">sock.c</span>, <span class="tt">telopt.c</span>, etc., all wrapped in <span class="tt">#ifdef
 DOSEMU</span>). The plugin is wired into dosemu2's I/O dispatcher via <span class="tt">ioselect.h</span>.</p>
@@ -180,7 +218,7 @@ DOSEMU</span>). The plugin is wired into dosemu2's I/O dispatcher via <span clas
 <li>The dosemu2 side's DTR handling maps to <span class="tt"><a class="el" href="modemu2k_8h.html#ae9f1b813716263592afd965e37cc5703" title="Set the host&#39;s DTR (Data Terminal Ready) signal state.">m2k_set_dtr()</a></span>. The &amp;D2 hangup-on-DTR-drop behavior is already implemented in modemu2k.</li>
 </ul>
 <p>The biggest unknown is whether dosemu2's main loop architecture is compatible with calling into a library that owns its own state machine. Worth a serious design conversation with dosemu2 maintainers before any code is written.</p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md22"></a>
+<h2 class="doxsection"><a class="anchor" id="linking-libmodemu2k-into-minicom"></a>
 Linking libmodemu2k into minicom</h2>
 <p>minicom currently centers everything on a single file descriptor <span class="tt">portfd</span> (the serial device or socket). It's referenced ~50 times in <span class="tt">src/main.c</span> plus appearances in <span class="tt">dial.c</span>, <span class="tt">updown.c</span>, <span class="tt">functions.c</span>. Read/write/<span class="tt">select</span> use this fd directly.</p>
 <p>A <span class="tt">--modem-emu</span> mode that swaps the fd-based path for <span class="tt">libmodemu2k</span>:</p>
@@ -194,7 +232,7 @@ Linking libmodemu2k into minicom</h2>
 <li>The dial UI talks AT commands directly today; in modemu2k mode it'd still work, since modemu2k accepts AT commands from the app-supplied byte stream the same way it would from a real serial connection.</li>
 </ul>
 <p>The harder questions: minicom's terminal state (raw mode, hardware flow control) presumes a real TTY behind <span class="tt">portfd</span>. Modemu2k's embed mode side-steps that, but the existing minicom code paths that call <span class="tt">m_sethwf</span> / <span class="tt">m_break</span> / <span class="tt">m_flush</span> would become no-ops and need either stubs or compile-time gating.</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md23"></a>
+<h1 class="doxsection"><a class="anchor" id="cross-references"></a>
 Cross-references</h1>
 <ul>
 <li><b>Building, testing, coverage:</b> <span class="tt">tests/README.md</span> covers the C/Python/shell layout, the <span class="tt">USE_AS_TEST_LIB</span> white-box pattern, the docker telnetd container for manual negotiation testing, and how to take a <span class="tt">gcovr</span> snapshot.</li>
