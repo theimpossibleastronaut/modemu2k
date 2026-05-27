@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['the_20usual_20mode_0',['With a comm program (the usual mode)',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html#autotoc_md9',1,'']]],
-  ['things_20to_20know_20first_1',['Important things to know first',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html#autotoc_md7',1,'']]],
-  ['to_20know_20first_2',['Important things to know first',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html#autotoc_md7',1,'']]],
-  ['to_20look_20next_3',['Where to look next',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html#autotoc_md12',1,'']]],
-  ['typical_20usage_4',['Typical usage',['../modemu2k_8h.html#autotoc_md13',1,'']]]
+  ['reading_0',['Where to start reading',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2HACKING.html#autotoc_md14',1,'']]],
+  ['references_1',['Cross-references',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2HACKING.html#autotoc_md23',1,'']]],
+  ['replacing_20the_20modemu_20plugin_20in_20dosemu2_2',['Replacing the modemu plugin in dosemu2',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2HACKING.html#autotoc_md21',1,'']]]
 ];

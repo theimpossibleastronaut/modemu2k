@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['up_20and_20escaping_0',['Hanging up and escaping',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html#autotoc_md11',1,'']]],
-  ['usage_1',['Usage',['../index.html#autotoc_md3',1,'']]],
-  ['usage_2',['Typical usage',['../modemu2k_8h.html#autotoc_md13',1,'']]],
-  ['usual_20mode_3',['With a comm program (the usual mode)',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html#autotoc_md9',1,'']]]
+  ['sketches_20aspirational_0',['Integration sketches (aspirational)',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2HACKING.html#autotoc_md20',1,'']]],
+  ['standalone_20stdin_20stdout_1',['Standalone (stdin/stdout)',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html#autotoc_md8',1,'']]],
+  ['start_20reading_2',['Where to start reading',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2HACKING.html#autotoc_md14',1,'']]],
+  ['started_20with_20modemu2k_3',['Getting started with modemu2k',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html',1,'']]],
+  ['stdin_20stdout_4',['Standalone (stdin/stdout)',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html#autotoc_md8',1,'']]],
+  ['stdout_5',['Standalone (stdin/stdout)',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html#autotoc_md8',1,'']]]
 ];
