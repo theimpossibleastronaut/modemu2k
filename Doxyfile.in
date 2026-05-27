@@ -1028,6 +1028,7 @@ WARN_LOGFILE           = doxywarn.log
 
 INPUT                  = @SOURCE_ROOT@/README.md \
                          @SOURCE_ROOT@/QUICKSTART.md \
+                         @SOURCE_ROOT@/HACKING.md \
                          @SOURCE_ROOT@/doxygen/changelog.md \
                          @SOURCE_ROOT@/doxygen/manpage.md \
                          @SOURCE_ROOT@/modemu2k.h

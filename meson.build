@@ -112,6 +112,7 @@ if get_option('gen-docs')
         'modemu2k.h',
         'README.md',
         'QUICKSTART.md',
+        'HACKING.md',
         'ChangeLog',
         'man/modemu2k.1',
         'tests/test_connect.c',
@@ -135,6 +136,7 @@ if not meson.is_subproject()
     files(
       'README.md',
       'QUICKSTART.md',
+      'HACKING.md',
       'COPYING',
       'AUTHORS',
       'ChangeLog',
