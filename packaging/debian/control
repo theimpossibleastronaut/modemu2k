@@ -22,4 +22,4 @@ Description: Hayes-style AT-command modem emulator bridging serial to TCP/Telnet
  picocom) on the slave, or accepts an incoming TCP connection as the
  TTY. IPv4 and IPv6 are supported.
  .
- modemu2k is a fork of modemu, originally developed by Toru Egashira.
+ modemu2k is based on modemu, originally developed by Toru Egashira.

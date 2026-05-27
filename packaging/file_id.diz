@@ -1,4 +1,4 @@
-modemu2k is a fork of modemu, originally
+modemu2k is based on modemu, originally
 developed by Toru Egashira. modemu2k adds
 telnet capability to a comm program. It
 can redirect telnet I/O to a pty so that a
