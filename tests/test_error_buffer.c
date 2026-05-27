@@ -140,7 +140,8 @@ test_strerror_mapping(void)
   assert(strcmp(m2k_strerror(M2K_ERR_TIMEOUT), "Connection timed out") == 0);
   assert(strcmp(m2k_strerror(M2K_ERR_CANCELED), "Operation canceled") == 0);
   assert(strcmp(m2k_strerror(M2K_ERR_BUG), "Internal bug") == 0);
-  assert(strcmp(m2k_strerror(M2K_ERR_FULL), "Buffer full") == 0);
+  assert(strcmp(m2k_strerror(M2K_ERR_WOULDBLOCK),
+                "Operation would block; retry later") == 0);
   assert(strcmp(m2k_strerror(M2K_ERR_AT), "AT command rejected") == 0);
 }
 
@@ -222,6 +223,21 @@ test_dtr_rts_tracking(void)
   m2k_free(ctx);
 }
 
+static void
+test_version(void)
+{
+  /* Runtime string must match the compile-time macro, byte-for-byte. */
+  const char *v = m2k_version();
+  assert(v);
+  assert(strcmp(v, M2K_VERSION) == 0);
+  /* Sanity: parses as MAJOR.MINOR.PATCH integers. */
+  int maj = -1, min = -1, pat = -1;
+  assert(sscanf(v, "%d.%d.%d", &maj, &min, &pat) == 3);
+  assert(maj == M2K_VERSION_MAJOR);
+  assert(min == M2K_VERSION_MINOR);
+  assert(pat == M2K_VERSION_PATCH);
+}
+
 int
 main(void)
 {
@@ -236,5 +252,6 @@ main(void)
   test_set_log_fn();
   test_initial_state_predicates();
   test_dtr_rts_tracking();
+  test_version();
   return 0;
 }

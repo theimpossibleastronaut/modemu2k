@@ -50,11 +50,22 @@ The `modemu2k(1)` man page has the full option and AT-command reference.
 ## Acknowledgments
 
 Several library-API conventions in `modemu2k.h` are modeled after
-[libcurl](https://curl.se/libcurl/): the caller-supplied detailed
-error buffer (`m2k_set_error_buffer` mirrors `CURLOPT_ERRORBUFFER`),
-the `strerror`-style code-to-message helper (`m2k_strerror`), the
-log-callback pattern (`m2k_set_log_fn` mirrors `CURLOPT_DEBUGFUNCTION`),
-and the explicit-fd event-loop split between `m2k_run` (blocking) and
-`m2k_step` / `m2k_get_pollfds` (host-owned event loop, analogous to
-curl's easy vs. multi interfaces). No code is copied — the conventions
-are.
+mature C libraries — the patterns, not the code:
+
+- **[libcurl](https://curl.se/libcurl/)** — caller-supplied detailed
+  error buffer (`m2k_set_error_buffer` mirrors `CURLOPT_ERRORBUFFER`),
+  `strerror`-style code-to-message helper, log-callback pattern
+  (`CURLOPT_DEBUGFUNCTION`), and the blocking/non-blocking split
+  between `m2k_run` and `m2k_step` (curl's easy vs. multi interfaces).
+- **[libuv](https://libuv.org/) / [libcurl](https://curl.se/libcurl/) /
+  [libssh2](https://www.libssh2.org/)** — `M2K_API` visibility/export
+  macro (mirrors `UV_EXTERN` / `CURL_EXTERN` / `LIBSSH2_API`) for
+  Windows DLL support and ELF visibility hardening.
+- **[SQLite](https://www.sqlite.org/) /
+  [libssh2](https://www.libssh2.org/) / [stb](https://github.com/nothings/stb)**
+  — versioned header + runtime `m2k_version()` for header/library
+  skew detection.
+- **[libssh2](https://www.libssh2.org/)** — `M2K_ERR_WOULDBLOCK`
+  return code for non-blocking flow control (mirrors
+  `LIBSSH2_ERROR_EAGAIN`), distinguishing flow-control from hard
+  errors.

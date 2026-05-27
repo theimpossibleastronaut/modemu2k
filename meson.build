@@ -45,11 +45,14 @@ pkg = import('pkgconfig')
 
 version_components = meson.project_version().split('.')
 version_conf = configuration_data()
-version_conf.set('MODEMU2K_VERSION_MAJOR', version_components[0])
-version_conf.set('MODEMU2K_VERSION_MINOR', version_components[1])
-version_conf.set('MODEMU2K_VERSION_PATCH', version_components[2])
-version_conf.set_quoted('MODEMU2K_VERSION', meson.project_version())
-version_h = configure_file(output: 'modemu2k_version.h', configuration: version_conf)
+version_conf.set('M2K_VERSION_MAJOR', version_components[0])
+version_conf.set('M2K_VERSION_MINOR', version_components[1])
+version_conf.set('M2K_VERSION_PATCH', version_components[2])
+version_conf.set_quoted('M2K_VERSION', meson.project_version())
+version_h = configure_file(
+  output: 'modemu2k_version.h',
+  configuration: version_conf,
+)
 
 subdir('src')
 

@@ -39,12 +39,54 @@
 #include <poll.h>     /* struct pollfd, used by m2k_get_pollfds()/m2k_step() below */
 #include <stddef.h>   /* size_t */
 
+#include "modemu2k_version.h"  /* M2K_VERSION_MAJOR / _MINOR / _PATCH / M2K_VERSION */
+
+/**
+ * @brief Public-symbol visibility/export marker.
+ *
+ * On platforms where it matters (Windows DLLs, ELF builds with
+ * `-fvisibility=hidden`) this macro decorates every documented public
+ * function below. Defaults to nothing on Unix-default builds, where
+ * symbols are visible already. Define M2K_BUILDING_DLL before including
+ * this header inside the modemu2k source tree on Windows to flip the
+ * dllimport/dllexport direction; consumers leave it undefined.
+ *
+ * Borrowed from libuv (UV_EXTERN) / libcurl (CURL_EXTERN) /
+ * libssh2 (LIBSSH2_API).
+ */
+#ifndef M2K_API
+# if defined(_WIN32)
+#  if defined(M2K_BUILDING_DLL)
+#   define M2K_API __declspec(dllexport)
+#  else
+#   define M2K_API __declspec(dllimport)
+#  endif
+# elif defined(__GNUC__) && __GNUC__ >= 4
+#  define M2K_API __attribute__((visibility("default")))
+# else
+#  define M2K_API
+# endif
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /** @brief Opaque modem emulator context. Create with m2k_new(), destroy with m2k_free(). */
 typedef struct m2k_s m2k_t;
+
+/**
+ * @brief Runtime version string of the linked libmodemu2k.
+ *
+ * Lets a caller detect a header/library version mismatch by comparing
+ * @ref M2K_VERSION (the value at the time the caller's translation unit
+ * was compiled) against m2k_version() (the value the linked library was
+ * built with).
+ *
+ * @return Static "MAJOR.MINOR.PATCH" string; never NULL, never owned by
+ *         the caller.
+ */
+M2K_API const char *m2k_version(void);
 
 /**
  * @brief Log callback type.
@@ -66,7 +108,9 @@ typedef enum {
   M2K_ERR_TIMEOUT,  /**< Operation timed out. */
   M2K_ERR_CANCELED, /**< Operation canceled (e.g., +++ escape sequence). */
   M2K_ERR_BUG,      /**< Internal assertion failure — should not happen. */
-  M2K_ERR_FULL,     /**< Buffer full; retry when the consumer has drained. */
+  M2K_ERR_WOULDBLOCK, /**< Operation would block; call m2k_step() (or wait
+                           for the relevant fd to become ready) and retry.
+                           Mirrors libssh2's LIBSSH2_ERROR_EAGAIN. */
   M2K_ERR_AT,       /**< AT command rejected by the lexer (malformed input). */
 } m2k_err_t;
 
@@ -74,13 +118,13 @@ typedef enum {
  * @brief Allocate and initialise a new modem context.
  * @return Newly allocated context, or NULL on memory exhaustion.
  */
-m2k_t      *m2k_new(void);
+M2K_API m2k_t      *m2k_new(void);
 
 /**
  * @brief Release all resources held by @p ctx.
  * @param ctx Context to destroy. Safe to call with NULL.
  */
-void        m2k_free(m2k_t *ctx);
+M2K_API void        m2k_free(m2k_t *ctx);
 
 /**
  * @brief Install a log callback.
@@ -96,7 +140,7 @@ void        m2k_free(m2k_t *ctx);
  *
  * @snippet examples/m2k_set_log_fn.c set_log_fn-install
  */
-void        m2k_set_log_fn(m2k_t *ctx, m2k_log_fn fn, void *userdata);
+M2K_API void        m2k_set_log_fn(m2k_t *ctx, m2k_log_fn fn, void *userdata);
 
 /** Recommended minimum size for the m2k_set_error_buffer() buffer. */
 #define M2K_ERROR_BUFFER_SIZE 256
@@ -123,7 +167,7 @@ void        m2k_set_log_fn(m2k_t *ctx, m2k_log_fn fn, void *userdata);
  *
  * @snippet examples/m2k_set_error_buffer.c set_error_buffer
  */
-void        m2k_set_error_buffer(m2k_t *ctx, char *buf, size_t size);
+M2K_API void        m2k_set_error_buffer(m2k_t *ctx, char *buf, size_t size);
 
 /**
  * @brief Feed a Hayes AT command string to the modem.
@@ -147,7 +191,7 @@ void        m2k_set_error_buffer(m2k_t *ctx, char *buf, size_t size);
  * m2k_atcmd(ctx, "ATS0=1");    // auto-answer on first ring
  * @endcode
  */
-m2k_err_t   m2k_atcmd(m2k_t *ctx, const char *cmd);
+M2K_API m2k_err_t   m2k_atcmd(m2k_t *ctx, const char *cmd);
 
 /**
  * @brief Open a TCP connection to @p host : @p port.
@@ -162,7 +206,7 @@ m2k_err_t   m2k_atcmd(m2k_t *ctx, const char *cmd);
  *
  * @snippet tests/test_connect.c dial
  */
-m2k_err_t   m2k_dial(m2k_t *ctx, const char *host, const char *port);
+M2K_API m2k_err_t   m2k_dial(m2k_t *ctx, const char *host, const char *port);
 
 /**
  * @brief Enter online mode and relay data between the PTY and the socket.
@@ -182,14 +226,14 @@ m2k_err_t   m2k_dial(m2k_t *ctx, const char *host, const char *port);
  * m2k_hangup(ctx);
  * @endcode
  */
-m2k_err_t   m2k_online(m2k_t *ctx);
+M2K_API m2k_err_t   m2k_online(m2k_t *ctx);
 
 /**
  * @brief Tear down the active TCP connection.
  * @param ctx Modem context.
  * @return M2K_OK on success.
  */
-m2k_err_t   m2k_hangup(m2k_t *ctx);
+M2K_API m2k_err_t   m2k_hangup(m2k_t *ctx);
 
 /**
  * @brief Request an immediate return to command mode from online mode.
@@ -208,14 +252,14 @@ m2k_err_t   m2k_hangup(m2k_t *ctx);
  * @param ctx Modem context.
  * @return M2K_OK.
  */
-m2k_err_t   m2k_escape(m2k_t *ctx);
+M2K_API m2k_err_t   m2k_escape(m2k_t *ctx);
 
 /**
  * @brief Return a human-readable string for @p err.
  * @param err Error code.
  * @return Static string; never NULL.
  */
-const char *m2k_strerror(m2k_err_t err);
+M2K_API const char *m2k_strerror(m2k_err_t err);
 
 /**
  * @brief Use stdin/stdout as the TTY (standalone mode).
@@ -225,7 +269,7 @@ const char *m2k_strerror(m2k_err_t err);
  * @param ctx Modem context.
  * @return M2K_OK.
  */
-m2k_err_t   m2k_setup_stdin(m2k_t *ctx);
+M2K_API m2k_err_t   m2k_setup_stdin(m2k_t *ctx);
 
 /**
  * @brief Allocate a PTY master and return the slave device path.
@@ -242,7 +286,7 @@ m2k_err_t   m2k_setup_stdin(m2k_t *ctx);
  *                  Must be non-NULL.
  * @return M2K_OK on success, M2K_ERR_PTY on failure.
  */
-m2k_err_t   m2k_setup_pty(m2k_t *ctx, const char **slave_out);
+M2K_API m2k_err_t   m2k_setup_pty(m2k_t *ctx, const char **slave_out);
 
 /**
  * @brief Allocate a PTY and fork/exec a comm program on the slave.
@@ -256,7 +300,7 @@ m2k_err_t   m2k_setup_pty(m2k_t *ctx, const char **slave_out);
  *
  * @snippet examples/m2k_setup_comm_program.c setup_comm_program
  */
-m2k_err_t   m2k_setup_comm_program(m2k_t *ctx, const char *cmd);
+M2K_API m2k_err_t   m2k_setup_comm_program(m2k_t *ctx, const char *cmd);
 
 /**
  * @brief Open an existing PTY device as the TTY.
@@ -265,7 +309,7 @@ m2k_err_t   m2k_setup_comm_program(m2k_t *ctx, const char *cmd);
  * @param dev Path to the PTY master device (e.g. @c "/dev/ptyp0").
  * @return M2K_OK on success, M2K_ERR_PTY if the device cannot be opened.
  */
-m2k_err_t   m2k_setup_dev(m2k_t *ctx, const char *dev);
+M2K_API m2k_err_t   m2k_setup_dev(m2k_t *ctx, const char *dev);
 
 /**
  * @brief Bind a TCP listening socket on @p port.
@@ -284,7 +328,7 @@ m2k_err_t   m2k_setup_dev(m2k_t *ctx, const char *dev);
  *
  * @snippet examples/m2k_setup_listen.c setup_listen
  */
-m2k_err_t   m2k_setup_listen(m2k_t *ctx, const char *port);
+M2K_API m2k_err_t   m2k_setup_listen(m2k_t *ctx, const char *port);
 
 /**
  * @brief Embed mode: no real TTY fd; the host application supplies the
@@ -301,7 +345,7 @@ m2k_err_t   m2k_setup_listen(m2k_t *ctx, const char *port);
  * @param ctx Modem context.
  * @return M2K_OK.
  */
-m2k_err_t   m2k_setup_app_io(m2k_t *ctx);
+M2K_API m2k_err_t   m2k_setup_app_io(m2k_t *ctx);
 
 /**
  * @brief Push bytes into the modem as if they had been read from the TTY.
@@ -312,16 +356,17 @@ m2k_err_t   m2k_setup_app_io(m2k_t *ctx);
  * processed by the next m2k_step() call.
  *
  * If the buffer is completely full, *consumed is set to 0 and the
- * function returns M2K_ERR_FULL — call m2k_step() to drain, then retry.
+ * function returns M2K_ERR_WOULDBLOCK — call m2k_step() to drain, then
+ * retry.
  *
  * @param ctx      Modem context.
  * @param buf      Bytes to inject. Must be non-NULL when @p len > 0.
  * @param len      Length of @p buf in bytes. May be 0.
  * @param consumed Out: bytes actually accepted (0 .. len). Must be non-NULL.
- * @return M2K_OK if any bytes were accepted, M2K_ERR_FULL if none were,
- *         M2K_ERR_PTY if the context is not in app-I/O mode.
+ * @return M2K_OK if any bytes were accepted, M2K_ERR_WOULDBLOCK if none
+ *         were, M2K_ERR_PTY if the context is not in app-I/O mode.
  */
-m2k_err_t   m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len,
+M2K_API m2k_err_t   m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len,
                                size_t *consumed);
 
 /**
@@ -340,7 +385,7 @@ m2k_err_t   m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len,
  * @return M2K_OK on success, M2K_ERR_PTY if the context is not in
  *         app-I/O mode.
  */
-m2k_err_t   m2k_read_to_app(m2k_t *ctx, void *buf, size_t max, size_t *len_out);
+M2K_API m2k_err_t   m2k_read_to_app(m2k_t *ctx, void *buf, size_t max, size_t *len_out);
 
 /**
  * @brief Expose the listening socket's fd (after m2k_setup_listen,
@@ -355,7 +400,7 @@ m2k_err_t   m2k_read_to_app(m2k_t *ctx, void *buf, size_t max, size_t *len_out);
  * @return The fd of a bound-but-not-yet-accepted listener, or -1 when
  *         no listener is open (either never set up, or already accepted).
  */
-int         m2k_get_listen_fd(const m2k_t *ctx);
+M2K_API int         m2k_get_listen_fd(const m2k_t *ctx);
 
 /**
  * @brief Accept a single incoming connection on the listening socket
@@ -370,7 +415,7 @@ int         m2k_get_listen_fd(const m2k_t *ctx);
  * @return M2K_OK on success, M2K_ERR_SOCKET on accept failure or if no
  *         listener has been set up.
  */
-m2k_err_t   m2k_listen_accept(m2k_t *ctx);
+M2K_API m2k_err_t   m2k_listen_accept(m2k_t *ctx);
 
 /**
  * @brief Run the modem command/online loop until the PTY closes.
@@ -395,7 +440,7 @@ m2k_err_t   m2k_listen_accept(m2k_t *ctx);
  * @param ctx Modem context.
  * @return M2K_OK when the session ends normally.
  */
-m2k_err_t   m2k_run(m2k_t *ctx);
+M2K_API m2k_err_t   m2k_run(m2k_t *ctx);
 
 /* ── Steppable event-loop API ───────────────────────────────────────
  *
@@ -440,7 +485,7 @@ m2k_err_t   m2k_run(m2k_t *ctx);
  *                   to be called again. -1 means no deadline.
  * @return M2K_OK on success, M2K_ERR_BUG if @p *nfds_inout is too small.
  */
-m2k_err_t   m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds,
+M2K_API m2k_err_t   m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds,
                             size_t *nfds_inout, int *timeout_ms);
 
 /**
@@ -458,7 +503,7 @@ m2k_err_t   m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds,
  *             returned in @p *nfds_inout).
  * @return M2K_OK on success.
  */
-m2k_err_t   m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds);
+M2K_API m2k_err_t   m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds);
 
 /**
  * @brief Test whether the session has ended.
@@ -466,7 +511,7 @@ m2k_err_t   m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds);
  * @return Nonzero when the state machine has reached a terminal state
  *         (PTY closed, etc.) and the caller's loop should stop.
  */
-int         m2k_run_done(const m2k_t *ctx);
+M2K_API int         m2k_run_done(const m2k_t *ctx);
 
 /**
  * @brief Test whether the modem is currently in online mode.
@@ -479,7 +524,7 @@ int         m2k_run_done(const m2k_t *ctx);
  * @return Nonzero in online mode, zero in command mode or after the
  *         session has ended.
  */
-int         m2k_is_online(const m2k_t *ctx);
+M2K_API int         m2k_is_online(const m2k_t *ctx);
 
 /**
  * @brief Test whether the modem has an active carrier (live TCP socket).
@@ -492,7 +537,7 @@ int         m2k_is_online(const m2k_t *ctx);
  * @param ctx Modem context.
  * @return Nonzero when a connection is alive, zero otherwise.
  */
-int         m2k_has_carrier(const m2k_t *ctx);
+M2K_API int         m2k_has_carrier(const m2k_t *ctx);
 
 /**
  * @brief Set the host's DTR (Data Terminal Ready) signal state.
@@ -507,7 +552,7 @@ int         m2k_has_carrier(const m2k_t *ctx);
  * @param ctx Modem context.
  * @param on  Non-zero to assert DTR, zero to drop it.
  */
-void        m2k_set_dtr(m2k_t *ctx, int on);
+M2K_API void        m2k_set_dtr(m2k_t *ctx, int on);
 
 /**
  * @brief Set the host's RTS (Request to Send) signal state.
@@ -520,13 +565,13 @@ void        m2k_set_dtr(m2k_t *ctx, int on);
  * @param ctx Modem context.
  * @param on  Non-zero to assert RTS, zero to drop it.
  */
-void        m2k_set_rts(m2k_t *ctx, int on);
+M2K_API void        m2k_set_rts(m2k_t *ctx, int on);
 
 /** Return the most recent value passed to m2k_set_dtr() (1 by default). */
-int         m2k_get_dtr(const m2k_t *ctx);
+M2K_API int         m2k_get_dtr(const m2k_t *ctx);
 
 /** Return the most recent value passed to m2k_set_rts() (1 by default). */
-int         m2k_get_rts(const m2k_t *ctx);
+M2K_API int         m2k_get_rts(const m2k_t *ctx);
 
 #ifdef __cplusplus
 }

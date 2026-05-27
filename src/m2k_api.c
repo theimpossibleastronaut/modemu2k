@@ -469,18 +469,24 @@ m2k_escape(m2k_t *ctx)
 }
 
 const char *
+m2k_version(void)
+{
+  return M2K_VERSION;
+}
+
+const char *
 m2k_strerror(m2k_err_t err)
 {
   static const char *strs[] = {
-    "Success",            /* M2K_OK */
-    "Out of memory",      /* M2K_ERR_NOMEM */
-    "PTY error",          /* M2K_ERR_PTY */
-    "Socket error",       /* M2K_ERR_SOCKET */
-    "Connection timed out",  /* M2K_ERR_TIMEOUT */
-    "Operation canceled", /* M2K_ERR_CANCELED */
-    "Internal bug",       /* M2K_ERR_BUG */
-    "Buffer full",        /* M2K_ERR_FULL */
-    "AT command rejected",/* M2K_ERR_AT */
+    "Success",                            /* M2K_OK */
+    "Out of memory",                      /* M2K_ERR_NOMEM */
+    "PTY error",                          /* M2K_ERR_PTY */
+    "Socket error",                       /* M2K_ERR_SOCKET */
+    "Connection timed out",               /* M2K_ERR_TIMEOUT */
+    "Operation canceled",                 /* M2K_ERR_CANCELED */
+    "Internal bug",                       /* M2K_ERR_BUG */
+    "Operation would block; retry later", /* M2K_ERR_WOULDBLOCK */
+    "AT command rejected",                /* M2K_ERR_AT */
   };
   if ((unsigned) err < sizeof(strs) / sizeof(strs[0]))
     return strs[err];
@@ -741,7 +747,7 @@ m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len, size_t *consumed)
   {
     m2k_err_set(ctx, "m2k_write_from_app: TTY read buffer full (%zu bytes pending)\n",
                 residue);
-    return M2K_ERR_FULL;
+    return M2K_ERR_WOULDBLOCK;
   }
   size_t room = cap - residue;
   size_t take = len < room ? len : room;

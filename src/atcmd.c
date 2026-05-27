@@ -223,7 +223,7 @@ prVersion(m2k_t *ctx)
 {
   putTty1(ctx, CHAR_CR(ctx));
   putTty1(ctx, CHAR_LF(ctx));
-  putTtyStr(ctx, "modemu2k version " MODEMU2K_VERSION);
+  putTtyStr(ctx, "modemu2k version " M2K_VERSION);
   putTty1(ctx, CHAR_CR(ctx));
   putTty1(ctx, CHAR_LF(ctx));
 }

@@ -96,7 +96,7 @@ test_full_buffer_returns_full(void)
   {
     size_t consumed = 0;
     m2k_err_t r = m2k_write_from_app(ctx, big, sizeof(big), &consumed);
-    if (r == M2K_ERR_FULL)
+    if (r == M2K_ERR_WOULDBLOCK)
     {
       assert(consumed == 0);
       m2k_free(ctx);
@@ -104,7 +104,7 @@ test_full_buffer_returns_full(void)
     }
     assert(r == M2K_OK);
   }
-  assert(0 && "expected M2K_ERR_FULL before 128KB consumed");
+  assert(0 && "expected M2K_ERR_WOULDBLOCK before 128KB consumed");
 }
 
 /* Verify m2k_escape() is a no-op outside online mode. The full
