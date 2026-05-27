@@ -2,16 +2,15 @@
 
 # modemu2k
 
-modemu2k is a fork of modemu, originally developed by Toru Egashira.
-
-## What is modemu2k?
-
 modemu2k is a Hayes-style AT-command modem emulator that bridges a
 serial-style interface to a TCP or Telnet endpoint. It ships as a C
 library (libmodemu2k) exposing the modem state machine, plus a small
 CLI built on top that allocates a PTY and either reads stdin/stdout
 directly, forks a comm program (minicom, picocom) on the slave, or
 accepts an incoming TCP connection as the TTY. IPv4 and IPv6.
+
+It is a fork of modemu, originally developed by Toru Egashira
+(1995–1996).
 
 Maintainer: Andy Alt
 
