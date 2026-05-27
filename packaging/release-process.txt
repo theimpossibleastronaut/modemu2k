@@ -12,13 +12,8 @@ In-tree edits (before tagging)
     relevant Debian distribution) and refresh the date stamp.
 [ ] meson.build: confirm `version:` matches the planned tag.
 
-Tag
----
-[ ] git tag -a vX.Y.Z -m "modemu2k X.Y.Z"
-[ ] git push origin master vX.Y.Z
-
-Tarball
--------
+Tarball (optional — for distro maintainers that want a checksum)
+----------------------------------------------------------------
 [ ] meson dist -C builddir
     → produces modemu2k-X.Y.Z.tar.xz in builddir/meson-dist/
 [ ] sha256sum and md5sum of the tarball — recorded here once generated:
@@ -29,22 +24,27 @@ Per-distro packaging files
 --------------------------
 [ ] packaging/PKGBUILD: set `sha256sums=('<sha256 from above>')` (was 'SKIP').
 [ ] packaging/Slackbuild/modemu2k/modemu2k.info: fill `MD5SUM="<md5 from above>"`.
-[ ] AppImage: triggered automatically by the tag push via
-    .github/workflows/appimage.yml; verify it produces an artifact.
 
-GitHub Release
---------------
-[ ] gh release create vX.Y.Z modemu2k-X.Y.Z.tar.xz \
-        --title "modemu2k vX.Y.Z" \
-        --notes "<release summary; pull bullets from the ChangeLog stanza>"
-[ ] Attach the AppImage(s) from the appimage workflow run.
+GitHub Release (which also creates the tag)
+-------------------------------------------
+[ ] Draft the release in the GitHub UI: target = master, tag = vX.Y.Z
+    (new), title = "modemu2k vX.Y.Z", body = release summary pulled from
+    the ChangeLog stanza.
+[ ] Click Publish. GitHub creates the tag on master at that point.
+[ ] The tag push fires .github/workflows/appimage.yml; it builds AppImages
+    for x86_64 and aarch64, then uses ncipollo/release-action with
+    allowUpdates + omitBody/Name to attach them (plus .sha256sum files)
+    to the release you just published — without touching the title or body.
+    → expect 4 attachments to appear on the release page within ~2 min.
+[ ] (Optional) attach the meson dist tarball from above if you generated it.
 
 gh-pages
 --------
 [ ] The docs workflow auto-publishes the versioned vX.Y.Z/ directory on
-    every push to master, including the tag push. Verify it ran.
+    every push to master. The tag-publish itself doesn't trigger it
+    (tags ≠ branch pushes), but any subsequent push to master will.
 [ ] gh-pages/index.html: hand-edit the version list <ul> to add the new
-    vX.Y.Z link. (CLAUDE.md notes this is intentionally hand-maintained.)
+    vX.Y.Z link.
 
 CI sanity (do before tagging)
 -----------------------------
