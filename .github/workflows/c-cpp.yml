@@ -22,6 +22,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm]
         cc: [gcc, clang]
+        # arm + clang is redundant — gcc-on-arm covers ARM-specific
+        # issues and clang-on-x86 covers clang-specific ones.
+        exclude:
+          - os: ubuntu-24.04-arm
+            cc: clang
     runs-on: ${{ matrix.os }}
     env:
       CC: ${{ matrix.cc }}
