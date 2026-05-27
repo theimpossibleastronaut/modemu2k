@@ -47,12 +47,6 @@ The `modemu2k(1)` man page has the full option and AT-command reference.
 * [Synchronet BBS List](https://www.synchro.net/sbbslist.html) — a
   directory of currently-reachable telnet BBSes
 
-## Downloads
-
-* [Release page](https://github.com/theimpossibleastronaut/modemu2k/releases)
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/modemu2k.svg)](https://repology.org/project/modemu2k/versions)
-
 ## Acknowledgments
 
 Several library-API conventions in `modemu2k.h` are modeled after
