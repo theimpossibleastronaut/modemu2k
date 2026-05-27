@@ -377,6 +377,20 @@ M2K_API m2k_err_t   m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len,
  * internal TTY write buffer into @p buf and stores the actual length in
  * @p *len_out (which may be zero if there is nothing pending).
  *
+ * @par Back-pressure shape
+ * After m2k_step() processes an incoming socket burst, the internal
+ * TTY-bound buffer may hold more bytes than a single read_to_app call
+ * can return. **The host must not block in poll() while bytes remain
+ * pending** — none of modemu2k's fds will fire to wake it. Use one of:
+ *
+ * - Loop on read_to_app until m2k_has_pending_output() returns 0; or
+ * - On a partial drain (got &lt; max OR you only wanted a small chunk),
+ *   check m2k_has_pending_output() and use a zero timeout on the next
+ *   poll() so the next read_to_app runs immediately.
+ *
+ * Skipping this collapses throughput to roughly "your buffer size
+ * per poll timeout."
+ *
  * @param ctx     Modem context.
  * @param buf     Destination buffer. Must be non-NULL when @p max > 0.
  * @param max     Maximum bytes to copy. May be 0.
@@ -386,6 +400,21 @@ M2K_API m2k_err_t   m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len,
  *         app-I/O mode.
  */
 M2K_API m2k_err_t   m2k_read_to_app(m2k_t *ctx, void *buf, size_t max, size_t *len_out);
+
+/**
+ * @brief Test whether the modem has TTY-bound bytes still buffered.
+ *
+ * Returns nonzero whenever a subsequent m2k_read_to_app() would deliver
+ * at least one byte without first needing another m2k_step()/poll
+ * cycle. See m2k_read_to_app() for the back-pressure pattern this
+ * predicate exists to support.
+ *
+ * Always returns 0 when the context isn't in app-I/O mode.
+ *
+ * @param ctx Modem context.
+ * @return Nonzero if buffered output is pending, zero otherwise.
+ */
+M2K_API int         m2k_has_pending_output(const m2k_t *ctx);
 
 /**
  * @brief Expose the listening socket's fd (after m2k_setup_listen,

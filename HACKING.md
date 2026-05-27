@@ -157,10 +157,22 @@ A `--modem-emu` mode that swaps the fd-based path for `libmodemu2k`:
   select-loop) needs to call `m2k_get_pollfds()` and merge those
   fds with its own, instead of putting `portfd` in the poll set.
 - Reads that today look like `read(portfd, buf, n)` become
-  `m2k_read_to_app(ctx, buf, n, &len)`. Writes become
-  `m2k_write_from_app(ctx, buf, n, &consumed)`, with the
-  `M2K_ERR_WOULDBLOCK` return treated as "pause output, retry
-  after next step."
+  `m2k_read_to_app(ctx, buf, n, &len)`. **Important**: when an
+  incoming socket burst fills the modem's internal TTY-bound
+  buffer past what one `read_to_app` can return (host's `buf` is
+  smaller than the burst), the next `poll()` must run with a zero
+  timeout. None of the modem's fds will fire to wake it — the
+  bytes are buffered inside libmodemu2k. Check
+  `m2k_has_pending_output()` and force `timeout=0` whenever it's
+  true; otherwise effective throughput collapses to roughly
+  "host buffer size per poll timeout." The same applies right
+  after a `m2k_write_from_app()` keystroke: the bytes sit in the
+  modem's tty-input buffer until the next `m2k_step()` flushes
+  them to the socket, so the post-write poll should also use
+  zero timeout for one iteration.
+- Writes become `m2k_write_from_app(ctx, buf, n, &consumed)`,
+  with the `M2K_ERR_WOULDBLOCK` return treated as "pause output,
+  retry after next step."
 - `m_dtrtoggle(portfd, ...)` calls map to `m2k_set_dtr()`.
 - The dial UI talks AT commands directly today; in modemu2k mode
   it'd still work, since modemu2k accepts AT commands from the

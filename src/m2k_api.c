@@ -786,6 +786,14 @@ m2k_read_to_app(m2k_t *ctx, void *buf, size_t max, size_t *len_out)
   return M2K_OK;
 }
 
+int
+m2k_has_pending_output(const m2k_t *ctx)
+{
+  if (!ctx || !ctx->app_io)
+    return 0;
+  return ctx->ttyBufW.ptr > ctx->ttyBufW.top;
+}
+
 /* ── Steppable event-loop API ────────────────────────────────────────
    m2k_run() is a poll()-driven wrapper over m2k_get_pollfds + m2k_step.
 
