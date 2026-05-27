@@ -19,6 +19,7 @@ License: GNU GPL 2 or later
 * [Source repository](https://github.com/theimpossibleastronaut/modemu2k)
 * [API documentation](https://theimpossibleastronaut.github.io/modemu2k/)
 * [Issues and bug reporting](https://github.com/theimpossibleastronaut/modemu2k/issues)
+* [Downloads](https://github.com/theimpossibleastronaut/modemu2k/releases/latest)
 
 ## Build
 
