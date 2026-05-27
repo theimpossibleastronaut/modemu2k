@@ -9,7 +9,7 @@ CLI built on top that allocates a PTY and either reads stdin/stdout
 directly, forks a comm program (minicom, picocom) on the slave, or
 accepts an incoming TCP connection as the TTY. IPv4 and IPv6.
 
-It is a fork of modemu, originally developed by Toru Egashira
+It is based on modemu, originally developed by Toru Egashira
 (1995–1996).
 
 Maintainer: Andy Alt
