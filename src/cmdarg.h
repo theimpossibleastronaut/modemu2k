@@ -31,7 +31,13 @@
 struct st_cmdarg
 {
   enum
-  { CA_STDINOUT, CA_SHOWDEV, CA_COMM_PROGRAM, CA_DEVGIVEN, CA_LISTEN } ttymode;
+  {
+    CA_STDINOUT,
+    CA_SHOWDEV,
+    CA_COMM_PROGRAM,
+    CA_DEVGIVEN,
+    CA_LISTEN
+  } ttymode;
   const char *comm_program;
   const char *atcmd;
   const char *dev;

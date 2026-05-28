@@ -1,9 +1,9 @@
 
-#include <stdio.h>              /*(printf) */
-#include <termios.h>            /*ICANON,TCSA... */
-#include <signal.h> /*SIGTERM*/
-#include <stdlib.h>             /*(atexit) */
-#include <unistd.h>             /*(isatty) */
+#include <stdio.h>   /*(printf) */
+#include <termios.h> /*ICANON,TCSA... */
+#include <signal.h>  /*SIGTERM*/
+#include <stdlib.h>  /*(atexit) */
+#include <unistd.h>  /*(isatty) */
 #include "m2k_private.h"
 /* stty -icannon -echo -isig -icrnl -inlcr */
 static int pid;
@@ -13,14 +13,14 @@ static void
 recoverTermios(void)
 {
   if (getpid() != pid)
-    return;                     /* SOCKS (at least v4.2) subprocess
+    return; /* SOCKS (at least v4.2) subprocess
                                    calls exit() (why not _exit()??) */
   tcsetattr(0, TCSADRAIN, &oldTermios);
   printf("\nGoodbye.\n");
 }
 
 #ifdef USE_ON_EXIT
-#define atexit(f) on_exit((f),0)
+#define atexit(f) on_exit((f), 0)
 #endif
 
 void

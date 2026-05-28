@@ -20,10 +20,14 @@
 static void
 sockReadLoop(m2k_t *ctx, st_sock *sock)
 {
-  static enum
-  {
-    SRL_NORM, SRL_IAC, SRL_CMD,
-    SRL_SB, SRL_SBC, SRL_SBS, SRL_SBI
+  static enum {
+    SRL_NORM,
+    SRL_IAC,
+    SRL_CMD,
+    SRL_SB,
+    SRL_SBC,
+    SRL_SBS,
+    SRL_SBI
   } state;
   static int cmd;
   static int opt;
@@ -152,14 +156,18 @@ escSeqHandle(m2k_t *ctx, int c)
 /* line buffer (for non-SGA mode) — state lives in ctx->lineBuf. */
 
 #define lineBufReset(ctx) ((ctx)->lineBuf.ptr = (ctx)->lineBuf.buf)
-#define putLine1(ctx, c) do {                                                \
-  struct m2k_linebuf *_lb = &(ctx)->lineBuf;                                 \
-  if (_lb->ptr < _lb->buf + LINEBUF_SIZE) *_lb->ptr++ = (c);                 \
-} while (0)
-#define lineBufBS(ctx) do {                                                  \
-  struct m2k_linebuf *_lb = &(ctx)->lineBuf;                                 \
-  if (_lb->ptr > _lb->buf) _lb->ptr--;                                       \
-} while (0)
+#define putLine1(ctx, c)                                       \
+  do                                                           \
+  {                                                            \
+    struct m2k_linebuf *_lb = &(ctx)->lineBuf;                 \
+    if (_lb->ptr < _lb->buf + LINEBUF_SIZE) *_lb->ptr++ = (c); \
+  } while (0)
+#define lineBufBS(ctx)                         \
+  do                                           \
+  {                                            \
+    struct m2k_linebuf *_lb = &(ctx)->lineBuf; \
+    if (_lb->ptr > _lb->buf) _lb->ptr--;       \
+  } while (0)
 
 
 /* TTY input processing loop */
@@ -513,16 +521,31 @@ getPtyMaster(m2k_t *ctx)
     goto bsd;
 
   rc = grantpt(pty);
-  if (rc < 0) { close(pty); goto bsd; }
+  if (rc < 0)
+  {
+    close(pty);
+    goto bsd;
+  }
 
   rc = unlockpt(pty);
-  if (rc < 0) { close(pty); goto bsd; }
+  if (rc < 0)
+  {
+    close(pty);
+    goto bsd;
+  }
 
   temp_line = ptsname(pty);
-  if (!temp_line) { close(pty); goto bsd; }
+  if (!temp_line)
+  {
+    close(pty);
+    goto bsd;
+  }
 
   if (strlen(temp_line) >= sizeof(ctx->slave_path))
-  { close(pty); return -1; }
+  {
+    close(pty);
+    return -1;
+  }
   strcpy(ctx->slave_path, temp_line);
   return pty;
 
@@ -590,7 +613,7 @@ getPtyMaster(m2k_t *ctx)
   m2k_log(ctx, "No more pty devices available.\n");
   return -1;
 }
-#endif  /* HAVE_GRANTPT */
+#endif /* HAVE_GRANTPT */
 
 
 /* ── Command mode (moved from main.c) ───────────────────────────── */
@@ -742,7 +765,7 @@ m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len, size_t *consumed)
     return M2K_OK;
 
   size_t residue = ctx->ttyBufR.end - ctx->ttyBufR.ptr;
-  size_t cap     = sizeof(ctx->ttyBufR.buf);
+  size_t cap = sizeof(ctx->ttyBufR.buf);
   if (residue >= cap)
   {
     m2k_err_set(ctx, "m2k_write_from_app: TTY read buffer full (%zu bytes pending)\n",
@@ -863,7 +886,7 @@ findPollfd(struct pollfd *fds, size_t nfds, int fd)
 
 /* POLLHUP/POLLERR fire regardless of requested events — fold them into
    the read trigger so EOF closure flows through the read path. */
-#define READ_EV  (POLLIN  | POLLHUP | POLLERR)
+#define READ_EV (POLLIN | POLLHUP | POLLERR)
 #define WRITE_EV (POLLOUT | POLLERR)
 
 /* One entry if rfd==wfd; else one per fd, each only when its mask is set. */
@@ -914,7 +937,7 @@ cmdPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
   }
 
   appendTtyPollfds(ctx, fds, &n,
-                   ttyBufWReady(ctx)   ? POLLIN  : 0,
+                   ttyBufWReady(ctx) ? POLLIN : 0,
                    ttyBufWHasData(ctx) ? POLLOUT : 0);
   *nfds_inout = n;
   *timeout_ms = -1;
@@ -1043,15 +1066,15 @@ onlinePollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_m
   size_t n = 0;
 
   short sock_ev = 0;
-  if (ttyBufWReady(ctx))     sock_ev |= POLLIN;
-  if (sockBufWHasData(ctx))  sock_ev |= POLLOUT;
+  if (ttyBufWReady(ctx)) sock_ev |= POLLIN;
+  if (sockBufWHasData(ctx)) sock_ev |= POLLOUT;
   fds[n].fd = sock->fd;
   fds[n].events = sock_ev;
   fds[n].revents = 0;
   n++;
 
   appendTtyPollfds(ctx, fds, &n,
-                   (sockBufWReady(ctx) && !ttyBufRHasData(ctx)) ? POLLIN  : 0,
+                   (sockBufWReady(ctx) && !ttyBufRHasData(ctx)) ? POLLIN : 0,
                    ttyBufWHasData(ctx) ? POLLOUT : 0);
   *nfds_inout = n;
 

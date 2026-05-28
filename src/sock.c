@@ -31,7 +31,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 // #include <sys/time.h>   /*->ttybuf.h (timeval)*/
-#include <stdlib.h>             /*(getenv) */
+#include <stdlib.h> /*(getenv) */
 #include "m2k_private.h"
 #include "m2k_ctx.h"
 
@@ -71,9 +71,9 @@ m2k_sockListen(m2k_t *ctx, const char *port)
 {
   struct addrinfo hints, *res;
   memset(&hints, 0, sizeof hints);
-  hints.ai_family   = AF_UNSPEC;
+  hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
-  hints.ai_flags    = AI_PASSIVE | AI_NUMERICSERV;
+  hints.ai_flags = AI_PASSIVE | AI_NUMERICSERV;
 
   int rc = getaddrinfo(NULL, port, &hints, &res);
   if (rc != 0)
@@ -143,7 +143,7 @@ m2k_sockAccept(m2k_t *ctx, int server_fd)
 {
   struct sockaddr_storage addr;
   socklen_t addrlen = sizeof addr;
-  int client_fd = accept(server_fd, (struct sockaddr *)&addr, &addrlen);
+  int client_fd = accept(server_fd, (struct sockaddr *) &addr, &addrlen);
   close(server_fd);
 
   if (client_fd == -1)
@@ -160,10 +160,10 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
   struct addrinfo hints, *result;
   memset(&hints, 0, sizeof(struct addrinfo));
 
-  hints.ai_family = AF_UNSPEC;  /* Allow IPv4 or IPv6 */
+  hints.ai_family = AF_UNSPEC; /* Allow IPv4 or IPv6 */
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = 0;
-  hints.ai_protocol = 0;        /* Any protocol */
+  hints.ai_protocol = 0; /* Any protocol */
 
   char out_port[PORT_MAX + 1];
   if ((size_t) snprintf(out_port, sizeof out_port, "%d",
@@ -173,7 +173,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
     return 1;
 
   if (ctx->atcmd.d.port.type != ATDP_NUL)
-    ctx->telOpt.sentReqs = 1;        /* skip sending option requests */
+    ctx->telOpt.sentReqs = 1; /* skip sending option requests */
 
   int s = getaddrinfo(ctx->atcmd.d.addr.str, out_port, &hints, &result);
   if (s != 0)
@@ -220,24 +220,23 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
       struct timeval to, t;
 
       tmp = 1;
-      ioctl(sock->fd, FIONBIO, &tmp);   /* non-blocking i/o */
+      ioctl(sock->fd, FIONBIO, &tmp); /* non-blocking i/o */
 
       /* but Term's connect() blocks here... */
-      if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0
-          && errno != EINPROGRESS)
+      if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0 && errno != EINPROGRESS)
       {
         m2k_log(ctx, "connect(): %s\n", strerror(errno));
         sockClose(sock);
-        continue;               /* try next address */
+        continue; /* try next address */
       }
 
       FD_ZERO(&rfds);
       FD_ZERO(&wfds);
       tv.tv_sec = 0;
 
-      timevalSet10ms(&t, ctx->atcmd.s[7] * 100);     /* S7 sec */
+      timevalSet10ms(&t, ctx->atcmd.s[7] * 100); /* S7 sec */
       gettimeofday(&to, NULL);
-      timevalAdd(&to, &t);      /* S7 sec after */
+      timevalAdd(&to, &t); /* S7 sec after */
 
       /* SOCKS Rselect() first checks if connected, then select(). */
       /* so, select() with large timeval is inappropriate */
@@ -246,7 +245,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
         if (!ctx->atcmd.pd)
           FD_SET(ctx->tty.rfd, &rfds);
         FD_SET(sock->fd, &wfds);
-        tv.tv_usec = 200 * 1000;        /* 0.2sec period */
+        tv.tv_usec = 200 * 1000; /* 0.2sec period */
 
       RETRY:
         if (select(sock->fd + 1, &rfds, &wfds, NULL, &tv) < 0)
@@ -278,32 +277,29 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
         /* SOCKS requires this check method (ref: What_SOCKS_expects) */
         if (FD_ISSET(sock->fd, &wfds))
         {
-          if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0
-              && errno != EISCONN)
+          if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0 && errno != EISCONN)
           {
             m2k_log(ctx, "connect()-2: %s\n", strerror(errno));
             sockClose(sock);
-            goto next_addr;     /* try next address */
+            goto next_addr; /* try next address */
           }
 
           tmp = 0;
-          ioctl(sock->fd, FIONBIO, &tmp);       /* blocking i/o */
+          ioctl(sock->fd, FIONBIO, &tmp); /* blocking i/o */
           sock->alive = 1;
           freeaddrinfo(result);
           return 0;
         }
 
         gettimeofday(&t, NULL);
-      }
-      while (timevalCmp(&t, &to) < 0);
+      } while (timevalCmp(&t, &to) < 0);
 
       freeaddrinfo(result);
       sockShutdown(sock);
       verboseOut(ctx, VERB_MISC, "Connection attempt timed out.\r\n");
-      return 1;                 /* timeout */
+      return 1; /* timeout */
     }
-  next_addr:
-    ;                           /* try next address in list */
+  next_addr:; /* try next address in list */
 #endif /*ifdef NO_DIAL_CANCELING */
   }
 
@@ -376,7 +372,7 @@ m2k_sockDialStart(m2k_t *ctx, st_sock *sock)
 {
   struct addrinfo hints;
   memset(&hints, 0, sizeof hints);
-  hints.ai_family   = AF_UNSPEC;
+  hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
 
   char out_port[PORT_MAX + 1];
@@ -404,7 +400,7 @@ m2k_sockDialStart(m2k_t *ctx, st_sock *sock)
   {
     int r = dialTryCurrent(ctx, sock);
     if (r >= 0)
-      return r;     /* 0 (in progress) or 1 (done) */
+      return r; /* 0 (in progress) or 1 (done) */
     /* this address failed — try next */
   }
 
@@ -431,8 +427,7 @@ m2k_sockDialProgress(m2k_t *ctx, st_sock *sock)
   if (!timed_out)
   {
     /* SOCKS-compatible probe: re-call connect(). */
-    if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) == 0
-        || errno == EISCONN)
+    if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) == 0 || errno == EISCONN)
     {
       int zero = 0;
       ioctl(sock->fd, FIONBIO, &zero);
@@ -463,7 +458,7 @@ m2k_sockDialProgress(m2k_t *ctx, st_sock *sock)
   m2k_err_set(ctx, "Could not connect to %s:%s (no address worked)\n",
               ctx->atcmd.d.addr.str,
               ctx->atcmd.d.port.type == ATDP_NUL ? "(default)"
-                                                  : ctx->atcmd.d.port.str);
+                                                 : ctx->atcmd.d.port.str);
   return -1;
 }
 

@@ -33,12 +33,12 @@
 #include "modemu2k.h"
 #include "modemu2k_version.h"
 
-#include <stdio.h>              /*stderr,(sscanf,sprintf) */
-#include <string.h>             /*(strncpy) */
+#include <stdio.h>  /*stderr,(sscanf,sprintf) */
+#include <string.h> /*(strncpy) */
 #include <stdbool.h>
 #include <sys/types.h>
 #include <sys/time.h>
-#include <arpa/telnet.h>        /* NTELOPTS for per-ctx telopt state */
+#include <arpa/telnet.h> /* NTELOPTS for per-ctx telopt state */
 
 #ifdef TERMNET
 #include <termnet.h>
@@ -53,50 +53,60 @@
 #include "cmdarg.h"
 
 /* socket read buffer size */
-#define SOCKBUFR_SIZE	1024
+#define SOCKBUFR_SIZE 1024
 
 /* tty read buffer size */
-#define TTYBUFR_SIZE	1024
+#define TTYBUFR_SIZE 1024
 
 /* line (!char) mode line-length */
-#define LINEBUF_SIZE	256
+#define LINEBUF_SIZE 256
 
 /* command mode line-length (w/o null) */
-#define CMDBUF_MAX	255
+#define CMDBUF_MAX 255
 
 typedef unsigned char uchar;
 
 /* +++ escape detection — per-ctx so two coexisting m2k_t instances
    don't share/corrupt each other's online-mode escape timing. */
-typedef enum { ESH_NORM, ESH_P1, ESH_P2, ESH_P3 } m2k_esh_state;
-struct m2k_escseq {
-    m2k_esh_state  state;
-    struct timeval plus1T;
-    int            checkSilence;
-    struct timeval expireT;
+typedef enum
+{
+  ESH_NORM,
+  ESH_P1,
+  ESH_P2,
+  ESH_P3
+} m2k_esh_state;
+struct m2k_escseq
+{
+  m2k_esh_state state;
+  struct timeval plus1T;
+  int checkSilence;
+  struct timeval expireT;
 };
 
 /* line buffer for non-SGA telnet mode — also per-ctx. */
-struct m2k_linebuf {
-    uchar  buf[LINEBUF_SIZE];
-    uchar *ptr;
+struct m2k_linebuf
+{
+  uchar buf[LINEBUF_SIZE];
+  uchar *ptr;
 };
 
 /* Command-mode input line buffer. Defined here (rather than as a
    m2k_api.c private struct) so the m2k_t context can embed one for
    the steppable m2k_step() API. */
-struct m2k_cmdbuf {
-    uchar buf[CMDBUF_MAX + 1];
-    uchar *ptr;
-    int eol;
+struct m2k_cmdbuf
+{
+  uchar buf[CMDBUF_MAX + 1];
+  uchar *ptr;
+  int eol;
 };
 
 /* Top-level state of the steppable event loop. */
-typedef enum {
-    M2K_STATE_CMD,     /* command mode — reading AT commands from the TTY */
-    M2K_STATE_DIAL,    /* non-blocking dial in progress — sock.fd is mid-connect */
-    M2K_STATE_ONLINE,  /* online mode — relaying between TTY and socket */
-    M2K_STATE_DONE     /* PTY closed; m2k_run_done() returns true */
+typedef enum
+{
+  M2K_STATE_CMD,    /* command mode — reading AT commands from the TTY */
+  M2K_STATE_DIAL,   /* non-blocking dial in progress — sock.fd is mid-connect */
+  M2K_STATE_ONLINE, /* online mode — relaying between TTY and socket */
+  M2K_STATE_DONE    /* PTY closed; m2k_run_done() returns true */
 } m2k_step_state;
 
 /* HAVE_GRANTPT is the legacy name; HAVE_POSIX_OPENPT is set by meson
@@ -123,8 +133,8 @@ typedef struct st_sock
 } st_sock;
 
 void sockInit(struct st_sock *sock);
-int sockClose(st_sock * sock);
-int sockShutdown(st_sock * sock);
+int sockClose(st_sock *sock);
+int sockShutdown(st_sock *sock);
 
 
 // atcmd
@@ -142,7 +152,7 @@ typedef enum
   ATDP_STR
 } AtdPType;
 
-#define ADDR_MAX 255  /* _POSIX_HOST_NAME_MAX */
+#define ADDR_MAX 255 /* _POSIX_HOST_NAME_MAX */
 #define PORT_MAX 63
 #define PT_MAX 40
 #define SREG_MAX 12
@@ -180,9 +190,9 @@ typedef struct
 /* m2k_err_t, m2k_log_fn, and m2k_t are defined in the public header above */
 
 #define CHAR_ESC(ctx) ((ctx)->atcmd.s[2])
-#define CHAR_CR(ctx)  ((ctx)->atcmd.s[3])
-#define CHAR_LF(ctx)  ((ctx)->atcmd.s[4])
-#define CHAR_BS(ctx)  ((ctx)->atcmd.s[5])
+#define CHAR_CR(ctx) ((ctx)->atcmd.s[3])
+#define CHAR_LF(ctx) ((ctx)->atcmd.s[4])
+#define CHAR_BS(ctx) ((ctx)->atcmd.s[5])
 
 void atcmdInit(m2k_t *ctx, struct st_cmdarg *cmdarg, st_sock *sock);
 
@@ -235,8 +245,8 @@ void sockBufRead(m2k_t *ctx, st_sock *sock);
 
 /* writing socket */
 
-#define SOCKBUFW_SIZE (2 * TTYBUFR_SIZE)        /* this seems to be any number */
-#define SOCKBUFW_SIZE_A (SOCKBUFW_SIZE + TTYBUFR_SIZE)  /* important */
+#define SOCKBUFW_SIZE (2 * TTYBUFR_SIZE)               /* this seems to be any number */
+#define SOCKBUFW_SIZE_A (SOCKBUFW_SIZE + TTYBUFR_SIZE) /* important */
 
 struct st_sockBufW
 {
@@ -265,26 +275,26 @@ void setTty(void);
 /* requirements for a telnet option */
 typedef enum
 {
-  TOR_MUSTNOT,                  /* disable the opt or disconnect */
-  TOR_BETTERNOT,                /* disable the opt or enable unwillingly */
-  TOR_NEUTRAL,                  /* modemu doesn't initiate any action for the opt.
+  TOR_MUSTNOT,   /* disable the opt or disconnect */
+  TOR_BETTERNOT, /* disable the opt or enable unwillingly */
+  TOR_NEUTRAL,   /* modemu doesn't initiate any action for the opt.
                                    {en,dis}able the opt as the peer requests. */
-  TOR_BETTER,                   /* enable the opt or disable unwillingly */
-  TOR_MUST                      /* enable the opt or disconnect */
+  TOR_BETTER,    /* enable the opt or disable unwillingly */
+  TOR_MUST       /* enable the opt or disconnect */
 } TelOptReq;
 
 typedef struct
 {
-  TelOptReq req;                /* requirement for the opt */
-  int state;                    /* current state (enabled:1 or disabled:0) */
-  int pending;                  /* state is pending (requested but no reply yet) */
+  TelOptReq req; /* requirement for the opt */
+  int state;     /* current state (enabled:1 or disabled:0) */
+  int pending;   /* state is pending (requested but no reply yet) */
 } TelOptState;
 
 typedef struct
 {
-  int opt;                      /* an telnet option. TELOPT_XXX */
-  TelOptState local;            /* local state of the option */
-  TelOptState remote;           /* remote state of the option */
+  int opt;            /* an telnet option. TELOPT_XXX */
+  TelOptState local;  /* local state of the option */
+  TelOptState remote; /* remote state of the option */
 } TelOptStates;
 
 /* 4 negotiated options (BINARY, ECHO, SGA, TTYPE) + 1 sentinel/default */
@@ -292,10 +302,10 @@ typedef struct
 
 struct st_telOpt
 {
-  int binsend;                  /* local binary opt is enabled */
-  int binrecv;                  /* remote binary opt is enabled */
-  int sgasend;                  /* local SGA opt is enabled (char-at-a-time mode) */
-  int sentReqs;                 /* have sent option requests to the peer
+  int binsend;  /* local binary opt is enabled */
+  int binrecv;  /* remote binary opt is enabled */
+  int sgasend;  /* local SGA opt is enabled (char-at-a-time mode) */
+  int sentReqs; /* have sent option requests to the peer
                                    or skip sending them */
   /* Per-ctx telnet-option state. Was file-scope globals in telopt.c
      until per-ctx separation. stTabMaster holds the live (mutated by
@@ -306,7 +316,12 @@ struct st_telOpt
   TelOptStates *stTab[NTELOPTS];
 };
 
-#define putOptCmd(ctx,s,c) { putSock1((ctx), IAC); putSock1((ctx), (s)); putSock1((ctx), (c)); }
+#define putOptCmd(ctx, s, c) \
+  {                          \
+    putSock1((ctx), IAC);    \
+    putSock1((ctx), (s));    \
+    putSock1((ctx), (c));    \
+  }
 
 void telOptReset(m2k_t *ctx);
 void telOptInit(m2k_t *ctx);
@@ -352,8 +367,8 @@ m2k_err_t ttyBufRead(m2k_t *ctx, st_sock *sock);
 
 /* writing tty */
 
-#define TTYBUFW_SIZE (2 * SOCKBUFR_SIZE)        /* this seems to be any number */
-#define TTYBUFW_SIZE_A (TTYBUFW_SIZE + SOCKBUFR_SIZE)   /* important */
+#define TTYBUFW_SIZE (2 * SOCKBUFR_SIZE)              /* this seems to be any number */
+#define TTYBUFW_SIZE_A (TTYBUFW_SIZE + SOCKBUFR_SIZE) /* important */
 
 struct st_ttyBufW
 {
@@ -366,7 +381,7 @@ struct st_ttyBufW
 void ttyBufWReset(m2k_t *ctx);
 bool ttyBufWHasData(m2k_t *ctx);
 bool ttyBufWReady(m2k_t *ctx);
-#define putTtyStr(ctx,s) putTtyN((ctx), (s), sizeof(s)-1)
+#define putTtyStr(ctx, s) putTtyN((ctx), (s), sizeof(s) - 1)
 
 m2k_err_t ttyBufWrite(m2k_t *ctx, st_sock *sock);
 void putTty1(m2k_t *ctx, unsigned char c);

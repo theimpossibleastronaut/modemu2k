@@ -24,8 +24,8 @@
  *
  */
 
-#include <stdlib.h>             /*(getenv) */
-#include <arpa/telnet.h>        /*TELOPT_xxx */
+#include <stdlib.h>      /*(getenv) */
+#include <arpa/telnet.h> /*TELOPT_xxx */
 #include "cmdarg.h"
 #include "m2k_private.h"
 #include "m2k_ctx.h"
@@ -36,16 +36,16 @@
 #define BINCMD
 #endif
 
-#define INITSTR "AT" \
-	"S2=43"		/* escape char = '+' */ \
-	"S3=13"		/* CR */ \
-	"S4=10"		/* LF */ \
-	"S5=8"		/* BS */ \
-	"S7=20"		/* timelimit for non-blocking connect */ \
-	"S12=50"	/* escape sequence guard time */ \
-	BINCMD		/* binary mode */ \
-	"%T1"		/* terminal-type = $TERM */ \
-	"&W"                    /* write to NVRAM */
+#define INITSTR "AT"                                              \
+                "S2=43"  /* escape char = '+' */                  \
+                "S3=13"  /* CR */                                 \
+                "S4=10"  /* LF */                                 \
+                "S5=8"   /* BS */                                 \
+                "S7=20"  /* timelimit for non-blocking connect */ \
+                "S12=50" /* escape sequence guard time */         \
+  BINCMD                 /* binary mode */                        \
+                "%T1"    /* terminal-type = $TERM */              \
+                "&W"     /* write to NVRAM */
 
 void
 atcmdInit(m2k_t *ctx, struct st_cmdarg *cmdarg, st_sock *sock)
@@ -53,15 +53,10 @@ atcmdInit(m2k_t *ctx, struct st_cmdarg *cmdarg, st_sock *sock)
   Cmdstat s;
 
   /*memset(atcmd, 0, sizeof(atcmd)); */
-  if (cmdLex(ctx, INITSTR, sock) != CMDST_OK
-      || ((s = cmdLex(ctx, getenv("MODEMU2k"), sock)) != CMDST_OK
-          && s != CMDST_NOAT)
-      || (cmdarg != NULL
-          && (s = cmdLex(ctx, cmdarg->atcmd, sock)) != CMDST_OK
-          && s != CMDST_NOAT))
+  if (cmdLex(ctx, INITSTR, sock) != CMDST_OK || ((s = cmdLex(ctx, getenv("MODEMU2k"), sock)) != CMDST_OK && s != CMDST_NOAT) || (cmdarg != NULL && (s = cmdLex(ctx, cmdarg->atcmd, sock)) != CMDST_OK && s != CMDST_NOAT))
   {
     m2k_log(ctx, "Error in initialization commands.\r\n");
-    CHAR_CR(ctx) = '\r';             /* force normal settings */
+    CHAR_CR(ctx) = '\r'; /* force normal settings */
     CHAR_LF(ctx) = '\n';
   }
 }
@@ -104,7 +99,7 @@ getNumArg(const char *s)
 int
 atcmdFake(m2k_t *ctx, const char *s, const char *vals)
 {
-  (void)ctx;
+  (void) ctx;
   int i;
 
   i = getNumArg(s) + '0';
@@ -179,7 +174,7 @@ prSreg(m2k_t *ctx, uchar *s)
 static void
 prOption(m2k_t *ctx)
 {
-  static char *onoff[] = { "off", "on " };
+  static char *onoff[] = {"off", "on "};
   char buf[64];
 
   putTty1(ctx, CHAR_CR(ctx));
@@ -271,7 +266,6 @@ atcmdI(m2k_t *ctx, const char *s)
 }
 
 
-
 /* Sn? */
 /* n: S register number */
 int
@@ -288,7 +282,7 @@ atcmdSQuery(m2k_t *ctx, const char *s)
   sprintf(buf, "%03u", ctx->atcmd.s[idx]);
   putTtyN(ctx, buf, 3);
   putTty1(ctx, CHAR_CR(ctx));
-  putTty1(ctx, CHAR_LF(ctx));             /*at least Courier does */
+  putTty1(ctx, CHAR_LF(ctx)); /*at least Courier does */
   return 0;
 }
 
@@ -351,7 +345,7 @@ atcmdPB(m2k_t *ctx, const char *s)
   if (idx > 1 || val > 3)
     return 1;
   ctx->atcmd.pb[idx] = val;
-  ctx->telOpt.sentReqs = 0;          /* renegotiate when returning online */
+  ctx->telOpt.sentReqs = 0; /* renegotiate when returning online */
   return 0;
 }
 
@@ -381,7 +375,7 @@ atcmdPL(m2k_t *ctx, const char *s)
   if (i > 3)
     return 1;
   ctx->atcmd.pl = i;
-  ctx->telOpt.sentReqs = 0;          /* renegotiate when returning online */
+  ctx->telOpt.sentReqs = 0; /* renegotiate when returning online */
   return 0;
 }
 
@@ -390,8 +384,8 @@ atcmdPL(m2k_t *ctx, const char *s)
 void
 atcmdPQ(m2k_t *ctx, st_sock *sock)
 {
-  (void)ctx;
-  sockShutdown(sock);           /* may discard unsent chars in kernel,
+  (void) ctx;
+  sockShutdown(sock); /* may discard unsent chars in kernel,
                                    or do ATH before quitting */
 }
 
@@ -425,13 +419,13 @@ atcmdPT(m2k_t *ctx, const char *s)
     ctx->atcmd.pt.wont = 1;
     break;
   case 1:
-    {
-      const char *term = getenv("TERM");
-      strncpy(ctx->atcmd.pt.str, term ? term : "", PT_MAX);
-      ctx->atcmd.pt.len = strlen(ctx->atcmd.pt.str);
-      ctx->atcmd.pt.wont = 0;
-      break;
-    }
+  {
+    const char *term = getenv("TERM");
+    strncpy(ctx->atcmd.pt.str, term ? term : "", PT_MAX);
+    ctx->atcmd.pt.len = strlen(ctx->atcmd.pt.str);
+    ctx->atcmd.pt.wont = 0;
+    break;
+  }
   default:
     return 1;
   }

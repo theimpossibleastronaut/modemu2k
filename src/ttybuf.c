@@ -1,7 +1,7 @@
 
-#include <sys/time.h>   /*->ttybuf.h (timeval)*/
+#include <sys/time.h> /*->ttybuf.h (timeval)*/
 #include <unistd.h>
-#include "m2k_private.h"       /*->ttybuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
+#include "m2k_private.h" /*->ttybuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 #include "m2k_ctx.h"
 
 void
@@ -99,14 +99,14 @@ void
 putTty1(m2k_t *ctx, uchar c)
 {
   if (ctx->ttyBufW.ptr >= ctx->ttyBufW.buf + TTYBUFW_SIZE)
-  {                             /* limit */
+  { /* limit */
     if (ctx->ttyBufW.ptr >= ctx->ttyBufW.buf + TTYBUFW_SIZE_A)
-    {                           /*actual limit */
+    { /*actual limit */
       m2k_log(ctx, "\attyBufW overrun.\n");
       return;
     }
     else
-      ctx->ttyBufW.stop = 1;         /* flow control */
+      ctx->ttyBufW.stop = 1; /* flow control */
   }
   *ctx->ttyBufW.ptr++ = c;
 }

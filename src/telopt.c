@@ -1,12 +1,12 @@
 
-#include <stdio.h>              /*stderr,(fprintf) */
+#include <stdio.h> /*stderr,(fprintf) */
 #include <stdlib.h>
-#include <sys/time.h>   /*->ttybuf.h (timeval)*/
-#define TELCMDS                 /*to use strings defined in telnet.h */
+#include <sys/time.h> /*->ttybuf.h (timeval)*/
+#define TELCMDS       /*to use strings defined in telnet.h */
 #define TELOPTS
-#include <arpa/telnet.h>        /*IAC,DO,DONT,... */
+#include <arpa/telnet.h> /*IAC,DO,DONT,... */
 
-#include "m2k_private.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
+#include "m2k_private.h" /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 #include "m2k_ctx.h"
 
 /* telnet option negotiation module — per-ctx state lives in
@@ -15,11 +15,11 @@
 
 static const TelOptStates stTabTemplate[M2K_TELOPT_ENTRIES] = {
   /*[opt]             [local]               [remote] */
-  {TELOPT_BINARY, {TOR_BETTER, 0, 0}, {TOR_BETTER, 0, 0}},      /*0 */
-  {TELOPT_ECHO, {TOR_MUSTNOT, 0, 0}, {TOR_BETTER, 0, 0}},       /*1 */
-  {TELOPT_SGA, {TOR_BETTER, 0, 0}, {TOR_MUST, 0, 0}},   /*3 */
-  {TELOPT_TTYPE, {TOR_NEUTRAL, 0, 0}, {TOR_MUSTNOT, 0, 0}},     /*24 */
-  {-1, {TOR_MUSTNOT, 0, 0}, {TOR_MUSTNOT, 0, 0}}        /* default state */
+  {TELOPT_BINARY, {TOR_BETTER, 0, 0}, {TOR_BETTER, 0, 0}},  /*0 */
+  {TELOPT_ECHO, {TOR_MUSTNOT, 0, 0}, {TOR_BETTER, 0, 0}},   /*1 */
+  {TELOPT_SGA, {TOR_BETTER, 0, 0}, {TOR_MUST, 0, 0}},       /*3 */
+  {TELOPT_TTYPE, {TOR_NEUTRAL, 0, 0}, {TOR_MUSTNOT, 0, 0}}, /*24 */
+  {-1, {TOR_MUSTNOT, 0, 0}, {TOR_MUSTNOT, 0, 0}}            /* default state */
 };
 
 /* The default/unknown-option entry is the last slot of stTabMaster. */
@@ -55,7 +55,8 @@ telOptInit(m2k_t *ctx)
 
   /* Build the opt-id lookup: every slot points at the sentinel first,
      then per-option slots get pointed at their stTabMaster entry. */
-  for (tosp = master; tosp->opt >= 0; tosp++);
+  for (tosp = master; tosp->opt >= 0; tosp++)
+    ;
   TelOptStates *sentinel = tosp;
   for (i = 0; i < NTELOPTS; i++)
     ctx->telOpt.stTab[i] = sentinel;
@@ -69,8 +70,8 @@ telcmdStr(int cmd)
 {
   static char str[16];
 
-#ifndef TELCMD_FIRST            /*is this rule correct for all telnet.h? */
-#define TELCMD_FIRST (256 - sizeof(telcmds)/sizeof(telcmds[0]))
+#ifndef TELCMD_FIRST /*is this rule correct for all telnet.h? */
+#define TELCMD_FIRST (256 - sizeof(telcmds) / sizeof(telcmds[0]))
 #endif
   if (cmd >= TELCMD_FIRST)
   {
@@ -119,10 +120,8 @@ printCmdOpt(m2k_t *ctx, const char *str, int cmd, int opt)
 static void
 setReqs(m2k_t *ctx)
 {
-  static TelOptReq tabP[]
-    = { TOR_BETTERNOT, TOR_BETTER, TOR_MUSTNOT, TOR_MUST };
-  static TelOptReq tabN[]
-    = { TOR_BETTER, TOR_BETTERNOT, TOR_MUST, TOR_MUSTNOT };
+  static TelOptReq tabP[] = {TOR_BETTERNOT, TOR_BETTER, TOR_MUSTNOT, TOR_MUST};
+  static TelOptReq tabN[] = {TOR_BETTER, TOR_BETTERNOT, TOR_MUST, TOR_MUSTNOT};
 
   TelOptStates **st = ctx->telOpt.stTab;
   /* %Bn=m (binary mode control) */
@@ -211,11 +210,11 @@ telOptHandle(m2k_t *ctx, int cmd, int opt)
 {
   TelOptState *tostp;
   TelOptStates *tosp;
-  int reqState;                 /* cmd's requiring state */
-  int posiResCmd;               /* positive response command for cmd */
-  int negaResCmd;               /* negative response command for cmd */
-  TelOptReq mustNegate;         /* must negate if req is this */
-  TelOptReq betterNegate;       /* better negate if req is this */
+  int reqState;           /* cmd's requiring state */
+  int posiResCmd;         /* positive response command for cmd */
+  int negaResCmd;         /* negative response command for cmd */
+  TelOptReq mustNegate;   /* must negate if req is this */
+  TelOptReq betterNegate; /* better negate if req is this */
   //  TelOptReq betterAssert;       /* better assert if req is this */
   //  TelOptReq mustAssert;         /* must assert if req is this */
 
@@ -275,21 +274,21 @@ telOptHandle(m2k_t *ctx, int cmd, int opt)
     {
       tostp->pending = 0;
       if (tostp->req == mustNegate)
-        return 1;               /* requirment didn't meet */
+        return 1; /* requirment didn't meet */
       if (tostp->state == !reqState)
-      {                         /* this may not happen */
+      { /* this may not happen */
         tostp->state = reqState;
-        putOptCmd(ctx, posiResCmd, opt);     /* positive response */
+        putOptCmd(ctx, posiResCmd, opt); /* positive response */
         printCmdOpt(ctx, ">", posiResCmd, opt);
       }
     }
     else
     {
-      putOptCmd(ctx, negaResCmd, opt);       /* negative response */
+      putOptCmd(ctx, negaResCmd, opt); /* negative response */
       printCmdOpt(ctx, ">", negaResCmd, opt);
     }
   }
-  else                          /*if (tostp->req == betterAssert or mustAssert or TOR_NEUTRAL) */
+  else /*if (tostp->req == betterAssert or mustAssert or TOR_NEUTRAL) */
   {
     if (tostp->pending)
     {
@@ -299,12 +298,12 @@ telOptHandle(m2k_t *ctx, int cmd, int opt)
     else
     {
       if (tostp->state == !reqState)
-      {                         /* this may not happen */
-        putOptCmd(ctx, posiResCmd, opt);     /* positive response */
+      {                                  /* this may not happen */
+        putOptCmd(ctx, posiResCmd, opt); /* positive response */
         printCmdOpt(ctx, ">", posiResCmd, opt);
       }
     }
-    tostp->state = reqState;    /* {en,dis}able option as requested */
+    tostp->state = reqState; /* {en,dis}able option as requested */
   }
 
   telOptSummarize(ctx);

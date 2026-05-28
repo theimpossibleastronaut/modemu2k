@@ -1,5 +1,5 @@
 
-#include <sys/time.h>   /*->ttybuf.h (timeval)*/
+#include <sys/time.h> /*->ttybuf.h (timeval)*/
 #include "m2k_private.h"
 
 /* a = b [10mS] */

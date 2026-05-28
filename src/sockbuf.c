@@ -3,7 +3,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <stdbool.h>
-#include "m2k_private.h"       /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
+#include "m2k_private.h" /*->sockbuf.h (uchar,SOCKBUFR_SIZE,TTYBUFR_SIZE)*/
 #include "m2k_ctx.h"
 
 /* reading socket */
@@ -85,7 +85,7 @@ sockBufWrite(m2k_t *ctx, st_sock *sock)
   else if (l < wl)
   {
     ctx->sockBufW.top += l;
-    /*return 1; *//* needs retry */
+    /*return 1; */ /* needs retry */
     return;
   }
   ctx->sockBufW.ptr = ctx->sockBufW.top = ctx->sockBufW.buf;
@@ -97,14 +97,14 @@ void
 putSock1(m2k_t *ctx, uchar c)
 {
   if (ctx->sockBufW.ptr >= ctx->sockBufW.buf + SOCKBUFW_SIZE)
-  {                             /* limit */
+  { /* limit */
     if (ctx->sockBufW.ptr >= ctx->sockBufW.buf + SOCKBUFW_SIZE_A)
-    {                           /*actual limit */
+    { /*actual limit */
       m2k_log(ctx, "\asockBufW overrun.\n");
       return;
     }
     else
-      ctx->sockBufW.stop = 1;        /* flow control */
+      ctx->sockBufW.stop = 1; /* flow control */
   }
   *ctx->sockBufW.ptr++ = c;
 }
