@@ -31,12 +31,13 @@ conf.set_quoted('PACKAGE_STRING', meson.project_name())
 conf.set_quoted('PACKAGE_URL', 'http://theimpossibleastronaut.com/modemu2k/')
 conf.set_quoted('PACKAGE_BUGREPORT', 'https://github.com/theimpossibleastronaut/modemu2k/issues')
 
-# Detect POSIX PTY allocation (posix_openpt/grantpt/unlockpt/ptsname).
-# Available on glibc/musl Linux, macOS, FreeBSD, NetBSD, Solaris, etc.
-# Falls back to the legacy BSD /dev/pty?? scan only if absent.
-if cc.has_function('posix_openpt',
-                   prefix: '#define _XOPEN_SOURCE 600\n#include <stdlib.h>\n#include <fcntl.h>')
-  conf.set('HAVE_POSIX_OPENPT', 1)
+# Require POSIX PTY allocation (posix_openpt/grantpt/unlockpt/ptsname),
+# POSIX since 2001. The legacy BSD /dev/pty?? scan fallback was
+# removed; if you ever need to bring up a pre-POSIX platform, recover
+# the fallback from git history.
+if not cc.has_function('posix_openpt',
+                       prefix: '#define _XOPEN_SOURCE 600\n#include <stdlib.h>\n#include <fcntl.h>')
+  error('posix_openpt() is required but was not found on this platform.')
 endif
 
 config_h = configure_file(output : 'config.h', configuration : conf)

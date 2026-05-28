@@ -51,7 +51,6 @@ forkExec(m2k_t *ctx, char *s)
   }
 }
 
-#ifdef HAVE_GRANTPT
 m2k_err_t
 commProgramForkExec(m2k_t *ctx, const char *cmd, char *ptyslave)
 {
@@ -63,21 +62,3 @@ commProgramForkExec(m2k_t *ctx, const char *cmd, char *ptyslave)
   free(s);
   return rc < 0 ? M2K_ERR_PTY : M2K_OK;
 }
-#else
-m2k_err_t
-commProgramForkExec(m2k_t *ctx, const char *cmd, char c10, char c01)
-{
-  char c[16];
-  strcpy(c, "tty");
-  c[3] = c10;
-  c[4] = c01;
-  c[5] = 0;
-  char *s = m2k_alloc(ctx, strlen(cmd) + strlen(c) + 1);
-  if (!s)
-    return M2K_ERR_NOMEM;
-  sprintf(s, cmd, c); /*'%s' -> 'p1' or sth */
-  int rc = forkExec(ctx, s);
-  free(s);
-  return rc < 0 ? M2K_ERR_PTY : M2K_OK;
-}
-#endif
