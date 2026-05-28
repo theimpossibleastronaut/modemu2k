@@ -1,3 +1,6 @@
+(in-progress)
+- modemu2k (v0.2.1)
+
 2026-05-27
 - modemu2k (v0.2.0)
   * Refactor core into libmodemu2k; public API in modemu2k.h at the
