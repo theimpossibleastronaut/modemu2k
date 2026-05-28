@@ -757,10 +757,14 @@ stepStateName(m2k_step_state s)
 {
   switch (s)
   {
-  case M2K_STATE_CMD:    return "CMD";
-  case M2K_STATE_DIAL:   return "DIAL";
-  case M2K_STATE_ONLINE: return "ONLINE";
-  case M2K_STATE_DONE:   return "DONE";
+  case M2K_STATE_CMD:
+    return "CMD";
+  case M2K_STATE_DIAL:
+    return "DIAL";
+  case M2K_STATE_ONLINE:
+    return "ONLINE";
+  case M2K_STATE_DONE:
+    return "DONE";
   }
   return "?";
 }
