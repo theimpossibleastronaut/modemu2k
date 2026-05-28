@@ -73,7 +73,13 @@ main(int argc, char *const argv[])
   if (cmdarg.verbose)
   {
     m2k_set_log_fn(ctx, stderr_log_fn, NULL);
-    fputs("modemu2k: verbose logging enabled\n", stderr);
+    /* The library already has narration sites guarded by the AT%V
+       verbose mask (VERB_MISC | VERB_TELOPT). Enable both so -v on
+       the CLI is "show everything you have", without forcing the
+       user to type AT%V3 every session. */
+    if (m2k_atcmd(ctx, "AT%V3") != M2K_OK)
+      fputs("modemu2k: failed to enable verbose mask\n", stderr);
+    fputs("modemu2k: verbose logging enabled (MISC|TELOPT)\n", stderr);
   }
   fputs(PACKAGE_STRING " " VERSION "\n", stdout);
   fputs("Enter 'at%q' to quit\n\n", stdout);

@@ -62,6 +62,7 @@ if sh.found()
   sh_test_cases = [
     'no_arg_usage',
     'options',
+    'verbose',
     ]
   foreach case : sh_test_cases
     name = 'test_' + case

@@ -96,6 +96,23 @@ backend for emulators such as dosemu2. Dual-stack IPv4/IPv6.
 .TP
 .B -h
 Print a usage summary.
+.\" ===== -v =====
+.TP
+.B -v
+Enable verbose narration to stderr.
+Installs a log callback and opens the runtime verbose mask
+.RB ( AT%V3 ,
+i.e.
+.B VERB_MISC | VERB_TELOPT )
+so the existing instrumentation sites (telnet IAC negotiation,
+socket and pty events, ATH/ATZ disconnect) actually print.
+Useful for diagnosing connection or transfer issues.
+.\" ===== -V =====
+.TP
+.B -V
+Print the
+.B modemu2k
+version and exit.
 .\" ===== -s =====
 .TP
 .B -s
