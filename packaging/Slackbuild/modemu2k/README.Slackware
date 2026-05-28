@@ -24,7 +24,7 @@ flex isn't a build-time requirement either.
 
 * `/usr/bin/modemu2k` — the CLI binary
 * `/usr/bin/m2k-minicom`, `/usr/bin/m2k-picocom` — convenience wrappers
-* `/usr/lib*/libmodemu2k.{a,so*}` — static and shared library
+* `/usr/lib*/libmodemu2k.so*` — shared library
 * `/usr/include/modemu2k/modemu2k.h` — public C API header
 * `/usr/include/modemu2k/modemu2k_version.h` — generated version macros
 * `/usr/man/man1/modemu2k.1.gz`

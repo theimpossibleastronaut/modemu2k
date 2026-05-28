@@ -93,7 +93,6 @@ meson setup .. \
   --mandir=/usr/man \
   --prefix=/usr \
   -Ddocdir=/usr/doc/$PRGNAM-$VERSION \
-  -Ddefault_library=both \
   -Dgen-docs=true \
   -Dhelper-scripts=true
 
