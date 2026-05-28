@@ -206,8 +206,8 @@ IPv4/IPv6.</p>
 
 
 <p><b>-h</b></p></td>
-<td width="6%"></td>
-<td width="82%">
+<td width="2%"></td>
+<td width="86%">
 
 
 <p>Print a usage summary.</p></td></tr>
@@ -217,8 +217,8 @@ IPv4/IPv6.</p>
 
 
 <p><b>-v</b></p></td>
-<td width="6%"></td>
-<td width="82%">
+<td width="2%"></td>
+<td width="86%">
 
 
 <p>Enable verbose narration to stderr. Installs a log
@@ -226,15 +226,28 @@ callback and opens the runtime verbose mask (<b>AT%V3</b>,
 i.e. <b>VERB_MISC | VERB_TELOPT )</b> so the existing
 instrumentation sites (telnet IAC negotiation, socket and
 pty events, ATH/ATZ disconnect) actually print. Useful for
-diagnosing connection or transfer issues.</p></td></tr>
+diagnosing connection or transfer issues. With <b>-c</b>
+(<b>comm-program</b> mode), modemu2k refuses to run when
+stderr is a terminal, because verbose output would corrupt
+the comm program&rsquo;s display. Redirect stderr first:</p></td></tr>
+<tr valign="top" align="left">
+<td width="9%"></td>
+<td width="3%">
+</td>
+<td width="2%"></td>
+<td width="86%">
+
+
+<p>modemu2k -v -c &quot;minicom ...&quot;
+2&gt;/tmp/m2k.log</p> </td></tr>
 <tr valign="top" align="left">
 <td width="9%"></td>
 <td width="3%">
 
 
 <p><b>-V</b></p></td>
-<td width="6%"></td>
-<td width="82%">
+<td width="2%"></td>
+<td width="86%">
 
 
 <p>Print the <b>modemu2k</b> version and exit.</p></td></tr>
@@ -244,8 +257,8 @@ diagnosing connection or transfer issues.</p></td></tr>
 
 
 <p><b>-s</b></p></td>
-<td width="6%"></td>
-<td width="82%">
+<td width="2%"></td>
+<td width="86%">
 
 
 <p>Print the last two letters of a device name. The device
@@ -758,7 +771,13 @@ entered.</p> </td></tr>
 </table>
 
 <p style="margin-left:18%; margin-top: 1em">Quit
-<b>modemu2k</b>.</p>
+<b>modemu2k</b>. Two consecutive <b>Ctrl-C</b> keystrokes
+from command mode are equivalent; a single <b>Ctrl-C</b>
+arms the trigger and clears any partial input line, but does
+not exit unless followed by another <b>Ctrl-C</b> with no
+intervening keystroke. Any other input byte disarms the
+trigger. In online mode <b>Ctrl-C</b> is treated as ordinary
+data and forwarded to the remote.</p>
 
 <table width="100%" border="0" rules="none" frame="void"
        cellspacing="0" cellpadding="0">

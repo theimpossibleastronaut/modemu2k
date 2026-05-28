@@ -141,8 +141,10 @@ With a comm program (the usual mode)</h1>
 <div class="fragment"><div class="line">modemu2k -c &quot;minicom -l -tansi -con -p %s&quot;</div>
 </div><!-- fragment --><p>For 8-bit-clean transfers, run the startup AT string at the same time:</p>
 <div class="fragment"><div class="line">modemu2k -e &quot;AT%B0=1%B1=1&amp;W&quot; -c &quot;minicom -l -tansi -con -p %s&quot;</div>
-</div><!-- fragment --><p>A convenience wrapper, <span class="tt">m2k-minicom</span>, runs the above invocation for you. It's in <span class="tt">scripts/m2k-minicom.in</span>; install it by configuring with <span class="tt">-Dhelper-scripts=true</span> before <span class="tt">ninja install</span>. A matching <span class="tt">m2k-picocom</span> ships under the same option.</p>
-<p>From inside minicom (or picocom, etc.), dial in the same AT style:</p>
+</div><!-- fragment --><p>A convenience wrapper, <span class="tt">m2k-minicom</span>, runs the above invocation for you. It's in <span class="tt">scripts/m2k-minicom</span>; install it by configuring with <span class="tt">-Dhelper-scripts=true</span> before <span class="tt">ninja install</span>. A matching <span class="tt">m2k-picocom</span> ships under the same option.</p>
+<p>Any arguments you pass to the wrappers are forwarded to modemu2k. For example, to enable verbose narration while running through minicom, redirect stderr to a log file (modemu2k refuses to run otherwise, because verbose output would corrupt the comm program's display):</p>
+<div class="fragment"><div class="line">m2k-minicom -v 2&gt;/tmp/m2k.log     # then tail -f /tmp/m2k.log</div>
+</div><!-- fragment --><p>From inside minicom (or picocom, etc.), dial in the same AT style:</p>
 <div class="fragment"><div class="line">atd&quot;trmb.ca 2030</div>
 </div><!-- fragment --><p>To quit modemu2k, just quit the comm program — modemu2k tears down with it.</p>
 <h1 class="doxsection"><a class="anchor" id="listen-mode-incoming-connections"></a>
