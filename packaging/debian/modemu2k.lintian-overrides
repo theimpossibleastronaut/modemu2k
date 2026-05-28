@@ -1,0 +1,6 @@
+# Our upstream ChangeLog uses the project's own format (date stanzas
+# and bullet entries), not Debian-policy changelog format. debhelper
+# auto-installs it as usr/share/doc/modemu2k/changelog.gz where
+# lintian then tries to parse it. The format mismatch is intentional;
+# the file ships as the project's documented release history.
+modemu2k: syntax-error-in-debian-changelog

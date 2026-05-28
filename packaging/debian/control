@@ -7,7 +7,7 @@ Build-Depends: debhelper-compat (= 13),
                groff,
                meson (>= 0.56.0),
                ninja-build,
-               pkg-config
+               pkgconf
 Standards-Version: 4.6.2
 Homepage: https://github.com/theimpossibleastronaut/modemu2k
 Rules-Requires-Root: no
