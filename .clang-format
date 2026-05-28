@@ -1,0 +1,38 @@
+---
+# Match the existing project style (Allman braces with body indented
+# from the brace, 2-space indent, spaces not tabs, `m2k_t *ctx`,
+# no space before `(` in function calls, space before `(` after
+# control keywords).
+Language: Cpp
+IndentWidth: 2
+ContinuationIndentWidth: 2
+UseTab: Never
+PointerAlignment: Right
+SpaceBeforeParens: ControlStatements
+BreakBeforeBraces: Allman
+# Preserve existing long lines and long doc comments instead of
+# reflowing them aggressively.
+ColumnLimit: 0
+ReflowComments: false
+SortIncludes: Never
+# Don't try to column-align consecutive declarations — modemu2k.h
+# does that manually with extra spaces and we'd lose the alignment.
+AlignConsecutiveDeclarations:
+  Enabled: false
+AlignConsecutiveAssignments:
+  Enabled: false
+# Match existing K&R/Allman convention: return type on its own line
+# above the function name (in definitions; declarations stay on one
+# line). Required for `escSeqReset\n(m2k_t *ctx)` style.
+BreakAfterReturnType: AllDefinitions
+# Preserve double-blank separators between code sections.
+MaxEmptyLinesToKeep: 2
+# Keep short enum bodies on a single line; only break when the
+# author wrote them on multiple lines to begin with.
+AllowShortEnumsOnASingleLine: true
+# Preserve the existing style choices for short conditionals:
+#   `if (rc < 0) { close(pty); goto bsd; }` stays inline.
+#   Cast spacing matches the codebase: `(unsigned) err`.
+AllowShortBlocksOnASingleLine: Always
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+SpaceAfterCStyleCast: true
