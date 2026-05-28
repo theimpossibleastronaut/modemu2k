@@ -93,7 +93,7 @@ $(function() {
   <div class="headertitle"><div class="title">modemu2k </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__2home_2runner_2work_2modemu2k_2modemu2k_2README"></a> <a href="https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml"><img src="https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml/badge.svg?branch=master" alt="C/C++ CI" style="pointer-events: none;" class="inline"/></a></p>
+<div class="textblock"><p><a class="anchor" id="md_README"></a> <a href="https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml"><img src="https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml/badge.svg?branch=master" alt="C/C++ CI" style="pointer-events: none;" class="inline"/></a></p>
 <h1 class="doxsection"><a class="anchor" id="modemu2k"></a>
 modemu2k</h1>
 <p>modemu2k is a Hayes-style AT-command modem emulator that bridges a serial-style interface to a TCP or Telnet endpoint. It ships as a C library (libmodemu2k) exposing the modem state machine, plus a small CLI built on top that allocates a PTY and either reads stdin/stdout directly, forks a comm program (minicom, picocom) on the slave, or accepts an incoming TCP connection as the TTY. IPv4 and IPv6.</p>
@@ -113,7 +113,7 @@ Build</h2>
 </div><!-- fragment --><p>Run <span class="tt">meson configure builddir</span> to see extra options. <span class="tt">ninja install</span> is optional. The <span class="tt">m2k-minicom</span> / <span class="tt">m2k-picocom</span> wrapper scripts are not installed by default; pass <span class="tt">-Dhelper-scripts=true</span> to opt in.</p>
 <h2 class="doxsection"><a class="anchor" id="usage"></a>
 Usage</h2>
-<p>See <b><a class="el" href="md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html" title="Getting started with modemu2k">QUICKSTART.md</a></b> for the actual how-to: standalone mode, running under minicom, listen mode, the binary-mode toggle for file transfers, escaping with <span class="tt">+++</span>, and quitting cleanly.</p>
+<p>See <b><a class="el" href="md_QUICKSTART.html" title="Getting started with modemu2k">QUICKSTART.md</a></b> for the actual how-to: standalone mode, running under minicom, listen mode, the binary-mode toggle for file transfers, escaping with <span class="tt">+++</span>, and quitting cleanly.</p>
 <p>The <span class="tt">modemu2k(1)</span> man page has the full option and AT-command reference.</p>
 <h2 class="doxsection"><a class="anchor" id="live-telnet-boards"></a>
 Live Telnet Boards</h2>

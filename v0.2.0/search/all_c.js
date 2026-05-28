@@ -47,12 +47,12 @@ var searchData=
   ['m2k_5fversion_44',['m2k_version',['../modemu2k_8h.html#a84e0b75d119d8bbd1e79780e10867c4f',1,'modemu2k.h']]],
   ['m2k_5fwrite_5ffrom_5fapp_45',['m2k_write_from_app',['../modemu2k_8h.html#ab0800ff35135cf932b508c41bb42bed7',1,'modemu2k.h']]],
   ['man_20page_46',['modemu2k(1) man page',['../manpage.html',1,'']]],
-  ['map_47',['Code map',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2HACKING.html#code-map',1,'']]],
-  ['minicom_48',['Linking libmodemu2k into minicom',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2HACKING.html#linking-libmodemu2k-into-minicom',1,'']]],
-  ['mode_49',['With a comm program (the usual mode)',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html#with-a-comm-program-the-usual-mode',1,'']]],
-  ['mode_20incoming_20connections_50',['Listen mode (incoming connections)',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html#listen-mode-incoming-connections',1,'']]],
-  ['modemu_20plugin_20in_20dosemu2_51',['Replacing the modemu plugin in dosemu2',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2HACKING.html#replacing-the-modemu-plugin-in-dosemu2',1,'']]],
-  ['modemu2k_52',['modemu2k',['../md__2home_2runner_2work_2modemu2k_2modemu2k_2QUICKSTART.html',1,'Getting started with modemu2k'],['../md__2home_2runner_2work_2modemu2k_2modemu2k_2HACKING.html',1,'Hacking on modemu2k'],['../index.html',1,'modemu2k'],['../index.html#modemu2k',1,'modemu2k']]],
+  ['map_47',['Code map',['../md_HACKING.html#code-map',1,'']]],
+  ['minicom_48',['Linking libmodemu2k into minicom',['../md_HACKING.html#linking-libmodemu2k-into-minicom',1,'']]],
+  ['mode_49',['With a comm program (the usual mode)',['../md_QUICKSTART.html#with-a-comm-program-the-usual-mode',1,'']]],
+  ['mode_20incoming_20connections_50',['Listen mode (incoming connections)',['../md_QUICKSTART.html#listen-mode-incoming-connections',1,'']]],
+  ['modemu_20plugin_20in_20dosemu2_51',['Replacing the modemu plugin in dosemu2',['../md_HACKING.html#replacing-the-modemu-plugin-in-dosemu2',1,'']]],
+  ['modemu2k_52',['modemu2k',['../md_QUICKSTART.html',1,'Getting started with modemu2k'],['../md_HACKING.html',1,'Hacking on modemu2k'],['../index.html',1,'modemu2k'],['../index.html#modemu2k',1,'modemu2k']]],
   ['modemu2k_201_20man_20page_53',['modemu2k(1) man page',['../manpage.html',1,'']]],
   ['modemu2k_2eh_54',['modemu2k.h',['../modemu2k_8h.html',1,'']]]
 ];
