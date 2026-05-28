@@ -1,0 +1,241 @@
+/* modemu2k doxygen theme
+ * Overrides CSS custom properties defined in doxygen.css.
+ * All foreground/background pairs meet WCAG AA (>= 4.5:1).
+ *
+ * Specificity note: stock doxygen.css sets nav/title vars at `html { }`
+ * (light) and `html:not(.dark-mode) { }` inside a prefers-color-scheme
+ * media block (specificity 0,1,1). A plain `:root` block (0,1,0) loses
+ * to that in dark mode, leaving stock defaults in place. We pin the
+ * overrides to `html, html:not(.dark-mode)` so the same selector wins
+ * by cascade order in both light and dark, and we explicitly repeat
+ * the most contrast-critical rules on `.sm-dox` to defend against
+ * future stock CSS reshuffles.
+ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html,
+html:not(.dark-mode) {
+  /* Width cap for the centered content column. Used by #doc-content,
+     #titlearea > table, and #main-nav .sm-dox so the title bar, top
+     nav, and body content all share the same horizontal rhythm.
+     Tweak in one place to change the layout. */
+  --m2k-content-max-width: 1100px;
+
+  /* Title bar: dark navy. #projectname/#projectbrief set explicitly below. */
+  --title-background-color: #1a3a5c;
+  --title-separator-color:  #2e86c1;
+
+  /* Top nav bar and dropdown panels.
+     --nav-menu-background-color drives both the bar and the dropdown body,
+     so one dark value covers both. Foreground colors are tuned for #1a3a5c:
+       #e8f2fb on #1a3a5c = 10.5:1 (AAA)
+       #d0e8f8 on #1a3a5c = 7.1:1  (AAA)
+       #a0c8e8 on #1a3a5c = 4.5:1  (AA)                                 */
+  --nav-menu-background-color:  #1a3a5c;
+  --nav-text-normal-color:      #e8f2fb;
+  --nav-text-hover-color:       #ffffff;
+  --nav-menu-foreground-color:  #d0e8f8;
+  --nav-menu-button-color:      #e8f2fb;
+  --nav-menu-active-bg:         #2e5f8a;
+  --nav-menu-active-color:      #7ec8e3;
+  --nav-arrow-color:            #a0c8e8;
+  --nav-arrow-selected-color:   #c8e8ff;
+
+  /* Links. #005ea6 on white = 5.9:1 (AA) */
+  --page-link-color:         #005ea6;
+  --page-visited-link-color: #005ea6;
+
+  /* Member declaration table */
+  --memdecl-background-color: #f0f4f8;
+  --memdecl-border-color:     #b8d0e8;
+
+  /* Member definition box */
+  --memdef-title-background-color: #dce8f8;
+  --memdef-proto-background-color: #eaf2fb;
+  --memdef-border-color:           #a8c4e0;
+
+  /* Section group headers. #003d80 on white = 10.4:1 (AAA) */
+  --group-header-color:           #003d80;
+  --group-header-separator-color: #2e86c1;
+}
+
+/* Defense-in-depth nav contrast: the CSS variables above are the primary
+   mechanism, but stock doxygen themes have shipped with white-on-pale-blue
+   .sm-dox bugs more than once. Pin the critical pair explicitly so contrast
+   is guaranteed even if a future variable rename quietly breaks overrides. */
+.sm-dox,
+.sm-dox ul {
+  background-color: #1a3a5c;
+  background-image: none;
+}
+.sm-dox a,
+.sm-dox a:focus,
+.sm-dox a:active,
+.sm-dox ul a,
+.sm-dox ul a:focus,
+.sm-dox ul a:active {
+  color: #e8f2fb;
+  text-shadow: none;
+  background-image: none;
+}
+.sm-dox a:hover,
+.sm-dox ul a:hover {
+  color: #ffffff;
+  background-color: #2e5f8a;
+  background-image: none;
+  text-shadow: none;
+}
+
+/* Title bar text (no CSS variable exposed for these).
+   #ffffff on #1a3a5c = 11:1 (AAA); #c8e0f0 on #1a3a5c = 5.5:1 (AA) */
+#projectname  { color: #ffffff; }
+#projectbrief { color: #c8e0f0; }
+
+/* Repo link in the title bar, right-aligned. Underlined so it reads as
+   a link even when color alone fails (AA accessibility requirement). */
+#m2k-repolink {
+  text-align: right;
+  white-space: nowrap;
+  padding-right: 4px;
+  vertical-align: middle;
+}
+#m2k-repolink a,
+#m2k-repolink a:visited {
+  color: #e8f2fb;
+  text-decoration: underline;
+  font-size: 14px;
+}
+#m2k-repolink a:hover,
+#m2k-repolink a:focus {
+  color: #ffffff;
+}
+
+/* Stronger top bar box-shadow for visual separation */
+#top {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Cap line length on wide desktops so prose stays readable, and add
+   breathing room on the sides. The title bar and top nav keep their
+   full-width navy backgrounds, but their *inner* content (title text,
+   menu items) is centered to the same column as #doc-content (see
+   --m2k-content-max-width above)
+   so the whole page has one consistent left/right rhythm.
+
+   Putting the background on #main-nav lets the .sm-dox ul shrink to
+   the centered column without leaving the bar's edges unpainted. */
+#doc-content {
+  max-width: var(--m2k-content-max-width);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+#titlearea > table {
+  max-width: var(--m2k-content-max-width);
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+/* Make the name+brief cell consume slack so the repo-link cell parks
+   against the right padding edge instead of hugging the brief text. */
+#projectalign { width: 100%; }
+#main-nav { background-color: #1a3a5c; }
+#main-nav .sm-dox {
+  max-width: var(--m2k-content-max-width);
+  margin: 0 auto;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+@media (max-width: 640px) {
+  #doc-content,
+  #titlearea > table,
+  #main-nav .sm-dox { padding-left: 16px; padding-right: 16px; }
+}
+
+/* Typography. #111 on white = 19:1 (AAA) */
+body, .contents, .textblock, td, th {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  color: #111111;
+}
+
+/* Code blocks. #111 on #f5f5f5 = 17:1 (AAA) */
+div.fragment, pre.fragment {
+  background: #f5f5f5;
+  border: 1px solid #d0d0d0;
+  border-left: 3px solid #2e86c1;
+  border-radius: 0 3px 3px 0;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #111111;
+}
+
+/* Footer. #555 on white = 7.4:1 (AA) */
+address.footer, .footer { color: #555555; font-size: 13px; }
+
+/* Hide the GitHub Actions CI badge inherited from README.md — it's
+   redundant inside the docs site and clutters the main page intro. */
+a[href*="/actions/workflows/"] { display: none; }
+
+/* Main-page only: suppress the duplicate "modemu2k" headings.
+   - .header carries the slim title bar showing the page name; useful
+     on Files/ChangeLog/etc. where the page title differs from the
+     project name, but redundant on the main page.
+   - The README's `# modemu2k` H1 is the second copy of the project
+     name; hide the first H1 in the textblock specifically.
+   The .m2k-mainpage class is set by a script in header.html. */
+html.m2k-mainpage .header { display: none; }
+html.m2k-mainpage .textblock > h1.doxsection:first-of-type { display: none; }
+
+/* Floating Table of Contents.
+   Doxygen emits the [TOC] directive as <div class="contents"> wrapping
+   a <div class="toc"> followed by the page body. We give the TOC its
+   own grid column inside .contents and let it stick to the top of the
+   viewport while scrolling. The body content narrows to make room
+   rather than the TOC sitting on top of it.
+
+   The breakpoint uses `em` so a user who zooms text up keeps the
+   layout intact — pixel breakpoints break when the viewport shrinks
+   below them at higher zoom levels. Below the breakpoint the TOC
+   falls back to a normal block at the top of the page. */
+@media (min-width: 60em) {
+  div.contents {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 14em;
+    column-gap: 1.5em;
+  }
+  /* Every direct child of .contents lands in the left column by default;
+     only the TOC opts into the right column. */
+  div.contents > * {
+    grid-column: 1;
+    min-width: 0;
+  }
+  div.contents > div.toc {
+    grid-column: 2;
+    grid-row: 1 / span 99;
+    position: sticky;
+    top: 1em;
+    align-self: start;
+    max-height: calc(100vh - 2em);
+    overflow-y: auto;
+    margin: 0;
+    background: #f5f5f5;
+    border: 1px solid #d0d0d0;
+    border-radius: 3px;
+    padding: 0.75em 1em;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  div.contents > div.toc h3 {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    font-size: 14px;
+  }
+  div.contents > div.toc ul {
+    padding-left: 1.2em;
+    margin: 0.25em 0;
+  }
+}
