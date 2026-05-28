@@ -11,6 +11,10 @@
   * `modemu2k -v` (verbose alone, no -e/-c/-d/-l/-s) now prints
     usage and exits, matching bare invocation; `-e` is required
     to enter stdin AT mode
+  * Verbose narration now logs AT command dispatch (`dispatch: …`)
+    and state-machine transitions (`state: X -> Y` across CMD,
+    DIAL, ONLINE, DONE), in addition to the pre-existing telopt
+    and sock/tty events
 
 2026-05-27
 - modemu2k (v0.2.0)

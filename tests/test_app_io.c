@@ -240,6 +240,54 @@ test_atcmd_quit(void)
   m2k_free(ctx);
 }
 
+static char verbose_capture[2048];
+static size_t verbose_capture_len;
+
+static void
+verbose_capture_cb(const char *msg, void *userdata)
+{
+  (void) userdata;
+  size_t mlen = strlen(msg);
+  if (verbose_capture_len + mlen >= sizeof(verbose_capture))
+    return;
+  memcpy(verbose_capture + verbose_capture_len, msg, mlen);
+  verbose_capture_len += mlen;
+  verbose_capture[verbose_capture_len] = '\0';
+}
+
+static void
+test_verbose_narrates_dispatch_and_state(void)
+{
+  verbose_capture_len = 0;
+  verbose_capture[0] = '\0';
+
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  m2k_set_log_fn(ctx, verbose_capture_cb, NULL);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+  assert(m2k_atcmd(ctx, "AT%V3") == M2K_OK);
+
+  size_t consumed = 0;
+  assert(m2k_write_from_app(ctx, "at%q\r", 5, &consumed) == M2K_OK);
+  assert(consumed == 5);
+
+  char drained[256];
+  for (int i = 0; i < 32 && !m2k_run_done(ctx); i++)
+  {
+    struct pollfd fds[M2K_MAX_POLLFDS];
+    size_t nfds = M2K_MAX_POLLFDS;
+    int timeout_ms;
+    assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
+    assert(m2k_step(ctx, fds, nfds) == M2K_OK);
+    size_t n = 0;
+    assert(m2k_read_to_app(ctx, drained, sizeof(drained), &n) == M2K_OK);
+  }
+  assert(m2k_run_done(ctx));
+  assert(contains(verbose_capture, verbose_capture_len, "dispatch: at%q"));
+  assert(contains(verbose_capture, verbose_capture_len, "state: CMD -> DONE"));
+  m2k_free(ctx);
+}
+
 int
 main(void)
 {
@@ -250,5 +298,6 @@ main(void)
   test_has_pending_output_wrong_mode();
   test_escape_in_cmd_mode();
   test_atcmd_quit();
+  test_verbose_narrates_dispatch_and_state();
   return 0;
 }

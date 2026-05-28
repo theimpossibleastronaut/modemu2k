@@ -739,9 +739,23 @@ m2k_has_pending_output(const m2k_t *ctx)
        ONLINE ── sock dead     ──▶ CMD
        ONLINE ── PTY closed    ──▶ DONE                                 */
 
+static const char *
+stepStateName(m2k_step_state s)
+{
+  switch (s)
+  {
+  case M2K_STATE_CMD:    return "CMD";
+  case M2K_STATE_DIAL:   return "DIAL";
+  case M2K_STATE_ONLINE: return "ONLINE";
+  case M2K_STATE_DONE:   return "DONE";
+  }
+  return "?";
+}
+
 static void
 stepEnterCmd(m2k_t *ctx)
 {
+  verboseOut(ctx, VERB_MISC, "state: %s -> CMD\r\n", stepStateName(ctx->step_state));
   cmdBufReset(&ctx->step_cmdbuf);
   ttyBufRReset(ctx);
   ctx->step_state = M2K_STATE_CMD;
@@ -750,6 +764,7 @@ stepEnterCmd(m2k_t *ctx)
 static void
 stepEnterOnline(m2k_t *ctx)
 {
+  verboseOut(ctx, VERB_MISC, "state: %s -> ONLINE\r\n", stepStateName(ctx->step_state));
   sockBufRReset(ctx);
   sockBufWReset(ctx);
   ttyBufRReset(ctx);
@@ -764,6 +779,7 @@ stepEnterOnline(m2k_t *ctx)
 static void
 stepEnterDial(m2k_t *ctx)
 {
+  verboseOut(ctx, VERB_MISC, "state: %s -> DIAL\r\n", stepStateName(ctx->step_state));
   /* Drop any pending TTY input — semantics of going off-hook. */
   ttyBufRReset(ctx);
   cmdBufReset(&ctx->step_cmdbuf);
@@ -859,6 +875,7 @@ cmdDispatchIfReady(m2k_t *ctx, struct m2k_cmdbuf *cmdBuf, st_sock *sock)
 {
   if (!cmdBuf->eol)
     return CMDST_OK;
+  verboseOut(ctx, VERB_MISC, "dispatch: %s\r\n", (char *) cmdBuf->buf);
   Cmdstat stat = cmdLex(ctx, (char *) cmdBuf->buf, sock);
   cmdBufReset(cmdBuf);
   switch (stat)
@@ -1156,6 +1173,7 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
       stepEnterOnline(ctx);
       return M2K_OK;
     case CMDST_PTY_CLOSED:
+      verboseOut(ctx, VERB_MISC, "state: %s -> DONE\r\n", stepStateName(ctx->step_state));
       ctx->step_state = M2K_STATE_DONE;
       return M2K_OK;
     default:
