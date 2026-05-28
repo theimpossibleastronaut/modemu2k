@@ -1,4 +1,4 @@
-(in-progress)
+2026-05-28
 - modemu2k (v0.2.1)
   * Add -v/--verbose flag (CLI): installs a stderr log_fn and
     enables the AT%V3 verbose mask so the library's pre-existing
