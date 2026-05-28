@@ -28,7 +28,7 @@ Tarball (optional — for distro maintainers that want a checksum)
 
 Per-distro packaging files
 --------------------------
-[ ] packaging/PKGBUILD: set `sha256sums=('<sha256 from above>')` (was 'SKIP').
+[ ] ~/src/Packaging/AUR/modemu2k/PKGBUILD: set `sha256sums=('<sha256 from above>')` (was 'SKIP').
 [ ] packaging/Slackbuild/modemu2k/modemu2k.info: fill `MD5SUM="<md5 from above>"`.
 
 GitHub Release (which also creates the tag)
