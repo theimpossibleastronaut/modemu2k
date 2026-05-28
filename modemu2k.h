@@ -504,9 +504,12 @@ M2K_API m2k_err_t   m2k_run(m2k_t *ctx);
  *       m2k_step(ctx, fds, nfds);
  *   }
  *
- * Dialing (ATD) is still synchronous inside m2k_step() in this phase —
- * the connect() call will block your event loop briefly. That will be
- * addressed in a later, non-blocking-dial pass.
+ * Dialing (ATD) is non-blocking: m2k_step() transitions the context
+ * into an internal DIAL state on ATD, returns control immediately,
+ * and resumes the connect() across subsequent m2k_step() calls. The
+ * host event loop is not held up by connect(). m2k_get_pollfds()
+ * publishes the in-progress socket fd while DIAL is active, so the
+ * host pollset stays accurate without special-casing.
  */
 
 /** Maximum number of pollfds modemu2k will ever ask the caller to watch. */
