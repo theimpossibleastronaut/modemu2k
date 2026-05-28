@@ -1,5 +1,7 @@
 (in-progress)
 - modemu2k (v0.2.1)
+  * Add -v/--verbose flag (CLI) to install a stderr log_fn; -v
+    previously meant --version, which now requires -V (breaking)
 
 2026-05-27
 - modemu2k (v0.2.0)

@@ -34,6 +34,14 @@
 #include "cmdarg.h"
 #include "config.h"
 
+static void
+stderr_log_fn(const char *msg, void *userdata)
+{
+  (void) userdata;
+  fputs("modemu2k: ", stderr);
+  fputs(msg, stderr);
+}
+
 int
 main(int argc, char *const argv[])
 {
@@ -53,6 +61,11 @@ main(int argc, char *const argv[])
 
   struct st_cmdarg cmdarg;
   cmdargParse(argc, argv, &cmdarg);
+  if (cmdarg.verbose)
+  {
+    m2k_set_log_fn(ctx, stderr_log_fn, NULL);
+    fputs("modemu2k: verbose logging enabled\n", stderr);
+  }
   fputs(PACKAGE_STRING " " VERSION "\n", stdout);
   fputs("Enter 'at%q' to quit\n\n", stdout);
 

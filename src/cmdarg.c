@@ -63,8 +63,9 @@ showUsage(char *const argv[])
   printf("  %s-l, --listen=%s<port>                     listen for an incoming TCP connection on [port]\n", opt, r);
   printf("  %s-s, --show%s                              show which device will be used\n", opt, r);
   puts("");
+  printf("  %s-v, --verbose%s                           log internal events to stderr\n", opt, r);
   printf("  %s-h, --help%s                              display help\n", opt, r);
-  printf("  %s-v, --version%s                           display version\n", opt, r);
+  printf("  %s-V, --version%s                           display version\n", opt, r);
   printf("  %s-w, --warranty%s                          display warranty\n", opt, r);
   puts("");
   printf("%sNote:%s The -c, -d, -l, and -s options are mutually exclusive; passing\n"
@@ -121,7 +122,7 @@ for details.\n",
 void
 cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
 {
-  const char *const short_options = "c:d:e:hl:svw";
+  const char *const short_options = "Vc:d:e:hl:svw";
 
   const struct option long_options[] = {
     {"commprog", 1, NULL, 'c'},
@@ -130,7 +131,8 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
     {"help", 0, NULL, 'h'},
     {"listen", 1, NULL, 'l'},
     {"show", 0, NULL, 's'},
-    {"version", 0, NULL, 'v'},
+    {"verbose", 0, NULL, 'v'},
+    {"version", 0, NULL, 'V'},
     {"warranty", 0, NULL, 'w'},
     {NULL, 0, NULL, 0}};
 
@@ -140,6 +142,7 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
   x->atcmd = NULL;
   x->dev = NULL;
   x->listen_port = NULL;
+  x->verbose = 0;
 
   /* Track the first mode-setting option (-c/-d/-l/-s) seen so we can
      reject conflicting combinations explicitly instead of silently
@@ -191,6 +194,9 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
       x->ttymode = CA_SHOWDEV;
       break;
     case 'v':
+      x->verbose = 1;
+      break;
+    case 'V':
       version(argv);
       exit(0);
     case 'w':

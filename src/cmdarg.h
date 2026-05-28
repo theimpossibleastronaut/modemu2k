@@ -42,6 +42,7 @@ struct st_cmdarg
   const char *atcmd;
   const char *dev;
   const char *listen_port;
+  int verbose;
 };
 
 void cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x);
