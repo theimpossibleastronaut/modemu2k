@@ -206,6 +206,40 @@ test_escape_in_cmd_mode(void)
   m2k_free(ctx);
 }
 
+static void
+test_atcmd_quit(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+  assert(!m2k_run_done(ctx));
+
+  size_t consumed = 0;
+  assert(m2k_write_from_app(ctx, "at%q\r", 5, &consumed) == M2K_OK);
+  assert(consumed == 5);
+
+  char drained[256];
+  size_t total = 0;
+  for (int i = 0; i < 32; i++)
+  {
+    struct pollfd fds[M2K_MAX_POLLFDS];
+    size_t nfds = M2K_MAX_POLLFDS;
+    int timeout_ms;
+    assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
+    assert(m2k_step(ctx, fds, nfds) == M2K_OK);
+
+    size_t n = 0;
+    assert(m2k_read_to_app(ctx, drained + total, sizeof(drained) - total, &n) == M2K_OK);
+    total += n;
+
+    if (m2k_run_done(ctx))
+      break;
+  }
+  assert(m2k_run_done(ctx));
+  assert(contains(drained, total, "OK"));
+  m2k_free(ctx);
+}
+
 int
 main(void)
 {
@@ -215,5 +249,6 @@ main(void)
   test_has_pending_output();
   test_has_pending_output_wrong_mode();
   test_escape_in_cmd_mode();
+  test_atcmd_quit();
   return 0;
 }

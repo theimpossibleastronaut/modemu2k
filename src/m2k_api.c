@@ -888,6 +888,8 @@ cmdIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
       Cmdstat s = cmdDispatchIfReady(ctx, cmdBuf, sock);
       if (s != CMDST_OK)
         return s;
+      if (ctx->quit_req && !ttyBufWHasData(ctx))
+        return CMDST_PTY_CLOSED;
       if (!ttyBufRHasData(ctx))
         return CMDST_OK;
       cmdReadLoop(ctx, cmdBuf);
@@ -913,6 +915,8 @@ cmdIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
       return CMDST_PTY_CLOSED;
     cmdReadLoop(ctx, cmdBuf);
   }
+  if (ctx->quit_req && !ttyBufWHasData(ctx))
+    return CMDST_PTY_CLOSED;
   return CMDST_OK;
 }
 

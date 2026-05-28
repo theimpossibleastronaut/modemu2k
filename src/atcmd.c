@@ -384,9 +384,8 @@ atcmdPL(m2k_t *ctx, const char *s)
 void
 atcmdPQ(m2k_t *ctx, st_sock *sock)
 {
-  (void) ctx;
-  sockShutdown(sock); /* may discard unsent chars in kernel,
-                                   or do ATH before quitting */
+  sockShutdown(sock);
+  ctx->quit_req = true; /* cmdIter transitions to DONE once ttyBufW drains. */
 }
 
 /* %Rn */

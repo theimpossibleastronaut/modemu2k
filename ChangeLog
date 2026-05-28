@@ -2,6 +2,9 @@
 - modemu2k (v0.2.1)
   * Add -v/--verbose flag (CLI) to install a stderr log_fn; -v
     previously meant --version, which now requires -V (breaking)
+  * Fix at%q to actually quit; previously it only shut the socket,
+    leaving the state machine running and ignoring the banner's
+    "Enter 'at%q' to quit" promise
 
 2026-05-27
 - modemu2k (v0.2.0)
