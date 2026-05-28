@@ -61,6 +61,15 @@ main(int argc, char *const argv[])
 
   struct st_cmdarg cmdarg;
   cmdargParse(argc, argv, &cmdarg);
+  /* -v / --verbose describes how to run, not what to do. If no mode
+     flag (-c/-d/-l/-s) and no -e were given, there's no operation
+     to narrate — treat like a no-arg invocation and print usage. */
+  if (cmdarg.ttymode == CA_STDINOUT && cmdarg.atcmd == NULL)
+  {
+    showUsage(argv);
+    m2k_free(ctx);
+    return 0;
+  }
   if (cmdarg.verbose)
   {
     m2k_set_log_fn(ctx, stderr_log_fn, NULL);

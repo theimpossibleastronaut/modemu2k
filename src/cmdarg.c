@@ -58,8 +58,9 @@ showUsage(char *const argv[])
   printf("  %s-c, --commprog=%s\"<comm_prog> <args>\"     invoke a comm program using [arguments]\n", opt, r);
   printf("  %s-d, --device=%s<pty_master>               talk through [pty_master]\n", opt, r);
   printf("  %s-e, --atstring=%s\"<ATxxx>\"                execute [ATxxx] commands at startup,\n"
-         "                                          then read AT commands interactively from stdin\n",
-         opt, r);
+         "                                          then read AT commands interactively from stdin\n"
+         "                                          (quote to protect from the shell, e.g. %s-e \"ATZ&F0\"%s)\n",
+         opt, r, ex, r);
   printf("  %s-l, --listen=%s<port>                     listen for an incoming TCP connection on [port]\n", opt, r);
   printf("  %s-s, --show%s                              show which device will be used\n", opt, r);
   puts("");
@@ -70,7 +71,7 @@ showUsage(char *const argv[])
   puts("");
   printf("%sNote:%s The -c, -d, -l, and -s options are mutually exclusive; passing\n"
          "more than one exits with an error. With none of them given but -e\n"
-         "present (e.g. 'modemu2k -e AT'), modemu2k reads AT commands from\n"
+         "present (e.g. 'modemu2k -e \"ATZ\"'), modemu2k reads AT commands from\n"
          "stdin/stdout. Invoked with no arguments at all, it prints this help.\n",
          sec, r);
   puts("");
