@@ -504,116 +504,31 @@ m2k_strerror(m2k_err_t err)
 
 /* ── PTY allocation (moved from main.c) ─────────────────────────── */
 
-#ifdef HAVE_GRANTPT
 static int
 getPtyMaster(m2k_t *ctx)
 {
-  int rc;
-  char name[12], *temp_line;
-  int pty = -1;
-  char *name1 = "pqrstuvwxyzPQRST", *name2 = "0123456789abcdef";
-  char *p1, *p2;
-
   /* posix_openpt is portable across Linux/macOS/FreeBSD; FreeBSD in
-     particular doesn't reliably expose /dev/ptmx as a devnode. */
-  pty = posix_openpt(O_RDWR | O_NOCTTY);
+     particular doesn't reliably expose /dev/ptmx as a devnode.
+     Meson refuses to configure without it. */
+  int pty = posix_openpt(O_RDWR | O_NOCTTY);
   if (pty < 0)
-    goto bsd;
+    return -1;
 
-  rc = grantpt(pty);
-  if (rc < 0)
-  {
-    close(pty);
-    goto bsd;
-  }
-
-  rc = unlockpt(pty);
-  if (rc < 0)
-  {
-    close(pty);
-    goto bsd;
-  }
-
-  temp_line = ptsname(pty);
-  if (!temp_line)
-  {
-    close(pty);
-    goto bsd;
-  }
-
-  if (strlen(temp_line) >= sizeof(ctx->slave_path))
+  if (grantpt(pty) < 0 || unlockpt(pty) < 0)
   {
     close(pty);
     return -1;
   }
-  strcpy(ctx->slave_path, temp_line);
-  return pty;
 
-bsd:
-  strcpy(name, "/dev/pty??");
-  for (p1 = name1; *p1; p1++)
+  const char *slave = ptsname(pty);
+  if (!slave || strlen(slave) >= sizeof(ctx->slave_path))
   {
-    name[8] = *p1;
-    for (p2 = name2; *p2; p2++)
-    {
-      name[9] = *p2;
-      pty = open(name, O_RDWR);
-      if (pty >= 0)
-        goto found;
-      if (errno == ENOENT)
-        goto bail;
-    }
-  }
-  goto bail;
-
-found:
-  strcpy(ctx->slave_path, name);
-  ctx->slave_path[5] = 't';
-  rc = chown(ctx->slave_path, getuid(), getgid());
-  if (rc < 0)
-    m2k_log(ctx, "Warning: could not change ownership of tty -- pty is insecure!\n");
-  rc = chmod(ctx->slave_path, S_IRUSR | S_IWUSR | S_IWGRP);
-  if (rc < 0)
-    m2k_log(ctx, "Warning: could not change permissions of tty -- pty is insecure!\n");
-  return pty;
-
-bail:
-  if (pty >= 0)
     close(pty);
-  return -1;
-}
-
-#else  /* !HAVE_GRANTPT */
-
-static int
-getPtyMaster(m2k_t *ctx)
-{
-  static const char *name1 = "pqrs";
-  static const char *name2 = "0123456789abcdef";
-  static char dev[] = "/dev/ptyXX";
-  const char *p10, *p01;
-  int fd;
-
-  for (p10 = name1; *p10 != '\0'; p10++)
-  {
-    dev[8] = *p10;
-    for (p01 = name2; *p01 != '\0'; p01++)
-    {
-      dev[9] = *p01;
-      fd = open(dev, O_RDWR);
-      if (fd >= 0)
-      {
-        ctx->slave_path[0] = *p10;
-        ctx->slave_path[1] = *p01;
-        ctx->slave_path[2] = '\0';
-        return fd;
-      }
-    }
+    return -1;
   }
-  m2k_log(ctx, "No more pty devices available.\n");
-  return -1;
+  strcpy(ctx->slave_path, slave);
+  return pty;
 }
-#endif /* HAVE_GRANTPT */
 
 
 /* ── Command mode (moved from main.c) ───────────────────────────── */
@@ -693,11 +608,7 @@ m2k_setup_comm_program(m2k_t *ctx, const char *cmd)
   if (fd < 0)
     return M2K_ERR_PTY;
   ctx->tty.rfd = ctx->tty.wfd = fd;
-#ifdef HAVE_GRANTPT
   return commProgramForkExec(ctx, cmd, ctx->slave_path);
-#else
-  return commProgramForkExec(ctx, cmd, ctx->slave_path[0], ctx->slave_path[1]);
-#endif
 }
 
 m2k_err_t

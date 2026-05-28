@@ -109,13 +109,6 @@ typedef enum
   M2K_STATE_DONE    /* PTY closed; m2k_run_done() returns true */
 } m2k_step_state;
 
-/* HAVE_GRANTPT is the legacy name; HAVE_POSIX_OPENPT is set by meson
-   at configure time after probing for posix_openpt. They mean the
-   same thing here — use the POSIX PTY allocation path. */
-#ifdef HAVE_POSIX_OPENPT
-#define HAVE_GRANTPT
-#endif
-
 #define DEFAULT_PORT 23
 
 // sock
@@ -217,11 +210,7 @@ int atcmdPTSet(m2k_t *ctx, const char *s);
 int atcmdPV(m2k_t *ctx, const char *s);
 
 // comm_program
-#ifdef HAVE_GRANTPT
 m2k_err_t commProgramForkExec(m2k_t *ctx, const char *cmd, char *ptyslave);
-#else
-m2k_err_t commProgramForkExec(m2k_t *ctx, const char *cmd, char c10, char c01);
-#endif
 
 // sockbuf
 
