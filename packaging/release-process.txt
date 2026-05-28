@@ -11,6 +11,12 @@ In-tree edits (before tagging)
 [ ] packaging/debian/changelog: change `UNRELEASED` → `unstable` (or the
     relevant Debian distribution) and refresh the date stamp.
 [ ] meson.build: confirm `version:` matches the planned tag.
+[ ] scripts/reformat.sh — reformat hand-written sources with indent.
+    Commit the result on its own so it stays separable from semantic
+    changes:
+        scripts/reformat.sh
+        git diff   # eyeball the changes
+        git add -A && git commit -m "reformat with indent"
 
 Tarball (optional — for distro maintainers that want a checksum)
 ----------------------------------------------------------------
