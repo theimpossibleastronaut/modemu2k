@@ -184,8 +184,7 @@ $(function() {
 <div class="line">    }</div>
 <div class="line">    <span class="keywordflow">break</span>;</div>
 <div class="line">  <span class="keywordflow">case</span> CA_LISTEN:</div>
-<div class="line">    <span class="keywordflow">if</span> (<a id="a8" name="a8"></a><a class="code hl_function" href="modemu2k_8h.html#ad7f6c25b8be4f0e633175d426db925d8">m2k_setup_listen</a>(ctx, cmdarg.listen_port) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a></div>
-<div class="line">        || <a id="_a9" name="_a9"></a><a class="code hl_function" href="modemu2k_8h.html#a3f20db8d832b116f49dcbe9b8e41ce48">m2k_listen_accept</a>(ctx) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
+<div class="line">    <span class="keywordflow">if</span> (<a id="a8" name="a8"></a><a class="code hl_function" href="modemu2k_8h.html#ad7f6c25b8be4f0e633175d426db925d8">m2k_setup_listen</a>(ctx, cmdarg.listen_port) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a> || <a id="_a9" name="_a9"></a><a class="code hl_function" href="modemu2k_8h.html#a3f20db8d832b116f49dcbe9b8e41ce48">m2k_listen_accept</a>(ctx) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
 <div class="line">    {</div>
 <div class="line">      <a class="code hl_function" href="modemu2k_8h.html#a5d75b20e6984cc904b69bdc7949e0f1d">m2k_free</a>(ctx);</div>
 <div class="line">      <span class="keywordflow">return</span> EXIT_FAILURE;</div>
