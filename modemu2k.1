@@ -314,6 +314,18 @@ Input characters are buffered and not sent until a CR character is entered.
 .B %Q
 Quit
 .BR modemu2k .
+Two consecutive
+.B Ctrl-C
+keystrokes from command mode are equivalent; a single
+.B Ctrl-C
+arms the trigger and clears any partial input line, but does
+not exit unless followed by another
+.B Ctrl-C
+with no intervening keystroke.
+Any other input byte disarms the trigger.
+In online mode
+.B Ctrl-C
+is treated as ordinary data and forwarded to the remote.
 .\" ===== %R =====
 .TP
 .BI %R n

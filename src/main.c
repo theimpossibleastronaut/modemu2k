@@ -81,8 +81,8 @@ main(int argc, char *const argv[])
       fputs("modemu2k: failed to enable verbose mask\n", stderr);
     fputs("modemu2k: verbose logging enabled (MISC|TELOPT)\n", stderr);
   }
-  fputs(PACKAGE_STRING " " VERSION "\n", stdout);
-  fputs("Enter 'at%q' to quit\n\n", stdout);
+  puts(PACKAGE_STRING " " VERSION);
+  puts("Enter 'at%q' (or Ctrl-C twice) to quit\n");
 
   switch (cmdarg.ttymode)
   {

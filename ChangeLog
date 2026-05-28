@@ -15,6 +15,11 @@
     and state-machine transitions (`state: X -> Y` across CMD,
     DIAL, ONLINE, DONE), in addition to the pre-existing telopt
     and sock/tty events
+  * Ctrl-C (0x03) in CMD mode now quits when pressed twice in a
+    row; one Ctrl-C arms and clears the partial input line, the
+    next Ctrl-C with no intervening keystroke triggers shutdown
+    via the same drain-then-DONE path as at%q. Online mode is
+    unaffected (Ctrl-C still flows to the remote)
 
 2026-05-27
 - modemu2k (v0.2.0)

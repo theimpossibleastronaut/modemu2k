@@ -32,6 +32,10 @@ struct m2k_s
                                        transition on the next m2k_step(). */
   bool quit_req;                 /* atcmdPQ (at%q) — drives transition to
                                        M2K_STATE_DONE once ttyBufW drains. */
+  bool intr_armed;               /* First Ctrl-C in CMD mode arms; a second
+                                       Ctrl-C with no intervening keystroke
+                                       sets quit_req. Cleared by any other
+                                       input byte. */
   bool dtr;                      /* m2k_set_dtr() — DTE control line. */
   bool rts;                      /* m2k_set_rts() — DTE control line. */
   struct addrinfo *dial_result;  /* getaddrinfo() head during non-blocking

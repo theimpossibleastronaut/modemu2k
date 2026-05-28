@@ -288,6 +288,54 @@ test_verbose_narrates_dispatch_and_state(void)
   m2k_free(ctx);
 }
 
+static void
+step_until_done_or_n(m2k_t *ctx, int max_iters)
+{
+  char drained[256];
+  for (int i = 0; i < max_iters && !m2k_run_done(ctx); i++)
+  {
+    struct pollfd fds[M2K_MAX_POLLFDS];
+    size_t nfds = M2K_MAX_POLLFDS;
+    int timeout_ms;
+    assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
+    assert(m2k_step(ctx, fds, nfds) == M2K_OK);
+    size_t n = 0;
+    assert(m2k_read_to_app(ctx, drained, sizeof(drained), &n) == M2K_OK);
+  }
+}
+
+static void
+test_double_ctrl_c_quits(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+
+  size_t consumed = 0;
+  assert(m2k_write_from_app(ctx, "\x03\x03", 2, &consumed) == M2K_OK);
+  assert(consumed == 2);
+  step_until_done_or_n(ctx, 32);
+  assert(m2k_run_done(ctx));
+  m2k_free(ctx);
+}
+
+static void
+test_single_ctrl_c_does_not_quit(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+
+  size_t consumed = 0;
+  /* Ctrl-C arms; intervening "AT\r" disarms and dispatches. Then a
+     lone Ctrl-C without a partner should NOT quit. */
+  assert(m2k_write_from_app(ctx, "\x03" "AT\r" "\x03", 5, &consumed) == M2K_OK);
+  assert(consumed == 5);
+  step_until_done_or_n(ctx, 16);
+  assert(!m2k_run_done(ctx));
+  m2k_free(ctx);
+}
+
 int
 main(void)
 {
@@ -299,5 +347,7 @@ main(void)
   test_escape_in_cmd_mode();
   test_atcmd_quit();
   test_verbose_narrates_dispatch_and_state();
+  test_double_ctrl_c_quits();
+  test_single_ctrl_c_does_not_quit();
   return 0;
 }

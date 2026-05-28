@@ -557,6 +557,19 @@ cmdReadLoop(m2k_t *ctx, struct m2k_cmdbuf *cmdBuf)
 
   while ((c = getTty1(ctx)) >= 0)
   {
+    if (c == 0x03) /* Ctrl-C (ETX) */
+    {
+      if (ctx->intr_armed)
+      {
+        ctx->quit_req = true;
+        ctx->intr_armed = false;
+        return;
+      }
+      ctx->intr_armed = true;
+      cmdBufReset(cmdBuf);
+      continue;
+    }
+    ctx->intr_armed = false;
     putTty1(ctx, c);
     if (c == CHAR_CR(ctx))
     {
