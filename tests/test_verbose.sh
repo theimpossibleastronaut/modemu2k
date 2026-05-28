@@ -45,3 +45,19 @@ assert_silent_without_verbose() {
 assert_silent_without_verbose
 assert_verbose_narrates "short" -v
 assert_verbose_narrates "long" --verbose
+
+# Regression guard: -e "atz" wipes ctx->atcmd.pv (via atcmdNV copy in
+# atcmdZ). The CLI must apply AT%V3 AFTER the -e command so the mask
+# survives the reset. Without the fix, -v -e atz silences narration.
+assert_verbose_after_atz() {
+  err=$(printf '' | "$bin" -v -e 'atz' 2>&1 1>/dev/null)
+  case "$err" in
+    *"Pty closed"*) ;;
+    *)
+      echo "FAIL (verbose-after-atz): -v should still narrate after -e atz, got:" >&2
+      printf '%s\n' "$err" >&2
+      exit 1
+      ;;
+  esac
+}
+assert_verbose_after_atz

@@ -20,6 +20,10 @@
     next Ctrl-C with no intervening keystroke triggers shutdown
     via the same drain-then-DONE path as at%q. Online mode is
     unaffected (Ctrl-C still flows to the remote)
+  * Fix -v silently no-opping when paired with `-e atz`-style
+    init strings: the AT%V mask is now opened *after* the -e
+    command runs, so it survives ATZ's atcmdNV reset. Interactive
+    ATZ during a -v session still wipes pv as a known follow-up
 
 2026-05-27
 - modemu2k (v0.2.0)
