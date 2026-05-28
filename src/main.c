@@ -30,6 +30,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <modemu2k.h>
 #include "cmdarg.h"
 #include "config.h"
@@ -69,6 +70,18 @@ main(int argc, char *const argv[])
     showUsage(argv);
     m2k_free(ctx);
     return 0;
+  }
+  if (cmdarg.verbose && cmdarg.ttymode == CA_COMM_PROGRAM && isatty(2))
+  {
+    fputs("modemu2k: -v with -c writes verbose output to the same terminal\n"
+          "as the comm program and would corrupt its display. Redirect\n"
+          "stderr to a file before retrying, e.g.:\n"
+          "    modemu2k -v -c \"minicom ...\" 2>/tmp/m2k.log\n"
+          "and watch it live in another terminal with:\n"
+          "    tail -f /tmp/m2k.log\n",
+          stderr);
+    m2k_free(ctx);
+    return 2;
   }
   if (cmdarg.verbose)
   {

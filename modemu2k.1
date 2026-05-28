@@ -107,6 +107,14 @@ i.e.
 so the existing instrumentation sites (telnet IAC negotiation,
 socket and pty events, ATH/ATZ disconnect) actually print.
 Useful for diagnosing connection or transfer issues.
+With
+.B -c
+.RB ( comm-program
+mode), modemu2k refuses to run when stderr is a terminal,
+because verbose output would corrupt the comm program's display.
+Redirect stderr first:
+.IP "" 4
+modemu2k -v -c "minicom ..." 2>/tmp/m2k.log
 .\" ===== -V =====
 .TP
 .B -V

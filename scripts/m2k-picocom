@@ -1,6 +1,7 @@
 #!/bin/sh
 # m2k-picocom — launch modemu2k driving picocom. Mirrors m2k-minicom.
-# See that script's header for the binary-resolution order.
+# See that script's header for the binary-resolution order and the
+# argument-forwarding contract (e.g. `m2k-picocom -v 2>/tmp/m2k.log`).
 
 set -e
 
@@ -18,4 +19,4 @@ do
 done
 : "${modemu2k:=modemu2k}"
 
-exec "$modemu2k" -c "picocom %s"
+exec "$modemu2k" "$@" -c "picocom %s"

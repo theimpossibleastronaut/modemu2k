@@ -62,9 +62,19 @@ modemu2k -e "AT%B0=1%B1=1&W" -c "minicom -l -tansi -con -p %s"
 ```
 
 A convenience wrapper, `m2k-minicom`, runs the above invocation for
-you. It's in `scripts/m2k-minicom.in`; install it by configuring with
+you. It's in `scripts/m2k-minicom`; install it by configuring with
 `-Dhelper-scripts=true` before `ninja install`. A matching
 `m2k-picocom` ships under the same option.
+
+Any arguments you pass to the wrappers are forwarded to modemu2k.
+For example, to enable verbose narration while running through
+minicom, redirect stderr to a log file (modemu2k refuses to run
+otherwise, because verbose output would corrupt the comm program's
+display):
+
+```sh
+m2k-minicom -v 2>/tmp/m2k.log     # then tail -f /tmp/m2k.log
+```
 
 From inside minicom (or picocom, etc.), dial in the same AT style:
 
