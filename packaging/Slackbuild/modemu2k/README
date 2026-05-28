@@ -19,3 +19,9 @@ Optional runtime helpers (not build-time requirements):
     inside a comm program. In the stock Slackware package set.
 
 No special configuration is needed before or after installing.
+
+Build options:
+
+  TEST=yes    Run `meson test` after building. Results are logged
+              under /usr/doc/modemu2k-<version>/test_results.txt
+              inside the package. Default: no.

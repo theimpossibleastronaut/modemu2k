@@ -28,6 +28,10 @@ BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 PKGTYPE=${PKGTYPE:-tgz}
 
+# Run `meson test` after build when TEST=yes is exported. Results are
+# logged into the package's documentation directory.
+TEST="${TEST:-no}"
+
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
     i?86) ARCH=i586 ;;
@@ -97,6 +101,12 @@ meson setup .. \
   -Dhelper-scripts=true
 
 ninja
+
+if [ "$TEST" = "yes" ]; then
+  mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+  meson test --print-errorlogs 2>&1 | tee $PKG/usr/doc/$PRGNAM-$VERSION/test_results.txt
+fi
+
 meson install --destdir $PKG
 cd ..
 
