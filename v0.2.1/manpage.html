@@ -126,7 +126,8 @@ dialup TCP connecting</p>
 <p style="margin-left:9%; margin-top: 1em"><b>modemu2k</b>
 [<b>-c</b> <i>comm_prog</i>] [<b>-d</b> <i>pty_master</i>]
 [<b>-e</b> <i>atcmds</i>] [<b>-l</b> <i>port</i>]
-[<b>-h</b>] [<b>-s</b>] [<b>-v</b>] [<b>-w</b>]</p>
+[<b>-h</b>] [<b>-s</b>] [<b>-V</b>] [<b>-v</b>]
+[<b>-w</b>]</p>
 
 <h2>DESCRIPTION
 <a name="DESCRIPTION"></a>
@@ -210,6 +211,33 @@ IPv4/IPv6.</p>
 
 
 <p>Print a usage summary.</p></td></tr>
+<tr valign="top" align="left">
+<td width="9%"></td>
+<td width="3%">
+
+
+<p><b>-v</b></p></td>
+<td width="6%"></td>
+<td width="82%">
+
+
+<p>Enable verbose narration to stderr. Installs a log
+callback and opens the runtime verbose mask (<b>AT%V3</b>,
+i.e. <b>VERB_MISC | VERB_TELOPT )</b> so the existing
+instrumentation sites (telnet IAC negotiation, socket and
+pty events, ATH/ATZ disconnect) actually print. Useful for
+diagnosing connection or transfer issues.</p></td></tr>
+<tr valign="top" align="left">
+<td width="9%"></td>
+<td width="3%">
+
+
+<p><b>-V</b></p></td>
+<td width="6%"></td>
+<td width="82%">
+
+
+<p>Print the <b>modemu2k</b> version and exit.</p></td></tr>
 <tr valign="top" align="left">
 <td width="9%"></td>
 <td width="3%">

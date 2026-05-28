@@ -383,7 +383,7 @@ Typical usage</h2>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on successful execution or no-op (missing <code>AT</code> prefix); M2K_ERR_AT if the lexer rejected the command as malformed, or the command was an action verb that should go through a dedicated entry point (ATD → m2k_dial, ATO → m2k_online); M2K_ERR_BUG only for unexpected lexer states.</dd></dl>
 <div class="fragment"><div class="line"><a class="code hl_function" href="#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATZ&quot;</span>);        <span class="comment">// reset to defaults</span></div>
 <div class="line"><a class="code hl_function" href="#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATS0=1&quot;</span>);    <span class="comment">// auto-answer on first ring</span></div>
-</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#_a10">main.c</a>.</dd>
+</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a4">main.c</a>.</dd>
 </dl>
 
 </div>
@@ -483,7 +483,7 @@ Typical usage</h2>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a4">main.c</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a2">main.c</a>.</dd>
 </dl>
 
 </div>
@@ -727,7 +727,7 @@ Typical usage</h2>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_SOCKET on accept failure or if no listener has been set up. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#_a9">main.c</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#_a11">main.c</a>.</dd>
 </dl>
 
 </div>
@@ -841,7 +841,7 @@ per poll timeout."</p>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK when the session ends normally. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a11">main.c</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a12">main.c</a>.</dd>
 </dl>
 
 </div>
@@ -987,7 +987,9 @@ per poll timeout."</p>
 <div class="line">  fputs(msg, log);</div>
 <div class="line">}</div>
 </div><!-- fragment --><div class="fragment"><div class="line">  <a class="code hl_function" href="#a7cc7ea598158c6d6d92646af1e0c66f9">m2k_set_log_fn</a>(ctx, my_logger, stderr);</div>
-</div><!-- fragment --> 
+</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a3">main.c</a>.</dd>
+</dl>
+
 </div>
 </div>
 <a id="ac7c4ec21a02fba2794af4d2c51fb9603" name="ac7c4ec21a02fba2794af4d2c51fb9603"></a>
@@ -1085,7 +1087,7 @@ per poll timeout."</p>
 <div class="line">    <span class="keywordflow">return</span> 1;</div>
 <div class="line">  }</div>
 <div class="line">  <a class="code hl_function" href="#a53bda9fcaa8c027a446b9ce19549cfa3">m2k_run</a>(ctx);   <span class="comment">/* blocks until the comm program exits */</span></div>
-</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a5">main.c</a>.</dd>
+</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a7">main.c</a>.</dd>
 </dl>
 
 </div>
@@ -1118,7 +1120,7 @@ per poll timeout."</p>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_PTY if the device cannot be opened. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a7">main.c</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a9">main.c</a>.</dd>
 </dl>
 
 </div>
@@ -1171,7 +1173,7 @@ per poll timeout."</p>
 <div class="line">  <a class="code hl_function" href="#a53bda9fcaa8c027a446b9ce19549cfa3">m2k_run</a>(ctx);</div>
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
-</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a8">main.c</a>.</dd>
+</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a10">main.c</a>.</dd>
 </dl>
 
 </div>
@@ -1206,7 +1208,7 @@ per poll timeout."</p>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_PTY on failure. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a2">main.c</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a6">main.c</a>.</dd>
 </dl>
 
 </div>
@@ -1235,7 +1237,7 @@ per poll timeout."</p>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a6">main.c</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a8">main.c</a>.</dd>
 </dl>
 
 </div>

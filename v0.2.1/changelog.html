@@ -93,7 +93,21 @@ $(function() {
   <div class="headertitle"><div class="title">Change log </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><pre class="fragment">2026-05-27
+<div class="textblock"><pre class="fragment">(in-progress)
+- modemu2k (v0.2.1)
+  * Add -v/--verbose flag (CLI): installs a stderr log_fn and
+    enables the AT%V3 verbose mask so the library's pre-existing
+    narration sites (MISC + TELOPT) print without an extra AT
+    command. -v previously meant --version, which now requires
+    -V (breaking)
+  * Fix at%q to actually quit; previously it only shut the socket,
+    leaving the state machine running and ignoring the banner's
+    "Enter 'at%q' to quit" promise
+  * `modemu2k -v` (verbose alone, no -e/-c/-d/-l/-s) now prints
+    usage and exits, matching bare invocation; `-e` is required
+    to enter stdin AT mode
+
+2026-05-27
 - modemu2k (v0.2.0)
   * Refactor core into libmodemu2k; public API in modemu2k.h at the
     project root, with M2K_API visibility markers on every public
