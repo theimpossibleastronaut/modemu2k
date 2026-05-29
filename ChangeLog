@@ -1,3 +1,6 @@
+(in-progress)
+- modemu2k (v0.2.2)
+
 2026-05-28
 - modemu2k (v0.2.1)
   * Add -v/--verbose flag (CLI). -v previously meant --version,

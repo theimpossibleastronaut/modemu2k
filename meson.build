@@ -1,7 +1,7 @@
 project(
   'modemu2k',
   'c',
-  version: '0.2.1',
+  version: '0.2.2',
   meson_version : '>= 0.56.0',
   default_options: [
     'warning_level=3',
