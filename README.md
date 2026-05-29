@@ -1,4 +1,5 @@
 [![C/C++ CI](https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml/badge.svg?branch=master)](https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/c-cpp.yml)
+[![BSD](https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/bsd.yml/badge.svg?branch=master)](https://github.com/theimpossibleastronaut/modemu2k/actions/workflows/bsd.yml)
 
 # modemu2k
 
