@@ -1,33 +1,12 @@
 2026-05-28
 - modemu2k (v0.2.1)
-  * Add -v/--verbose flag (CLI): installs a stderr log_fn and
-    enables the AT%V3 verbose mask so the library's pre-existing
-    narration sites (MISC + TELOPT) print without an extra AT
-    command. -v previously meant --version, which now requires
-    -V (breaking)
-  * Fix at%q to actually quit; previously it only shut the socket,
-    leaving the state machine running and ignoring the banner's
-    "Enter 'at%q' to quit" promise
-  * `modemu2k -v` (verbose alone, no -e/-c/-d/-l/-s) now prints
-    usage and exits, matching bare invocation; `-e` is required
-    to enter stdin AT mode
-  * Verbose narration now logs AT command dispatch (`dispatch: …`)
-    and state-machine transitions (`state: X -> Y` across CMD,
-    DIAL, ONLINE, DONE), in addition to the pre-existing telopt
-    and sock/tty events
-  * Ctrl-C (0x03) in CMD mode now quits when pressed twice in a
-    row; one Ctrl-C arms and clears the partial input line, the
-    next Ctrl-C with no intervening keystroke triggers shutdown
-    via the same drain-then-DONE path as at%q. Online mode is
-    unaffected (Ctrl-C still flows to the remote)
-  * Fix -v silently no-opping when paired with `-e atz`-style
-    init strings: the AT%V mask is now opened *after* the -e
-    command runs, so it survives ATZ's atcmdNV reset. Interactive
-    ATZ during a -v session still wipes pv as a known follow-up
-  * `-v` with `-c` refuses to run when stderr is a TTY (would
-    corrupt the comm program's display); redirect stderr first.
-    The m2k-minicom / m2k-picocom helper scripts now forward
-    arbitrary args to modemu2k, so `m2k-minicom -v 2>log` works
+  * Add -v/--verbose flag (CLI). -v previously meant --version,
+    which now requires -V (breaking)
+  * Fix at%q to actually quit (regression from v0.2.0)
+  * Ctrl-C twice in CMD mode quits (CMD only; online mode
+    unaffected)
+  * m2k-minicom / m2k-picocom helper scripts forward arbitrary
+    args to modemu2k
 
 2026-05-27
 - modemu2k (v0.2.0)
