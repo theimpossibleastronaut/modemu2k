@@ -78,10 +78,18 @@ jobs:
           VERSION: ${{ steps.ver.outputs.version }}
         run: |
           set -e
-          dest="gh-pages-out/v${VERSION}"
+          # API/ABI is stable within a minor version, so docs publish to
+          # vMAJOR.MINOR.x/ (e.g. v0.2.x), not vMAJOR.MINOR.PATCH/.
+          MAJOR_MINOR=$(echo "$VERSION" | cut -d. -f1,2)
+          dest="gh-pages-out/v${MAJOR_MINOR}.x"
           rm -rf "$dest"
           mkdir -p "$dest"
           cp -a builddir/html/. "$dest/"
+          # Clean up obsolete patch-level dirs from before this convention
+          # landed (e.g. v0.2.0, v0.2.1 superseded by v0.2.x).
+          for old in gh-pages-out/v"${MAJOR_MINOR}".[0-9]*; do
+            [ -d "$old" ] && rm -rf "$old"
+          done
 
       - name: Rebuild landing-page version list
         run: |
@@ -94,10 +102,20 @@ jobs:
               print("no index.html on gh-pages; skipping landing-page update")
               raise SystemExit(0)
 
+          # Accept either vN.N.N (legacy frozen historical dirs like v0.1.0)
+          # or vN.N.x (current rolling-pointer per minor series).
+          pattern = re.compile(r"v\d+\.\d+\.(?:\d+|x)")
+          def sort_key(v):
+              # "v0.2.x" sorts above "v0.2.5" because we want the rolling
+              # pointer for a minor series ranked above any frozen patch.
+              return tuple(
+                  10**9 if p == "x" else int(p)
+                  for p in v[1:].split(".")
+              )
           versions = sorted(
               (p.name for p in root.iterdir()
-               if p.is_dir() and re.fullmatch(r"v\d+\.\d+\.\d+", p.name)),
-              key=lambda v: tuple(int(x) for x in v[1:].split(".")),
+               if p.is_dir() and pattern.fullmatch(p.name)),
+              key=sort_key,
               reverse=True,
           )
           items = "\n".join(
