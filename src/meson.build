@@ -54,4 +54,5 @@ dep_modemu2k = declare_dependency(
 pkg.generate(
   lib_modemu2k,
   description: 'PTY-based modem emulator library',
+  subdirs: 'modemu2k',
   )
