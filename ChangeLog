@@ -2,6 +2,9 @@
 - modemu2k (v0.2.2)
   * Fix pkg-config Cflags so consumers can `#include <modemu2k.h>`
     (was forcing the namespaced `<modemu2k/modemu2k.h>` form)
+  * Fix interactive ATZ wiping the -v verbose mask mid-session; add
+    m2k_set_force_verbose / m2k_get_force_verbose public API for hosts
+    that want narration regardless of AT%V state
 
 2026-05-28
 - modemu2k (v0.2.1)

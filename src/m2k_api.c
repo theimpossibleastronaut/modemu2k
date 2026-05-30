@@ -1283,6 +1283,18 @@ m2k_get_dtr(const m2k_t *ctx)
   return ctx->dtr;
 }
 
+void
+m2k_set_force_verbose(m2k_t *ctx, int on)
+{
+  ctx->force_verbose = !!on;
+}
+
+int
+m2k_get_force_verbose(const m2k_t *ctx)
+{
+  return ctx->force_verbose;
+}
+
 int
 m2k_get_rts(const m2k_t *ctx)
 {

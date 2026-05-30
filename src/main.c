@@ -131,15 +131,11 @@ main(int argc, char *const argv[])
     break;
   }
 
+  if (cmdarg.verbose)
+    m2k_set_force_verbose(ctx, 1);
+
   if (cmdarg.atcmd != NULL && m2k_atcmd(ctx, cmdarg.atcmd) != M2K_OK)
     fprintf(stderr, "Error in initialization commands.\r\n");
-
-  /* Open the AT%V verbose mask AFTER -e processing, because the
-     -e command may include ATZ (which resets atcmd.pv to the NV
-     default of 0 via the atcmdNV copy in atcmdZ) and that would
-     silence every verboseOut() site for the rest of the run. */
-  if (cmdarg.verbose && m2k_atcmd(ctx, "AT%V3") != M2K_OK)
-    fputs("modemu2k: failed to enable verbose mask\n", stderr);
 
   m2k_run(ctx);
   m2k_free(ctx);

@@ -46,18 +46,23 @@ assert_silent_without_verbose
 assert_verbose_narrates "short" -v
 assert_verbose_narrates "long" --verbose
 
-# Regression guard: -e "atz" wipes ctx->atcmd.pv (via atcmdNV copy in
-# atcmdZ). The CLI must apply AT%V3 AFTER the -e command so the mask
-# survives the reset. Without the fix, -v -e atz silences narration.
+# Regression guard: ATZ wipes ctx->atcmd.pv (via the atcmdNV copy in
+# atcmdZ). The CLI uses m2k_set_force_verbose() to bypass that mask, so
+# both startup-time (-e atz) and interactive ATZ must keep narrating.
 assert_verbose_after_atz() {
-  err=$(printf '' | "$bin" -v -e 'atz' 2>&1 1>/dev/null)
+  label="$1"
+  shift
+  err=$("$@" 2>&1 1>/dev/null)
   case "$err" in
     *"Pty closed"*) ;;
     *)
-      echo "FAIL (verbose-after-atz): -v should still narrate after -e atz, got:" >&2
+      echo "FAIL (verbose-after-atz/$label): expected narration after ATZ, got:" >&2
       printf '%s\n' "$err" >&2
       exit 1
       ;;
   esac
 }
-assert_verbose_after_atz
+# Startup-time: -e atz runs before the CMD loop starts.
+assert_verbose_after_atz "startup" sh -c "printf '' | '$bin' -v -e 'atz'"
+# Interactive: ATZ typed into the CMD-mode line buffer mid-session.
+assert_verbose_after_atz "interactive" sh -c "printf 'atz\n' | '$bin' -v -e 'AT'"

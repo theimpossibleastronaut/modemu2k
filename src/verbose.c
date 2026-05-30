@@ -58,7 +58,7 @@ m2k_err_set(m2k_t *ctx, const char *fmt, ...)
 void
 verboseOut(m2k_t *ctx, int mask, const char *format, ...)
 {
-  if (!(ctx->atcmd.pv & mask))
+  if (!ctx->force_verbose && !(ctx->atcmd.pv & mask))
     return;
   va_list ap;
   va_start(ap, format);
@@ -69,7 +69,7 @@ verboseOut(m2k_t *ctx, int mask, const char *format, ...)
 void
 verbosePerror(m2k_t *ctx, int mask, const char *s)
 {
-  if (!(ctx->atcmd.pv & mask))
+  if (!ctx->force_verbose && !(ctx->atcmd.pv & mask))
     return;
   m2k_log(ctx, "%s: %s\n", s, strerror(errno));
 }

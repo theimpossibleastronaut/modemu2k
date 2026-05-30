@@ -38,6 +38,10 @@ struct m2k_s
                                        input byte. */
   bool dtr;                      /* m2k_set_dtr() — DTE control line. */
   bool rts;                      /* m2k_set_rts() — DTE control line. */
+  bool force_verbose;            /* m2k_set_force_verbose() — bypasses the
+                                       AT%V mask in verboseOut/verbosePerror so
+                                       ATZ (which resets atcmd.pv via the
+                                       atcmdNV copy) can't silence the host. */
   struct addrinfo *dial_result;  /* getaddrinfo() head during non-blocking
                                        dial (M2K_STATE_DIAL); freed when the
                                        dial resolves or is aborted. */

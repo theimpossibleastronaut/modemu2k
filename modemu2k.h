@@ -620,6 +620,24 @@ M2K_API int         m2k_get_dtr(const m2k_t *ctx);
 /** Return the most recent value passed to m2k_set_rts() (1 by default). */
 M2K_API int         m2k_get_rts(const m2k_t *ctx);
 
+/**
+ * @brief Bypass the AT%V verbose mask in verboseOut() / verbosePerror().
+ *
+ * Normally narration sites are gated by `ctx->atcmd.pv & mask`, which the
+ * Hayes `AT%V` command sets. ATZ resets `atcmd.pv` to its NV default of 0
+ * (via the `atcmdNV` copy inside `atcmdZ`), so a host that wanted log
+ * output for the whole run can be silenced by any user-issued `ATZ`. This
+ * flag is OR'd into the gate, so log output survives regardless of the
+ * AT%V mask. Default is off. Used by the standalone CLI's `-v` flag.
+ *
+ * @param ctx Modem context.
+ * @param on  Non-zero to force narration on, zero to defer to AT%V.
+ */
+M2K_API void        m2k_set_force_verbose(m2k_t *ctx, int on);
+
+/** Return the most recent value passed to m2k_set_force_verbose() (0 by default). */
+M2K_API int         m2k_get_force_verbose(const m2k_t *ctx);
+
 #ifdef __cplusplus
 }
 #endif
