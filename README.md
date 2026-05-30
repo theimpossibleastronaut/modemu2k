@@ -50,7 +50,6 @@ look them up in your browser if you would like more info.)
 * The Rusty Mailbox — trmb.ca 2030
 * [Synchronet BBS List](https://www.synchro.net/sbbslist.html) — a
   directory of currently-reachable telnet BBSes
-* [The Telnet BBS Guide](https://www.telnetbbsguide.com/)
 
 ## Acknowledgments
 
