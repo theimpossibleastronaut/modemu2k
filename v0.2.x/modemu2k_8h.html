@@ -419,10 +419,22 @@ Typical usage</h2>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on success, M2K_ERR_SOCKET on failure.</dd></dl>
-<div class="fragment"><div class="line">  <span class="comment">/* Dial a hostname; the resolver tries each address until one connects. */</span></div>
-<div class="line">  assert(m2k_dial(ctx, <span class="stringliteral">&quot;github.com&quot;</span>, <span class="stringliteral">&quot;80&quot;</span>) == <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>);</div>
-<div class="line">  sleep(2);</div>
-<div class="line">  assert(<a class="code hl_function" href="#a9dc773771965394574f89b3eef68c977">m2k_hangup</a>(ctx) == <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>);</div>
+<div class="fragment"><div class="line"><span class="comment">/* ATS7 sets the dial timeout (seconds); AT%D1 disables non-TTY dial</span></div>
+<div class="line"><span class="comment">   cancel so a stray stdin byte can&#39;t abort the dial. */</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> run_dial(<a class="code hl_typedef" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, <span class="keyword">const</span> <span class="keywordtype">char</span> *host, <span class="keyword">const</span> <span class="keywordtype">char</span> *port)</div>
+<div class="line">{</div>
+<div class="line">  <a class="code hl_function" href="#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATS7=20&quot;</span>);</div>
+<div class="line">  <a class="code hl_function" href="#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;AT%D1&quot;</span>);</div>
+<div class="line"> </div>
+<div class="line">  <a class="code hl_enumeration" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a> err = m2k_dial(ctx, host, port);</div>
+<div class="line">  <span class="keywordflow">if</span> (err != <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>) {</div>
+<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;dial: %s\n&quot;</span>, <a class="code hl_function" href="#ac68560914e8d83ca8998de26e5b9e8c3">m2k_strerror</a>(err));</div>
+<div class="line">    <span class="keywordflow">return</span> 1;</div>
+<div class="line">  }</div>
+<div class="line">  sleep(1);</div>
+<div class="line">  <a class="code hl_function" href="#a9dc773771965394574f89b3eef68c977">m2k_hangup</a>(ctx);</div>
+<div class="line">  <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
 </div><!-- fragment --><dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000002">Deprecated</a></b></dt><dd>Slated for removal in 0.3.0. Use <a class="el" href="#a53bda9fcaa8c027a446b9ce19549cfa3" title="Run the modem command/online loop until the PTY closes.">m2k_run()</a> or the step API (m2k_get_pollfds + m2k_step) instead — they share one state-machine implementation with the rest of the library.</dd></dl>
 <p>Blocks until the connection closes or the <code>+++</code> escape sequence is detected. Returns M2K_ERR_CANCELED when the caller escapes back to command mode.</p>
 <dl class="params"><dt>Parameters</dt><dd>

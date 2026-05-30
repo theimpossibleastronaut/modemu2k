@@ -95,8 +95,9 @@ $(function() {
 <div class="contents">
 <div class="textblock"><pre class="fragment">(in-progress)
 - modemu2k (v0.2.3)
-  * Tag test_connect / test_ipv6 with meson suite 'network' so
-    sandboxed builds can opt out via `--no-suite network`
+  * Rewrite test_connect / test_ipv6 to use loopback only; the dial
+    docblock @snippet moves to examples/m2k_dial.c. Removes hardcoded
+    GitHub IP and the need for any `network` suite tag
 
 2026-05-30
 - modemu2k (v0.2.2)
