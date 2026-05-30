@@ -1,4 +1,4 @@
-(in-progress)
+2026-05-30
 - modemu2k (v0.2.2)
   * Fix pkg-config Cflags so consumers can `#include <modemu2k.h>`
     (was forcing the namespaced `<modemu2k/modemu2k.h>` form)
