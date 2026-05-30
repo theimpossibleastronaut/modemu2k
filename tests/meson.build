@@ -17,11 +17,17 @@ test_cases = [
   'ttybuf',
   ]
 
+helper_cases = ['connect', 'ipv6']
+
 foreach case : test_cases
   name = 'test_' + case
+  srcs = [name + '.c']
+  if case in helper_cases
+    srcs += 'test_helpers.c'
+  endif
   exe = executable(
     name,
-    name + '.c',
+    srcs,
     include_directories: '../src',
     # M2K_SUPPRESS_DEPRECATED keeps tests that still exercise the
     # deprecated synchronous API (m2k_dial / m2k_online) compiling
