@@ -86,9 +86,13 @@ jobs:
           mkdir -p "$dest"
           cp -a builddir/html/. "$dest/"
           # Clean up obsolete patch-level dirs from before this convention
-          # landed (e.g. v0.2.0, v0.2.1 superseded by v0.2.x).
+          # landed (e.g. v0.2.0, v0.2.1 superseded by v0.2.x). nullglob so
+          # the loop exits 0 once those dirs are gone (otherwise an empty
+          # match yields the literal pattern and the `[ -d ]` short-circuit
+          # returns 1, failing the step under `bash -e`).
+          shopt -s nullglob
           for old in gh-pages-out/v"${MAJOR_MINOR}".[0-9]*; do
-            [ -d "$old" ] && rm -rf "$old"
+            rm -rf "$old"
           done
 
       - name: Rebuild landing-page version list
