@@ -205,6 +205,9 @@ Functions</h2></td></tr>
 <tr class="memdesc:ac7c4ec21a02fba2794af4d2c51fb9603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the host's RTS (Request to Send) signal state.  <br /></td></tr>
 <tr class="memitem:a3b1ed5ada130124884cb3d4082a80bb1" id="r_a3b1ed5ada130124884cb3d4082a80bb1"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#a3b1ed5ada130124884cb3d4082a80bb1">m2k_get_dtr</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
 <tr class="memitem:aa8104482881dc715489f7830b882012b" id="r_aa8104482881dc715489f7830b882012b"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#aa8104482881dc715489f7830b882012b">m2k_get_rts</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memitem:a0163af0c01d8839179943e37e339e04c" id="r_a0163af0c01d8839179943e37e339e04c"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void&#160;</td><td class="memItemRight"><a class="el" href="#a0163af0c01d8839179943e37e339e04c">m2k_set_force_verbose</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, int on)</td></tr>
+<tr class="memdesc:a0163af0c01d8839179943e37e339e04c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bypass the ATV verbose mask in verboseOut() / verbosePerror().  <br /></td></tr>
+<tr class="memitem:acd7fdc94fb09001b8db141b195b948f6" id="r_acd7fdc94fb09001b8db141b195b948f6"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#acd7fdc94fb09001b8db141b195b948f6">m2k_get_force_verbose</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -383,7 +386,7 @@ Typical usage</h2>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK on successful execution or no-op (missing <code>AT</code> prefix); M2K_ERR_AT if the lexer rejected the command as malformed, or the command was an action verb that should go through a dedicated entry point (ATD → m2k_dial, ATO → m2k_online); M2K_ERR_BUG only for unexpected lexer states.</dd></dl>
 <div class="fragment"><div class="line"><a class="code hl_function" href="#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATZ&quot;</span>);        <span class="comment">// reset to defaults</span></div>
 <div class="line"><a class="code hl_function" href="#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;ATS0=1&quot;</span>);    <span class="comment">// auto-answer on first ring</span></div>
-</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#_a11">main.c</a>.</dd>
+</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#_a12">main.c</a>.</dd>
 </dl>
 
 </div>
@@ -503,6 +506,24 @@ Typical usage</h2>
       </table>
 </div><div class="memdoc">
 <p>Return the most recent value passed to <a class="el" href="#ae9f1b813716263592afd965e37cc5703" title="Set the host&#39;s DTR (Data Terminal Ready) signal state.">m2k_set_dtr()</a> (1 by default). </p>
+
+</div>
+</div>
+<a id="acd7fdc94fb09001b8db141b195b948f6" name="acd7fdc94fb09001b8db141b195b948f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd7fdc94fb09001b8db141b195b948f6">&#9670;&#160;</a></span>m2k_get_force_verbose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int m2k_get_force_verbose </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Return the most recent value passed to <a class="el" href="#a0163af0c01d8839179943e37e339e04c" title="Bypass the ATV verbose mask in verboseOut() / verbosePerror().">m2k_set_force_verbose()</a> (0 by default). </p>
 
 </div>
 </div>
@@ -841,7 +862,7 @@ per poll timeout."</p>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK when the session ends normally. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a12">main.c</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a13">main.c</a>.</dd>
 </dl>
 
 </div>
@@ -944,6 +965,39 @@ per poll timeout."</p>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a>(ctx, <span class="stringliteral">&quot;AT~not~a~real~command&quot;</span>) != <a class="code hl_enumvalue" href="#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
 <div class="line">    fprintf(stderr, <span class="stringliteral">&quot;modemu2k: %s\n&quot;</span>, errbuf);</div>
 </div><!-- fragment --> 
+</div>
+</div>
+<a id="a0163af0c01d8839179943e37e339e04c" name="a0163af0c01d8839179943e37e339e04c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0163af0c01d8839179943e37e339e04c">&#9670;&#160;</a></span>m2k_set_force_verbose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void m2k_set_force_verbose </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>on</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bypass the ATV verbose mask in verboseOut() / verbosePerror(). </p>
+<p>Normally narration sites are gated by <span class="tt">ctx-&gt;atcmd.pv &amp; mask</span>, which the Hayes <span class="tt">ATV</span> command sets. ATZ resets <span class="tt">atcmd.pv</span> to its NV default of 0 (via the <span class="tt">atcmdNV</span> copy inside <span class="tt">atcmdZ</span>), so a host that wanted log output for the whole run can be silenced by any user-issued <span class="tt">ATZ</span>. This flag is OR'd into the gate, so log output survives regardless of the ATV mask. Default is off. Used by the standalone CLI's <span class="tt">-v</span> flag.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
+    <tr><td class="paramname">on</td><td>Non-zero to force narration on, zero to defer to ATV. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a11">main.c</a>.</dd>
+</dl>
+
 </div>
 </div>
 <a id="a7cc7ea598158c6d6d92646af1e0c66f9" name="a7cc7ea598158c6d6d92646af1e0c66f9"></a>
