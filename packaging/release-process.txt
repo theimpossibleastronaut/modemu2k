@@ -46,11 +46,14 @@ GitHub Release (which also creates the tag)
 
 gh-pages
 --------
-[ ] The docs workflow auto-publishes the versioned vX.Y.Z/ directory on
-    every push to master. The tag-publish itself doesn't trigger it
-    (tags ≠ branch pushes), but any subsequent push to master will.
-[ ] gh-pages/index.html: hand-edit the version list <ul> to add the new
-    vX.Y.Z link.
+[ ] The docs workflow auto-publishes to vMAJOR.MINOR.x/ (rolling
+    pointer, not per-patch) on every push to master. Tag-publish itself
+    doesn't trigger it (tags ≠ branch pushes), but any subsequent push
+    to master will.
+[ ] gh-pages/index.html: no hand-edit needed within a minor series —
+    the docs workflow's "Rebuild landing-page version list" step sorts
+    existing dirs and regenerates the <ul>. Hand-edit only when adding
+    a wholly new minor series (e.g. introducing v0.3.x/).
 
 CI sanity (do before tagging)
 -----------------------------
