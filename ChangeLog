@@ -1,5 +1,7 @@
 (in-progress)
 - modemu2k (v0.2.3)
+  * Tag test_connect / test_ipv6 with meson suite 'network' so
+    sandboxed builds can opt out via `--no-suite network`
 
 2026-05-30
 - modemu2k (v0.2.2)
