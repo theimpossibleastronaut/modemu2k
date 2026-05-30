@@ -222,7 +222,7 @@ M2K_API m2k_err_t   m2k_atcmd(m2k_t *ctx, const char *cmd);
  * @param port Service name or decimal port number.
  * @return M2K_OK on success, M2K_ERR_SOCKET on failure.
  *
- * @snippet tests/test_connect.c dial
+ * @snippet examples/m2k_dial.c dial
  */
 M2K_API M2K_DEPRECATED("use m2k_run() or the step API instead")
 m2k_err_t           m2k_dial(m2k_t *ctx, const char *host, const char *port);

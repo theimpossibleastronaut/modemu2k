@@ -67,14 +67,6 @@ setup(void)
 }
 
 static void
-test_ipv4_numeric(void)
-{
-  assert(m2k_dial(ctx, "140.82.113.3", "80") == M2K_OK);
-  sleep(1);
-  assert(m2k_hangup(ctx) == M2K_OK);
-}
-
-static void
 test_ipv6_loopback(void)
 {
   char dialhost[32];
@@ -99,7 +91,6 @@ main(void)
   ctx = m2k_new();
   assert(ctx != NULL);
   setup();
-  test_ipv4_numeric();
   test_ipv6_loopback();
   m2k_free(ctx);
   return 0;

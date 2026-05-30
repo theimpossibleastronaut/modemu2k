@@ -17,10 +17,6 @@ test_cases = [
   'ttybuf',
   ]
 
-# Tests that dial out to public hosts; excluded in sandboxed builds
-# (e.g. OBS, sbuild) via `meson test --no-suite network`.
-network_cases = ['connect', 'ipv6']
-
 foreach case : test_cases
   name = 'test_' + case
   exe = executable(
@@ -33,11 +29,7 @@ foreach case : test_cases
     c_args : ['-DUSE_AS_TEST_LIB', '-DM2K_SUPPRESS_DEPRECATED'],
     dependencies: [dep_modemu2k]
     )
-  if case in network_cases
-    test(name, exe, suite: 'network')
-  else
-    test(name, exe)
-  endif
+  test(name, exe)
 endforeach
 
 python3 = find_program('python3', required: false)

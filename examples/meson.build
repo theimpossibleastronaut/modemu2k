@@ -8,6 +8,7 @@
 # prefix. Executables are only built in standalone mode — parent
 # projects pulling us in as a subproject don't need them.
 example_cases = [
+  'm2k_dial',
   'm2k_set_log_fn',
   'm2k_set_error_buffer',
   'm2k_setup_comm_program',
@@ -23,6 +24,9 @@ if not meson.is_subproject()
     executable(
       'example_' + case,
       case + '.c',
+      # m2k_dial's docblock still ships, so its example uses the
+      # deprecated entry point; suppress so -Werror doesn't trip.
+      c_args : ['-DM2K_SUPPRESS_DEPRECATED'],
       dependencies: dep_modemu2k,
       install: false,
       )
