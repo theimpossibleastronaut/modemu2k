@@ -37,7 +37,7 @@ if (/(^|\/)index\.html$|\/$/.test(location.pathname)) {
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">modemu2k<span id="projectnumber">&#160;0.2.2</span>
+   <div id="projectname">modemu2k<span id="projectnumber">&#160;0.2.3</span>
    </div>
    <div id="projectbrief">Library that provides telnet capability to a comm program</div>
   </td>
@@ -93,7 +93,12 @@ $(function() {
   <div class="headertitle"><div class="title">Change log </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><pre class="fragment">2026-05-30
+<div class="textblock"><pre class="fragment">(in-progress)
+- modemu2k (v0.2.3)
+  * Tag test_connect / test_ipv6 with meson suite 'network' so
+    sandboxed builds can opt out via `--no-suite network`
+
+2026-05-30
 - modemu2k (v0.2.2)
   * Fix pkg-config Cflags so consumers can `#include &lt;modemu2k.h&gt;`
     (was forcing the namespaced `&lt;modemu2k/modemu2k.h&gt;` form)
