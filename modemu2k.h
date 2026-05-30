@@ -28,9 +28,14 @@
  *   m2k_free(ctx);
  * @endcode
  *
- * For finer control — for example, dialling programmatically and entering
- * online mode without the AT command loop — use m2k_dial(), m2k_online(),
- * and m2k_hangup() directly.
+ * For finer control — driving the state machine yourself rather than
+ * letting m2k_run() block — replace m2k_run() with a poll loop built
+ * around m2k_get_pollfds() + m2k_step(), exiting when m2k_run_done()
+ * returns nonzero. Dialing from code is done by feeding the ATD string
+ * through the CMD-mode line buffer (write to the TTY in standalone mode,
+ * or m2k_write_from_app() in embed mode); m2k_step() then walks the
+ * DIAL → ONLINE transition. m2k_escape() and m2k_hangup() drive the
+ * online→cmd and disconnect transitions programmatically.
  *
  * @example main.c
  * The full source of the bundled `modemu2k` executable.
@@ -177,7 +182,9 @@ M2K_API void        m2k_set_log_fn(m2k_t *ctx, m2k_log_fn fn, void *userdata);
  * @param buf  Caller-owned buffer that outlives the context, or NULL
  *             to detach. Recommended size: @ref M2K_ERROR_BUFFER_SIZE.
  * @param size Capacity of @p buf in bytes (including the trailing NUL).
- *             Ignored when @p buf is NULL.
+ *             Ignored when @p buf is NULL. Passing @p size = 0 with a
+ *             non-NULL @p buf is equivalent to detaching — the pointer
+ *             is stored but never written through.
  *
  * @snippet examples/m2k_set_error_buffer.c set_error_buffer
  */
@@ -196,8 +203,12 @@ M2K_API void        m2k_set_error_buffer(m2k_t *ctx, char *buf, size_t size);
  *            A string with no @c AT prefix is silently ignored.
  * @return M2K_OK on successful execution or no-op (missing @c AT prefix);
  *         M2K_ERR_AT if the lexer rejected the command as malformed, or
- *         the command was an action verb that should go through a
- *         dedicated entry point (ATD → m2k_dial, ATO → m2k_online);
+ *         if the command was an action verb (ATD or ATO) — those drive a
+ *         connection and so are not actionable from this one-shot
+ *         configuration entry. To dial or resume online mode from code,
+ *         feed the ATD/ATO string through the CMD-mode line buffer
+ *         (m2k_write_from_app() in embed mode, or just write to the TTY
+ *         in standalone mode) and let m2k_step() dispatch it.
  *         M2K_ERR_BUG only for unexpected lexer states.
  *
  * @code
@@ -272,7 +283,8 @@ M2K_API m2k_err_t   m2k_escape(m2k_t *ctx);
 /**
  * @brief Return a human-readable string for @p err.
  * @param err Error code.
- * @return Static string; never NULL.
+ * @return Static string; never NULL. Codes outside the @ref m2k_err_t
+ *         range return a generic "Unknown error".
  */
 M2K_API const char *m2k_strerror(m2k_err_t err);
 
@@ -339,7 +351,10 @@ M2K_API m2k_err_t   m2k_setup_dev(m2k_t *ctx, const char *dev);
  *
  * @param ctx  Modem context.
  * @param port Service name or decimal port number to listen on.
- * @return M2K_OK on success, M2K_ERR_SOCKET on failure.
+ * @return M2K_OK on success, M2K_ERR_SOCKET on failure. All bind /
+ *         listen / getaddrinfo failures (port in use, address family
+ *         unavailable, etc.) funnel through M2K_ERR_SOCKET; pair with
+ *         m2k_set_error_buffer() to recover the specific cause.
  *
  * @snippet examples/m2k_setup_listen.c setup_listen
  */
@@ -379,7 +394,8 @@ M2K_API m2k_err_t   m2k_setup_app_io(m2k_t *ctx);
  * @param len      Length of @p buf in bytes. May be 0.
  * @param consumed Out: bytes actually accepted (0 .. len). Must be non-NULL.
  * @return M2K_OK if any bytes were accepted, M2K_ERR_WOULDBLOCK if none
- *         were, M2K_ERR_PTY if the context is not in app-I/O mode.
+ *         were, M2K_ERR_PTY (overloaded as "wrong I/O mode") if the
+ *         context is not in app-I/O mode — call m2k_setup_app_io() first.
  */
 M2K_API m2k_err_t   m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len,
                                size_t *consumed);
@@ -411,8 +427,9 @@ M2K_API m2k_err_t   m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len,
  * @param max     Maximum bytes to copy. May be 0.
  * @param len_out Out: number of bytes actually copied (0 means no data).
  *                Must be non-NULL.
- * @return M2K_OK on success, M2K_ERR_PTY if the context is not in
- *         app-I/O mode.
+ * @return M2K_OK on success, M2K_ERR_PTY (overloaded as "wrong I/O
+ *         mode") if the context is not in app-I/O mode — call
+ *         m2k_setup_app_io() first.
  */
 M2K_API m2k_err_t   m2k_read_to_app(m2k_t *ctx, void *buf, size_t max, size_t *len_out);
 
@@ -456,8 +473,10 @@ M2K_API int         m2k_get_listen_fd(const m2k_t *ctx);
  *
  * @param ctx Modem context (must have an active listener from
  *            m2k_setup_listen()).
- * @return M2K_OK on success, M2K_ERR_SOCKET on accept failure or if no
- *         listener has been set up.
+ * @return M2K_OK on success, M2K_ERR_SOCKET on accept failure (including
+ *         interruption by a signal) or if no listener has been set up.
+ *         On failure the listener is closed regardless; a fresh
+ *         m2k_setup_listen() is required to retry.
  */
 M2K_API m2k_err_t   m2k_listen_accept(m2k_t *ctx);
 
