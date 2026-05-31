@@ -1,9 +1,8 @@
-modemu2k is a Hayes-style AT-command modem
-emulator that bridges a serial interface to
-a TCP or Telnet endpoint over IPv4 or IPv6.
-Ships as a C library (libmodemu2k) plus a
-small CLI that allocates a PTY and forks a
-comm program (minicom, picocom) on the slave,
-or accepts an incoming TCP connection as
-the TTY. Based on modemu, by Toru Egashira
-(1995-1996).
+modemu2k v0.2.2 - Hayes AT-command modem
+emulator that bridges a serial-style
+interface to a TCP/Telnet endpoint over
+IPv4 or IPv6. Ships as a C library
+(libmodemu2k) plus a small CLI. Based on
+modemu, by Toru Egashira (1995-1996).
+
+github.com/theimpossibleastronaut/modemu2k

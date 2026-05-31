@@ -11,6 +11,8 @@ In-tree edits (before tagging)
 [ ] packaging/debian/changelog: change `UNRELEASED` → `unstable` (or the
     relevant Debian distribution) and refresh the date stamp.
 [ ] meson.build: confirm `version:` matches the planned tag.
+[ ] packaging/file_id.diz: bump the `vX.Y.Z` on the first line to the
+    planned tag (the BBS-distribution DIZ ships in the source tarball).
 [ ] scripts/reformat.sh — reformat hand-written sources with indent.
     Commit the result on its own so it stays separable from semantic
     changes:
