@@ -7,6 +7,7 @@ var searchData=
   ['adding_20things_4',['Adding things',['../md_HACKING.html#adding-things',1,'']]],
   ['and_20escaping_5',['Hanging up and escaping',['../md_QUICKSTART.html#hanging-up-and-escaping',1,'']]],
   ['api_20function_6',['A new public API function',['../md_HACKING.html#a-new-public-api-function',1,'']]],
-  ['aspirational_7',['Integration sketches (aspirational)',['../md_HACKING.html#integration-sketches-aspirational',1,'']]],
-  ['at_20command_8',['A new AT command',['../md_HACKING.html#a-new-at-command',1,'']]]
+  ['app_7',['The App',['../index.html#the-app',1,'']]],
+  ['aspirational_8',['Integration sketches (aspirational)',['../md_HACKING.html#integration-sketches-aspirational',1,'']]],
+  ['at_20command_9',['A new AT command',['../md_HACKING.html#a-new-at-command',1,'']]]
 ];
