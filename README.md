@@ -17,6 +17,18 @@ Maintainer: Andy Alt
 
 License: GNU GPL 2 or later
 
+# The App
+
+This project includes **modemu2k**, a small command-line program that fills in
+for the dialup modem that classic terminal programs like minicom and picocom
+were originally written to talk to. You can run modemu2k, point your terminal
+program at it, and type the same `ATD"bbs.example.com"` commands you'd have
+typed in the 1990s — except modemu2k turns each "dial" command into a network
+(TCP/telnet) connection instead of dialing a phone number. The classic comm
+program thinks it's still talking to a real modem; you're actually reaching
+today's BBSes over the internet. Works on Linux and BSD, with IPv4 and IPv6.
+
+
 * [Source repository](https://github.com/theimpossibleastronaut/modemu2k)
 * [API documentation](https://theimpossibleastronaut.github.io/modemu2k/)
 * [Issues and bug reporting](https://github.com/theimpossibleastronaut/modemu2k/issues)
