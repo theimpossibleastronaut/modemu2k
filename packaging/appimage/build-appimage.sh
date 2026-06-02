@@ -56,6 +56,7 @@ if [ ! -d "$BUILD_DIR" ]; then
     -Dbuildtype=release \
     -Dstrip=true \
     -Db_sanitize=none \
+    -Dhelper-scripts=true \
     -Dprefix=/usr \
     --libdir=lib
 fi
