@@ -79,3 +79,38 @@ ATD"localhost 2323"
 
 See `docker/README.md` for details.
 
+## Diagnosing a live session
+
+When a real BBS session misbehaves (stuck dial, hung file transfer,
+"where did the bytes go?"), trace modemu2k and the comm program
+together. modemu2k uses `send()`/`recv()` for the socket, so a
+`read,write`-only filter makes the wire side invisible — include the
+socket syscalls or skip the filter entirely.
+
+Full capture (simplest; use when the socket side looks suspiciously
+quiet under a filter):
+
+```sh
+sudo strace -f -p $(pgrep -n modemu2k) -p $(pgrep -n minicom) \
+  -tt -o /tmp/m2k.strace
+```
+
+Filtered (smaller, for narrower questions):
+
+```sh
+sudo strace -f -p $(pgrep -n modemu2k) -p $(pgrep -n minicom) \
+  -tt -e trace=read,write,poll,select,sendto,recvfrom,sendmsg,recvmsg,sendmmsg,recvmmsg,execve,wait4,exit_group \
+  -o /tmp/m2k.strace
+```
+
+`-f` follows forks so the `lrzsz-rz` / `lrzsz-sz` transfer child is
+captured. For a pure wire view, run tcpdump in parallel:
+
+```sh
+sudo tcpdump -i any -w /tmp/bbs.pcap host <bbs-host> and port <port>
+```
+
+Only one tracer can attach to a PID at a time — a leftover `strace`
+makes a new one fail with `PTRACE_SEIZE … Operation not permitted`
+(easy to misread as a YAMA restriction). `pkill strace` if unsure.
+
