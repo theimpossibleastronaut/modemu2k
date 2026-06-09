@@ -54,14 +54,15 @@ file transfers, escaping with `+++`, and quitting cleanly.
 
 The `modemu2k(1)` man page has the full option and AT-command reference.
 
-## Live Telnet Boards
+## BBS Related
 
-(BBSes in this list may also be capable of ssh or web-based protocols;
-look them up in your browser if you would like more info.)
+Some BBSes may also be capable of ssh or other protocols; look them up in your
+browser if you would like more info (many have a www portal).
 
 * The Rusty Mailbox — trmb.ca 2030
 * [Synchronet BBS List](https://www.synchro.net/sbbslist.html) — a
   directory of currently-reachable telnet BBSes
+* [The BBS Corner](https://bbscorner.com/)
 
 ## Acknowledgments
 
