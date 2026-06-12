@@ -57,7 +57,20 @@ commProgramForkExec(m2k_t *ctx, const char *cmd, char *ptyslave)
   char *s = m2k_alloc(ctx, strlen(cmd) + strlen(ptyslave) + 1);
   if (!s)
     return M2K_ERR_NOMEM;
-  sprintf(s, cmd, ptyslave);
+  /* Substitute the first "%s" in cmd with the slave path. cmd is NOT a
+     printf format string: treating it as one let a stray %n/%x or a
+     second %s overflow s or read arbitrary memory. */
+  const char *pct = strstr(cmd, "%s");
+  if (pct != NULL)
+  {
+    size_t head = (size_t) (pct - cmd);
+    size_t plen = strlen(ptyslave);
+    memcpy(s, cmd, head);
+    memcpy(s + head, ptyslave, plen);
+    strcpy(s + head + plen, pct + 2);
+  }
+  else
+    strcpy(s, cmd);
   int rc = forkExec(ctx, s);
   free(s);
   return rc < 0 ? M2K_ERR_PTY : M2K_OK;

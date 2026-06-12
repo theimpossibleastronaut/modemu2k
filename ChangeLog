@@ -9,6 +9,8 @@
     into tests/test_helpers.{c,h}
   * Fix out-of-bounds read of telopts[] when a telnet peer sends a
     malformed subnegotiation option byte
+  * Stop treating the comm-program command as a printf format string;
+    substitute the slave path safely (overflow / format-string fix)
 
 2026-05-30
 - modemu2k (v0.2.2)
