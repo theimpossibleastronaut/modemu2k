@@ -11,6 +11,8 @@
     malformed subnegotiation option byte
   * Stop treating the comm-program command as a printf format string;
     substitute the slave path safely (overflow / format-string fix)
+  * Close the library-owned PTY / dev / accepted-client fd in
+    m2k_free() (was leaked every session)
 
 2026-05-30
 - modemu2k (v0.2.2)

@@ -387,6 +387,11 @@ m2k_free(m2k_t *ctx)
     return;
   if (ctx->listen_fd != -1)
     close(ctx->listen_fd);
+  /* Close the TTY fd only when the library opened it (PTY master, dev,
+     accepted client). stdin mode (rfd/wfd = 0/1) and app-IO are
+     caller-owned. rfd == wfd in every owned case, so one close suffices. */
+  if (ctx->tty_owned && ctx->tty.rfd >= 0)
+    close(ctx->tty.rfd);
   sockShutdown(&ctx->sock);
   free(ctx);
 }
@@ -599,6 +604,7 @@ m2k_setup_stdin(m2k_t *ctx)
 {
   ctx->tty.rfd = 0;
   ctx->tty.wfd = 1;
+  ctx->tty_owned = false;
   setTty();
   return M2K_OK;
 }
@@ -610,6 +616,7 @@ m2k_setup_pty(m2k_t *ctx, const char **slave_out)
   if (fd < 0)
     return M2K_ERR_PTY;
   ctx->tty.rfd = ctx->tty.wfd = fd;
+  ctx->tty_owned = true;
   *slave_out = ctx->slave_path;
   return M2K_OK;
 }
@@ -621,6 +628,7 @@ m2k_setup_comm_program(m2k_t *ctx, const char *cmd)
   if (fd < 0)
     return M2K_ERR_PTY;
   ctx->tty.rfd = ctx->tty.wfd = fd;
+  ctx->tty_owned = true;
   return commProgramForkExec(ctx, cmd, ctx->slave_path);
 }
 
@@ -634,6 +642,7 @@ m2k_setup_dev(m2k_t *ctx, const char *dev)
     return M2K_ERR_PTY;
   }
   ctx->tty.rfd = ctx->tty.wfd = fd;
+  ctx->tty_owned = true;
   return M2K_OK;
 }
 
@@ -660,6 +669,7 @@ m2k_listen_accept(m2k_t *ctx)
   if (client_fd == -1)
     return M2K_ERR_SOCKET;
   ctx->tty.rfd = ctx->tty.wfd = client_fd;
+  ctx->tty_owned = true;
   return M2K_OK;
 }
 
@@ -673,6 +683,7 @@ m2k_setup_app_io(m2k_t *ctx)
 {
   ctx->app_io = true;
   ctx->tty.rfd = ctx->tty.wfd = -1;
+  ctx->tty_owned = false;
   return M2K_OK;
 }
 

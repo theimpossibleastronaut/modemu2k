@@ -28,6 +28,10 @@ struct m2k_s
                                        drains TTY bytes via m2k_{write_from,
                                        read_to}_app() instead of read()/write()
                                        on tty.{rfd,wfd}. */
+  bool tty_owned;                /* true when tty.rfd/wfd is a library-opened
+                                       fd (PTY master, dev, or accepted client)
+                                       that m2k_free() must close; false for
+                                       stdin (0/1, caller-owned) and app-IO. */
   bool escape_req;               /* m2k_escape() — drives one online→cmd
                                        transition on the next m2k_step(). */
   bool quit_req;                 /* atcmdPQ (at%q) — drives transition to
