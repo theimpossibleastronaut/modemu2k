@@ -329,7 +329,10 @@ ttypeSBHandle(m2k_t *ctx)
 int
 telOptSBHandle(m2k_t *ctx, int opt)
 {
-  verboseOut(ctx, VERB_TELOPT, "< SB %s SEND SE.\r\n", telopts[opt]);
+  /* opt is a peer-supplied byte; telopts[] has only NTELOPTS entries.
+     Guard the index before logging (cf. teloptStr). */
+  if (opt < NTELOPTS)
+    verboseOut(ctx, VERB_TELOPT, "< SB %s SEND SE.\r\n", telopts[opt]);
 
   switch (opt)
   {
