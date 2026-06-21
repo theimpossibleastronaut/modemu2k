@@ -31,7 +31,7 @@ jobs:
     env:
       CC: ${{ matrix.cc }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y meson ninja-build ${{ matrix.cc }}
@@ -67,7 +67,7 @@ jobs:
         os: [macos-15, macos-26]
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Install dependencies
       run: brew install meson
