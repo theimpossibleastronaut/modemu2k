@@ -21,10 +21,10 @@ jobs:
       DOXYGEN_VERSION: 1.16.1
     steps:
       - name: Checkout source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Checkout gh-pages
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: gh-pages
           path: gh-pages-out
