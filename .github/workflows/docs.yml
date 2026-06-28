@@ -40,7 +40,7 @@ jobs:
       # Pin to the official upstream binary so live rendering matches local.
       - name: Cache Doxygen
         id: doxygen-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/doxygen
           key: doxygen-${{ env.DOXYGEN_VERSION }}-${{ runner.os }}-${{ runner.arch }}
