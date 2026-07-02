@@ -17,8 +17,7 @@ bin="$1"
 check_usage_exit() {
   label="$1"
   shift
-  out=$("$bin" "$@")
-  rc=$?
+  out=$("$bin" "$@") && rc=0 || rc=$?
   if [ "$rc" -ne 0 ]; then
     echo "FAIL ($label): expected exit 0, got $rc" >&2
     exit 1
