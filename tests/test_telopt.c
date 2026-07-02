@@ -161,6 +161,36 @@ test_sb_handle_unknown(void)
   assert(telOptSBHandle(ctx, TELOPT_NAWS) == 1);
 }
 
+/* Regression guard for the out-of-bounds read fixed in f490f5f: a telnet
+   peer can put any option byte (0-255) in a subnegotiation, but telopts[]
+   has only NTELOPTS entries. telOptSBHandle must bound-check before
+   indexing it for the log line. Verbose telopt logging is enabled so that
+   guarded telopts[opt] access actually fires — an unbounded regression
+   trips ASan (Andy's default build) here rather than silently. */
+static void
+test_sb_handle_hostile_opt(void)
+{
+  init_ctx();
+  ctx->atcmd.pv = 0xFF;   /* enable VERB_TELOPT so the log path is live */
+  assert(telOptSBHandle(ctx, NTELOPTS) == 1);
+  assert(telOptSBHandle(ctx, NTELOPTS + 100) == 1);
+  assert(telOptSBHandle(ctx, 255) == 1);
+}
+
+/* A peer-supplied option byte can be anything 0-255; telOptHandle must
+   route out-of-range options through the default state entry (telopt.c
+   guards the stTab index at line 223), never reading past stTab. */
+static void
+test_handle_hostile_opt(void)
+{
+  init_ctx();
+  ctx->atcmd.pv = 0xFF;
+  assert(telOptHandle(ctx, WILL, 255) == 0);
+  assert(telOptHandle(ctx, DO,   255) == 0);
+  assert(telOptHandle(ctx, WONT, 255) == 0);
+  assert(telOptHandle(ctx, DONT, 255) == 0);
+}
+
 static void
 test_print_cmd(void)
 {
@@ -215,6 +245,8 @@ main(void)
   test_send_reqs();
   test_sb_handle_ttype();
   test_sb_handle_unknown();
+  test_sb_handle_hostile_opt();
+  test_handle_hostile_opt();
   test_print_cmd();
   test_multi_ctx_isolation();
   return 0;
