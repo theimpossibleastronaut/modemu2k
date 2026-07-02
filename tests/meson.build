@@ -59,6 +59,9 @@ if python3.found()
       args: [files(name + '.py'), modemu2k_exe.full_path()],
       depends: modemu2k_exe,
       timeout: 60,
+      # docker_telnet uses a fixed container name and host port, so it can't
+      # run concurrently with itself (e.g. under `meson test --repeat`).
+      is_parallel: case != 'docker_telnet',
       )
   endforeach
 endif
