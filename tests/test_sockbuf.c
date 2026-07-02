@@ -98,8 +98,11 @@ test_putSock1_flow_control(void)
      one more write should hit the guard and be dropped */
   for (int i = SOCKBUFW_SIZE + 1; i < SOCKBUFW_SIZE_A; i++)
     putSock1(ctx, 'Z');
-  /* this one hits the hard limit and is silently dropped */
+  /* this one hits the hard limit and must be silently dropped:
+     the write pointer must not advance past the buffer */
+  uchar *before = ctx->sockBufW.ptr;
   putSock1(ctx, '!');
+  assert(ctx->sockBufW.ptr == before);
 }
 
 int
