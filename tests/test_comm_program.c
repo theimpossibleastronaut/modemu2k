@@ -9,6 +9,7 @@
 
 #include "test.h"
 #include "../modemu2k.h"
+#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
@@ -48,17 +49,30 @@ test_setup_comm_program_basic(void)
   assert(fds[0].fd > 2);
   assert(fstat(fds[0].fd, &st) == 0);
 
+  int ptyfd = fds[0].fd;
   m2k_free(ctx);
+  /* m2k_free must close the library-owned PTY fd (regression guard for
+     the fd leak fixed in b573d19). */
+  assert(fstat(ptyfd, &st) == -1 && errno == EBADF);
 }
 
 static void
 test_setup_comm_program_with_format(void)
 {
-  /* Verify the %s slave-path expansion path: command contains %s and
-     should be substituted with the PTY slave path. We can't directly
-     observe what got sprintf'd, but a malformed format wouldn't crash
-     this either; what we're really checking is that a cmd with %s
-     reaches the same OK status as one without. */
+  /* Verify %s is actually substituted with the PTY slave path — not just
+     that a cmd containing %s returns OK. The spawned shell echoes its
+     argument to a tmpfile; the file then holds a /dev/... node only if
+     the substitution ran (a broken expansion would write "%s" or empty). */
+  char tmpl[] = "/tmp/m2k_comm_XXXXXX";
+  int tfd = mkstemp(tmpl);
+  assert(tfd >= 0);
+  close(tfd);
+
+  char cmd[128];
+  /* -> "echo %s > /tmp/m2k_comm_XXXXXX"; the first %s is the slave-path
+     placeholder that commProgramForkExec substitutes. */
+  snprintf(cmd, sizeof cmd, "echo %%s > %s", tmpl);
+
   sigset_t set, oldset;
   sigemptyset(&set);
   sigaddset(&set, SIGCHLD);
@@ -66,14 +80,32 @@ test_setup_comm_program_with_format(void)
 
   m2k_t *ctx = m2k_new();
   assert(ctx);
-  /* This shell line runs `: <slavepath>` — a no-op that ignores its
-     argument — so it exits with status 0 regardless of the path. */
-  assert(m2k_setup_comm_program(ctx, ": %s") == M2K_OK);
+  assert(m2k_setup_comm_program(ctx, cmd) == M2K_OK);
 
   signal(SIGCHLD, SIG_IGN);
   sigprocmask(SIG_SETMASK, &oldset, NULL);
 
+  /* The child exits right after echo; poll the file until it has data. */
+  char buf[128];
+  ssize_t n = 0;
+  for (int i = 0; i < 200; i++)   /* up to ~2s */
+  {
+    int rfd = open(tmpl, O_RDONLY);
+    if (rfd >= 0)
+    {
+      n = read(rfd, buf, sizeof buf - 1);
+      close(rfd);
+      if (n > 0)
+        break;
+    }
+    usleep(10000);
+  }
+  assert(n > 0);
+  buf[n] = '\0';
+  assert(strstr(buf, "/dev/") != NULL);
+
   m2k_free(ctx);
+  unlink(tmpl);
 }
 
 int
