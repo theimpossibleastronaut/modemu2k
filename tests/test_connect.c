@@ -1,3 +1,5 @@
+/* Covers the deprecated synchronous m2k_dial(). Keep while m2k_dial ships;
+   remove (or port to the m2k_step path) when it is removed in 0.3.0. */
 #include "test.h"
 #include "test_helpers.h"
 #include <stdio.h>
@@ -16,14 +18,14 @@ test_connect(void)
   char port_s[8];
   snprintf(port_s, sizeof(port_s), "%d", port);
 
-  /* Hostname path: "localhost" resolves via /etc/hosts / nsswitch — no
-     public DNS lookup needed, so this works inside sandboxed builds. */
+  /* m2k_dial is blocking: it returns M2K_OK only once connected, so no
+     wait is needed before hanging up. "localhost" resolves via
+     /etc/hosts / nsswitch — no public DNS lookup, so this works in
+     sandboxed builds. */
   assert(m2k_dial(ctx, "localhost", port_s) == M2K_OK);
-  sleep(1);
   assert(m2k_hangup(ctx) == M2K_OK);
 
   assert(m2k_dial(ctx, "127.0.0.1", port_s) == M2K_OK);
-  sleep(1);
   assert(m2k_hangup(ctx) == M2K_OK);
 
   m2k_free(ctx);
