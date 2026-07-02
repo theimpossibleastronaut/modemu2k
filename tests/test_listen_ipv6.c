@@ -39,22 +39,33 @@ has_dualstack(void)
   return 1;
 }
 
-/* Fork a child that connects to the listen port via IPv6 loopback. */
+/* Fork a child that connects to the listen port via IPv6 loopback, retrying
+   until the parent is listening (a fixed delay would race bind/listen under
+   load and hang the parent in accept()). */
 static void
 start_connector(void)
 {
   connector_pid = fork();
   if (connector_pid == 0)
   {
-    usleep(100000);   /* 100ms — enough for parent to reach bind/listen */
-    int fd = socket(AF_INET6, SOCK_STREAM, 0);
-    if (fd < 0)
-      _exit(1);
     struct sockaddr_in6 addr = {0};
     addr.sin6_family = AF_INET6;
     addr.sin6_port   = htons(atoi(TEST_PORT));
     inet_pton(AF_INET6, "::1", &addr.sin6_addr);
-    connect(fd, (struct sockaddr *)&addr, sizeof(addr));
+    int fd = -1;
+    for (int i = 0; i < 100; i++)   /* up to ~5s */
+    {
+      fd = socket(AF_INET6, SOCK_STREAM, 0);
+      if (fd < 0)
+        _exit(1);
+      if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) == 0)
+        break;
+      close(fd);
+      fd = -1;
+      usleep(50000);
+    }
+    if (fd < 0)
+      _exit(1);
     usleep(100000);
     close(fd);
     _exit(0);
