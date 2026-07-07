@@ -144,7 +144,10 @@ With a comm program (the usual mode)</h1>
 </div><!-- fragment --><p>A convenience wrapper, <span class="tt">m2k-minicom</span>, runs the above invocation for you. It's in <span class="tt">scripts/m2k-minicom</span>; install it by configuring with <span class="tt">-Dhelper-scripts=true</span> before <span class="tt">ninja install</span>. A matching <span class="tt">m2k-picocom</span> ships under the same option.</p>
 <p>Any arguments you pass to the wrappers are forwarded to modemu2k. For example, to enable verbose narration while running through minicom, redirect stderr to a log file (modemu2k refuses to run otherwise, because verbose output would corrupt the comm program's display):</p>
 <div class="fragment"><div class="line">m2k-minicom -v 2&gt;/tmp/m2k.log     # then tail -f /tmp/m2k.log</div>
-</div><!-- fragment --><p>From inside minicom (or picocom, etc.), dial in the same AT style:</p>
+</div><!-- fragment --><p>You can pass options to minicom after a <span class="tt">--</span>. Options before <span class="tt">--</span> go to modemu2k. One use is character sets: some BBSes send their box and shading characters as CP437, the old PC character set, and on a UTF-8 terminal those characters look wrong. minicom's <span class="tt">-R</span> converts them:</p>
+<div class="fragment"><div class="line">m2k-minicom -- -R CP437</div>
+</div><!-- fragment --><p>Do not convert the character set for a board that already sends UTF-8. That would break the display.</p>
+<p>From inside minicom (or picocom, etc.), dial in the same AT style:</p>
 <div class="fragment"><div class="line">atd&quot;trmb.ca 2030</div>
 </div><!-- fragment --><p>To quit modemu2k, just quit the comm program — modemu2k tears down with it.</p>
 <h1 class="doxsection"><a class="anchor" id="listen-mode-incoming-connections"></a>
