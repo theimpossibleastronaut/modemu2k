@@ -76,6 +76,18 @@ display):
 m2k-minicom -v 2>/tmp/m2k.log     # then tail -f /tmp/m2k.log
 ```
 
+You can pass options to minicom after a `--`. Options before `--` go to
+modemu2k. One use is character sets: some BBSes send their box and
+shading characters as CP437, the old PC character set, and on a UTF-8
+terminal those characters look wrong. minicom's `-R` converts them:
+
+```sh
+m2k-minicom -- -R CP437
+```
+
+Do not convert the character set for a board that already sends UTF-8.
+That would break the display.
+
 From inside minicom (or picocom, etc.), dial in the same AT style:
 
 ```

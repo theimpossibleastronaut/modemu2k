@@ -14,6 +14,13 @@
 #     m2k-minicom -v 2>/tmp/m2k.log     # then `tail -f /tmp/m2k.log`
 # modemu2k refuses -v in -c mode when stderr is a TTY (verbose would
 # corrupt minicom's display), so the stderr redirect is required.
+#
+# Options after a "--" are passed to minicom; everything before "--" goes to
+# modemu2k (the default). For example, to fix CP437 line-art that shows as
+# "?" on a UTF-8 terminal, have minicom convert the character set:
+#     m2k-minicom -- -R CP437
+# Combine with modemu2k options:
+#     m2k-minicom -v -- -R CP437
 
 set -e
 
@@ -31,4 +38,26 @@ do
 done
 : "${modemu2k:=modemu2k}"
 
-exec "$modemu2k" "$@" -e "AT%B0=1%B1=1&W" -c "minicom -l -tansi -con -p %s"
+# Split args at "--": those before it stay for modemu2k (kept in "$@");
+# those after it are appended to minicom's command line ($mc_extra). The
+# rotate keeps modemu2k args properly quoted; minicom extras become a plain
+# string, which is fine for typical options (e.g. -R CP437, -8).
+mc_extra=
+argc=$#
+i=0
+while [ "$i" -lt "$argc" ]; do
+  arg="$1"
+  shift
+  i=$((i + 1))
+  if [ "$arg" = "--" ]; then
+    while [ "$i" -lt "$argc" ]; do
+      mc_extra="$mc_extra $1"
+      shift
+      i=$((i + 1))
+    done
+    break
+  fi
+  set -- "$@" "$arg"
+done
+
+exec "$modemu2k" "$@" -e "AT%B0=1%B1=1&W" -c "minicom -l -tansi -con$mc_extra -p %s"

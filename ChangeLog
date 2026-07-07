@@ -1,5 +1,8 @@
 (in-progress)
 - modemu2k (v0.2.3)
+  * m2k-minicom: pass options after `--` to minicom (e.g.
+    `m2k-minicom -- -R CP437` to convert a BBS's CP437 characters
+    for a UTF-8 terminal)
   * Rewrite test_connect / test_ipv6 to use loopback only; the dial
     docblock @snippet moves to examples/m2k_dial.c. Removes hardcoded
     GitHub IP and the need for any `network` suite tag
