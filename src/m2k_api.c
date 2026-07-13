@@ -341,11 +341,11 @@ putTtyCmdstat(m2k_t *ctx, Cmdstat s)
 
     putTty1(ctx, CHAR_CR(ctx));
     putTty1(ctx, CHAR_LF(ctx));
-    putTtyN(ctx, msg_escape_seq, sizeof msg_escape_seq);
+    putTtyN(ctx, msg_escape_seq, sizeof msg_escape_seq - 1);
 
     putTty1(ctx, CHAR_CR(ctx));
     putTty1(ctx, CHAR_LF(ctx));
-    putTtyN(ctx, msg_return_online, sizeof msg_return_online);
+    putTtyN(ctx, msg_return_online, sizeof msg_return_online - 1);
   }
 
   putTty1(ctx, CHAR_CR(ctx));
