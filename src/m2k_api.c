@@ -1519,7 +1519,9 @@ m2k_describe_state(const m2k_t *ctx, char *buf, size_t cap)
                    sizeof ctx->tty.bufR.buf,
                    (size_t) (ctx->tty.bufW.ptr - ctx->tty.bufW.top),
                    sizeof ctx->tty.bufW.buf,
-                   ctx->sock.conn.fd,
+                   /* sockInit's "no socket" sentinel is 0, not -1; present
+                      it as -1 so it can't be read as stdin. */
+                   ctx->sock.conn.fd > 0 ? ctx->sock.conn.fd : -1,
                    ctx->sock.conn.alive ? "yes" : "no",
                    (size_t) (ctx->sock.bufR.end - ctx->sock.bufR.ptr),
                    sizeof ctx->sock.bufR.buf,
@@ -1534,6 +1536,10 @@ m2k_describe_state(const m2k_t *ctx, char *buf, size_t cap)
   if (cap > 0 && buf != NULL)
   {
     size_t copy = (size_t) n < cap - 1 ? (size_t) n : cap - 1;
+    if (copy > sizeof tmp - 1) /* unreachable while the format's worst
+                                  case (~450 bytes) fits tmp; guards a
+                                  future fifth line. */
+      copy = sizeof tmp - 1;
     memcpy(buf, tmp, copy);
     buf[copy] = '\0';
   }

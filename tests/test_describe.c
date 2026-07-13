@@ -42,6 +42,7 @@ test_cmd_state_content(void)
   assert((size_t) n == strlen(buf));
   assert(strstr(buf, "state=CMD") != NULL);
   assert(strstr(buf, "carrier=no") != NULL);
+  assert(strstr(buf, "sock: fd=-1") != NULL); /* sockInit's "none" is 0 */
   assert(strstr(buf, "answer_fd=-1") != NULL);
   assert(strstr(buf, "dial=idle") != NULL);
   /* four lines: exactly three newlines, none trailing */
