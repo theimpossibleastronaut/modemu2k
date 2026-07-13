@@ -56,8 +56,11 @@ struct m2k_s
                                        Ctrl-C with no intervening keystroke
                                        sets quit_req. Cleared by any other
                                        input byte. */
-  bool dtr;                      /* m2k_set_dtr() — DTE control line. */
-  bool rts;                      /* m2k_set_rts() — DTE control line. */
+  struct
+  {
+    bool dtr, rts;            /* m2k_set_dtr()/m2k_set_rts() — DTE control
+                                   lines. */
+  } ctrl;
   bool force_verbose;            /* m2k_set_force_verbose() — bypasses the
                                        AT%V mask in verboseOut/verbosePerror so
                                        ATZ (which resets atcmd.pv via the
