@@ -5,9 +5,15 @@ struct m2k_s
 {
   Atcmd atcmd;
   Atcmd atcmdNV;
-  st_sock sock;
-  struct st_sockBufR sockBufR;
-  struct st_sockBufW sockBufW;
+  struct
+  {
+    st_sock conn;
+    struct st_sockBufR bufR;
+    struct st_sockBufW bufW;
+    int listen_fd;            /* Bound listener from m2k_setup_listen,
+                                   consumed by m2k_listen_accept; -1 when
+                                   no listener is open. */
+  } sock;
   struct
   {
     int rfd, wfd;             /* absorbed st_tty */
@@ -28,9 +34,6 @@ struct m2k_s
   char slave_path[64];           /* PTY slave path filled by
                                            m2k_setup_pty/m2k_setup_comm_program;
                                            lifetime = ctx. */
-  int listen_fd;                 /* Bound listener from m2k_setup_listen,
-                                       consumed by m2k_listen_accept; -1 when
-                                       no listener is open. */
   int answer_fd;                 /* Line-side listener from m2k_setup_answer
                                        (ATA/RING answer path); -1 when unbound.
                                        Survives hangup; closed by m2k_free(). */

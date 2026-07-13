@@ -12,13 +12,13 @@
 void
 sockBufRReset(m2k_t *ctx)
 {
-  ctx->sockBufR.ptr = ctx->sockBufR.end = ctx->sockBufR.buf;
+  ctx->sock.bufR.ptr = ctx->sock.bufR.end = ctx->sock.bufR.buf;
 }
 
 int
 getSock1(m2k_t *ctx)
 {
-  return ((ctx->sockBufR.ptr >= ctx->sockBufR.end) ? -1 : *ctx->sockBufR.ptr++);
+  return ((ctx->sock.bufR.ptr >= ctx->sock.bufR.end) ? -1 : *ctx->sock.bufR.ptr++);
 }
 
 void
@@ -26,7 +26,7 @@ sockBufRead(m2k_t *ctx, st_sock *sock)
 {
   int l;
 
-  l = recv(sock->fd, ctx->sockBufR.buf, sizeof(ctx->sockBufR.buf), 0);
+  l = recv(sock->fd, ctx->sock.bufR.buf, sizeof(ctx->sock.bufR.buf), 0);
   if (l <= 0)
   {
     sock->alive = 0;
@@ -39,8 +39,8 @@ sockBufRead(m2k_t *ctx, st_sock *sock)
       m2k_log(ctx, "recv(): %s\n", strerror(errno));
     return;
   }
-  ctx->sockBufR.ptr = ctx->sockBufR.buf;
-  ctx->sockBufR.end = ctx->sockBufR.buf + l;
+  ctx->sock.bufR.ptr = ctx->sock.bufR.buf;
+  ctx->sock.bufR.end = ctx->sock.bufR.buf + l;
 }
 
 /* writing socket */
@@ -48,20 +48,20 @@ sockBufRead(m2k_t *ctx, st_sock *sock)
 void
 sockBufWReset(m2k_t *ctx)
 {
-  ctx->sockBufW.ptr = ctx->sockBufW.top = ctx->sockBufW.buf;
-  ctx->sockBufW.stop = 0;
+  ctx->sock.bufW.ptr = ctx->sock.bufW.top = ctx->sock.bufW.buf;
+  ctx->sock.bufW.stop = 0;
 }
 
 bool
 sockBufWHasData(m2k_t *ctx)
 {
-  return (ctx->sockBufW.ptr > ctx->sockBufW.buf);
+  return (ctx->sock.bufW.ptr > ctx->sock.bufW.buf);
 }
 
 bool
 sockBufWReady(m2k_t *ctx)
 {
-  return !ctx->sockBufW.stop;
+  return !ctx->sock.bufW.stop;
 }
 
 void
@@ -69,10 +69,10 @@ sockBufWrite(m2k_t *ctx, st_sock *sock)
 {
   int wl, l;
 
-  wl = ctx->sockBufW.ptr - ctx->sockBufW.top;
+  wl = ctx->sock.bufW.ptr - ctx->sock.bufW.top;
   if (wl == 0)
     return;
-  l = send(sock->fd, ctx->sockBufW.top, wl, 0);
+  l = send(sock->fd, ctx->sock.bufW.top, wl, 0);
   if (l <= 0)
   {
     sock->alive = 0;
@@ -84,29 +84,29 @@ sockBufWrite(m2k_t *ctx, st_sock *sock)
   }
   else if (l < wl)
   {
-    ctx->sockBufW.top += l;
+    ctx->sock.bufW.top += l;
     /*return 1; */ /* needs retry */
     return;
   }
-  ctx->sockBufW.ptr = ctx->sockBufW.top = ctx->sockBufW.buf;
-  ctx->sockBufW.stop = 0;
+  ctx->sock.bufW.ptr = ctx->sock.bufW.top = ctx->sock.bufW.buf;
+  ctx->sock.bufW.stop = 0;
   return;
 }
 
 void
 putSock1(m2k_t *ctx, uchar c)
 {
-  if (ctx->sockBufW.ptr >= ctx->sockBufW.buf + SOCKBUFW_SIZE)
+  if (ctx->sock.bufW.ptr >= ctx->sock.bufW.buf + SOCKBUFW_SIZE)
   { /* limit */
-    if (ctx->sockBufW.ptr >= ctx->sockBufW.buf + SOCKBUFW_SIZE_A)
+    if (ctx->sock.bufW.ptr >= ctx->sock.bufW.buf + SOCKBUFW_SIZE_A)
     { /*actual limit */
       m2k_log(ctx, "\asockBufW overrun.\n");
       return;
     }
     else
-      ctx->sockBufW.stop = 1; /* flow control */
+      ctx->sock.bufW.stop = 1; /* flow control */
   }
-  *ctx->sockBufW.ptr++ = c;
+  *ctx->sock.bufW.ptr++ = c;
 }
 
 void

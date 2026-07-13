@@ -21,11 +21,11 @@ test_sockBufR_read(void)
 {
   sockBufRReset(ctx);
   /* manually load the read buffer as sockBufRead() would */
-  ctx->sockBufR.buf[0] = 'A';
-  ctx->sockBufR.buf[1] = 'T';
-  ctx->sockBufR.buf[2] = 'Z';
-  ctx->sockBufR.ptr = ctx->sockBufR.buf;
-  ctx->sockBufR.end = ctx->sockBufR.buf + 3;
+  ctx->sock.bufR.buf[0] = 'A';
+  ctx->sock.bufR.buf[1] = 'T';
+  ctx->sock.bufR.buf[2] = 'Z';
+  ctx->sock.bufR.ptr = ctx->sock.bufR.buf;
+  ctx->sock.bufR.end = ctx->sock.bufR.buf + 3;
 
   assert(getSock1(ctx) == 'A');
   assert(getSock1(ctx) == 'T');
@@ -37,8 +37,8 @@ static void
 test_sockBufR_reset_clears(void)
 {
   /* fill then reset — should be empty again */
-  ctx->sockBufR.ptr = ctx->sockBufR.buf;
-  ctx->sockBufR.end = ctx->sockBufR.buf + 10;
+  ctx->sock.bufR.ptr = ctx->sock.bufR.buf;
+  ctx->sock.bufR.end = ctx->sock.bufR.buf + 10;
   sockBufRReset(ctx);
   assert(getSock1(ctx) == -1);
 }
@@ -60,7 +60,7 @@ test_putSock1(void)
   putSock1(ctx, 'X');
   assert(sockBufWHasData(ctx));
   assert(sockBufWReady(ctx));
-  assert(ctx->sockBufW.buf[0] == 'X');
+  assert(ctx->sock.bufW.buf[0] == 'X');
 }
 
 static void
@@ -70,7 +70,7 @@ test_putSockN(void)
   sockBufWReset(ctx);
   putSockN(ctx, data, 5);
   assert(sockBufWHasData(ctx));
-  assert(memcmp(ctx->sockBufW.buf, "hello", 5) == 0);
+  assert(memcmp(ctx->sock.bufW.buf, "hello", 5) == 0);
 }
 
 static void
@@ -100,9 +100,9 @@ test_putSock1_flow_control(void)
     putSock1(ctx, 'Z');
   /* this one hits the hard limit and must be silently dropped:
      the write pointer must not advance past the buffer */
-  uchar *before = ctx->sockBufW.ptr;
+  uchar *before = ctx->sock.bufW.ptr;
   putSock1(ctx, '!');
-  assert(ctx->sockBufW.ptr == before);
+  assert(ctx->sock.bufW.ptr == before);
 }
 
 int

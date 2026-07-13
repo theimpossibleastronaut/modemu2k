@@ -369,17 +369,17 @@ m2k_new(void)
   m2k_t *ctx = m2k_calloc(NULL, 1, sizeof(m2k_t));
   if (!ctx)
     return NULL;
-  ctx->listen_fd = -1;
+  ctx->sock.listen_fd = -1;
   ctx->answer_fd = -1;
   ctx->step_state = M2K_STATE_CMD;
   ctx->dtr = true;
   ctx->rts = true;
   cmdBufReset(&ctx->step_cmdbuf);
-  sockInit(&ctx->sock);
+  sockInit(&ctx->sock.conn);
   ttyBufRReset(ctx);
   ttyBufWReset(ctx);
   telOptInit(ctx);
-  atcmdInit(ctx, NULL, &ctx->sock);
+  atcmdInit(ctx, NULL, &ctx->sock.conn);
   return ctx;
 }
 
@@ -388,8 +388,8 @@ m2k_free(m2k_t *ctx)
 {
   if (ctx == NULL)
     return;
-  if (ctx->listen_fd != -1)
-    close(ctx->listen_fd);
+  if (ctx->sock.listen_fd != -1)
+    close(ctx->sock.listen_fd);
   if (ctx->answer_fd != -1)
     close(ctx->answer_fd);
   /* Close the TTY fd only when the library opened it (PTY master, dev,
@@ -397,7 +397,7 @@ m2k_free(m2k_t *ctx)
      caller-owned. rfd == wfd in every owned case, so one close suffices. */
   if (ctx->tty.owned && ctx->tty.rfd >= 0)
     close(ctx->tty.rfd);
-  sockShutdown(&ctx->sock);
+  sockShutdown(&ctx->sock.conn);
   free(ctx);
 }
 
@@ -420,7 +420,7 @@ m2k_set_error_buffer(m2k_t *ctx, char *buf, size_t size)
 m2k_err_t
 m2k_atcmd(m2k_t *ctx, const char *cmd)
 {
-  Cmdstat r = cmdLex(ctx, cmd, &ctx->sock);
+  Cmdstat r = cmdLex(ctx, cmd, &ctx->sock.conn);
   switch (r)
   {
   case CMDST_OK:
@@ -464,14 +464,14 @@ m2k_dial(m2k_t *ctx, const char *host, const char *port)
   }
 
   telOptReset(ctx);
-  return m2k_sockDial(ctx, &ctx->sock) == 0 ? M2K_OK : M2K_ERR_SOCKET;
+  return m2k_sockDial(ctx, &ctx->sock.conn) == 0 ? M2K_OK : M2K_ERR_SOCKET;
 }
 
 m2k_err_t
 m2k_online(m2k_t *ctx)
 {
   putTtyCmdstat(ctx, CMDST_CONNECT);
-  int r = onlineMode(ctx, &ctx->sock);
+  int r = onlineMode(ctx, &ctx->sock.conn);
   if (r == 1)
   {
     putTtyCmdstat(ctx, CMDST_OK);
@@ -660,20 +660,20 @@ m2k_setup_listen(m2k_t *ctx, const char *port)
   int fd = m2k_sockListen(ctx, port);
   if (fd == -1)
     return M2K_ERR_SOCKET;
-  ctx->listen_fd = fd;
+  ctx->sock.listen_fd = fd;
   return M2K_OK;
 }
 
 m2k_err_t
 m2k_listen_accept(m2k_t *ctx)
 {
-  if (ctx->listen_fd == -1)
+  if (ctx->sock.listen_fd == -1)
   {
     m2k_err_set(ctx, "m2k_listen_accept: no listener (call m2k_setup_listen first)\n");
     return M2K_ERR_SOCKET;
   }
-  int client_fd = m2k_sockAccept(ctx, ctx->listen_fd);
-  ctx->listen_fd = -1;
+  int client_fd = m2k_sockAccept(ctx, ctx->sock.listen_fd);
+  ctx->sock.listen_fd = -1;
   if (client_fd == -1)
     return M2K_ERR_SOCKET;
   ctx->tty.rfd = ctx->tty.wfd = client_fd;
@@ -872,7 +872,7 @@ m2k_hangup(m2k_t *ctx)
      without waiting out the S7 timeout. */
   if (ctx->step_state == M2K_STATE_DIAL)
   {
-    m2k_sockDialAbort(ctx, &ctx->sock);
+    m2k_sockDialAbort(ctx, &ctx->sock.conn);
     putTtyCmdstat(ctx, CMDST_NOCARRIER);
     stepEnterCmd(ctx);
     return M2K_OK;
@@ -883,7 +883,7 @@ m2k_hangup(m2k_t *ctx)
     stepEnterCmd(ctx);
     return M2K_OK;
   }
-  sockShutdown(&ctx->sock);
+  sockShutdown(&ctx->sock.conn);
   return M2K_OK;
 }
 
@@ -956,7 +956,7 @@ cmdPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
     *timeout_ms = -1;
   }
 
-  if (ctx->answer_fd != -1 && !ctx->sock.alive)
+  if (ctx->answer_fd != -1 && !ctx->sock.conn.alive)
   {
     if (ctx->atcmd.s[1] == 0)
     {
@@ -1013,7 +1013,7 @@ cmdDispatchIfReady(m2k_t *ctx, struct m2k_cmdbuf *cmdBuf, st_sock *sock)
 static Cmdstat
 cmdIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 {
-  st_sock *sock = &ctx->sock;
+  st_sock *sock = &ctx->sock.conn;
   struct m2k_cmdbuf *cmdBuf = &ctx->step_cmdbuf;
 
   if (ctx->app_io)
@@ -1063,7 +1063,7 @@ dialPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
 {
   size_t n = 0;
 
-  fds[n].fd = ctx->sock.fd;
+  fds[n].fd = ctx->sock.conn.fd;
   fds[n].events = POLLOUT;
   fds[n].revents = 0;
   n++;
@@ -1099,19 +1099,19 @@ dialIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
     struct pollfd *p = findPollfd(fds, nfds, ctx->tty.rfd);
     if (p && (p->revents & READ_EV))
     {
-      m2k_sockDialAbort(ctx, &ctx->sock);
+      m2k_sockDialAbort(ctx, &ctx->sock.conn);
       return -1;
     }
   }
   /* Whether the socket fired or the deadline elapsed, ask Progress. */
-  return m2k_sockDialProgress(ctx, &ctx->sock);
+  return m2k_sockDialProgress(ctx, &ctx->sock.conn);
 }
 
 /* Non-blocking "is a caller waiting in the accept queue?" check. */
 static int
 answerPending(m2k_t *ctx)
 {
-  if (ctx->answer_fd == -1 || ctx->sock.alive)
+  if (ctx->answer_fd == -1 || ctx->sock.conn.alive)
     return 0;
   struct pollfd p = {.fd = ctx->answer_fd, .events = POLLIN, .revents = 0};
   return poll(&p, 1, 0) == 1 && (p.revents & POLLIN);
@@ -1126,9 +1126,9 @@ answerAccept(m2k_t *ctx)
   if (fd == -1)
     return -1;
   telOptReset(ctx);
-  sockInit(&ctx->sock);
-  ctx->sock.fd = fd;
-  ctx->sock.alive = 1;
+  sockInit(&ctx->sock.conn);
+  ctx->sock.conn.fd = fd;
+  ctx->sock.conn.alive = 1;
   ctx->atcmd.s[1] = 0; /* call answered — ring counter rests */
   return 0;
 }
@@ -1193,7 +1193,7 @@ answerIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 static void
 onlinePollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
 {
-  st_sock *sock = &ctx->sock;
+  st_sock *sock = &ctx->sock.conn;
   size_t n = 0;
 
   short sock_ev = 0;
@@ -1238,7 +1238,7 @@ onlinePollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_m
 static int
 onlineIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 {
-  st_sock *sock = &ctx->sock;
+  st_sock *sock = &ctx->sock.conn;
   struct pollfd *p;
 
   if (ctx->escape_req)
@@ -1309,7 +1309,7 @@ onlineIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 static int
 cmdRingCheck(m2k_t *ctx)
 {
-  if (ctx->answer_fd == -1 || ctx->sock.alive)
+  if (ctx->answer_fd == -1 || ctx->sock.conn.alive)
     return 0;
   if (!answerPending(ctx))
   {
@@ -1375,14 +1375,14 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
     switch (s)
     {
     case CMDST_ATD:
-      if (ctx->sock.alive)
+      if (ctx->sock.conn.alive)
       {
         putTtyCmdstat(ctx, CMDST_ERROR);
         return M2K_OK;
       }
       telOptReset(ctx);
       {
-        int r = m2k_sockDialStart(ctx, &ctx->sock);
+        int r = m2k_sockDialStart(ctx, &ctx->sock.conn);
         if (r == 1)
         {
           stepEnterOnline(ctx);
@@ -1398,7 +1398,7 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
       }
       return M2K_OK;
     case CMDST_ATO:
-      if (!ctx->sock.alive)
+      if (!ctx->sock.conn.alive)
       {
         putTtyCmdstat(ctx, CMDST_NOCARRIER);
         return M2K_OK;
@@ -1406,7 +1406,7 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
       stepEnterOnline(ctx);
       return M2K_OK;
     case CMDST_ATA:
-      if (ctx->sock.alive || ctx->answer_fd == -1)
+      if (ctx->sock.conn.alive || ctx->answer_fd == -1)
       {
         putTtyCmdstat(ctx, CMDST_ERROR);
         return M2K_OK;
@@ -1475,7 +1475,7 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
     else if (r == -1)
     {
       /* Connection or PTY ended. Tear down the socket and report. */
-      sockShutdown(&ctx->sock);
+      sockShutdown(&ctx->sock.conn);
       putTtyCmdstat(ctx, CMDST_NOCARRIER);
       stepEnterCmd(ctx);
     }
@@ -1503,13 +1503,13 @@ m2k_is_online(const m2k_t *ctx)
 int
 m2k_has_carrier(const m2k_t *ctx)
 {
-  return ctx->sock.alive;
+  return ctx->sock.conn.alive;
 }
 
 int
 m2k_get_listen_fd(const m2k_t *ctx)
 {
-  return ctx->listen_fd;
+  return ctx->sock.listen_fd;
 }
 
 void
@@ -1519,7 +1519,7 @@ m2k_set_dtr(m2k_t *ctx, int on)
   bool was_asserted = ctx->dtr;
   ctx->dtr = new_state;
   /* &D2-equivalent: 1→0 transition while a connection is live hangs up. */
-  if (was_asserted && !new_state && ctx->sock.alive)
+  if (was_asserted && !new_state && ctx->sock.conn.alive)
     m2k_hangup(ctx);
 }
 
