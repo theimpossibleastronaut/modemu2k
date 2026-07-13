@@ -75,7 +75,9 @@ check_info() {
 
 check_info "help"     -h "--commprog"
 check_info "help"     -h "--answer"
-check_info "version"  -v "modemu2k"
+check_info "version"  -V "Maintainer:"
+# -v alone is the verbose flag; with no mode it falls back to usage (exit 0).
+check_info "verbose-usage" -v "--commprog"
 check_info "warranty" -w "WARRANTY"
 
 # --- Result ---------------------------------------------------------------
