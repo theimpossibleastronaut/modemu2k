@@ -8,9 +8,18 @@ struct m2k_s
   st_sock sock;
   struct st_sockBufR sockBufR;
   struct st_sockBufW sockBufW;
-  struct st_tty tty;
-  struct st_ttyBufR ttyBufR;
-  struct st_ttyBufW ttyBufW;
+  struct
+  {
+    int rfd, wfd;             /* absorbed st_tty */
+    bool owned;               /* true when rfd/wfd is a library-opened fd
+                                   (PTY master, dev, or accepted client)
+                                   that m2k_free() must close; false for
+                                   stdin (0/1, caller-owned) and app-IO.
+                                   rfd == wfd in every owned case, so one
+                                   close suffices. */
+    struct st_ttyBufR bufR;
+    struct st_ttyBufW bufW;
+  } tty;
   struct st_telOpt telOpt;
   m2k_log_fn log_fn;
   void *log_userdata;
@@ -33,10 +42,6 @@ struct m2k_s
                                        drains TTY bytes via m2k_{write_from,
                                        read_to}_app() instead of read()/write()
                                        on tty.{rfd,wfd}. */
-  bool tty_owned;                /* true when tty.rfd/wfd is a library-opened
-                                       fd (PTY master, dev, or accepted client)
-                                       that m2k_free() must close; false for
-                                       stdin (0/1, caller-owned) and app-IO. */
   bool escape_req;               /* m2k_escape() — drives one online→cmd
                                        transition on the next m2k_step(). */
   bool quit_req;                 /* atcmdPQ (at%q) — drives transition to

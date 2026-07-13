@@ -329,13 +329,6 @@ int timevalCmp(const struct timeval *ap, const struct timeval *bp);
 
 // ttybuf
 
-struct st_tty
-{
-  int rfd;
-  int wfd;
-};
-
-
 /* reading tty */
 
 struct st_ttyBufR

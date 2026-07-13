@@ -7,14 +7,14 @@
 void
 ttyBufRReset(m2k_t *ctx)
 {
-  ctx->ttyBufR.ptr = ctx->ttyBufR.end = ctx->ttyBufR.buf;
-  ctx->ttyBufR.prevT.tv_sec = ctx->ttyBufR.prevT.tv_usec = 0;
+  ctx->tty.bufR.ptr = ctx->tty.bufR.end = ctx->tty.bufR.buf;
+  ctx->tty.bufR.prevT.tv_sec = ctx->tty.bufR.prevT.tv_usec = 0;
 }
 
 bool
 ttyBufRHasData(m2k_t *ctx)
 {
-  return ctx->ttyBufR.ptr < ctx->ttyBufR.end;
+  return ctx->tty.bufR.ptr < ctx->tty.bufR.end;
 }
 
 /* reading tty */
@@ -22,7 +22,7 @@ ttyBufRHasData(m2k_t *ctx)
 int
 getTty1(m2k_t *ctx)
 {
-  return ((ctx->ttyBufR.ptr >= ctx->ttyBufR.end) ? -1 : *ctx->ttyBufR.ptr++);
+  return ((ctx->tty.bufR.ptr >= ctx->tty.bufR.end) ? -1 : *ctx->tty.bufR.ptr++);
 }
 
 m2k_err_t
@@ -30,7 +30,7 @@ ttyBufRead(m2k_t *ctx, st_sock *sock)
 {
   int l;
 
-  l = read(ctx->tty.rfd, ctx->ttyBufR.buf, sizeof(ctx->ttyBufR.buf));
+  l = read(ctx->tty.rfd, ctx->tty.bufR.buf, sizeof(ctx->tty.bufR.buf));
   if (l <= 0)
   {
     sockClose(sock);
@@ -39,10 +39,10 @@ ttyBufRead(m2k_t *ctx, st_sock *sock)
       verbosePerror(ctx, VERB_MISC, "read()");
     return M2K_ERR_PTY;
   }
-  ctx->ttyBufR.prevT = ctx->ttyBufR.newT;
-  gettimeofday(&ctx->ttyBufR.newT, NULL);
-  ctx->ttyBufR.ptr = ctx->ttyBufR.buf;
-  ctx->ttyBufR.end = ctx->ttyBufR.buf + l;
+  ctx->tty.bufR.prevT = ctx->tty.bufR.newT;
+  gettimeofday(&ctx->tty.bufR.newT, NULL);
+  ctx->tty.bufR.ptr = ctx->tty.bufR.buf;
+  ctx->tty.bufR.end = ctx->tty.bufR.buf + l;
   return M2K_OK;
 }
 
@@ -52,20 +52,20 @@ ttyBufRead(m2k_t *ctx, st_sock *sock)
 void
 ttyBufWReset(m2k_t *ctx)
 {
-  ctx->ttyBufW.ptr = ctx->ttyBufW.top = ctx->ttyBufW.buf;
-  ctx->ttyBufW.stop = 0;
+  ctx->tty.bufW.ptr = ctx->tty.bufW.top = ctx->tty.bufW.buf;
+  ctx->tty.bufW.stop = 0;
 }
 
 bool
 ttyBufWHasData(m2k_t *ctx)
 {
-  return (ctx->ttyBufW.ptr > ctx->ttyBufW.buf);
+  return (ctx->tty.bufW.ptr > ctx->tty.bufW.buf);
 }
 
 bool
 ttyBufWReady(m2k_t *ctx)
 {
-  return !ctx->ttyBufW.stop;
+  return !ctx->tty.bufW.stop;
 }
 
 m2k_err_t
@@ -73,10 +73,10 @@ ttyBufWrite(m2k_t *ctx, st_sock *sock)
 {
   int wl, l;
 
-  wl = ctx->ttyBufW.ptr - ctx->ttyBufW.top;
+  wl = ctx->tty.bufW.ptr - ctx->tty.bufW.top;
   if (wl == 0)
     return M2K_OK;
-  l = write(ctx->tty.wfd, ctx->ttyBufW.top, wl);
+  l = write(ctx->tty.wfd, ctx->tty.bufW.top, wl);
   if (l <= 0)
   {
     sockClose(sock);
@@ -87,28 +87,28 @@ ttyBufWrite(m2k_t *ctx, st_sock *sock)
   }
   else if (l < wl)
   {
-    ctx->ttyBufW.top += l;
+    ctx->tty.bufW.top += l;
     return M2K_OK;
   }
-  ctx->ttyBufW.ptr = ctx->ttyBufW.top = ctx->ttyBufW.buf;
-  ctx->ttyBufW.stop = 0;
+  ctx->tty.bufW.ptr = ctx->tty.bufW.top = ctx->tty.bufW.buf;
+  ctx->tty.bufW.stop = 0;
   return M2K_OK;
 }
 
 void
 putTty1(m2k_t *ctx, uchar c)
 {
-  if (ctx->ttyBufW.ptr >= ctx->ttyBufW.buf + TTYBUFW_SIZE)
+  if (ctx->tty.bufW.ptr >= ctx->tty.bufW.buf + TTYBUFW_SIZE)
   { /* limit */
-    if (ctx->ttyBufW.ptr >= ctx->ttyBufW.buf + TTYBUFW_SIZE_A)
+    if (ctx->tty.bufW.ptr >= ctx->tty.bufW.buf + TTYBUFW_SIZE_A)
     { /*actual limit */
       m2k_log(ctx, "\attyBufW overrun.\n");
       return;
     }
     else
-      ctx->ttyBufW.stop = 1; /* flow control */
+      ctx->tty.bufW.stop = 1; /* flow control */
   }
-  *ctx->ttyBufW.ptr++ = c;
+  *ctx->tty.bufW.ptr++ = c;
 }
 
 void

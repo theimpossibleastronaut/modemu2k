@@ -16,10 +16,10 @@ static void
 test_ttyBufRHasData_with_data(void)
 {
   ttyBufRReset(ctx);
-  ctx->ttyBufR.buf[0] = 'A';
-  ctx->ttyBufR.buf[1] = 'B';
-  ctx->ttyBufR.ptr = ctx->ttyBufR.buf;
-  ctx->ttyBufR.end = ctx->ttyBufR.buf + 2;
+  ctx->tty.bufR.buf[0] = 'A';
+  ctx->tty.bufR.buf[1] = 'B';
+  ctx->tty.bufR.ptr = ctx->tty.bufR.buf;
+  ctx->tty.bufR.end = ctx->tty.bufR.buf + 2;
   assert(ttyBufRHasData(ctx));
   getTty1(ctx);
   assert(ttyBufRHasData(ctx));

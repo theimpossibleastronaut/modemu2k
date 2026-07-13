@@ -122,17 +122,17 @@ escSeqHandle(m2k_t *ctx, int c)
   switch (es->state)
   {
   case ESH_P1:
-    if (c == CHAR_ESC(ctx) && !s12timePassed(ctx, &ctx->ttyBufR.newT, &es->plus1T))
+    if (c == CHAR_ESC(ctx) && !s12timePassed(ctx, &ctx->tty.bufR.newT, &es->plus1T))
       es->state = ESH_P2;
     else
       es->state = ESH_NORM;
     break;
   case ESH_P2:
-    if (c == CHAR_ESC(ctx) && !s12timePassed(ctx, &ctx->ttyBufR.newT, &es->plus1T))
+    if (c == CHAR_ESC(ctx) && !s12timePassed(ctx, &ctx->tty.bufR.newT, &es->plus1T))
     {
       es->checkSilence = 1;
       timevalSet10ms(&es->expireT, ctx->atcmd.s[12] * 2);
-      timevalAdd(&es->expireT, &ctx->ttyBufR.newT);
+      timevalAdd(&es->expireT, &ctx->tty.bufR.newT);
       es->state = ESH_P3;
     }
     else
@@ -144,9 +144,9 @@ escSeqHandle(m2k_t *ctx, int c)
     /* fall through — same as ESH_NORM first-char logic */
     /* FALLTHROUGH */
   case ESH_NORM:
-    if (c == CHAR_ESC(ctx) && s12timePassed(ctx, &ctx->ttyBufR.newT, &ctx->ttyBufR.prevT))
+    if (c == CHAR_ESC(ctx) && s12timePassed(ctx, &ctx->tty.bufR.newT, &ctx->tty.bufR.prevT))
     {
-      es->plus1T = ctx->ttyBufR.newT;
+      es->plus1T = ctx->tty.bufR.newT;
       es->state = ESH_P1;
     }
   }
@@ -395,7 +395,7 @@ m2k_free(m2k_t *ctx)
   /* Close the TTY fd only when the library opened it (PTY master, dev,
      accepted client). stdin mode (rfd/wfd = 0/1) and app-IO are
      caller-owned. rfd == wfd in every owned case, so one close suffices. */
-  if (ctx->tty_owned && ctx->tty.rfd >= 0)
+  if (ctx->tty.owned && ctx->tty.rfd >= 0)
     close(ctx->tty.rfd);
   sockShutdown(&ctx->sock);
   free(ctx);
@@ -612,7 +612,7 @@ m2k_setup_stdin(m2k_t *ctx)
 {
   ctx->tty.rfd = 0;
   ctx->tty.wfd = 1;
-  ctx->tty_owned = false;
+  ctx->tty.owned = false;
   setTty();
   return M2K_OK;
 }
@@ -624,7 +624,7 @@ m2k_setup_pty(m2k_t *ctx, const char **slave_out)
   if (fd < 0)
     return M2K_ERR_PTY;
   ctx->tty.rfd = ctx->tty.wfd = fd;
-  ctx->tty_owned = true;
+  ctx->tty.owned = true;
   *slave_out = ctx->slave_path;
   return M2K_OK;
 }
@@ -636,7 +636,7 @@ m2k_setup_comm_program(m2k_t *ctx, const char *cmd)
   if (fd < 0)
     return M2K_ERR_PTY;
   ctx->tty.rfd = ctx->tty.wfd = fd;
-  ctx->tty_owned = true;
+  ctx->tty.owned = true;
   return commProgramForkExec(ctx, cmd, ctx->slave_path);
 }
 
@@ -650,7 +650,7 @@ m2k_setup_dev(m2k_t *ctx, const char *dev)
     return M2K_ERR_PTY;
   }
   ctx->tty.rfd = ctx->tty.wfd = fd;
-  ctx->tty_owned = true;
+  ctx->tty.owned = true;
   return M2K_OK;
 }
 
@@ -677,7 +677,7 @@ m2k_listen_accept(m2k_t *ctx)
   if (client_fd == -1)
     return M2K_ERR_SOCKET;
   ctx->tty.rfd = ctx->tty.wfd = client_fd;
-  ctx->tty_owned = true;
+  ctx->tty.owned = true;
   return M2K_OK;
 }
 
@@ -716,7 +716,7 @@ m2k_setup_app_io(m2k_t *ctx)
 {
   ctx->app_io = true;
   ctx->tty.rfd = ctx->tty.wfd = -1;
-  ctx->tty_owned = false;
+  ctx->tty.owned = false;
   return M2K_OK;
 }
 
@@ -732,8 +732,8 @@ m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len, size_t *consumed)
   if (len == 0)
     return M2K_OK;
 
-  size_t residue = ctx->ttyBufR.end - ctx->ttyBufR.ptr;
-  size_t cap = sizeof(ctx->ttyBufR.buf);
+  size_t residue = ctx->tty.bufR.end - ctx->tty.bufR.ptr;
+  size_t cap = sizeof(ctx->tty.bufR.buf);
   if (residue >= cap)
   {
     m2k_err_set(ctx, "m2k_write_from_app: TTY read buffer full (%zu bytes pending)\n",
@@ -743,13 +743,13 @@ m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len, size_t *consumed)
   size_t room = cap - residue;
   size_t take = len < room ? len : room;
 
-  if (residue && ctx->ttyBufR.ptr != ctx->ttyBufR.buf)
-    memmove(ctx->ttyBufR.buf, ctx->ttyBufR.ptr, residue);
-  memcpy(ctx->ttyBufR.buf + residue, buf, take);
-  ctx->ttyBufR.ptr = ctx->ttyBufR.buf;
-  ctx->ttyBufR.end = ctx->ttyBufR.buf + residue + take;
-  ctx->ttyBufR.prevT = ctx->ttyBufR.newT;
-  gettimeofday(&ctx->ttyBufR.newT, NULL);
+  if (residue && ctx->tty.bufR.ptr != ctx->tty.bufR.buf)
+    memmove(ctx->tty.bufR.buf, ctx->tty.bufR.ptr, residue);
+  memcpy(ctx->tty.bufR.buf + residue, buf, take);
+  ctx->tty.bufR.ptr = ctx->tty.bufR.buf;
+  ctx->tty.bufR.end = ctx->tty.bufR.buf + residue + take;
+  ctx->tty.bufR.prevT = ctx->tty.bufR.newT;
+  gettimeofday(&ctx->tty.bufR.newT, NULL);
   *consumed = take;
   return M2K_OK;
 }
@@ -762,16 +762,16 @@ m2k_read_to_app(m2k_t *ctx, void *buf, size_t max, size_t *len_out)
     *len_out = 0;
     return M2K_ERR_PTY;
   }
-  size_t available = ctx->ttyBufW.ptr - ctx->ttyBufW.top;
+  size_t available = ctx->tty.bufW.ptr - ctx->tty.bufW.top;
   size_t n = available < max ? available : max;
   if (n)
-    memcpy(buf, ctx->ttyBufW.top, n);
-  ctx->ttyBufW.top += n;
-  if (ctx->ttyBufW.top >= ctx->ttyBufW.ptr)
+    memcpy(buf, ctx->tty.bufW.top, n);
+  ctx->tty.bufW.top += n;
+  if (ctx->tty.bufW.top >= ctx->tty.bufW.ptr)
   {
     /* Buffer fully drained — rewind to make room for new output. */
-    ctx->ttyBufW.ptr = ctx->ttyBufW.top = ctx->ttyBufW.buf;
-    ctx->ttyBufW.stop = 0;
+    ctx->tty.bufW.ptr = ctx->tty.bufW.top = ctx->tty.bufW.buf;
+    ctx->tty.bufW.stop = 0;
   }
   *len_out = n;
   return M2K_OK;
@@ -782,7 +782,7 @@ m2k_has_pending_output(const m2k_t *ctx)
 {
   if (!ctx || !ctx->app_io)
     return 0;
-  return ctx->ttyBufW.ptr > ctx->ttyBufW.top;
+  return ctx->tty.bufW.ptr > ctx->tty.bufW.top;
 }
 
 /* ── Steppable event-loop API ────────────────────────────────────────
