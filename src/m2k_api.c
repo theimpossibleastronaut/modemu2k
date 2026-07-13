@@ -787,6 +787,10 @@ m2k_has_pending_output(const m2k_t *ctx)
        CMD    ── ATD (alive=0) ──▶ (dial inline) ──▶ ONLINE on success
                                                   ──▶ CMD on dial fail
        CMD    ── ATO (alive=1) ──▶ ONLINE
+       CMD    ── ATA (caller)   ──▶ ONLINE (CONNECT)
+       CMD    ── ATA (none)     ──▶ ANSWER (wait ≤ S7)
+       ANSWER ── caller arrives ──▶ ONLINE (CONNECT)
+       ANSWER ── S7 / keypress  ──▶ CMD (NO CARRIER)
        CMD    ── PTY closed    ──▶ DONE
        ONLINE ── +++ escape    ──▶ CMD
        ONLINE ── sock dead     ──▶ CMD
@@ -801,6 +805,8 @@ stepStateName(m2k_step_state s)
     return "CMD";
   case M2K_STATE_DIAL:
     return "DIAL";
+  case M2K_STATE_ANSWER:
+    return "ANSWER";
   case M2K_STATE_ONLINE:
     return "ONLINE";
   case M2K_STATE_DONE:
@@ -843,6 +849,18 @@ stepEnterDial(m2k_t *ctx)
   ctx->step_state = M2K_STATE_DIAL;
 }
 
+static void
+stepEnterAnswer(m2k_t *ctx)
+{
+  verboseOut(ctx, VERB_MISC, "state: %s -> ANSWER\r\n", stepStateName(ctx->step_state));
+  /* Drop any pending TTY input — semantics of going off-hook. */
+  ttyBufRReset(ctx);
+  cmdBufReset(&ctx->step_cmdbuf);
+  gettimeofday(&ctx->answer_deadline, NULL);
+  ctx->answer_deadline.tv_sec += ctx->atcmd.s[7];
+  ctx->step_state = M2K_STATE_ANSWER;
+}
+
 m2k_err_t
 m2k_hangup(m2k_t *ctx)
 {
@@ -851,6 +869,12 @@ m2k_hangup(m2k_t *ctx)
   if (ctx->step_state == M2K_STATE_DIAL)
   {
     m2k_sockDialAbort(ctx, &ctx->sock);
+    putTtyCmdstat(ctx, CMDST_NOCARRIER);
+    stepEnterCmd(ctx);
+    return M2K_OK;
+  }
+  if (ctx->step_state == M2K_STATE_ANSWER)
+  {
     putTtyCmdstat(ctx, CMDST_NOCARRIER);
     stepEnterCmd(ctx);
     return M2K_OK;
@@ -1047,6 +1071,84 @@ dialIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
   return m2k_sockDialProgress(ctx, &ctx->sock);
 }
 
+/* Non-blocking "is a caller waiting in the accept queue?" check. */
+static int
+answerPending(m2k_t *ctx)
+{
+  if (ctx->answer_fd == -1 || ctx->sock.alive)
+    return 0;
+  struct pollfd p = {.fd = ctx->answer_fd, .events = POLLIN, .revents = 0};
+  return poll(&p, 1, 0) == 1 && (p.revents & POLLIN);
+}
+
+/* Accept the pending caller and adopt it as the connection. Returns 0
+   on success, -1 on accept failure (the listener stays bound). */
+static int
+answerAccept(m2k_t *ctx)
+{
+  int fd = m2k_sockAcceptKeep(ctx, ctx->answer_fd);
+  if (fd == -1)
+    return -1;
+  telOptReset(ctx);
+  sockInit(&ctx->sock);
+  ctx->sock.fd = fd;
+  ctx->sock.alive = 1;
+  ctx->atcmd.s[1] = 0; /* call answered — ring counter rests */
+  return 0;
+}
+
+/* Answer mode: wait for the listener to become readable, plus the TTY
+   rfd (a keypress cancels, like dial cancel). Timeout runs to the S7
+   deadline. */
+static void
+answerPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
+{
+  size_t n = 0;
+
+  fds[n].fd = ctx->answer_fd;
+  fds[n].events = POLLIN;
+  fds[n].revents = 0;
+  n++;
+
+  appendTtyPollfds(ctx, fds, &n, POLLIN, 0);
+  *nfds_inout = n;
+
+  struct timeval now, remaining;
+  gettimeofday(&now, NULL);
+  if (timevalCmp(&now, &ctx->answer_deadline) >= 0)
+  {
+    *timeout_ms = 0;
+    return;
+  }
+  remaining = ctx->answer_deadline;
+  timevalSub(&remaining, &now);
+  long ms = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
+  if (ms <= 0) ms = 1;
+  *timeout_ms = (int) ms;
+}
+
+/* Returns 1 (accepted — caller transitions to ONLINE), 0 (continue
+   polling), -1 (canceled or timed out — caller emits NOCARRIER + CMD). */
+static int
+answerIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
+{
+  if (!ctx->app_io)
+  {
+    struct pollfd *p = findPollfd(fds, nfds, ctx->tty.rfd);
+    if (p && (p->revents & READ_EV))
+      return -1;
+  }
+  struct pollfd *p = findPollfd(fds, nfds, ctx->answer_fd);
+  if (p && (p->revents & READ_EV))
+    return answerAccept(ctx) == 0 ? 1 : -1;
+
+  struct timeval now;
+  gettimeofday(&now, NULL);
+  if (timevalCmp(&now, &ctx->answer_deadline) >= 0)
+    return -1;
+  return 0;
+}
+
 /* timeout_ms is driven by the +++ escape silence guard; expiry is
    detected inside onlineIter after poll returns. */
 static void
@@ -1177,6 +1279,9 @@ m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout
   case M2K_STATE_DIAL:
     dialPollfds(ctx, fds, nfds_inout, timeout_ms);
     return M2K_OK;
+  case M2K_STATE_ANSWER:
+    answerPollfds(ctx, fds, nfds_inout, timeout_ms);
+    return M2K_OK;
   case M2K_STATE_ONLINE:
     onlinePollfds(ctx, fds, nfds_inout, timeout_ms);
     return M2K_OK;
@@ -1230,6 +1335,28 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
       }
       stepEnterOnline(ctx);
       return M2K_OK;
+    case CMDST_ATA:
+      if (ctx->sock.alive || ctx->answer_fd == -1)
+      {
+        putTtyCmdstat(ctx, CMDST_ERROR);
+        return M2K_OK;
+      }
+      if (answerPending(ctx))
+      {
+        if (answerAccept(ctx) == 0)
+          stepEnterOnline(ctx);
+        else
+          putTtyCmdstat(ctx, CMDST_NOCARRIER);
+      }
+      else if (ctx->atcmd.s[7] == 0)
+      {
+        putTtyCmdstat(ctx, CMDST_NOCARRIER);
+      }
+      else
+      {
+        stepEnterAnswer(ctx);
+      }
+      return M2K_OK;
     case CMDST_PTY_CLOSED:
       verboseOut(ctx, VERB_MISC, "state: %s -> DONE\r\n", stepStateName(ctx->step_state));
       ctx->step_state = M2K_STATE_DONE;
@@ -1241,6 +1368,20 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
   case M2K_STATE_DIAL:
   {
     int r = dialIter(ctx, fds, nfds);
+    if (r == 1)
+    {
+      stepEnterOnline(ctx);
+    }
+    else if (r == -1)
+    {
+      putTtyCmdstat(ctx, CMDST_NOCARRIER);
+      stepEnterCmd(ctx);
+    }
+    return M2K_OK;
+  }
+  case M2K_STATE_ANSWER:
+  {
+    int r = answerIter(ctx, fds, nfds);
     if (r == 1)
     {
       stepEnterOnline(ctx);

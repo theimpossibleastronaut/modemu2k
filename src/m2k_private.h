@@ -105,6 +105,7 @@ typedef enum
 {
   M2K_STATE_CMD,    /* command mode — reading AT commands from the TTY */
   M2K_STATE_DIAL,   /* non-blocking dial in progress — sock.fd is mid-connect */
+  M2K_STATE_ANSWER, /* ATA waiting up to S7 seconds for an incoming caller */
   M2K_STATE_ONLINE, /* online mode — relaying between TTY and socket */
   M2K_STATE_DONE    /* PTY closed; m2k_run_done() returns true */
 } m2k_step_state;
