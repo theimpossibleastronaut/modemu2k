@@ -87,6 +87,7 @@ TTYPE	([-/a-zA-Z0-9]*)
 <INITIAL>^#	{ return cmdstat = CMDST_NOAT; }
 <INITIAL>.|\n	{ /*ignore preceding garbage*/ }
 
+<AT>[aA]	{ cmdstat = CMDST_ATA; }
 <AT>[dD]	{ BEGIN ATD; cmdstat = CMDST_ERROR; }
 <AT>[eE][0-9]?	{ if (atcmdFake(ctx, yytext,"1")) return cmdstat = CMDST_ERROR; }
 <AT>[fF][0-9]?	{ if (atcmdFake(ctx, yytext,"1")) return cmdstat = CMDST_ERROR; }

@@ -413,7 +413,9 @@ typedef enum
   CMDST_NOAT,
   CMDST_ATD,
   CMDST_ATO,
-  CMDST_PTY_CLOSED
+  CMDST_PTY_CLOSED,
+  CMDST_ATA,
+  CMDST_RING
 } Cmdstat;
 
 Cmdstat cmdLex(m2k_t *ctx, const char *ptr, st_sock *sock);

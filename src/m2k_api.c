@@ -326,6 +326,8 @@ putTtyCmdstat(m2k_t *ctx, Cmdstat s)
     "",
     "",
     "",
+    "",     /* CMDST_ATA — never printed */
+    "RING",
   };
 
   putTty1(ctx, CHAR_CR(ctx));
@@ -432,6 +434,9 @@ m2k_atcmd(m2k_t *ctx, const char *cmd)
     return M2K_ERR_AT;
   case CMDST_ATO:
     m2k_err_set(ctx, "ATO is not actionable from m2k_atcmd; use m2k_online()\n");
+    return M2K_ERR_AT;
+  case CMDST_ATA:
+    m2k_err_set(ctx, "ATA is not actionable from m2k_atcmd; use the step loop\n");
     return M2K_ERR_AT;
   default:
     m2k_err_set(ctx, "m2k_atcmd: unexpected lexer status %d for \"%s\"\n", r, cmd);
@@ -934,6 +939,7 @@ cmdDispatchIfReady(m2k_t *ctx, struct m2k_cmdbuf *cmdBuf, st_sock *sock)
   {
   case CMDST_ATD:
   case CMDST_ATO:
+  case CMDST_ATA:
     return stat;
   case CMDST_OK:
   case CMDST_ERROR:

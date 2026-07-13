@@ -36,9 +36,26 @@ test_setup_answer_binds(void)
   m2k_free(ctx);
 }
 
+static void
+test_ata_lexes(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  char errbuf[256] = "";
+  m2k_set_error_buffer(ctx, errbuf, sizeof errbuf);
+  /* ATA is a stepping-loop command, not actionable synchronously —
+     same contract as ATD/ATO in m2k_atcmd(). */
+  assert(m2k_atcmd(ctx, "ATA") == M2K_ERR_AT);
+  assert(strstr(errbuf, "ATA is not actionable") != NULL);
+  /* Garbage after AT still errors (lexer catch-all intact). */
+  assert(m2k_atcmd(ctx, "ATY") == M2K_ERR_AT);
+  m2k_free(ctx);
+}
+
 int
 main(void)
 {
   test_setup_answer_binds();
+  test_ata_lexes();
   return 0;
 }
