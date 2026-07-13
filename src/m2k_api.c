@@ -370,7 +370,7 @@ m2k_new(void)
   if (!ctx)
     return NULL;
   ctx->sock.listen_fd = -1;
-  ctx->answer_fd = -1;
+  ctx->answer.fd = -1;
   ctx->step_state = M2K_STATE_CMD;
   ctx->dtr = true;
   ctx->rts = true;
@@ -390,8 +390,8 @@ m2k_free(m2k_t *ctx)
     return;
   if (ctx->sock.listen_fd != -1)
     close(ctx->sock.listen_fd);
-  if (ctx->answer_fd != -1)
-    close(ctx->answer_fd);
+  if (ctx->answer.fd != -1)
+    close(ctx->answer.fd);
   /* Close the TTY fd only when the library opened it (PTY master, dev,
      accepted client). stdin mode (rfd/wfd = 0/1) and app-IO are
      caller-owned. rfd == wfd in every owned case, so one close suffices. */
@@ -684,7 +684,7 @@ m2k_listen_accept(m2k_t *ctx)
 m2k_err_t
 m2k_setup_answer(m2k_t *ctx, const char *port)
 {
-  if (ctx->answer_fd != -1)
+  if (ctx->answer.fd != -1)
   {
     m2k_err_set(ctx, "m2k_setup_answer: answer listener already bound\n");
     return M2K_ERR_SOCKET;
@@ -696,14 +696,14 @@ m2k_setup_answer(m2k_t *ctx, const char *port)
      accept queue, so a blocking accept() after a positive poll could
      hang m2k_step indefinitely. */
   fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
-  ctx->answer_fd = fd;
+  ctx->answer.fd = fd;
   return M2K_OK;
 }
 
 int
 m2k_get_answer_fd(const m2k_t *ctx)
 {
-  return ctx->answer_fd;
+  return ctx->answer.fd;
 }
 
 /* ── App-IO (embed) mode ──────────────────────────────────────────────
@@ -860,8 +860,8 @@ stepEnterAnswer(m2k_t *ctx)
   /* Drop any pending TTY input — semantics of going off-hook. */
   ttyBufRReset(ctx);
   cmdBufReset(&ctx->step_cmdbuf);
-  gettimeofday(&ctx->answer_deadline, NULL);
-  ctx->answer_deadline.tv_sec += ctx->atcmd.s[7];
+  gettimeofday(&ctx->answer.deadline, NULL);
+  ctx->answer.deadline.tv_sec += ctx->atcmd.s[7];
   ctx->step_state = M2K_STATE_ANSWER;
 }
 
@@ -956,12 +956,12 @@ cmdPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
     *timeout_ms = -1;
   }
 
-  if (ctx->answer_fd != -1 && !ctx->sock.conn.alive)
+  if (ctx->answer.fd != -1 && !ctx->sock.conn.alive)
   {
     if (ctx->atcmd.s[1] == 0)
     {
       /* No ring cycle yet — wake when a caller arrives. */
-      fds[n].fd = ctx->answer_fd;
+      fds[n].fd = ctx->answer.fd;
       fds[n].events = POLLIN;
       fds[n].revents = 0;
       n++;
@@ -973,9 +973,9 @@ cmdPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
       struct timeval now, remaining;
       gettimeofday(&now, NULL);
       int ms = 0;
-      if (timevalCmp(&now, &ctx->ring_next) < 0)
+      if (timevalCmp(&now, &ctx->answer.ring_next) < 0)
       {
-        remaining = ctx->ring_next;
+        remaining = ctx->answer.ring_next;
         timevalSub(&remaining, &now);
         long l = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
         ms = l > 0 ? (int) l : 1;
@@ -1111,9 +1111,9 @@ dialIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 static int
 answerPending(m2k_t *ctx)
 {
-  if (ctx->answer_fd == -1 || ctx->sock.conn.alive)
+  if (ctx->answer.fd == -1 || ctx->sock.conn.alive)
     return 0;
-  struct pollfd p = {.fd = ctx->answer_fd, .events = POLLIN, .revents = 0};
+  struct pollfd p = {.fd = ctx->answer.fd, .events = POLLIN, .revents = 0};
   return poll(&p, 1, 0) == 1 && (p.revents & POLLIN);
 }
 
@@ -1122,7 +1122,7 @@ answerPending(m2k_t *ctx)
 static int
 answerAccept(m2k_t *ctx)
 {
-  int fd = m2k_sockAcceptKeep(ctx, ctx->answer_fd);
+  int fd = m2k_sockAcceptKeep(ctx, ctx->answer.fd);
   if (fd == -1)
     return -1;
   telOptReset(ctx);
@@ -1141,7 +1141,7 @@ answerPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_m
 {
   size_t n = 0;
 
-  fds[n].fd = ctx->answer_fd;
+  fds[n].fd = ctx->answer.fd;
   fds[n].events = POLLIN;
   fds[n].revents = 0;
   n++;
@@ -1154,12 +1154,12 @@ answerPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_m
 
   struct timeval now, remaining;
   gettimeofday(&now, NULL);
-  if (timevalCmp(&now, &ctx->answer_deadline) >= 0)
+  if (timevalCmp(&now, &ctx->answer.deadline) >= 0)
   {
     *timeout_ms = 0;
     return;
   }
-  remaining = ctx->answer_deadline;
+  remaining = ctx->answer.deadline;
   timevalSub(&remaining, &now);
   long ms = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
   if (ms <= 0) ms = 1;
@@ -1177,13 +1177,13 @@ answerIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
     if (p && (p->revents & READ_EV))
       return -1;
   }
-  struct pollfd *p = findPollfd(fds, nfds, ctx->answer_fd);
+  struct pollfd *p = findPollfd(fds, nfds, ctx->answer.fd);
   if (p && (p->revents & READ_EV))
     return answerAccept(ctx) == 0 ? 1 : -1;
 
   struct timeval now;
   gettimeofday(&now, NULL);
-  if (timevalCmp(&now, &ctx->answer_deadline) >= 0)
+  if (timevalCmp(&now, &ctx->answer.deadline) >= 0)
     return -1;
   return 0;
 }
@@ -1309,7 +1309,7 @@ onlineIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 static int
 cmdRingCheck(m2k_t *ctx)
 {
-  if (ctx->answer_fd == -1 || ctx->sock.conn.alive)
+  if (ctx->answer.fd == -1 || ctx->sock.conn.alive)
     return 0;
   if (!answerPending(ctx))
   {
@@ -1318,13 +1318,13 @@ cmdRingCheck(m2k_t *ctx)
   }
   struct timeval now;
   gettimeofday(&now, NULL);
-  if (ctx->atcmd.s[1] != 0 && timevalCmp(&now, &ctx->ring_next) < 0)
+  if (ctx->atcmd.s[1] != 0 && timevalCmp(&now, &ctx->answer.ring_next) < 0)
     return 0; /* between rings */
   putTtyCmdstat(ctx, CMDST_RING);
   if (ctx->atcmd.s[1] < 255)
     ctx->atcmd.s[1]++;
-  ctx->ring_next = now;
-  ctx->ring_next.tv_sec += RING_INTERVAL_SEC;
+  ctx->answer.ring_next = now;
+  ctx->answer.ring_next.tv_sec += RING_INTERVAL_SEC;
   if (ctx->atcmd.s[0] > 0 && ctx->atcmd.s[1] >= ctx->atcmd.s[0])
     return answerAccept(ctx) == 0;
   return 0;
@@ -1406,7 +1406,7 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
       stepEnterOnline(ctx);
       return M2K_OK;
     case CMDST_ATA:
-      if (ctx->sock.conn.alive || ctx->answer_fd == -1)
+      if (ctx->sock.conn.alive || ctx->answer.fd == -1)
       {
         putTtyCmdstat(ctx, CMDST_ERROR);
         return M2K_OK;
