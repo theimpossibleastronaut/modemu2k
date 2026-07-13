@@ -231,6 +231,71 @@ test_second_call_after_hangup(void)
   m2k_free(ctx);
 }
 
+static void
+test_ring_emitted_for_pending_caller(void)
+{
+  m2k_t *ctx = new_answer_ctx();
+  int client = connect_client(answer_port(ctx));
+
+  for (int i = 0; i < 50 && strstr(outbuf, "RING") == NULL; i++)
+    step_once(ctx);
+  assert(strstr(outbuf, "RING") != NULL);
+  assert(!m2k_is_online(ctx)); /* S0=0: never auto-answers */
+  assert(ctx->atcmd.s[1] == 1); /* one ring so far (cadence is 6 s) */
+
+  /* Explicit ATA answers the ringing call. */
+  push_line(ctx, "ATA");
+  for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+  assert(ctx->atcmd.s[1] == 0); /* counter rests once answered */
+
+  close(client);
+  m2k_free(ctx);
+}
+
+static void
+test_s0_auto_answer(void)
+{
+  m2k_t *ctx = new_answer_ctx();
+  assert(m2k_atcmd(ctx, "ATS0=1") == M2K_OK);
+  int client = connect_client(answer_port(ctx));
+
+  for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+  assert(strstr(outbuf, "RING") != NULL);
+  assert(strstr(outbuf, "CONNECT") != NULL);
+
+  close(client);
+  m2k_free(ctx);
+}
+
+static void
+test_ath_keeps_listener(void)
+{
+  m2k_t *ctx = new_answer_ctx();
+  int client = connect_client(answer_port(ctx));
+  push_line(ctx, "ATA");
+  for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+
+  /* +++ escape back to CMD, then ATH hangs up the call only. */
+  assert(m2k_escape(ctx) == M2K_OK);
+  for (int i = 0; i < 10 && m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(!m2k_is_online(ctx));
+  push_line(ctx, "ATH");
+  for (int i = 0; i < 10 && m2k_has_carrier(ctx); i++)
+    step_once(ctx);
+  assert(!m2k_has_carrier(ctx));
+  assert(m2k_get_answer_fd(ctx) >= 0);
+
+  close(client);
+  m2k_free(ctx);
+}
+
 int
 main(void)
 {
@@ -241,5 +306,8 @@ main(void)
   test_ata_no_caller_s7_zero_nocarrier();
   test_ata_s7_timeout_nocarrier();
   test_second_call_after_hangup();
+  test_ring_emitted_for_pending_caller();
+  test_s0_auto_answer();
+  test_ath_keeps_listener();
   return 0;
 }

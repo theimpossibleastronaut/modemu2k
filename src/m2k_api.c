@@ -897,6 +897,9 @@ findPollfd(struct pollfd *fds, size_t nfds, int fd)
 #define READ_EV (POLLIN | POLLHUP | POLLERR)
 #define WRITE_EV (POLLOUT | POLLERR)
 
+/* Seconds between RING emissions while a caller waits (US ring cadence). */
+#define RING_INTERVAL_SEC 6
+
 /* One entry if rfd==wfd; else one per fd, each only when its mask is set. */
 static void
 appendTtyPollfds(m2k_t *ctx, struct pollfd *fds, size_t *n,
@@ -937,18 +940,47 @@ cmdPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
 
   if (ctx->app_io)
   {
-    *nfds_inout = 0;
     /* timeout=0 only if there's already work to do; otherwise let the
        host's poll() block on its own fds until it has bytes to push us. */
     *timeout_ms = (ttyBufRHasData(ctx) || ctx->step_cmdbuf.eol) ? 0 : -1;
-    return;
+  }
+  else
+  {
+    appendTtyPollfds(ctx, fds, &n,
+                     ttyBufWReady(ctx) ? POLLIN : 0,
+                     ttyBufWHasData(ctx) ? POLLOUT : 0);
+    *timeout_ms = -1;
   }
 
-  appendTtyPollfds(ctx, fds, &n,
-                   ttyBufWReady(ctx) ? POLLIN : 0,
-                   ttyBufWHasData(ctx) ? POLLOUT : 0);
+  if (ctx->answer_fd != -1 && !ctx->sock.alive)
+  {
+    if (ctx->atcmd.s[1] == 0)
+    {
+      /* No ring cycle yet — wake when a caller arrives. */
+      fds[n].fd = ctx->answer_fd;
+      fds[n].events = POLLIN;
+      fds[n].revents = 0;
+      n++;
+    }
+    else
+    {
+      /* Ring cycle in progress: the listener stays readable (level-
+         triggered), so wake on the next-RING deadline instead. */
+      struct timeval now, remaining;
+      gettimeofday(&now, NULL);
+      int ms = 0;
+      if (timevalCmp(&now, &ctx->ring_next) < 0)
+      {
+        remaining = ctx->ring_next;
+        timevalSub(&remaining, &now);
+        long l = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
+        ms = l > 0 ? (int) l : 1;
+      }
+      if (*timeout_ms < 0 || ms < *timeout_ms)
+        *timeout_ms = ms;
+    }
+  }
   *nfds_inout = n;
-  *timeout_ms = -1;
 }
 
 static Cmdstat
@@ -1265,6 +1297,32 @@ onlineIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
   return 0;
 }
 
+/* RING/S0 bookkeeping for CMD state. Returns 1 when S0 auto-answer
+   accepted a caller (caller transitions to ONLINE), else 0. */
+static int
+cmdRingCheck(m2k_t *ctx)
+{
+  if (ctx->answer_fd == -1 || ctx->sock.alive)
+    return 0;
+  if (!answerPending(ctx))
+  {
+    ctx->atcmd.s[1] = 0; /* caller gone (or none): ring cycle over */
+    return 0;
+  }
+  struct timeval now;
+  gettimeofday(&now, NULL);
+  if (ctx->atcmd.s[1] != 0 && timevalCmp(&now, &ctx->ring_next) < 0)
+    return 0; /* between rings */
+  putTtyCmdstat(ctx, CMDST_RING);
+  if (ctx->atcmd.s[1] < 255)
+    ctx->atcmd.s[1]++;
+  ctx->ring_next = now;
+  ctx->ring_next.tv_sec += RING_INTERVAL_SEC;
+  if (ctx->atcmd.s[0] > 0 && ctx->atcmd.s[1] >= ctx->atcmd.s[0])
+    return answerAccept(ctx) == 0;
+  return 0;
+}
+
 m2k_err_t
 m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
 {
@@ -1301,6 +1359,11 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
   {
   case M2K_STATE_CMD:
   {
+    if (cmdRingCheck(ctx))
+    {
+      stepEnterOnline(ctx);
+      return M2K_OK;
+    }
     Cmdstat s = cmdIter(ctx, fds, nfds);
     switch (s)
     {
