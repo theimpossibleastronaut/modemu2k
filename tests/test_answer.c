@@ -7,6 +7,7 @@
 #include <poll.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 /* Discover the ephemeral port of the bound answer listener. */
 static int
@@ -296,6 +297,44 @@ test_ath_keeps_listener(void)
   m2k_free(ctx);
 }
 
+static void
+test_aborted_caller_does_not_hang(void)
+{
+  /* A caller that RSTs before ATA is silently removed from the accept
+     queue on Linux; a blocking accept() would then hang m2k_step. The
+     answer listener is non-blocking so the step loop must stay prompt
+     and resolve to NO CARRIER (or answer a real caller) either way. */
+  m2k_t *ctx = new_answer_ctx();
+  assert(m2k_atcmd(ctx, "ATS7=1") == M2K_OK);
+
+  int client = connect_client(answer_port(ctx));
+  struct linger lg = {1, 0};
+  assert(setsockopt(client, SOL_SOCKET, SO_LINGER, &lg, sizeof lg) == 0);
+  close(client); /* RST */
+  usleep(100 * 1000);
+
+  struct timespec t0, t1;
+  clock_gettime(CLOCK_MONOTONIC, &t0);
+  push_line(ctx, "ATA");
+  for (int i = 0; i < 40 && strstr(outbuf, "NO CARRIER") == NULL; i++)
+    step_once(ctx);
+  clock_gettime(CLOCK_MONOTONIC, &t1);
+  double elapsed = (t1.tv_sec - t0.tv_sec) + (t1.tv_nsec - t0.tv_nsec) / 1e9;
+  assert(elapsed < 3.0); /* never wedged in a blocking accept() */
+  assert(strstr(outbuf, "NO CARRIER") != NULL);
+  assert(!m2k_is_online(ctx));
+
+  /* Listener still healthy for a well-behaved caller. */
+  int c2 = connect_client(answer_port(ctx));
+  out_reset();
+  push_line(ctx, "ATA");
+  for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+  close(c2);
+  m2k_free(ctx);
+}
+
 int
 main(void)
 {
@@ -309,5 +348,6 @@ main(void)
   test_ring_emitted_for_pending_caller();
   test_s0_auto_answer();
   test_ath_keeps_listener();
+  test_aborted_caller_does_not_hang();
   return 0;
 }

@@ -692,6 +692,10 @@ m2k_setup_answer(m2k_t *ctx, const char *port)
   int fd = m2k_sockListen(ctx, port);
   if (fd == -1)
     return M2K_ERR_SOCKET;
+  /* Non-blocking: Linux silently removes RST-aborted callers from the
+     accept queue, so a blocking accept() after a positive poll could
+     hang m2k_step indefinitely. */
+  fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
   ctx->answer_fd = fd;
   return M2K_OK;
 }
