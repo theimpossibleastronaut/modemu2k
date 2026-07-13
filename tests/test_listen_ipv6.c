@@ -2,9 +2,6 @@
 #include <signal.h>
 #include <stdio.h>
 
-/* Separate port from test_listen.c to avoid conflicts when both run. */
-#define TEST_PORT "19877"
-
 static pid_t connector_pid = -1;
 
 static void
@@ -39,38 +36,40 @@ has_dualstack(void)
   return 1;
 }
 
-/* Fork a child that connects to the listen port via IPv6 loopback, retrying
-   until the parent is listening (a fixed delay would race bind/listen under
-   load and hang the parent in accept()). */
+/* Fork a child that connects via IPv6 loopback to the already-bound
+   listener (kernel-assigned port 0, discovered via getsockname on
+   m2k_get_listen_fd) — no retry loop, no fixed-port collisions. */
 static void
-start_connector(void)
+start_connector(int port)
 {
   connector_pid = fork();
   if (connector_pid == 0)
   {
     struct sockaddr_in6 addr = {0};
     addr.sin6_family = AF_INET6;
-    addr.sin6_port   = htons(atoi(TEST_PORT));
+    addr.sin6_port   = htons((unsigned short) port);
     inet_pton(AF_INET6, "::1", &addr.sin6_addr);
-    int fd = -1;
-    for (int i = 0; i < 100; i++)   /* up to ~5s */
-    {
-      fd = socket(AF_INET6, SOCK_STREAM, 0);
-      if (fd < 0)
-        _exit(1);
-      if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) == 0)
-        break;
-      close(fd);
-      fd = -1;
-      usleep(50000);
-    }
+    int fd = socket(AF_INET6, SOCK_STREAM, 0);
     if (fd < 0)
       _exit(1);
-    usleep(100000);
+    if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) != 0)
+      _exit(1);
+    usleep(100000);   /* stay connected until parent's accept() returns */
     close(fd);
     _exit(0);
   }
   atexit(stop_connector);
+}
+
+static int
+listen_port(m2k_t *ctx)
+{
+  struct sockaddr_storage ss;
+  socklen_t slen = sizeof ss;
+  assert(getsockname(m2k_get_listen_fd(ctx), (struct sockaddr *) &ss, &slen) == 0);
+  if (ss.ss_family == AF_INET6)
+    return ntohs(((struct sockaddr_in6 *) &ss)->sin6_port);
+  return ntohs(((struct sockaddr_in *) &ss)->sin_port);
 }
 
 static void
@@ -78,7 +77,10 @@ test_setup_listen_ipv6(void)
 {
   m2k_t *ctx = m2k_new();
   assert(ctx != NULL);
-  assert(m2k_setup_listen(ctx, TEST_PORT) == M2K_OK);
+  assert(m2k_setup_listen(ctx, "0") == M2K_OK);
+  start_connector(listen_port(ctx));
+  if (connector_pid < 0)
+    exit(77);
   assert(m2k_listen_accept(ctx) == M2K_OK);
   m2k_free(ctx);
 }
@@ -87,10 +89,6 @@ int
 main(void)
 {
   if (!has_dualstack())
-    return 77;
-
-  start_connector();
-  if (connector_pid < 0)
     return 77;
 
   test_setup_listen_ipv6();

@@ -2,8 +2,6 @@
 #include <signal.h>
 #include <stdio.h>
 
-#define TEST_PORT "19876"
-
 static pid_t connector_pid = -1;
 
 static void
@@ -13,33 +11,24 @@ stop_connector(void)
     kill(connector_pid, SIGTERM);
 }
 
-/* Fork a child that connects to localhost:TEST_PORT, retrying until the
-   parent is listening. A fixed delay would race the parent's bind/listen
-   under load (e.g. the ASan build), leaving the parent to block in accept()
-   with nobody connecting. */
+/* Fork a child that connects to the already-bound listener. The parent
+   binds first (kernel-assigned port 0, discovered via getsockname on
+   m2k_get_listen_fd), so a single connect attempt suffices — no retry
+   loop and no fixed-port collision with other tests or build dirs. */
 static void
-start_connector(void)
+start_connector(int port)
 {
   connector_pid = fork();
   if (connector_pid == 0)
   {
     struct sockaddr_in addr = {0};
     addr.sin_family = AF_INET;
-    addr.sin_port   = htons(atoi(TEST_PORT));
+    addr.sin_port   = htons((unsigned short) port);
     inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
-    int fd = -1;
-    for (int i = 0; i < 100; i++)   /* up to ~5s */
-    {
-      fd = socket(AF_INET, SOCK_STREAM, 0);
-      if (fd < 0)
-        _exit(1);
-      if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) == 0)
-        break;
-      close(fd);
-      fd = -1;
-      usleep(50000);
-    }
+    int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0)
+      _exit(1);
+    if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) != 0)
       _exit(1);
     usleep(100000);   /* stay connected until parent's accept() returns */
     close(fd);
@@ -48,12 +37,26 @@ start_connector(void)
   atexit(stop_connector);
 }
 
+static int
+listen_port(m2k_t *ctx)
+{
+  struct sockaddr_storage ss;
+  socklen_t slen = sizeof ss;
+  assert(getsockname(m2k_get_listen_fd(ctx), (struct sockaddr *) &ss, &slen) == 0);
+  if (ss.ss_family == AF_INET6)
+    return ntohs(((struct sockaddr_in6 *) &ss)->sin6_port);
+  return ntohs(((struct sockaddr_in *) &ss)->sin_port);
+}
+
 static void
 test_setup_listen(void)
 {
   m2k_t *ctx = m2k_new();
   assert(ctx != NULL);
-  assert(m2k_setup_listen(ctx, TEST_PORT) == M2K_OK);
+  assert(m2k_setup_listen(ctx, "0") == M2K_OK);
+  start_connector(listen_port(ctx));
+  if (connector_pid < 0)
+    exit(77);
   assert(m2k_listen_accept(ctx) == M2K_OK);
   m2k_free(ctx);
 }
@@ -61,9 +64,6 @@ test_setup_listen(void)
 int
 main(void)
 {
-  start_connector();
-  if (connector_pid < 0)
-    return 77;
   test_setup_listen();
   return 0;
 }

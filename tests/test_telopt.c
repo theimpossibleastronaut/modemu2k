@@ -191,14 +191,27 @@ test_handle_hostile_opt(void)
   assert(telOptHandle(ctx, DONT, 255) == 0);
 }
 
+static char logbuf[256];
+
+static void
+log_capture(const char *msg, void *ud)
+{
+  (void) ud;
+  strncat(logbuf, msg, sizeof logbuf - strlen(logbuf) - 1);
+}
+
 static void
 test_print_cmd(void)
 {
   init_ctx();
-  /* telOptPrintCmd writes via verboseOut. With pv=0 (default), nothing
-     emits anyway — but the call path is covered. */
   ctx->atcmd.pv = 0xFF;          /* enable all verbose categories */
+  logbuf[0] = '\0';
+  m2k_set_log_fn(ctx, log_capture, NULL);
   telOptPrintCmd(ctx, ">", DO);
+  /* Format is "%s IAC %s": direction marker, IAC, telnet command name. */
+  assert(strstr(logbuf, "IAC") != NULL);
+  assert(strstr(logbuf, "DO") != NULL);
+  m2k_set_log_fn(ctx, NULL, NULL);
 }
 
 /* Two coexisting m2k_t contexts must not share telnet option state.

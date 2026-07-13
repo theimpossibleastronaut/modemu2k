@@ -151,7 +151,14 @@ test_ata_accepts_pending_caller(void)
   for (int i = 0; i < 20; i++)
     step_once(ctx);
   char rbuf[16] = "";
-  assert(recv(client, rbuf, sizeof rbuf - 1, 0) == 5);
+  ssize_t got = -1;
+  for (int i = 0; i < 50 && got < 0; i++)
+  {
+    got = recv(client, rbuf, sizeof rbuf - 1, MSG_DONTWAIT);
+    if (got < 0)
+      usleep(20000); /* bounded wait: fail diagnosably instead of hanging */
+  }
+  assert(got == 5);
   assert(memcmp(rbuf, "hello", 5) == 0);
 
   assert(send(client, "world", 5, 0) == 5);

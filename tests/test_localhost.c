@@ -1,3 +1,7 @@
+/* NOTE: uses the deprecated synchronous m2k_dial(). When 0.3.0 removes
+   it, port this to the step API — the getaddrinfo multi-address
+   fallback under test must survive the removal. */
+
 #include "test.h"
 #include <signal.h>
 #include <stdio.h>

@@ -63,6 +63,6 @@ assert_verbose_after_atz() {
   esac
 }
 # Startup-time: -e atz runs before the CMD loop starts.
-assert_verbose_after_atz "startup" sh -c "printf '' | '$bin' -v -e 'atz'"
+assert_verbose_after_atz "startup" sh -c 'printf "" | "$1" -v -e atz' sh "$bin"
 # Interactive: ATZ typed into the CMD-mode line buffer mid-session.
-assert_verbose_after_atz "interactive" sh -c "printf 'atz\n' | '$bin' -v -e 'AT'"
+assert_verbose_after_atz "interactive" sh -c 'printf "atz\n" | "$1" -v -e AT' sh "$bin"

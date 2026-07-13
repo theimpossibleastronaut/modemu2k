@@ -1,5 +1,3 @@
-# TODO: Add more tests!
-
 test_cases = [
   'answer',
   'app_io',
@@ -37,7 +35,7 @@ foreach case : test_cases
     c_args : ['-DUSE_AS_TEST_LIB', '-DM2K_SUPPRESS_DEPRECATED'],
     dependencies: [dep_modemu2k]
     )
-  test(name, exe)
+  test(name, exe, suite: 'unit')
 endforeach
 
 python3 = find_program('python3', required: false)
@@ -61,6 +59,7 @@ if python3.found()
       args: [files(name + '.py'), modemu2k_exe.full_path()],
       depends: modemu2k_exe,
       timeout: 60,
+      suite: 'integration',
       # docker_telnet uses a fixed container name and host port, so it can't
       # run concurrently with itself (e.g. under `meson test --repeat`).
       is_parallel: case != 'docker_telnet',
@@ -82,6 +81,7 @@ if sh.found()
       sh,
       args: [files(name + '.sh'), modemu2k_exe.full_path()],
       depends: modemu2k_exe,
+      suite: 'cli',
       )
   endforeach
 endif

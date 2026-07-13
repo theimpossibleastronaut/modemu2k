@@ -1,3 +1,7 @@
+/* NOTE: uses the deprecated synchronous m2k_dial(). When 0.3.0 removes
+   it, port this to the step API (push_atd + m2k_step) — the IPv6
+   address handling under test must survive the removal. */
+
 #include "test.h"
 #include "test_helpers.h"
 #include <stdio.h>
@@ -30,7 +34,6 @@ main(void)
   char port_s[8];
   snprintf(port_s, sizeof(port_s), "%d", port);
   assert(m2k_dial(ctx, "::1", port_s) == M2K_OK);
-  sleep(1);
   assert(m2k_hangup(ctx) == M2K_OK);
 
   m2k_free(ctx);

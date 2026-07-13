@@ -19,12 +19,15 @@ The suite mixes three test kinds:
 
 | File pattern | Kind | Driver |
 |---|---|---|
-| `tests/test_*.c` | C white-box units | linked against `libmodemu2k` with `-DUSE_AS_TEST_LIB` |
+| `tests/test_*.c` | C units (mostly white-box; a few use only the public header) | linked against `libmodemu2k` with `-DUSE_AS_TEST_LIB` |
 | `tests/test_*.py` | Black-box integration | run against the built `modemu2k` binary |
 | `tests/test_*.sh` | CLI smoke tests | shell-level checks of `--help`, option parsing, etc. |
 
 Adding a new test in any kind is one line in `tests/meson.build` — the
-`test_cases`, `py_test_cases`, or `sh_test_cases` list.
+`test_cases`, `py_test_cases`, or `sh_test_cases` list (plus
+`helper_cases` if the test links `test_helpers.c`). Tests carry meson
+suite labels: `meson test -C builddir --suite unit` (or `integration`,
+`cli`) runs one kind.
 
 ### White-box vs black-box
 
