@@ -23,18 +23,43 @@ on:
 
 jobs:
   build-appimage:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: write
+    # Arch base per arch: official archlinux is x86_64-only, so the arm64
+    # leg uses the community Arch Linux ARM image.
+    container:
+      image: ${{ matrix.image }}
     env:
       VERSION: ${{ inputs.version }}
     strategy:
+      fail-fast: false
       matrix:
-        os:
-          - ubuntu-24.04-arm
-          - ubuntu-24.04
+        include:
+          - runner: ubuntu-24.04
+            image: archlinux:latest
+          - runner: ubuntu-24.04-arm
+            image: lopsided/archlinux:latest
 
     steps:
+      # Runs before checkout: the arm (lopsided/archlinux) base image ships
+      # only bsdtar, but actions/checkout needs GNU tar + git.
+      - name: Install build dependencies
+        run: |
+          # pacman 7's download sandbox (Landlock + the 'alpm' DownloadUser)
+          # cannot be applied inside the CI container; disable it.
+          sed -i '/^\[options\]/a DisableSandbox' /etc/pacman.conf
+          pacman -Syu --noconfirm --needed \
+            base-devel \
+            flex \
+            git \
+            meson \
+            ninja \
+            patchelf \
+            tar \
+            wget \
+            zsync
+
       - name: Checkout
         uses: actions/checkout@v7
 
@@ -51,8 +76,7 @@ jobs:
           fi
 
       - name: Build AppImage
-        run: |
-          docker compose -f packaging/appimage/docker-compose.yml run --rm build
+        run: packaging/appimage/build-appimage.sh
 
       - name: Create sha256sum
         run: |
