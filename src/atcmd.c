@@ -385,7 +385,7 @@ void
 atcmdPQ(m2k_t *ctx, st_sock *sock)
 {
   sockShutdown(sock);
-  ctx->quit_req = true; /* cmdIter transitions to DONE once ttyBufW drains. */
+  ctx->step.quit_req = true; /* cmdIter transitions to DONE once ttyBufW drains. */
 }
 
 /* %Rn */

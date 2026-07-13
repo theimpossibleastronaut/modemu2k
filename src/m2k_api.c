@@ -371,10 +371,10 @@ m2k_new(void)
     return NULL;
   ctx->sock.listen_fd = -1;
   ctx->answer.fd = -1;
-  ctx->step_state = M2K_STATE_CMD;
+  ctx->step.state = M2K_STATE_CMD;
   ctx->ctrl.dtr = true;
   ctx->ctrl.rts = true;
-  cmdBufReset(&ctx->step_cmdbuf);
+  cmdBufReset(&ctx->step.cmdbuf);
   sockInit(&ctx->sock.conn);
   ttyBufRReset(ctx);
   ttyBufWReset(ctx);
@@ -484,8 +484,8 @@ m2k_online(m2k_t *ctx)
 m2k_err_t
 m2k_escape(m2k_t *ctx)
 {
-  if (ctx->step_state == M2K_STATE_ONLINE)
-    ctx->escape_req = true;
+  if (ctx->step.state == M2K_STATE_ONLINE)
+    ctx->step.escape_req = true;
   return M2K_OK;
 }
 
@@ -572,17 +572,17 @@ cmdReadLoop(m2k_t *ctx, struct m2k_cmdbuf *cmdBuf)
   {
     if (c == 0x03) /* Ctrl-C (ETX) */
     {
-      if (ctx->intr_armed)
+      if (ctx->step.intr_armed)
       {
-        ctx->quit_req = true;
-        ctx->intr_armed = false;
+        ctx->step.quit_req = true;
+        ctx->step.intr_armed = false;
         return;
       }
-      ctx->intr_armed = true;
+      ctx->step.intr_armed = true;
       cmdBufReset(cmdBuf);
       continue;
     }
-    ctx->intr_armed = false;
+    ctx->step.intr_armed = false;
     putTty1(ctx, c);
     if (c == CHAR_CR(ctx))
     {
@@ -714,7 +714,7 @@ m2k_get_answer_fd(const m2k_t *ctx)
 m2k_err_t
 m2k_setup_app_io(m2k_t *ctx)
 {
-  ctx->app_io = true;
+  ctx->step.app_io = true;
   ctx->tty.rfd = ctx->tty.wfd = -1;
   ctx->tty.owned = false;
   return M2K_OK;
@@ -724,7 +724,7 @@ m2k_err_t
 m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len, size_t *consumed)
 {
   *consumed = 0;
-  if (!ctx->app_io)
+  if (!ctx->step.app_io)
   {
     m2k_err_set(ctx, "m2k_write_from_app: not in app-I/O mode (call m2k_setup_app_io first)\n");
     return M2K_ERR_PTY;
@@ -757,7 +757,7 @@ m2k_write_from_app(m2k_t *ctx, const void *buf, size_t len, size_t *consumed)
 m2k_err_t
 m2k_read_to_app(m2k_t *ctx, void *buf, size_t max, size_t *len_out)
 {
-  if (!ctx->app_io)
+  if (!ctx->step.app_io)
   {
     *len_out = 0;
     return M2K_ERR_PTY;
@@ -780,7 +780,7 @@ m2k_read_to_app(m2k_t *ctx, void *buf, size_t max, size_t *len_out)
 int
 m2k_has_pending_output(const m2k_t *ctx)
 {
-  if (!ctx || !ctx->app_io)
+  if (!ctx || !ctx->step.app_io)
     return 0;
   return ctx->tty.bufW.ptr > ctx->tty.bufW.top;
 }
@@ -822,16 +822,16 @@ stepStateName(m2k_step_state s)
 static void
 stepEnterCmd(m2k_t *ctx)
 {
-  verboseOut(ctx, VERB_MISC, "state: %s -> CMD\r\n", stepStateName(ctx->step_state));
-  cmdBufReset(&ctx->step_cmdbuf);
+  verboseOut(ctx, VERB_MISC, "state: %s -> CMD\r\n", stepStateName(ctx->step.state));
+  cmdBufReset(&ctx->step.cmdbuf);
   ttyBufRReset(ctx);
-  ctx->step_state = M2K_STATE_CMD;
+  ctx->step.state = M2K_STATE_CMD;
 }
 
 static void
 stepEnterOnline(m2k_t *ctx)
 {
-  verboseOut(ctx, VERB_MISC, "state: %s -> ONLINE\r\n", stepStateName(ctx->step_state));
+  verboseOut(ctx, VERB_MISC, "state: %s -> ONLINE\r\n", stepStateName(ctx->step.state));
   sockBufRReset(ctx);
   sockBufWReset(ctx);
   ttyBufRReset(ctx);
@@ -840,29 +840,29 @@ stepEnterOnline(m2k_t *ctx)
   if (!ctx->telOpt.sentReqs && !ctx->atcmd.pr)
     telOptSendReqs(ctx);
   putTtyCmdstat(ctx, CMDST_CONNECT);
-  ctx->step_state = M2K_STATE_ONLINE;
+  ctx->step.state = M2K_STATE_ONLINE;
 }
 
 static void
 stepEnterDial(m2k_t *ctx)
 {
-  verboseOut(ctx, VERB_MISC, "state: %s -> DIAL\r\n", stepStateName(ctx->step_state));
+  verboseOut(ctx, VERB_MISC, "state: %s -> DIAL\r\n", stepStateName(ctx->step.state));
   /* Drop any pending TTY input — semantics of going off-hook. */
   ttyBufRReset(ctx);
-  cmdBufReset(&ctx->step_cmdbuf);
-  ctx->step_state = M2K_STATE_DIAL;
+  cmdBufReset(&ctx->step.cmdbuf);
+  ctx->step.state = M2K_STATE_DIAL;
 }
 
 static void
 stepEnterAnswer(m2k_t *ctx)
 {
-  verboseOut(ctx, VERB_MISC, "state: %s -> ANSWER\r\n", stepStateName(ctx->step_state));
+  verboseOut(ctx, VERB_MISC, "state: %s -> ANSWER\r\n", stepStateName(ctx->step.state));
   /* Drop any pending TTY input — semantics of going off-hook. */
   ttyBufRReset(ctx);
-  cmdBufReset(&ctx->step_cmdbuf);
+  cmdBufReset(&ctx->step.cmdbuf);
   gettimeofday(&ctx->answer.deadline, NULL);
   ctx->answer.deadline.tv_sec += ctx->atcmd.s[7];
-  ctx->step_state = M2K_STATE_ANSWER;
+  ctx->step.state = M2K_STATE_ANSWER;
 }
 
 m2k_err_t
@@ -870,14 +870,14 @@ m2k_hangup(m2k_t *ctx)
 {
   /* Abort a dial-in-progress so the host can recover the context
      without waiting out the S7 timeout. */
-  if (ctx->step_state == M2K_STATE_DIAL)
+  if (ctx->step.state == M2K_STATE_DIAL)
   {
     m2k_sockDialAbort(ctx, &ctx->sock.conn);
     putTtyCmdstat(ctx, CMDST_NOCARRIER);
     stepEnterCmd(ctx);
     return M2K_OK;
   }
-  if (ctx->step_state == M2K_STATE_ANSWER)
+  if (ctx->step.state == M2K_STATE_ANSWER)
   {
     putTtyCmdstat(ctx, CMDST_NOCARRIER);
     stepEnterCmd(ctx);
@@ -909,7 +909,7 @@ static void
 appendTtyPollfds(m2k_t *ctx, struct pollfd *fds, size_t *n,
                  short read_ev, short write_ev)
 {
-  if (ctx->app_io)
+  if (ctx->step.app_io)
     return;
   if (ctx->tty.rfd == ctx->tty.wfd)
   {
@@ -942,11 +942,11 @@ cmdPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
 {
   size_t n = 0;
 
-  if (ctx->app_io)
+  if (ctx->step.app_io)
   {
     /* timeout=0 only if there's already work to do; otherwise let the
        host's poll() block on its own fds until it has bytes to push us. */
-    *timeout_ms = (ttyBufRHasData(ctx) || ctx->step_cmdbuf.eol) ? 0 : -1;
+    *timeout_ms = (ttyBufRHasData(ctx) || ctx->step.cmdbuf.eol) ? 0 : -1;
   }
   else
   {
@@ -1014,16 +1014,16 @@ static Cmdstat
 cmdIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 {
   st_sock *sock = &ctx->sock.conn;
-  struct m2k_cmdbuf *cmdBuf = &ctx->step_cmdbuf;
+  struct m2k_cmdbuf *cmdBuf = &ctx->step.cmdbuf;
 
-  if (ctx->app_io)
+  if (ctx->step.app_io)
   {
     for (;;)
     {
       Cmdstat s = cmdDispatchIfReady(ctx, cmdBuf, sock);
       if (s != CMDST_OK)
         return s;
-      if (ctx->quit_req && !ttyBufWHasData(ctx))
+      if (ctx->step.quit_req && !ttyBufWHasData(ctx))
         return CMDST_PTY_CLOSED;
       if (!ttyBufRHasData(ctx))
         return CMDST_OK;
@@ -1050,7 +1050,7 @@ cmdIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
       return CMDST_PTY_CLOSED;
     cmdReadLoop(ctx, cmdBuf);
   }
-  if (ctx->quit_req && !ttyBufWHasData(ctx))
+  if (ctx->step.quit_req && !ttyBufWHasData(ctx))
     return CMDST_PTY_CLOSED;
   return CMDST_OK;
 }
@@ -1094,7 +1094,7 @@ dialIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 {
   /* User-cancel via TTY input. Only meaningful outside app_io; in
      app_io the host can call m2k_hangup() to abort. */
-  if (!ctx->app_io)
+  if (!ctx->step.app_io)
   {
     struct pollfd *p = findPollfd(fds, nfds, ctx->tty.rfd);
     if (p && (p->revents & READ_EV))
@@ -1171,7 +1171,7 @@ answerPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_m
 static int
 answerIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 {
-  if (!ctx->app_io)
+  if (!ctx->step.app_io)
   {
     struct pollfd *p = findPollfd(fds, nfds, ctx->tty.rfd);
     if (p && (p->revents & READ_EV))
@@ -1241,9 +1241,9 @@ onlineIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
   st_sock *sock = &ctx->sock.conn;
   struct pollfd *p;
 
-  if (ctx->escape_req)
+  if (ctx->step.escape_req)
   {
-    ctx->escape_req = false;
+    ctx->step.escape_req = false;
     ctx->escSeq.checkSilence = 0;
     return 1;
   }
@@ -1267,7 +1267,7 @@ onlineIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
       ttyReadLoop(ctx);
   }
 
-  if (ctx->app_io)
+  if (ctx->step.app_io)
   {
     if (ttyBufRHasData(ctx))
       ttyReadLoop(ctx);
@@ -1289,7 +1289,7 @@ onlineIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
     sockReadLoop(ctx, sock);
   }
 
-  if (!ctx->app_io)
+  if (!ctx->step.app_io)
   {
     p = findPollfd(fds, nfds, ctx->tty.rfd);
     if (p && (p->revents & READ_EV))
@@ -1336,7 +1336,7 @@ m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout
   if (*nfds_inout < M2K_MAX_POLLFDS)
     return M2K_ERR_BUG;
 
-  switch (ctx->step_state)
+  switch (ctx->step.state)
   {
   case M2K_STATE_CMD:
     cmdPollfds(ctx, fds, nfds_inout, timeout_ms);
@@ -1362,7 +1362,7 @@ m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout
 m2k_err_t
 m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 {
-  switch (ctx->step_state)
+  switch (ctx->step.state)
   {
   case M2K_STATE_CMD:
   {
@@ -1428,8 +1428,8 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
       }
       return M2K_OK;
     case CMDST_PTY_CLOSED:
-      verboseOut(ctx, VERB_MISC, "state: %s -> DONE\r\n", stepStateName(ctx->step_state));
-      ctx->step_state = M2K_STATE_DONE;
+      verboseOut(ctx, VERB_MISC, "state: %s -> DONE\r\n", stepStateName(ctx->step.state));
+      ctx->step.state = M2K_STATE_DONE;
       return M2K_OK;
     default:
       return M2K_OK;
@@ -1491,13 +1491,13 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 int
 m2k_run_done(const m2k_t *ctx)
 {
-  return ctx->step_state == M2K_STATE_DONE;
+  return ctx->step.state == M2K_STATE_DONE;
 }
 
 int
 m2k_is_online(const m2k_t *ctx)
 {
-  return ctx->step_state == M2K_STATE_ONLINE;
+  return ctx->step.state == M2K_STATE_ONLINE;
 }
 
 int
