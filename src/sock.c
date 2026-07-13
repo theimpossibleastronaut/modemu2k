@@ -335,9 +335,9 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
    the host event loop between attempts (no more multi-second freeze
    inside m2k_step).
 
-   State across calls is in ctx->dial_result (the getaddrinfo list head,
+   State across calls is in ctx->dial.result (the getaddrinfo list head,
    kept alive for the lifetime of the dial), sock->rp (current attempt),
-   ctx->dial_deadline (when the current attempt times out), and sock->fd
+   ctx->dial.deadline (when the current attempt times out), and sock->fd
    (the socket currently undergoing connect()).
 
    getaddrinfo itself remains synchronous inside Start — DNS is typically
@@ -377,8 +377,8 @@ dialTryCurrent(m2k_t *ctx, st_sock *sock)
     /* Compute deadline = now + S7 seconds. */
     struct timeval t;
     timevalSet10ms(&t, ctx->atcmd.s[7] * 100);
-    gettimeofday(&ctx->dial_deadline, NULL);
-    timevalAdd(&ctx->dial_deadline, &t);
+    gettimeofday(&ctx->dial.deadline, NULL);
+    timevalAdd(&ctx->dial.deadline, &t);
     return 0;
   }
   m2k_log(ctx, "connect(): %s\n", strerror(errno));
@@ -405,17 +405,17 @@ m2k_sockDialStart(m2k_t *ctx, st_sock *sock)
     ctx->telOpt.sentReqs = 1;
 
   int s = getaddrinfo(ctx->atcmd.d.addr.str, out_port, &hints,
-                      &ctx->dial_result);
+                      &ctx->dial.result);
   if (s != 0)
   {
     m2k_err_set(ctx, "Host address lookup failed for %s: %s\n",
                 ctx->atcmd.d.addr.str, gai_strerror(s));
-    ctx->dial_result = NULL;
+    ctx->dial.result = NULL;
     return -1;
   }
 
   sockInit(sock);
-  for (sock->rp = ctx->dial_result; sock->rp != NULL; sock->rp = sock->rp->ai_next)
+  for (sock->rp = ctx->dial.result; sock->rp != NULL; sock->rp = sock->rp->ai_next)
   {
     int r = dialTryCurrent(ctx, sock);
     if (r >= 0)
@@ -424,8 +424,8 @@ m2k_sockDialStart(m2k_t *ctx, st_sock *sock)
   }
 
   /* No address worked. */
-  freeaddrinfo(ctx->dial_result);
-  ctx->dial_result = NULL;
+  freeaddrinfo(ctx->dial.result);
+  ctx->dial.result = NULL;
   m2k_err_set(ctx, "Could not connect to %s:%s (no address worked)\n",
               ctx->atcmd.d.addr.str, out_port);
   return -1;
@@ -434,12 +434,12 @@ m2k_sockDialStart(m2k_t *ctx, st_sock *sock)
 int
 m2k_sockDialProgress(m2k_t *ctx, st_sock *sock)
 {
-  if (!ctx->dial_result || !sock->rp)
+  if (!ctx->dial.result || !sock->rp)
     return -1;
 
   struct timeval now;
   gettimeofday(&now, NULL);
-  bool timed_out = timevalCmp(&now, &ctx->dial_deadline) >= 0;
+  bool timed_out = timevalCmp(&now, &ctx->dial.deadline) >= 0;
 
   /* Test the current attempt. If still pending, return 0 (more polling
      needed) unless timed_out. */
@@ -451,8 +451,8 @@ m2k_sockDialProgress(m2k_t *ctx, st_sock *sock)
       int zero = 0;
       ioctl(sock->fd, FIONBIO, &zero);
       sock->alive = 1;
-      freeaddrinfo(ctx->dial_result);
-      ctx->dial_result = NULL;
+      freeaddrinfo(ctx->dial.result);
+      ctx->dial.result = NULL;
       return 1;
     }
     if (errno == EALREADY || errno == EINPROGRESS)
@@ -472,8 +472,8 @@ m2k_sockDialProgress(m2k_t *ctx, st_sock *sock)
   }
 
   /* No more addresses. */
-  freeaddrinfo(ctx->dial_result);
-  ctx->dial_result = NULL;
+  freeaddrinfo(ctx->dial.result);
+  ctx->dial.result = NULL;
   m2k_err_set(ctx, "Could not connect to %s:%s (no address worked)\n",
               ctx->atcmd.d.addr.str,
               ctx->atcmd.d.port.type == ATDP_NUL ? "(default)"
@@ -484,10 +484,10 @@ m2k_sockDialProgress(m2k_t *ctx, st_sock *sock)
 void
 m2k_sockDialAbort(m2k_t *ctx, st_sock *sock)
 {
-  if (ctx->dial_result)
+  if (ctx->dial.result)
   {
-    freeaddrinfo(ctx->dial_result);
-    ctx->dial_result = NULL;
+    freeaddrinfo(ctx->dial.result);
+    ctx->dial.result = NULL;
   }
   sockShutdown(sock);
 }

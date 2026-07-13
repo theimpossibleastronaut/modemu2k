@@ -1075,12 +1075,12 @@ dialPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
 
   struct timeval now, remaining;
   gettimeofday(&now, NULL);
-  if (timevalCmp(&now, &ctx->dial_deadline) >= 0)
+  if (timevalCmp(&now, &ctx->dial.deadline) >= 0)
   {
     *timeout_ms = 0;
     return;
   }
-  remaining = ctx->dial_deadline;
+  remaining = ctx->dial.deadline;
   timevalSub(&remaining, &now);
   long ms = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
   if (ms <= 0) ms = 1;

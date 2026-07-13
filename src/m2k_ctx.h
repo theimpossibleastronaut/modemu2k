@@ -59,10 +59,13 @@ struct m2k_s
                                        AT%V mask in verboseOut/verbosePerror so
                                        ATZ (which resets atcmd.pv via the
                                        atcmdNV copy) can't silence the host. */
-  struct addrinfo *dial_result;  /* getaddrinfo() head during non-blocking
-                                       dial (M2K_STATE_DIAL); freed when the
-                                       dial resolves or is aborted. */
-  struct timeval dial_deadline;
+  struct
+  {
+    struct addrinfo *result;  /* getaddrinfo() head during non-blocking
+                                   dial (M2K_STATE_DIAL); freed when the
+                                   dial resolves or is aborted. */
+    struct timeval deadline;
+  } dial;
   struct m2k_escseq escSeq;   /* +++ escape detector (online mode). */
   struct m2k_linebuf lineBuf; /* Line buffer for non-SGA telnet mode. */
 };
