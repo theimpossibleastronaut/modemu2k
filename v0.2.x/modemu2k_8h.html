@@ -201,6 +201,8 @@ Functions</h2></td></tr>
 <tr class="memdesc:a73e7663351359d6537023e1c94d043c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether the session has ended.  <br /></td></tr>
 <tr class="memitem:a39b416897d3718145945526703b81c5b" id="r_a39b416897d3718145945526703b81c5b"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#a39b416897d3718145945526703b81c5b">m2k_is_online</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
 <tr class="memdesc:a39b416897d3718145945526703b81c5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether the modem is currently in online mode.  <br /></td></tr>
+<tr class="memitem:a99a21024f7ea4bd1ffd8f290c14eb300" id="r_a99a21024f7ea4bd1ffd8f290c14eb300"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#a99a21024f7ea4bd1ffd8f290c14eb300">m2k_describe_state</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, char *buf, size_t cap)</td></tr>
+<tr class="memdesc:a99a21024f7ea4bd1ffd8f290c14eb300"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a human-readable snapshot of the modem's state into <code class="param">buf</code>.  <br /></td></tr>
 <tr class="memitem:ac4737dc8597b34c735dd8b54a539aa90" id="r_ac4737dc8597b34c735dd8b54a539aa90"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#ac4737dc8597b34c735dd8b54a539aa90">m2k_has_carrier</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
 <tr class="memdesc:ac4737dc8597b34c735dd8b54a539aa90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether the modem has an active carrier (live TCP socket).  <br /></td></tr>
 <tr class="memitem:ae9f1b813716263592afd965e37cc5703" id="r_ae9f1b813716263592afd965e37cc5703"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void&#160;</td><td class="memItemRight"><a class="el" href="#ae9f1b813716263592afd965e37cc5703">m2k_set_dtr</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, int on)</td></tr>
@@ -449,6 +451,48 @@ Typical usage</h2>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>M2K_OK when the remote end closes, M2K_ERR_CANCELED on +++ escape. </dd></dl>
 
+</div>
+</div>
+<a id="a99a21024f7ea4bd1ffd8f290c14eb300" name="a99a21024f7ea4bd1ffd8f290c14eb300"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99a21024f7ea4bd1ffd8f290c14eb300">&#9670;&#160;</a></span>m2k_describe_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int m2k_describe_state </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>cap</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write a human-readable snapshot of the modem's state into <code class="param">buf</code>. </p>
+<p>Four newline-separated lines covering the step-machine state, carrier, TTY fds and buffer fill, socket and buffer fill, listeners, ring count, dial progress, control lines, and verbose mask. Intended for bug reports and host-side debug dumps; the exact format may evolve between versions and is not a parsing API.</p>
+<p>snprintf contract: returns the length the full description requires (excluding the terminating NUL) regardless of <code class="param">cap</code>; writes at most <code class="param">cap</code> - 1 bytes plus a NUL. <code class="param">cap</code> == 0 (with <code class="param">buf</code> NULL or not) is a legal size probe.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
+    <tr><td class="paramname">buf</td><td>Destination buffer (may be NULL when <code class="param">cap</code> is 0). </td></tr>
+    <tr><td class="paramname">cap</td><td>Capacity of <code class="param">buf</code> in bytes. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Length of the full description, excluding the NUL.</dd></dl>
+<div class="fragment"><div class="line">  <span class="keywordtype">char</span> state[512];</div>
+<div class="line">  <a class="code hl_function" href="#a99a21024f7ea4bd1ffd8f290c14eb300">m2k_describe_state</a>(ctx, state, <span class="keyword">sizeof</span> state);</div>
+<div class="line">  fprintf(stderr, <span class="stringliteral">&quot;modem state:\n%s\n&quot;</span>, state);   <span class="comment">/* paste into bug reports */</span></div>
+</div><!-- fragment --> 
 </div>
 </div>
 <a id="a8497dabd96dab585f2e6255bd9414a0a" name="a8497dabd96dab585f2e6255bd9414a0a"></a>
