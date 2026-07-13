@@ -343,6 +343,92 @@ test_aborted_caller_does_not_hang(void)
   m2k_free(ctx);
 }
 
+/* Real guard-time +++ escape through escSeqHandle — m2k_escape() used
+   elsewhere bypasses the detector entirely, so this is its only
+   coverage. S12=5 → 100 ms guard windows keep the test fast. */
+static void
+test_plus_escape_guard_time(void)
+{
+  m2k_t *ctx = new_answer_ctx();
+  assert(m2k_atcmd(ctx, "ATS12=5") == M2K_OK);
+  int client = connect_client(answer_port(ctx));
+  push_line(ctx, "ATA");
+  for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+
+  /* +++ with no preceding guard silence must NOT escape. */
+  size_t consumed = 0;
+  assert(m2k_write_from_app(ctx, "x", 1, &consumed) == M2K_OK);
+  assert(m2k_write_from_app(ctx, "+++", 3, &consumed) == M2K_OK);
+  for (int i = 0; i < 5; i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+
+  /* Guard silence, then +++, then trailing silence: escapes to CMD
+     with OK; the connection itself stays up. */
+  out_reset();
+  usleep(150 * 1000);
+  assert(m2k_write_from_app(ctx, "+++", 3, &consumed) == M2K_OK);
+  for (int i = 0; i < 30 && m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(!m2k_is_online(ctx));
+  assert(m2k_has_carrier(ctx));
+  assert(strstr(outbuf, "OK") != NULL);
+
+  /* ATO returns to the same connection. */
+  out_reset();
+  push_line(ctx, "ATO");
+  for (int i = 0; i < 20 && !m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+  assert(strstr(outbuf, "CONNECT") != NULL);
+
+  close(client);
+  m2k_free(ctx);
+}
+
+/* &D2 semantics: dropping DTR with a live connection hangs up; raising
+   it again leaves the line answerable. */
+static void
+test_dtr_drop_hangs_up(void)
+{
+  m2k_t *ctx = new_answer_ctx();
+  int client = connect_client(answer_port(ctx));
+  push_line(ctx, "ATA");
+  for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+
+  m2k_set_dtr(ctx, 0);
+  for (int i = 0; i < 20 && (m2k_has_carrier(ctx) || m2k_is_online(ctx)); i++)
+    step_once(ctx);
+  assert(!m2k_has_carrier(ctx));
+  assert(!m2k_is_online(ctx));
+
+  /* Peer sees EOF, not silence. */
+  char rb[4];
+  ssize_t got = -1;
+  for (int i = 0; i < 50 && got < 0; i++)
+  {
+    got = recv(client, rb, sizeof rb, MSG_DONTWAIT);
+    if (got < 0)
+      usleep(20000);
+  }
+  assert(got == 0);
+  close(client);
+
+  m2k_set_dtr(ctx, 1);
+  int c2 = connect_client(answer_port(ctx));
+  out_reset();
+  push_line(ctx, "ATA");
+  for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+  close(c2);
+  m2k_free(ctx);
+}
+
 /* Like new_answer_ctx but WITHOUT %R1 — the telnet IAC relay stays live. */
 static m2k_t *
 new_telnet_answer_ctx(void)
@@ -445,5 +531,7 @@ main(void)
   test_ath_keeps_listener();
   test_aborted_caller_does_not_hang();
   test_iac_parser_multi_ctx_isolation();
+  test_plus_escape_guard_time();
+  test_dtr_drop_hangs_up();
   return 0;
 }

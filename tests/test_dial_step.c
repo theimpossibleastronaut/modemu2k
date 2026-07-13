@@ -7,6 +7,7 @@
    waiting for the S7 timeout. */
 
 #include "test.h"
+#include "test_helpers.h"
 #include "../modemu2k.h"
 #include <poll.h>
 #include <stdio.h>
@@ -136,10 +137,102 @@ test_step_dial_no_blocking(void)
   m2k_free(ctx);
 }
 
+
+/* Return 1 when the ctx is back in idle CMD (app_io: no fds, infinite
+   timeout, nothing pending) — how a resolved-and-failed dial must end. */
+static int
+is_idle_cmd(m2k_t *ctx)
+{
+  struct pollfd fds[M2K_MAX_POLLFDS];
+  size_t nfds = M2K_MAX_POLLFDS;
+  int timeout_ms;
+  assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
+  return nfds == 0 && timeout_ms < 0 && !m2k_is_online(ctx);
+}
+
+static void
+test_step_dial_refused(void)
+{
+  /* Bind an ephemeral port, then close it — nothing listens there, so
+     the loopback dial gets an immediate RST. */
+  int port;
+  int srv = bind_listener(&port);
+  close(srv);
+
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+  m2k_atcmd(ctx, "ATS7=5");
+  m2k_atcmd(ctx, "AT%D1");
+  push_atd(ctx, "127.0.0.1", port);
+
+  int idle = 0;
+  for (int i = 0; i < 50 && !idle; i++)
+  {
+    step_once(ctx);
+    idle = is_idle_cmd(ctx);
+  }
+  assert(idle);
+  assert(!m2k_has_carrier(ctx));
+  m2k_free(ctx);
+}
+
+static void
+test_step_dial_s7_timeout(void)
+{
+  /* RFC 5737 TEST-NET-1 drops the SYN; with S7=1 the DIAL state must
+     expire on its own and land back in idle CMD (no m2k_hangup). */
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+  m2k_atcmd(ctx, "ATS7=1");
+  m2k_atcmd(ctx, "AT%D1");
+  push_atd(ctx, "192.0.2.1", 1);
+
+  int idle = 0;
+  for (int i = 0; i < 40 && !idle; i++)
+  {
+    step_once(ctx);
+    idle = is_idle_cmd(ctx);
+  }
+  assert(idle);
+  assert(!m2k_has_carrier(ctx));
+  m2k_free(ctx);
+}
+
+static void
+test_step_dial_localhost_fallback(void)
+{
+  /* "localhost" usually resolves ::1 first; the server only listens on
+     127.0.0.1, so the dial must iterate to the next getaddrinfo result
+     under the step path (the sync m2k_dial version of this lives in
+     test_localhost.c until 0.3.0 removes it). */
+  int port;
+  if (start_loopback_listener(AF_INET, &port) < 0)
+    return;
+
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+  m2k_atcmd(ctx, "ATS7=5");
+  m2k_atcmd(ctx, "AT%D1");
+  push_atd(ctx, "localhost", port);
+
+  for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+  assert(m2k_has_carrier(ctx));
+  m2k_hangup(ctx);
+  m2k_free(ctx);
+}
+
 int
 main(void)
 {
   test_step_dial_reaches_online();
   test_step_dial_no_blocking();
+  test_step_dial_refused();
+  test_step_dial_s7_timeout();
+  test_step_dial_localhost_fallback();
   return 0;
 }

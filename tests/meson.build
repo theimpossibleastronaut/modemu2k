@@ -17,7 +17,7 @@ test_cases = [
   'ttybuf',
   ]
 
-helper_cases = ['connect', 'ipv6']
+helper_cases = ['connect', 'dial_step', 'ipv6']
 
 foreach case : test_cases
   name = 'test_' + case

@@ -297,6 +297,49 @@ test_atcmdPQ(void)
   assert(sock.alive == 0);
 }
 
+/* --- ATD host/port pattern variants (cmdlex.l ATD rule block) --- */
+
+static void
+test_atd_variants(void)
+{
+  st_sock sock;
+  sockInit(&sock);
+  telopt_setup();
+  setup();
+  ttyBufWReset(ctx);
+
+  /* Quoted hostname + numeric port (space-separated, per the docs). */
+  assert(cmdLex(ctx, "ATD\"bbs.example.org 2030\"", &sock) == CMDST_ATD);
+  assert(ctx->atcmd.d.addr.type == ATDA_STR);
+  assert(ctx->atcmd.d.port.type == ATDP_NUM);
+  assert(strcmp(ctx->atcmd.d.addr.str, "bbs.example.org") == 0);
+  assert(strcmp(ctx->atcmd.d.port.str, "2030") == 0);
+
+  /* Service-name port. */
+  assert(cmdLex(ctx, "ATD\"bbs.example.org telnet\"", &sock) == CMDST_ATD);
+  assert(ctx->atcmd.d.port.type == ATDP_STR);
+  assert(strcmp(ctx->atcmd.d.port.str, "telnet") == 0);
+
+  /* Unclosed quote is tolerated (the usage example relies on it). */
+  assert(cmdLex(ctx, "ATD\"bbs.example.org 2030", &sock) == CMDST_ATD);
+
+  /* Bare numeric address needs no quotes; port defaults (ATDP_NUL). */
+  assert(cmdLex(ctx, "ATD192.0.2.1", &sock) == CMDST_ATD);
+  assert(ctx->atcmd.d.addr.type == ATDA_NUM);
+  assert(ctx->atcmd.d.port.type == ATDP_NUL);
+
+  /* Bare numeric address + numeric port. */
+  assert(cmdLex(ctx, "ATD192.0.2.1 8080", &sock) == CMDST_ATD);
+  assert(ctx->atcmd.d.port.type == ATDP_NUM);
+
+  /* Tone/pulse dial modifiers are ignored noise. */
+  assert(cmdLex(ctx, "ATDT192.0.2.1", &sock) == CMDST_ATD);
+  assert(ctx->atcmd.d.addr.type == ATDA_NUM);
+
+  /* Garbage after ATD is an error. */
+  assert(cmdLex(ctx, "ATD!!", &sock) == CMDST_ERROR);
+}
+
 /* --- cmdLex coverage for verbs hit only by extended tests --- */
 
 static void
@@ -468,6 +511,7 @@ main(void)
   test_atcmdPT();
   test_atcmdPTSet();
   test_atcmdPQ();
+  test_atd_variants();
   test_cmdlex_verbs();
   test_cmdlex_percent();
   test_cmdlex_sreg_query();
