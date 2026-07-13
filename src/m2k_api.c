@@ -16,21 +16,23 @@
 
 /* ── relay helpers (moved from main.c) ───────────────────────────── */
 
-/* socket input processing loop */
+/* socket input processing loop — IAC stream parser state lives in
+   ctx->srl so coexisting contexts (and successive connections) don't
+   share or inherit it. */
+enum
+{
+  SRL_NORM,
+  SRL_IAC,
+  SRL_CMD,
+  SRL_SB,
+  SRL_SBC,
+  SRL_SBS,
+  SRL_SBI
+};
+
 static void
 sockReadLoop(m2k_t *ctx, st_sock *sock)
 {
-  static enum {
-    SRL_NORM,
-    SRL_IAC,
-    SRL_CMD,
-    SRL_SB,
-    SRL_SBC,
-    SRL_SBS,
-    SRL_SBI
-  } state;
-  static int cmd;
-  static int opt;
   int c;
 
   if (ctx->atcmd.pr)
@@ -42,7 +44,7 @@ sockReadLoop(m2k_t *ctx, st_sock *sock)
   {
     while ((c = getSock1(ctx)) >= 0)
     {
-      switch (state)
+      switch (ctx->srl.state)
       {
       case SRL_IAC:
         switch (c)
@@ -51,43 +53,43 @@ sockReadLoop(m2k_t *ctx, st_sock *sock)
         case WONT:
         case DO:
         case DONT:
-          cmd = c;
-          state = SRL_CMD;
+          ctx->srl.cmd = c;
+          ctx->srl.state = SRL_CMD;
           break;
         case IAC:
           putTty1(ctx, c);
-          state = SRL_NORM;
+          ctx->srl.state = SRL_NORM;
           break;
         case SB:
-          state = SRL_SB;
+          ctx->srl.state = SRL_SB;
           break;
         default:
-          state = SRL_NORM;
+          ctx->srl.state = SRL_NORM;
           telOptPrintCmd(ctx, "<", c);
         }
         break;
       case SRL_CMD:
-        if (telOptHandle(ctx, cmd, c))
+        if (telOptHandle(ctx, ctx->srl.cmd, c))
           sock->alive = 0;
-        state = SRL_NORM;
+        ctx->srl.state = SRL_NORM;
         break;
       case SRL_SB:
-        opt = c;
-        state = SRL_SBC;
+        ctx->srl.opt = c;
+        ctx->srl.state = SRL_SBC;
         break;
       case SRL_SBC:
-        state = (c == TELQUAL_SEND) ? SRL_SBS : SRL_NORM;
+        ctx->srl.state = (c == TELQUAL_SEND) ? SRL_SBS : SRL_NORM;
         break;
       case SRL_SBS:
-        state = (c == IAC) ? SRL_SBI : SRL_NORM;
+        ctx->srl.state = (c == IAC) ? SRL_SBI : SRL_NORM;
         break;
       case SRL_SBI:
-        telOptSBHandle(ctx, opt);
-        state = SRL_NORM;
+        telOptSBHandle(ctx, ctx->srl.opt);
+        ctx->srl.state = SRL_NORM;
         break;
       default:
         if (c == IAC)
-          state = SRL_IAC;
+          ctx->srl.state = SRL_IAC;
         else
           putTty1(ctx, c);
       }
@@ -239,6 +241,8 @@ onlineMode(m2k_t *ctx, st_sock *sock)
   ttyBufRReset(ctx);
   lineBufReset(ctx);
   escSeqReset(ctx);
+  ctx->srl.state = SRL_NORM; /* don't inherit mid-IAC state from a
+                                 previous connection */
 
   if (!ctx->telOpt.sentReqs && !ctx->atcmd.pr)
     telOptSendReqs(ctx);
@@ -837,6 +841,8 @@ stepEnterOnline(m2k_t *ctx)
   ttyBufRReset(ctx);
   lineBufReset(ctx);
   escSeqReset(ctx);
+  ctx->srl.state = SRL_NORM; /* don't inherit mid-IAC state from a
+                                 previous connection */
   if (!ctx->telOpt.sentReqs && !ctx->atcmd.pr)
     telOptSendReqs(ctx);
   putTtyCmdstat(ctx, CMDST_CONNECT);

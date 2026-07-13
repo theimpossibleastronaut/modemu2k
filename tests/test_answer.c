@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <arpa/telnet.h>
 
 /* Discover the ephemeral port of the bound answer listener. */
 static int
@@ -335,6 +336,93 @@ test_aborted_caller_does_not_hang(void)
   m2k_free(ctx);
 }
 
+/* Like new_answer_ctx but WITHOUT %R1 — the telnet IAC relay stays live. */
+static m2k_t *
+new_telnet_answer_ctx(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+  /* Request binary both ways so the peer's WILL BINARY is accepted
+     deterministically (the %B default depends on BINMODE_AS_DEFAULT). */
+  assert(m2k_atcmd(ctx, "AT%B0=1%B1=1") == M2K_OK);
+  assert(m2k_setup_answer(ctx, "0") == M2K_OK);
+  return ctx;
+}
+
+/* Step without touching the shared outbuf; drain into a caller buffer. */
+static void
+step_drain(m2k_t *ctx, char *buf, size_t cap, size_t *len)
+{
+  struct pollfd fds[M2K_MAX_POLLFDS];
+  size_t nfds = M2K_MAX_POLLFDS;
+  int timeout_ms;
+  assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
+  if (timeout_ms < 0 || timeout_ms > 50) timeout_ms = 50;
+  if (nfds > 0)
+    poll(fds, nfds, timeout_ms);
+  assert(m2k_step(ctx, fds, nfds) == M2K_OK);
+  size_t got = 0;
+  m2k_read_to_app(ctx, buf + *len, cap - *len - 1, &got);
+  *len += got;
+  buf[*len] = '\0';
+}
+
+/* Regression guard: sockReadLoop's IAC stream parser state used to be
+   function-local statics, shared across every context. Two interleaved
+   online contexts — one paused mid-IAC — corrupted each other: the
+   other ctx's payload byte was swallowed as a telnet command. State now
+   lives in ctx->srl. */
+static void
+test_iac_parser_multi_ctx_isolation(void)
+{
+  m2k_t *a = new_telnet_answer_ctx();
+  m2k_t *b = new_telnet_answer_ctx();
+  int ca = connect_client(answer_port(a));
+  int cb = connect_client(answer_port(b));
+
+  char abuf[2048] = "", bbuf[2048] = "";
+  size_t alen = 0, blen = 0;
+
+  size_t consumed = 0;
+  assert(m2k_write_from_app(a, "ATA\r", 4, &consumed) == M2K_OK);
+  assert(m2k_write_from_app(b, "ATA\r", 4, &consumed) == M2K_OK);
+  for (int i = 0; i < 50 && !(m2k_is_online(a) && m2k_is_online(b)); i++)
+  {
+    step_drain(a, abuf, sizeof abuf, &alen);
+    step_drain(b, bbuf, sizeof bbuf, &blen);
+  }
+  assert(m2k_is_online(a) && m2k_is_online(b));
+
+  /* Park ctx A mid-IAC: a lone IAC byte, nothing else. */
+  assert(send(ca, "\xff", 1, 0) == 1);
+  for (int i = 0; i < 10; i++)
+    step_drain(a, abuf, sizeof abuf, &alen);
+
+  /* Now ctx B receives a plain payload byte. With shared parser state
+     it was consumed as a telnet command; it must reach B's app. */
+  alen = blen = 0; abuf[0] = bbuf[0] = '\0';
+  assert(send(cb, "X", 1, 0) == 1);
+  for (int i = 0; i < 20 && strchr(bbuf, 'X') == NULL; i++)
+    step_drain(b, bbuf, sizeof bbuf, &blen);
+  assert(strchr(bbuf, 'X') != NULL);
+
+  /* And ctx A's suspended sequence still completes correctly: the rest
+     of "IAC WILL BINARY" arrives, negotiation lands in A's state. */
+  assert(send(ca, "\xfb\x00", 2, 0) == 2); /* WILL TELOPT_BINARY */
+  for (int i = 0; i < 20 && !a->telOpt.binrecv; i++)
+    step_drain(a, abuf, sizeof abuf, &alen);
+  assert(a->telOpt.stTab[TELOPT_BINARY]->remote.state == 1);
+  assert(a->telOpt.binrecv == 1);
+  /* B's negotiation state must be untouched by A's traffic. */
+  assert(b->telOpt.binrecv == 0);
+
+  close(ca);
+  close(cb);
+  m2k_free(a);
+  m2k_free(b);
+}
+
 int
 main(void)
 {
@@ -349,5 +437,6 @@ main(void)
   test_s0_auto_answer();
   test_ath_keeps_listener();
   test_aborted_caller_does_not_hang();
+  test_iac_parser_multi_ctx_isolation();
   return 0;
 }

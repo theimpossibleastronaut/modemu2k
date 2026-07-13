@@ -77,6 +77,11 @@ struct m2k_s
                                    dial resolves or is aborted. */
     struct timeval deadline;
   } dial;
+  struct
+  {
+    int state, cmd, opt;      /* sockReadLoop's telnet IAC stream parser
+                                   (SRL_* states in m2k_api.c). */
+  } srl;
   struct m2k_escseq escSeq;   /* +++ escape detector (online mode). */
   struct m2k_linebuf lineBuf; /* Line buffer for non-SGA telnet mode. */
 };
