@@ -74,6 +74,7 @@ check_info() {
 }
 
 check_info "help"     -h "--commprog"
+check_info "help"     -h "--answer"
 check_info "version"  -v "modemu2k"
 check_info "warranty" -w "WARRANTY"
 

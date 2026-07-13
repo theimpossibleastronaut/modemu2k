@@ -42,6 +42,7 @@ struct st_cmdarg
   const char *atcmd;
   const char *dev;
   const char *listen_port;
+  const char *answer_port;
   int verbose;
 };
 

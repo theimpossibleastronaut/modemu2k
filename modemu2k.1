@@ -10,7 +10,7 @@ modemu2k \- dialup TCP connecting
 .SH SYNOPSIS
 .\"
 .B modemu2k
-[\fB-c \fIcomm_prog\fR] [\fB-d \fIpty_master\fR] [\fB-e \fIatcmds\fR]
+[\fB-a \fIport\fR] [\fB-c \fIcomm_prog\fR] [\fB-d \fIpty_master\fR] [\fB-e \fIatcmds\fR]
 [\fB-l \fIport\fR] [\fB-h\fR] [\fB-s\fR] [\fB-V\fR] [\fB-v\fR] [\fB-w\fR]
 .\"
 .\"
@@ -49,6 +49,18 @@ to reach standalone command mode on stdin/stdout (for example,
 .\"
 .\"
 .SH OPTIONS
+.\" ===== -a =====
+.TP
+.BI -a " port"
+Answer incoming TCP connections (``calls'') on
+.IR port .
+A waiting caller makes
+.B modemu2k
+print RING in command mode; the ATA command, or S0 auto-answer
+(e.g.\& ATS0=1), accepts the call and goes online. The listener stays
+bound after hangup, so the next caller can be answered without a
+restart. Can be combined with any of the -c, -d, -e, -l, and -s
+options. Dual-stack IPv4/IPv6.
 .\" ===== -c =====
 .TP
 .BI -c " comm_prog"
@@ -135,6 +147,7 @@ comm program must open /dev/tty\fIp8\fP.
 .\" ==========
 .PP
 Note: The -c, -d, -l, and -s options are mutually exclusive.
+The -a option can be combined with any of them.
 Specifying more than one is rejected with an error message; the
 former silent "last one wins" behavior was removed.
 .\"

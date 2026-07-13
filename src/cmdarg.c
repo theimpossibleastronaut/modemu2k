@@ -55,6 +55,7 @@ showUsage(char *const argv[])
 
   printf("%sUsage:%s %s [OPTION]...\n\n", sec, r, argv[0]);
 
+  printf("  %s-a, --answer=%s<port>                     answer incoming TCP \"calls\" on [port] (RING, ATA, S0)\n", opt, r);
   printf("  %s-c, --commprog=%s\"<comm_prog> <args>\"     invoke a comm program using [arguments]\n", opt, r);
   printf("  %s-d, --device=%s<pty_master>               talk through [pty_master]\n", opt, r);
   printf("  %s-e, --atstring=%s\"<ATxxx>\"                execute [ATxxx] commands at startup,\n"
@@ -70,9 +71,10 @@ showUsage(char *const argv[])
   printf("  %s-w, --warranty%s                          display warranty\n", opt, r);
   puts("");
   printf("%sNote:%s The -c, -d, -l, and -s options are mutually exclusive; passing\n"
-         "more than one exits with an error. With none of them given but -e\n"
-         "present (e.g. 'modemu2k -e \"ATZ\"'), modemu2k reads AT commands from\n"
-         "stdin/stdout. Invoked with no arguments at all, it prints this help.\n",
+         "more than one exits with an error. The -a option can be combined\n"
+         "with any of them. With no mode option given but -e present (e.g.\n"
+         "'modemu2k -e \"ATZ\"'), modemu2k reads AT commands from stdin/stdout.\n"
+         "Invoked with no arguments at all, it prints this help.\n",
          sec, r);
   puts("");
   printf("%sExample:%s launch minicom and enable 8-bit binary mode (same invocation\n"
@@ -123,9 +125,10 @@ for details.\n",
 void
 cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
 {
-  const char *const short_options = "Vc:d:e:hl:svw";
+  const char *const short_options = "Va:c:d:e:hl:svw";
 
   const struct option long_options[] = {
+    {"answer", 1, NULL, 'a'},
     {"commprog", 1, NULL, 'c'},
     {"device", 1, NULL, 'd'},
     {"atstring", 1, NULL, 'e'},
@@ -143,6 +146,7 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
   x->atcmd = NULL;
   x->dev = NULL;
   x->listen_port = NULL;
+  x->answer_port = NULL;
   x->verbose = 0;
 
   /* Track the first mode-setting option (-c/-d/-l/-s) seen so we can
@@ -169,6 +173,9 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
 
     switch ((char) next_option)
     {
+    case 'a': /* -a <port> (composes with all modes; not a SET_MODE flag) */
+      x->answer_port = optarg;
+      break;
     case 'c': /* -c <comm-program args> */
       SET_MODE('c');
       x->ttymode = CA_COMM_PROGRAM;

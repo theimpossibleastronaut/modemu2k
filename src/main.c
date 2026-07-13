@@ -131,6 +131,13 @@ main(int argc, char *const argv[])
     break;
   }
 
+  if (cmdarg.answer_port != NULL && m2k_setup_answer(ctx, cmdarg.answer_port) != M2K_OK)
+  {
+    fprintf(stderr, "modemu2k: failed to bind answer port %s\n", cmdarg.answer_port);
+    m2k_free(ctx);
+    return EXIT_FAILURE;
+  }
+
   if (cmdarg.verbose)
     m2k_set_force_verbose(ctx, 1);
 
