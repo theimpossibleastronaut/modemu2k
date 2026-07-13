@@ -1,4 +1,5 @@
 #include "test.h"
+#include "test_helpers.h"
 #include <signal.h>
 #include <stdio.h>
 
@@ -61,24 +62,13 @@ start_connector(int port)
   atexit(stop_connector);
 }
 
-static int
-listen_port(m2k_t *ctx)
-{
-  struct sockaddr_storage ss;
-  socklen_t slen = sizeof ss;
-  assert(getsockname(m2k_get_listen_fd(ctx), (struct sockaddr *) &ss, &slen) == 0);
-  if (ss.ss_family == AF_INET6)
-    return ntohs(((struct sockaddr_in6 *) &ss)->sin6_port);
-  return ntohs(((struct sockaddr_in *) &ss)->sin_port);
-}
-
 static void
 test_setup_listen_ipv6(void)
 {
   m2k_t *ctx = m2k_new();
   assert(ctx != NULL);
   assert(m2k_setup_listen(ctx, "0") == M2K_OK);
-  start_connector(listen_port(ctx));
+  start_connector(test_local_port(m2k_get_listen_fd(ctx)));
   if (connector_pid < 0)
     exit(77);
   assert(m2k_listen_accept(ctx) == M2K_OK);

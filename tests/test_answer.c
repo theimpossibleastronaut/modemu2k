@@ -4,6 +4,7 @@
 #include "test.h"
 #include "m2k_private.h"
 #include "m2k_ctx.h"
+#include "test_helpers.h"
 #include <poll.h>
 #include <stdio.h>
 #include <string.h>
@@ -14,12 +15,7 @@
 static int
 answer_port(m2k_t *ctx)
 {
-  struct sockaddr_storage ss;
-  socklen_t slen = sizeof ss;
-  assert(getsockname(m2k_get_answer_fd(ctx), (struct sockaddr *) &ss, &slen) == 0);
-  if (ss.ss_family == AF_INET6)
-    return ntohs(((struct sockaddr_in6 *) &ss)->sin6_port);
-  return ntohs(((struct sockaddr_in *) &ss)->sin_port);
+  return test_local_port(m2k_get_answer_fd(ctx));
 }
 
 static char outbuf[8192];
@@ -35,18 +31,7 @@ out_reset(void)
 static void
 step_once(m2k_t *ctx)
 {
-  struct pollfd fds[M2K_MAX_POLLFDS];
-  size_t nfds = M2K_MAX_POLLFDS;
-  int timeout_ms;
-  assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
-  if (timeout_ms < 0 || timeout_ms > 100) timeout_ms = 100;
-  if (nfds > 0)
-    poll(fds, nfds, timeout_ms);
-  assert(m2k_step(ctx, fds, nfds) == M2K_OK);
-  size_t len = 0;
-  m2k_read_to_app(ctx, outbuf + outlen, sizeof outbuf - outlen - 1, &len);
-  outlen += len;
-  outbuf[outlen] = '\0';
+  test_step_drain(ctx, outbuf, sizeof outbuf, &outlen);
 }
 
 static void
@@ -70,19 +55,6 @@ new_answer_ctx(void)
   assert(m2k_setup_answer(ctx, "0") == M2K_OK);
   out_reset();
   return ctx;
-}
-
-static int
-connect_client(int port)
-{
-  int fd = socket(AF_INET, SOCK_STREAM, 0);
-  assert(fd >= 0);
-  struct sockaddr_in addr = {0};
-  addr.sin_family = AF_INET;
-  inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
-  addr.sin_port = htons((unsigned short) port);
-  assert(connect(fd, (struct sockaddr *) &addr, sizeof addr) == 0);
-  return fd;
 }
 
 static void
@@ -136,7 +108,7 @@ static void
 test_ata_accepts_pending_caller(void)
 {
   m2k_t *ctx = new_answer_ctx();
-  int client = connect_client(answer_port(ctx));
+  int client = test_connect_client(answer_port(ctx));
 
   push_line(ctx, "ATA");
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
@@ -200,7 +172,7 @@ test_ata_s7_timeout_nocarrier(void)
   assert(strstr(outbuf, "NO CARRIER") != NULL);
   assert(!m2k_is_online(ctx));
   /* Back in CMD: a caller arriving now can still be answered. */
-  int client = connect_client(answer_port(ctx));
+  int client = test_connect_client(answer_port(ctx));
   out_reset();
   push_line(ctx, "ATA");
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
@@ -214,7 +186,7 @@ static void
 test_second_call_after_hangup(void)
 {
   m2k_t *ctx = new_answer_ctx();
-  int c1 = connect_client(answer_port(ctx));
+  int c1 = test_connect_client(answer_port(ctx));
   push_line(ctx, "ATA");
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
     step_once(ctx);
@@ -229,7 +201,7 @@ test_second_call_after_hangup(void)
   assert(strstr(outbuf, "NO CARRIER") != NULL);
 
   /* Second caller, second ATA, no re-bind. */
-  int c2 = connect_client(answer_port(ctx));
+  int c2 = test_connect_client(answer_port(ctx));
   out_reset();
   push_line(ctx, "ATA");
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
@@ -244,7 +216,7 @@ static void
 test_ring_emitted_for_pending_caller(void)
 {
   m2k_t *ctx = new_answer_ctx();
-  int client = connect_client(answer_port(ctx));
+  int client = test_connect_client(answer_port(ctx));
 
   for (int i = 0; i < 50 && strstr(outbuf, "RING") == NULL; i++)
     step_once(ctx);
@@ -268,7 +240,7 @@ test_s0_auto_answer(void)
 {
   m2k_t *ctx = new_answer_ctx();
   assert(m2k_atcmd(ctx, "ATS0=1") == M2K_OK);
-  int client = connect_client(answer_port(ctx));
+  int client = test_connect_client(answer_port(ctx));
 
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
     step_once(ctx);
@@ -284,7 +256,7 @@ static void
 test_ath_keeps_listener(void)
 {
   m2k_t *ctx = new_answer_ctx();
-  int client = connect_client(answer_port(ctx));
+  int client = test_connect_client(answer_port(ctx));
   push_line(ctx, "ATA");
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
     step_once(ctx);
@@ -315,7 +287,7 @@ test_aborted_caller_does_not_hang(void)
   m2k_t *ctx = new_answer_ctx();
   assert(m2k_atcmd(ctx, "ATS7=1") == M2K_OK);
 
-  int client = connect_client(answer_port(ctx));
+  int client = test_connect_client(answer_port(ctx));
   struct linger lg = {1, 0};
   assert(setsockopt(client, SOL_SOCKET, SO_LINGER, &lg, sizeof lg) == 0);
   close(client); /* RST */
@@ -333,7 +305,7 @@ test_aborted_caller_does_not_hang(void)
   assert(!m2k_is_online(ctx));
 
   /* Listener still healthy for a well-behaved caller. */
-  int c2 = connect_client(answer_port(ctx));
+  int c2 = test_connect_client(answer_port(ctx));
   out_reset();
   push_line(ctx, "ATA");
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
@@ -351,7 +323,7 @@ test_plus_escape_guard_time(void)
 {
   m2k_t *ctx = new_answer_ctx();
   assert(m2k_atcmd(ctx, "ATS12=5") == M2K_OK);
-  int client = connect_client(answer_port(ctx));
+  int client = test_connect_client(answer_port(ctx));
   push_line(ctx, "ATA");
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
     step_once(ctx);
@@ -394,7 +366,7 @@ static void
 test_dtr_drop_hangs_up(void)
 {
   m2k_t *ctx = new_answer_ctx();
-  int client = connect_client(answer_port(ctx));
+  int client = test_connect_client(answer_port(ctx));
   push_line(ctx, "ATA");
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
     step_once(ctx);
@@ -419,7 +391,7 @@ test_dtr_drop_hangs_up(void)
   close(client);
 
   m2k_set_dtr(ctx, 1);
-  int c2 = connect_client(answer_port(ctx));
+  int c2 = test_connect_client(answer_port(ctx));
   out_reset();
   push_line(ctx, "ATA");
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
@@ -443,24 +415,6 @@ new_telnet_answer_ctx(void)
   return ctx;
 }
 
-/* Step without touching the shared outbuf; drain into a caller buffer. */
-static void
-step_drain(m2k_t *ctx, char *buf, size_t cap, size_t *len)
-{
-  struct pollfd fds[M2K_MAX_POLLFDS];
-  size_t nfds = M2K_MAX_POLLFDS;
-  int timeout_ms;
-  assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
-  if (timeout_ms < 0 || timeout_ms > 50) timeout_ms = 50;
-  if (nfds > 0)
-    poll(fds, nfds, timeout_ms);
-  assert(m2k_step(ctx, fds, nfds) == M2K_OK);
-  size_t got = 0;
-  m2k_read_to_app(ctx, buf + *len, cap - *len - 1, &got);
-  *len += got;
-  buf[*len] = '\0';
-}
-
 /* Regression guard: sockReadLoop's IAC stream parser state used to be
    function-local statics, shared across every context. Two interleaved
    online contexts — one paused mid-IAC — corrupted each other: the
@@ -471,8 +425,8 @@ test_iac_parser_multi_ctx_isolation(void)
 {
   m2k_t *a = new_telnet_answer_ctx();
   m2k_t *b = new_telnet_answer_ctx();
-  int ca = connect_client(answer_port(a));
-  int cb = connect_client(answer_port(b));
+  int ca = test_connect_client(answer_port(a));
+  int cb = test_connect_client(answer_port(b));
 
   char abuf[2048] = "", bbuf[2048] = "";
   size_t alen = 0, blen = 0;
@@ -482,29 +436,29 @@ test_iac_parser_multi_ctx_isolation(void)
   assert(m2k_write_from_app(b, "ATA\r", 4, &consumed) == M2K_OK);
   for (int i = 0; i < 50 && !(m2k_is_online(a) && m2k_is_online(b)); i++)
   {
-    step_drain(a, abuf, sizeof abuf, &alen);
-    step_drain(b, bbuf, sizeof bbuf, &blen);
+    test_step_drain(a, abuf, sizeof abuf, &alen);
+    test_step_drain(b, bbuf, sizeof bbuf, &blen);
   }
   assert(m2k_is_online(a) && m2k_is_online(b));
 
   /* Park ctx A mid-IAC: a lone IAC byte, nothing else. */
   assert(send(ca, "\xff", 1, 0) == 1);
   for (int i = 0; i < 10; i++)
-    step_drain(a, abuf, sizeof abuf, &alen);
+    test_step_drain(a, abuf, sizeof abuf, &alen);
 
   /* Now ctx B receives a plain payload byte. With shared parser state
      it was consumed as a telnet command; it must reach B's app. */
   alen = blen = 0; abuf[0] = bbuf[0] = '\0';
   assert(send(cb, "X", 1, 0) == 1);
   for (int i = 0; i < 20 && strchr(bbuf, 'X') == NULL; i++)
-    step_drain(b, bbuf, sizeof bbuf, &blen);
+    test_step_drain(b, bbuf, sizeof bbuf, &blen);
   assert(strchr(bbuf, 'X') != NULL);
 
   /* And ctx A's suspended sequence still completes correctly: the rest
      of "IAC WILL BINARY" arrives, negotiation lands in A's state. */
   assert(send(ca, "\xfb\x00", 2, 0) == 2); /* WILL TELOPT_BINARY */
   for (int i = 0; i < 20 && !a->telOpt.binrecv; i++)
-    step_drain(a, abuf, sizeof abuf, &alen);
+    test_step_drain(a, abuf, sizeof abuf, &alen);
   assert(a->telOpt.stTab[TELOPT_BINARY]->remote.state == 1);
   assert(a->telOpt.binrecv == 1);
   /* B's negotiation state must be untouched by A's traffic. */

@@ -44,21 +44,6 @@ push_atd(m2k_t *ctx, const char *host, int port)
   assert(consumed == (size_t) n);
 }
 
-static int
-step_once(m2k_t *ctx)
-{
-  struct pollfd fds[M2K_MAX_POLLFDS];
-  size_t nfds = M2K_MAX_POLLFDS;
-  int timeout_ms;
-  assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
-  /* Cap timeout to make the test snappy. */
-  if (timeout_ms < 0 || timeout_ms > 100) timeout_ms = 100;
-  if (nfds > 0)
-    poll(fds, nfds, timeout_ms);
-  assert(m2k_step(ctx, fds, nfds) == M2K_OK);
-  return 0;
-}
-
 static void
 test_step_dial_reaches_online(void)
 {
@@ -75,7 +60,7 @@ test_step_dial_reaches_online(void)
 
   /* Drive m2k_step until ONLINE. Each step must return quickly. */
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
-    step_once(ctx);
+    test_step(ctx);
 
   assert(m2k_is_online(ctx));
   assert(m2k_has_carrier(ctx));
@@ -107,7 +92,7 @@ test_step_dial_no_blocking(void)
 
   struct timespec t0, t1;
   clock_gettime(CLOCK_MONOTONIC, &t0);
-  step_once(ctx);
+  test_step(ctx);
   clock_gettime(CLOCK_MONOTONIC, &t1);
 
   double elapsed = (t1.tv_sec - t0.tv_sec) +
@@ -169,7 +154,7 @@ test_step_dial_refused(void)
   int idle = 0;
   for (int i = 0; i < 50 && !idle; i++)
   {
-    step_once(ctx);
+    test_step(ctx);
     idle = is_idle_cmd(ctx);
   }
   assert(idle);
@@ -192,7 +177,7 @@ test_step_dial_s7_timeout(void)
   int idle = 0;
   for (int i = 0; i < 40 && !idle; i++)
   {
-    step_once(ctx);
+    test_step(ctx);
     idle = is_idle_cmd(ctx);
   }
   assert(idle);
@@ -219,7 +204,7 @@ test_step_dial_localhost_fallback(void)
   push_atd(ctx, "localhost", port);
 
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
-    step_once(ctx);
+    test_step(ctx);
   assert(m2k_is_online(ctx));
   assert(m2k_has_carrier(ctx));
   m2k_hangup(ctx);

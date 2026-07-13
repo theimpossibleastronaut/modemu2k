@@ -3,6 +3,7 @@
 #include "test.h"
 #include "m2k_private.h"
 #include "m2k_ctx.h"
+#include "test_helpers.h"
 #include <poll.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,25 +11,7 @@
 static int
 answer_port(m2k_t *ctx)
 {
-  struct sockaddr_storage ss;
-  socklen_t slen = sizeof ss;
-  assert(getsockname(m2k_get_answer_fd(ctx), (struct sockaddr *) &ss, &slen) == 0);
-  if (ss.ss_family == AF_INET6)
-    return ntohs(((struct sockaddr_in6 *) &ss)->sin6_port);
-  return ntohs(((struct sockaddr_in *) &ss)->sin_port);
-}
-
-static void
-step_once(m2k_t *ctx)
-{
-  struct pollfd fds[M2K_MAX_POLLFDS];
-  size_t nfds = M2K_MAX_POLLFDS;
-  int timeout_ms;
-  assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
-  if (timeout_ms < 0 || timeout_ms > 100) timeout_ms = 100;
-  if (nfds > 0)
-    poll(fds, nfds, timeout_ms);
-  assert(m2k_step(ctx, fds, nfds) == M2K_OK);
+  return test_local_port(m2k_get_answer_fd(ctx));
 }
 
 static void
@@ -72,7 +55,7 @@ test_online_state_content(void)
   size_t consumed = 0;
   assert(m2k_write_from_app(ctx, line, sizeof line - 1, &consumed) == M2K_OK);
   for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
-    step_once(ctx);
+    test_step(ctx);
   assert(m2k_is_online(ctx));
 
   char buf[512];

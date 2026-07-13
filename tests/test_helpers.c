@@ -1,6 +1,7 @@
 #include "test.h"
 #include "test_helpers.h"
 #include <signal.h>
+#include <poll.h>
 
 #define MAX_LOOPBACK_SERVERS 4
 static pid_t loopback_pids[MAX_LOOPBACK_SERVERS];
@@ -87,4 +88,52 @@ start_loopback_listener(int family, int *port_out)
   }
   *port_out = port;
   return 0;
+}
+
+void
+test_step(m2k_t *ctx)
+{
+  struct pollfd fds[M2K_MAX_POLLFDS];
+  size_t nfds = M2K_MAX_POLLFDS;
+  int timeout_ms;
+  assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
+  if (timeout_ms < 0 || timeout_ms > 100)
+    timeout_ms = 100;
+  if (nfds > 0)
+    poll(fds, nfds, timeout_ms);
+  assert(m2k_step(ctx, fds, nfds) == M2K_OK);
+}
+
+void
+test_step_drain(m2k_t *ctx, char *buf, size_t cap, size_t *len)
+{
+  test_step(ctx);
+  size_t got = 0;
+  m2k_read_to_app(ctx, buf + *len, cap - *len - 1, &got);
+  *len += got;
+  buf[*len] = '\0';
+}
+
+int
+test_connect_client(int port)
+{
+  int fd = socket(AF_INET, SOCK_STREAM, 0);
+  assert(fd >= 0);
+  struct sockaddr_in addr = {0};
+  addr.sin_family = AF_INET;
+  inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
+  addr.sin_port = htons((unsigned short) port);
+  assert(connect(fd, (struct sockaddr *) &addr, sizeof addr) == 0);
+  return fd;
+}
+
+int
+test_local_port(int fd)
+{
+  struct sockaddr_storage ss;
+  socklen_t slen = sizeof ss;
+  assert(getsockname(fd, (struct sockaddr *) &ss, &slen) == 0);
+  if (ss.ss_family == AF_INET6)
+    return ntohs(((struct sockaddr_in6 *) &ss)->sin6_port);
+  return ntohs(((struct sockaddr_in *) &ss)->sin_port);
 }
