@@ -1146,6 +1146,9 @@ answerPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_m
   fds[n].revents = 0;
   n++;
 
+  /* No TTY write side here (same as dialPollfds): nothing is emitted
+     until the answer resolves, so output buffered at ANSWER entry
+     stalls for up to S7 seconds. */
   appendTtyPollfds(ctx, fds, &n, POLLIN, 0);
   *nfds_inout = n;
 

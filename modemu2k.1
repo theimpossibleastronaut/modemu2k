@@ -61,6 +61,12 @@ print RING in command mode; the ATA command, or S0 auto-answer
 bound after hangup, so the next caller can be answered without a
 restart. Can be combined with any of the -c, -d, -e, -l, and -s
 options. Dual-stack IPv4/IPv6.
+.IP
+ATA is not accepted inside an -e init string; to answer without
+typing, enable auto-answer instead (for example -e "ATS0=1").
+When combined with -l, the answer port is bound only after the
+-l connection has been accepted; callers dialing in before then
+are refused rather than queued.
 .\" ===== -c =====
 .TP
 .BI -c " comm_prog"
