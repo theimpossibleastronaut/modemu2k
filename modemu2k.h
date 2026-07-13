@@ -626,6 +626,29 @@ M2K_API int         m2k_run_done(const m2k_t *ctx);
 M2K_API int         m2k_is_online(const m2k_t *ctx);
 
 /**
+ * @brief Write a human-readable snapshot of the modem's state into @p buf.
+ *
+ * Four newline-separated lines covering the step-machine state, carrier,
+ * TTY fds and buffer fill, socket and buffer fill, listeners, ring count,
+ * dial progress, control lines, and verbose mask. Intended for bug
+ * reports and host-side debug dumps; the exact format may evolve between
+ * versions and is not a parsing API.
+ *
+ * snprintf contract: returns the length the full description requires
+ * (excluding the terminating NUL) regardless of @p cap; writes at most
+ * @p cap - 1 bytes plus a NUL. @p cap == 0 (with @p buf NULL or not) is
+ * a legal size probe.
+ *
+ * @param ctx Modem context.
+ * @param buf Destination buffer (may be NULL when @p cap is 0).
+ * @param cap Capacity of @p buf in bytes.
+ * @return Length of the full description, excluding the NUL.
+ *
+ * @snippet examples/m2k_describe_state.c describe_state
+ */
+M2K_API int         m2k_describe_state(const m2k_t *ctx, char *buf, size_t cap);
+
+/**
  * @brief Test whether the modem has an active carrier (live TCP socket).
  *
  * Maps to the DCD (Data Carrier Detect) signal real serial modems

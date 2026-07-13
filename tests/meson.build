@@ -6,6 +6,7 @@ test_cases = [
   'atcmd',
   'comm_program',
   'connect',
+  'describe',
   'dial_step',
   'error_buffer',
   'ipv6',

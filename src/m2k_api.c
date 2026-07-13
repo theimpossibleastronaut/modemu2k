@@ -1501,6 +1501,46 @@ m2k_is_online(const m2k_t *ctx)
 }
 
 int
+m2k_describe_state(const m2k_t *ctx, char *buf, size_t cap)
+{
+  char tmp[512];
+  int n = snprintf(tmp, sizeof tmp,
+                   "state=%s carrier=%s app_io=%s\n"
+                   "tty: rfd=%d wfd=%d owned=%s bufR=%zu/%zu bufW=%zu/%zu\n"
+                   "sock: fd=%d alive=%s bufR=%zu/%zu bufW=%zu/%zu listen_fd=%d\n"
+                   "line: answer_fd=%d rings(S1)=%u dial=%s dtr=%d rts=%d "
+                   "verbose=0x%02x force=%s",
+                   stepStateName(ctx->step.state),
+                   ctx->sock.conn.alive ? "yes" : "no",
+                   ctx->step.app_io ? "yes" : "no",
+                   ctx->tty.rfd, ctx->tty.wfd,
+                   ctx->tty.owned ? "yes" : "no",
+                   (size_t) (ctx->tty.bufR.end - ctx->tty.bufR.ptr),
+                   sizeof ctx->tty.bufR.buf,
+                   (size_t) (ctx->tty.bufW.ptr - ctx->tty.bufW.top),
+                   sizeof ctx->tty.bufW.buf,
+                   ctx->sock.conn.fd,
+                   ctx->sock.conn.alive ? "yes" : "no",
+                   (size_t) (ctx->sock.bufR.end - ctx->sock.bufR.ptr),
+                   sizeof ctx->sock.bufR.buf,
+                   (size_t) (ctx->sock.bufW.ptr - ctx->sock.bufW.top),
+                   sizeof ctx->sock.bufW.buf,
+                   ctx->sock.listen_fd,
+                   ctx->answer.fd, (unsigned) ctx->atcmd.s[1],
+                   ctx->dial.result ? "in-progress" : "idle",
+                   ctx->ctrl.dtr, ctx->ctrl.rts,
+                   (unsigned) ctx->atcmd.pv,
+                   ctx->log.force_verbose ? "yes" : "no");
+  if (cap > 0 && buf != NULL)
+  {
+    size_t copy = (size_t) n < cap - 1 ? (size_t) n : cap - 1;
+    memcpy(buf, tmp, copy);
+    buf[copy] = '\0';
+  }
+  return n;
+}
+
+int
 m2k_has_carrier(const m2k_t *ctx)
 {
   return ctx->sock.conn.alive;

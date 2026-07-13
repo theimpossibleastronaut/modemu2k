@@ -9,6 +9,7 @@
 # projects pulling us in as a subproject don't need them.
 example_cases = [
   'm2k_dial',
+  'm2k_describe_state',
   'm2k_set_log_fn',
   'm2k_set_error_buffer',
   'm2k_setup_answer',
