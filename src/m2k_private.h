@@ -425,3 +425,4 @@ int m2k_sockDialProgress(m2k_t *ctx, st_sock *sock);
 void m2k_sockDialAbort(m2k_t *ctx, st_sock *sock);
 int m2k_sockListen(m2k_t *ctx, const char *port);
 int m2k_sockAccept(m2k_t *ctx, int server_fd);
+int m2k_sockAcceptKeep(m2k_t *ctx, int server_fd);

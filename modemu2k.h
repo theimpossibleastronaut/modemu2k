@@ -481,6 +481,39 @@ M2K_API int         m2k_get_listen_fd(const m2k_t *ctx);
 M2K_API m2k_err_t   m2k_listen_accept(m2k_t *ctx);
 
 /**
+ * @brief Bind the line-side "answer" listener on @p port.
+ *
+ * Incoming TCP connections on this port are treated as modem calls:
+ * while one is pending, command mode emits RING (S-register 1 counts
+ * the rings); the ATA command — or S0 auto-answer when S0 > 0 —
+ * accepts the call and goes online, exactly as if ATD had connected
+ * outward. The listener persists across hangups (a real modem's
+ * hangup does not remove the phone line) and is closed by m2k_free().
+ *
+ * Not to be confused with m2k_setup_listen(), which accepts a TCP
+ * connection to use as the TTY (DTE side).
+ *
+ * @param ctx  Modem context.
+ * @param port Service name or decimal port number to listen on.
+ * @return M2K_OK on success; M2K_ERR_SOCKET if a listener is already
+ *         bound or on bind / listen / getaddrinfo failure.
+ *
+ * @snippet examples/m2k_setup_answer.c setup_answer
+ */
+M2K_API m2k_err_t   m2k_setup_answer(m2k_t *ctx, const char *port);
+
+/**
+ * @brief Expose the answer listener's fd (after m2k_setup_answer()).
+ *
+ * Lets an embedding host poll for the incoming-call event itself
+ * (the RING indication also flows through the TTY output).
+ *
+ * @param ctx Modem context.
+ * @return The bound answer listener fd, or -1 when none is bound.
+ */
+M2K_API int         m2k_get_answer_fd(const m2k_t *ctx);
+
+/**
  * @brief Run the modem command/online loop until the PTY closes.
  *
  * Handles the full state machine: reads Hayes AT commands in command mode,

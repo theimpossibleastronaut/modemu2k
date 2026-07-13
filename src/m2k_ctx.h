@@ -22,6 +22,11 @@ struct m2k_s
   int listen_fd;                 /* Bound listener from m2k_setup_listen,
                                        consumed by m2k_listen_accept; -1 when
                                        no listener is open. */
+  int answer_fd;                 /* Line-side listener from m2k_setup_answer
+                                       (ATA/RING answer path); -1 when unbound.
+                                       Survives hangup; closed by m2k_free(). */
+  struct timeval answer_deadline; /* S7 wait window for M2K_STATE_ANSWER. */
+  struct timeval ring_next;      /* Next RING emission while a caller waits. */
   m2k_step_state step_state;     /* Steppable event-loop state machine. */
   struct m2k_cmdbuf step_cmdbuf; /* Per-step persistent cmd-mode line buffer. */
   bool app_io;                   /* m2k_setup_app_io() flag — host supplies/

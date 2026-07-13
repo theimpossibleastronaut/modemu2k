@@ -154,6 +154,25 @@ m2k_sockAccept(m2k_t *ctx, int server_fd)
   return client_fd;
 }
 
+/* Like m2k_sockAccept, but the listener stays open — the answer-side
+   "phone line" persists across calls. SO_OOBINLINE matches what the
+   dial path sets on its socket. */
+int
+m2k_sockAcceptKeep(m2k_t *ctx, int server_fd)
+{
+  struct sockaddr_storage addr;
+  socklen_t addrlen = sizeof addr;
+  int client_fd = accept(server_fd, (struct sockaddr *) &addr, &addrlen);
+  if (client_fd == -1)
+  {
+    m2k_err_set(ctx, "accept: %s\n", strerror(errno));
+    return -1;
+  }
+  int tmp = 1;
+  setsockopt(client_fd, SOL_SOCKET, SO_OOBINLINE, &tmp, sizeof(tmp));
+  return client_fd;
+}
+
 int
 m2k_sockDial(m2k_t *ctx, st_sock *sock)
 {

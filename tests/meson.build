@@ -1,6 +1,7 @@
 # TODO: Add more tests!
 
 test_cases = [
+  'answer',
   'app_io',
   'atcmd',
   'comm_program',

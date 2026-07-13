@@ -368,6 +368,7 @@ m2k_new(void)
   if (!ctx)
     return NULL;
   ctx->listen_fd = -1;
+  ctx->answer_fd = -1;
   ctx->step_state = M2K_STATE_CMD;
   ctx->dtr = true;
   ctx->rts = true;
@@ -387,6 +388,8 @@ m2k_free(m2k_t *ctx)
     return;
   if (ctx->listen_fd != -1)
     close(ctx->listen_fd);
+  if (ctx->answer_fd != -1)
+    close(ctx->answer_fd);
   /* Close the TTY fd only when the library opened it (PTY master, dev,
      accepted client). stdin mode (rfd/wfd = 0/1) and app-IO are
      caller-owned. rfd == wfd in every owned case, so one close suffices. */
@@ -671,6 +674,27 @@ m2k_listen_accept(m2k_t *ctx)
   ctx->tty.rfd = ctx->tty.wfd = client_fd;
   ctx->tty_owned = true;
   return M2K_OK;
+}
+
+m2k_err_t
+m2k_setup_answer(m2k_t *ctx, const char *port)
+{
+  if (ctx->answer_fd != -1)
+  {
+    m2k_err_set(ctx, "m2k_setup_answer: answer listener already bound\n");
+    return M2K_ERR_SOCKET;
+  }
+  int fd = m2k_sockListen(ctx, port);
+  if (fd == -1)
+    return M2K_ERR_SOCKET;
+  ctx->answer_fd = fd;
+  return M2K_OK;
+}
+
+int
+m2k_get_answer_fd(const m2k_t *ctx)
+{
+  return ctx->answer_fd;
 }
 
 /* ── App-IO (embed) mode ──────────────────────────────────────────────

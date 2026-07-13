@@ -11,6 +11,7 @@ example_cases = [
   'm2k_dial',
   'm2k_set_log_fn',
   'm2k_set_error_buffer',
+  'm2k_setup_answer',
   'm2k_setup_comm_program',
   'm2k_setup_listen',
   ]
