@@ -227,13 +227,20 @@ $(function() {
 <div class="line">    <span class="keywordflow">break</span>;</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordflow">if</span> (cmdarg.verbose)</div>
-<div class="line">    <a id="a11" name="a11"></a><a class="code hl_function" href="modemu2k_8h.html#a0163af0c01d8839179943e37e339e04c">m2k_set_force_verbose</a>(ctx, 1);</div>
+<div class="line">  <span class="keywordflow">if</span> (cmdarg.answer_port != NULL &amp;&amp; <a id="_a11" name="_a11"></a><a class="code hl_function" href="modemu2k_8h.html#ac43d20543766212d04303fb52a05856e">m2k_setup_answer</a>(ctx, cmdarg.answer_port) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
+<div class="line">  {</div>
+<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;modemu2k: failed to bind answer port %s\n&quot;</span>, cmdarg.answer_port);</div>
+<div class="line">    <a class="code hl_function" href="modemu2k_8h.html#a5d75b20e6984cc904b69bdc7949e0f1d">m2k_free</a>(ctx);</div>
+<div class="line">    <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordflow">if</span> (cmdarg.atcmd != NULL &amp;&amp; <a id="_a12" name="_a12"></a><a class="code hl_function" href="modemu2k_8h.html#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a>(ctx, cmdarg.atcmd) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
+<div class="line">  <span class="keywordflow">if</span> (cmdarg.verbose)</div>
+<div class="line">    <a id="a12" name="a12"></a><a class="code hl_function" href="modemu2k_8h.html#a0163af0c01d8839179943e37e339e04c">m2k_set_force_verbose</a>(ctx, 1);</div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordflow">if</span> (cmdarg.atcmd != NULL &amp;&amp; <a id="_a13" name="_a13"></a><a class="code hl_function" href="modemu2k_8h.html#a9db3de10144ae6dfed16e43d037568bd">m2k_atcmd</a>(ctx, cmdarg.atcmd) != <a class="code hl_enumvalue" href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a>)</div>
 <div class="line">    fprintf(stderr, <span class="stringliteral">&quot;Error in initialization commands.\r\n&quot;</span>);</div>
 <div class="line"> </div>
-<div class="line">  <a id="a13" name="a13"></a><a class="code hl_function" href="modemu2k_8h.html#a53bda9fcaa8c027a446b9ce19549cfa3">m2k_run</a>(ctx);</div>
+<div class="line">  <a id="a14" name="a14"></a><a class="code hl_function" href="modemu2k_8h.html#a53bda9fcaa8c027a446b9ce19549cfa3">m2k_run</a>(ctx);</div>
 <div class="line">  <a class="code hl_function" href="modemu2k_8h.html#a5d75b20e6984cc904b69bdc7949e0f1d">m2k_free</a>(ctx);</div>
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
@@ -251,6 +258,7 @@ $(function() {
 <div class="ttc" id="amodemu2k_8h_html_aa0c4543e93fa6c87b50c3ce31acc1223"><div class="ttname"><a href="modemu2k_8h.html#aa0c4543e93fa6c87b50c3ce31acc1223">m2k_new</a></div><div class="ttdeci">M2K_API m2k_t * m2k_new(void)</div><div class="ttdoc">Allocate and initialise a new modem context.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe"><div class="ttname"><a href="modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe">M2K_OK</a></div><div class="ttdeci">@ M2K_OK</div><div class="ttdef"><b>Definition</b> modemu2k.h:123</div></div>
 <div class="ttc" id="amodemu2k_8h_html_ab77f3daab4a6f38d7739cf5da27476cf"><div class="ttname"><a href="modemu2k_8h.html#ab77f3daab4a6f38d7739cf5da27476cf">m2k_setup_pty</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_setup_pty(m2k_t *ctx, const char **slave_out)</div><div class="ttdoc">Allocate a PTY master and return the slave device path.</div></div>
+<div class="ttc" id="amodemu2k_8h_html_ac43d20543766212d04303fb52a05856e"><div class="ttname"><a href="modemu2k_8h.html#ac43d20543766212d04303fb52a05856e">m2k_setup_answer</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_setup_answer(m2k_t *ctx, const char *port)</div><div class="ttdoc">Bind the line-side &quot;answer&quot; listener on port.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_ad7f6c25b8be4f0e633175d426db925d8"><div class="ttname"><a href="modemu2k_8h.html#ad7f6c25b8be4f0e633175d426db925d8">m2k_setup_listen</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_setup_listen(m2k_t *ctx, const char *port)</div><div class="ttdoc">Bind a TCP listening socket on port.</div></div>
 </div><!-- fragment --> </div><!-- contents -->
 <!-- HTML footer for doxygen 1.16.1-->

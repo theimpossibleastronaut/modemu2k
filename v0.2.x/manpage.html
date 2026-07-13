@@ -124,10 +124,10 @@ dialup TCP connecting</p>
 
 
 <p style="margin-left:9%; margin-top: 1em"><b>modemu2k</b>
-[<b>-c</b> <i>comm_prog</i>] [<b>-d</b> <i>pty_master</i>]
-[<b>-e</b> <i>atcmds</i>] [<b>-l</b> <i>port</i>]
-[<b>-h</b>] [<b>-s</b>] [<b>-V</b>] [<b>-v</b>]
-[<b>-w</b>]</p>
+[<b>-a</b> <i>port</i>] [<b>-c</b> <i>comm_prog</i>]
+[<b>-d</b> <i>pty_master</i>] [<b>-e</b> <i>atcmds</i>]
+[<b>-l</b> <i>port</i>] [<b>-h</b>] [<b>-s</b>] [<b>-V</b>]
+[<b>-v</b>] [<b>-w</b>]</p>
 
 <h2>DESCRIPTION
 <a name="DESCRIPTION"></a>
@@ -160,8 +160,27 @@ stdin/stdout (for example, <i>modemu2k -e AT</i>).</p>
 </h2>
 
 
-<p style="margin-left:9%; margin-top: 1em"><b>-c</b>
-<i>comm_prog</i></p>
+<p style="margin-left:9%; margin-top: 1em"><b>-a</b>
+<i>port</i></p>
+
+<p style="margin-left:18%;">Answer incoming TCP connections
+(&lsquo;&lsquo;calls&rsquo;&rsquo;) on <i>port</i>. A
+waiting caller makes <b>modemu2k</b> print RING in command
+mode; the ATA command, or S0 auto-answer (e.g. ATS0=1),
+accepts the call and goes online. The listener stays bound
+after hangup, so the next caller can be answered without a
+restart. Can be combined with any of the -c, -d, -e, -l, and
+-s options. Dual-stack IPv4/IPv6.</p>
+
+<p style="margin-left:18%; margin-top: 1em">ATA is not
+accepted inside an -e init string; to answer without typing,
+enable auto-answer instead (for example -e
+&quot;ATS0=1&quot;). When combined with -l, the answer port
+is bound only after the -l connection has been accepted;
+callers dialing in before then are refused rather than
+queued.</p>
+
+<p style="margin-left:9%;"><b>-c</b> <i>comm_prog</i></p>
 
 <p style="margin-left:18%;">Invoke a comm program
 <i>comm_prog</i>. <b>Modemu2k</b> invokes it by passing
@@ -268,9 +287,10 @@ comm program must open /dev/tty<i>p8</i>.</p></td></tr>
 </table>
 
 <p style="margin-left:9%; margin-top: 1em">Note: The -c,
--d, -l, and -s options are mutually exclusive. Specifying
-more than one is rejected with an error message; the former
-silent &quot;last one wins&quot; behavior was removed.</p>
+-d, -l, and -s options are mutually exclusive. The -a option
+can be combined with any of them. Specifying more than one
+is rejected with an error message; the former silent
+&quot;last one wins&quot; behavior was removed.</p>
 
 <h2>COMMAND MODE
 <a name="COMMAND MODE"></a>
