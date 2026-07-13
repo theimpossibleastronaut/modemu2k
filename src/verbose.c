@@ -11,8 +11,8 @@ m2k_vlog(m2k_t *ctx, const char *fmt, va_list ap)
 {
   char buf[512];
   vsnprintf(buf, sizeof(buf), fmt, ap);
-  if (ctx && ctx->log_fn)
-    ctx->log_fn(buf, ctx->log_userdata);
+  if (ctx && ctx->log.fn)
+    ctx->log.fn(buf, ctx->log.userdata);
   else
     fputs(buf, stderr);
 }
@@ -27,7 +27,7 @@ m2k_log(m2k_t *ctx, const char *fmt, ...)
 }
 
 /* m2k_err_set: record a detailed message for the most recent error.
-   Writes to ctx->err_buf (if installed via m2k_set_error_buffer) and
+   Writes to ctx->log.err_buf (if installed via m2k_set_error_buffer) and
    ALSO emits through the log callback so existing log consumers still
    see it. Used at error-return sites instead of plain m2k_log. */
 void
@@ -39,18 +39,18 @@ m2k_err_set(m2k_t *ctx, const char *fmt, ...)
   vsnprintf(buf, sizeof(buf), fmt, ap);
   va_end(ap);
 
-  if (ctx && ctx->err_buf && ctx->err_buf_size)
+  if (ctx && ctx->log.err_buf && ctx->log.err_buf_size)
   {
-    size_t n = ctx->err_buf_size - 1;
-    strncpy(ctx->err_buf, buf, n);
-    ctx->err_buf[n] = '\0';
+    size_t n = ctx->log.err_buf_size - 1;
+    strncpy(ctx->log.err_buf, buf, n);
+    ctx->log.err_buf[n] = '\0';
     /* Strip a trailing newline — error buffer is single-line; logs keep it. */
-    size_t len = strlen(ctx->err_buf);
-    if (len && ctx->err_buf[len - 1] == '\n')
-      ctx->err_buf[len - 1] = '\0';
+    size_t len = strlen(ctx->log.err_buf);
+    if (len && ctx->log.err_buf[len - 1] == '\n')
+      ctx->log.err_buf[len - 1] = '\0';
   }
-  if (ctx && ctx->log_fn)
-    ctx->log_fn(buf, ctx->log_userdata);
+  if (ctx && ctx->log.fn)
+    ctx->log.fn(buf, ctx->log.userdata);
   else
     fputs(buf, stderr);
 }
@@ -58,7 +58,7 @@ m2k_err_set(m2k_t *ctx, const char *fmt, ...)
 void
 verboseOut(m2k_t *ctx, int mask, const char *format, ...)
 {
-  if (!ctx->force_verbose && !(ctx->atcmd.pv & mask))
+  if (!ctx->log.force_verbose && !(ctx->atcmd.pv & mask))
     return;
   va_list ap;
   va_start(ap, format);
@@ -69,7 +69,7 @@ verboseOut(m2k_t *ctx, int mask, const char *format, ...)
 void
 verbosePerror(m2k_t *ctx, int mask, const char *s)
 {
-  if (!ctx->force_verbose && !(ctx->atcmd.pv & mask))
+  if (!ctx->log.force_verbose && !(ctx->atcmd.pv & mask))
     return;
   m2k_log(ctx, "%s: %s\n", s, strerror(errno));
 }

@@ -404,15 +404,15 @@ m2k_free(m2k_t *ctx)
 void
 m2k_set_log_fn(m2k_t *ctx, m2k_log_fn fn, void *userdata)
 {
-  ctx->log_fn = fn;
-  ctx->log_userdata = userdata;
+  ctx->log.fn = fn;
+  ctx->log.userdata = userdata;
 }
 
 void
 m2k_set_error_buffer(m2k_t *ctx, char *buf, size_t size)
 {
-  ctx->err_buf = buf;
-  ctx->err_buf_size = buf ? size : 0;
+  ctx->log.err_buf = buf;
+  ctx->log.err_buf_size = buf ? size : 0;
   if (buf && size)
     buf[0] = '\0';
 }
@@ -1538,13 +1538,13 @@ m2k_get_dtr(const m2k_t *ctx)
 void
 m2k_set_force_verbose(m2k_t *ctx, int on)
 {
-  ctx->force_verbose = !!on;
+  ctx->log.force_verbose = !!on;
 }
 
 int
 m2k_get_force_verbose(const m2k_t *ctx)
 {
-  return ctx->force_verbose;
+  return ctx->log.force_verbose;
 }
 
 int

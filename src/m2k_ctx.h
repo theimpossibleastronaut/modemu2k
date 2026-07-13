@@ -27,10 +27,17 @@ struct m2k_s
     struct st_ttyBufW bufW;
   } tty;
   struct st_telOpt telOpt;
-  m2k_log_fn log_fn;
-  void *log_userdata;
-  char *err_buf; /* m2k_set_error_buffer() — caller-owned. */
-  size_t err_buf_size;
+  struct
+  {
+    m2k_log_fn fn;
+    void *userdata;
+    char *err_buf;            /* m2k_set_error_buffer() — caller-owned. */
+    size_t err_buf_size;
+    bool force_verbose;       /* m2k_set_force_verbose() — bypasses the
+                                   AT%V mask in verboseOut/verbosePerror so
+                                   ATZ (which resets atcmd.pv via the
+                                   atcmdNV copy) can't silence the host. */
+  } log;
   char slave_path[64];           /* PTY slave path filled by
                                            m2k_setup_pty/m2k_setup_comm_program;
                                            lifetime = ctx. */
@@ -63,10 +70,6 @@ struct m2k_s
     bool dtr, rts;            /* m2k_set_dtr()/m2k_set_rts() — DTE control
                                    lines. */
   } ctrl;
-  bool force_verbose;            /* m2k_set_force_verbose() — bypasses the
-                                       AT%V mask in verboseOut/verbosePerror so
-                                       ATZ (which resets atcmd.pv via the
-                                       atcmdNV copy) can't silence the host. */
   struct
   {
     struct addrinfo *result;  /* getaddrinfo() head during non-blocking
