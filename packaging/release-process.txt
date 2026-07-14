@@ -13,12 +13,14 @@ In-tree edits (before tagging)
 [ ] meson.build: confirm `version:` matches the planned tag.
 [ ] packaging/file_id.diz: bump the `vX.Y.Z` on the first line to the
     planned tag (the BBS-distribution DIZ ships in the source tarball).
-[ ] scripts/reformat.sh — reformat hand-written sources with indent.
-    Commit the result on its own so it stays separable from semantic
-    changes:
+[ ] scripts/reformat.sh — reformat hand-written sources with
+    clang-format. Commit the result on its own so it stays separable
+    from semantic changes:
         scripts/reformat.sh
         git diff   # eyeball the changes
-        git add -A && git commit -m "reformat with indent"
+        git add -A && git commit -m "reformat with clang-format"
+[ ] meson fmt -ir — reformat all meson.build files (default style; no
+    .editorconfig in this repo). Own commit, same reasoning as above.
 
 Tarball (optional — for distro maintainers that want a checksum)
 ----------------------------------------------------------------
@@ -30,8 +32,22 @@ Tarball (optional — for distro maintainers that want a checksum)
 
 Per-distro packaging files
 --------------------------
-[ ] ~/src/Packaging/AUR/modemu2k/PKGBUILD: set `sha256sums=('<sha256 from above>')` (was 'SKIP').
-[ ] packaging/Slackbuild/modemu2k/modemu2k.info: fill `MD5SUM="<md5 from above>"`.
+[ ] packaging/aur/PKGBUILD (local AUR clone, git-excluded from this
+    repo): bump pkgver, reset pkgrel=1, set sha256sums, regenerate
+    .SRCINFO with `makepkg --printsrcinfo > .SRCINFO`.
+[ ] ~/src/slackbuilds/network/modemu2k/modemu2k.info: bump VERSION /
+    DOWNLOAD, fill `MD5SUM="<md5 from above>"`.
+[ ] ~/src/OpenSuse/home:andy5995:branches:network:utilities/modemu2k/:
+    bump spec Version, prepend a modemu2k.changes entry, osc build test.
+
+v0.2.3 (2026-07-14) tarball checksums
+-------------------------------------
+Generate the dist tarball from the FINAL pre-tag commit (meson dist
+archives the latest committed revision), then record here in the
+post-release housekeeping commit — recording before the final dist
+is circular (the commit changes the next tarball):
+    sha256: <fill in post-dist>
+    md5:    <fill in post-dist>
 
 GitHub Release (which also creates the tag)
 -------------------------------------------

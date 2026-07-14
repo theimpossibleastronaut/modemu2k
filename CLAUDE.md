@@ -255,6 +255,6 @@ Gotcha: **only one strace can attach to a given PID at a time**. If a prior stra
 
 ## Packaging
 
-Per-distro packaging files live under `packaging/`: `debian/`, `appimage/`, plus `file_id.diz`. Maintained *outside* this tree: the AUR `PKGBUILD` (`~/src/Packaging/AUR/modemu2k/`), the SlackBuild (`~/src/slackbuilds/network/modemu2k/` — moved out July 2026), and the OpenSUSE spec (`~/src/OpenSuse/home:andy5995:branches:network:utilities/modemu2k/`). Cross-distro packaging knowledge (containers, lintian gotchas, SBo conventions, the Debian `packaging/debian/ → ./debian/` move, etc.) lives in the gClaude packaging skill.
+Per-distro packaging files live under `packaging/`: `debian/`, `appimage/`, plus `file_id.diz`. Maintained *outside* this tree: the AUR `PKGBUILD` (in the AUR git clone at `packaging/aur/`, which is locally git-excluded from this repo), the SlackBuild (`~/src/slackbuilds/network/modemu2k/` — moved out July 2026), and the OpenSUSE spec (`~/src/OpenSuse/home:andy5995:branches:network:utilities/modemu2k/`). Cross-distro packaging knowledge (containers, lintian gotchas, SBo conventions, the Debian `packaging/debian/ → ./debian/` move, etc.) lives in the gClaude packaging skill.
 
 - `packaging/debian/modemu2k.lintian-overrides` silences `syntax-error-in-debian-changelog`. The trigger is the upstream `ChangeLog` (project's date-stanza format) installed as `changelog.gz` — see the gClaude Debian entry for the mechanic.
