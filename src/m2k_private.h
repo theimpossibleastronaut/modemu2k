@@ -414,6 +414,11 @@ typedef enum
 } Cmdstat;
 
 Cmdstat cmdLex(m2k_t *ctx, const char *ptr, st_sock *sock);
+
+/* m2k_step.c internals shared with m2k_api.c (deprecated sync API) and
+   m2k_new(). */
+int onlineMode(m2k_t *ctx, st_sock *sock);
+void cmdBufReset(struct m2k_cmdbuf *x);
 void putTtyCmdstat(m2k_t *ctx, Cmdstat s);
 
 int m2k_sockDial(m2k_t *ctx, st_sock *sock);

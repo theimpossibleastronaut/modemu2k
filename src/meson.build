@@ -2,6 +2,8 @@ src = [
   'atcmd.c',
   'comm_program.c',
   'm2k_api.c',
+  'm2k_setup.c',
+  'm2k_step.c',
   'sockbuf.c',
   'stty.c',
   'timeval.c',
