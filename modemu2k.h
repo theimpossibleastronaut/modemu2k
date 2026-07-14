@@ -127,6 +127,8 @@ typedef void (*m2k_log_fn)(const char *msg, void *userdata);
  * telnet-negotiation narration; TRACE additionally opens byte-level
  * buffer traffic. The Hayes-side AT%V mask can still open individual
  * DEBUG/TRACE categories independently of the level.
+ *
+ * @since 0.2.3
  */
 typedef enum {
   M2K_LOG_ERROR = 0, /**< Failures: syscall errors, rejected commands. */
@@ -532,6 +534,8 @@ M2K_API m2k_err_t   m2k_listen_accept(m2k_t *ctx);
  *         bound or on bind / listen / getaddrinfo failure.
  *
  * @snippet examples/m2k_setup_answer.c setup_answer
+ *
+ * @since 0.2.3
  */
 M2K_API m2k_err_t   m2k_setup_answer(m2k_t *ctx, const char *port);
 
@@ -543,6 +547,8 @@ M2K_API m2k_err_t   m2k_setup_answer(m2k_t *ctx, const char *port);
  *
  * @param ctx Modem context.
  * @return The bound answer listener fd, or -1 when none is bound.
+ *
+ * @since 0.2.3
  */
 M2K_API int         m2k_get_answer_fd(const m2k_t *ctx);
 
@@ -688,6 +694,8 @@ M2K_API int         m2k_is_online(const m2k_t *ctx);
  * @return Length of the full description, excluding the NUL.
  *
  * @snippet examples/m2k_describe_state.c describe_state
+ *
+ * @since 0.2.3
  */
 M2K_API int         m2k_describe_state(const m2k_t *ctx, char *buf, size_t cap);
 
@@ -751,10 +759,13 @@ M2K_API int         m2k_get_rts(const m2k_t *ctx);
  *
  * @param ctx Modem context.
  * @param on  Non-zero to force narration on, zero to defer to AT%V.
+ *
+ * @since 0.2.2
  */
 M2K_API void        m2k_set_force_verbose(m2k_t *ctx, int on);
 
-/** Return the most recent value passed to m2k_set_force_verbose() (0 by default). */
+/** Return the most recent value passed to m2k_set_force_verbose() (0 by default).
+ *  @since 0.2.2 */
 M2K_API int         m2k_get_force_verbose(const m2k_t *ctx);
 
 /**
@@ -779,10 +790,13 @@ M2K_API int         m2k_get_force_verbose(const m2k_t *ctx);
  *
  * @param ctx   Modem context.
  * @param level New threshold; one of @ref m2k_log_level_t.
+ *
+ * @since 0.2.3
  */
 M2K_API void        m2k_set_log_level(m2k_t *ctx, m2k_log_level_t level);
 
-/** Return the current log level threshold (M2K_LOG_INFO by default). */
+/** Return the current log level threshold (M2K_LOG_INFO by default).
+ *  @since 0.2.3 */
 M2K_API m2k_log_level_t m2k_get_log_level(const m2k_t *ctx);
 
 #ifdef __cplusplus
