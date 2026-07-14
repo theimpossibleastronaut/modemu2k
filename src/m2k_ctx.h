@@ -82,7 +82,7 @@ struct m2k_s
   struct
   {
     int state, cmd, opt;      /* sockReadLoop's telnet IAC stream parser
-                                   (SRL_* states in m2k_api.c). */
+                                   (SRL_* states in m2k_step.c). */
   } srl;
   struct m2k_escseq escSeq;   /* +++ escape detector (online mode). */
   struct m2k_linebuf lineBuf; /* Line buffer for non-SGA telnet mode. */
