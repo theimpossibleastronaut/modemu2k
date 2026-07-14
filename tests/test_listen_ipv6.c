@@ -14,7 +14,13 @@ stop_connector(void)
 
 /* Check that dual-stack actually works: m2k_sockListen tries AF_INET6 with
    IPV6_V6ONLY=0 and falls back to IPv4 if the OS refuses (e.g. OpenBSD).
-   Replicate that probe here so we skip rather than time out. */
+   Replicate that probe here so we skip rather than time out.
+
+   Binding ::1 (not just creating the socket) is the load-bearing step: with
+   IPv6 administratively disabled (net.ipv6.conf.all.disable_ipv6=1), the
+   socket() and IPV6_V6ONLY calls all still succeed, but bind(::1) fails with
+   EADDRNOTAVAIL — which is exactly the condition that would otherwise make
+   m2k_listen_accept() below block until the meson timeout. */
 static int
 has_dualstack(void)
 {
@@ -33,8 +39,12 @@ has_dualstack(void)
     return 0;
   }
 #endif
+  struct sockaddr_in6 loop = {0};
+  loop.sin6_family = AF_INET6;
+  inet_pton(AF_INET6, "::1", &loop.sin6_addr);
+  int ok = bind(fd, (struct sockaddr *) &loop, sizeof loop) == 0;
   close(fd);
-  return 1;
+  return ok;
 }
 
 /* Fork a child that connects via IPv6 loopback to the already-bound
