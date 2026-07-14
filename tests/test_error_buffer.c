@@ -35,10 +35,10 @@ test_atcmd_action_verbs_route_to_at_error(void)
      should return M2K_ERR_AT (not M2K_ERR_BUG) with a helpful nudge
      toward the right entry point. */
   assert(m2k_atcmd(ctx, "ATD\"bbs 23\"") == M2K_ERR_AT);
-  assert(contains(errbuf, "m2k_dial"));
+  assert(contains(errbuf, "step loop"));
 
   assert(m2k_atcmd(ctx, "ATO") == M2K_ERR_AT);
-  assert(contains(errbuf, "m2k_online"));
+  assert(contains(errbuf, "step loop"));
 
   m2k_free(ctx);
 }

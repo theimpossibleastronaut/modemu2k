@@ -18,6 +18,10 @@
  *   // m2k_setup_comm_program(ctx, "minicom -p %s");   // fork a comm program on a PTY
  *   // m2k_setup_listen(ctx, "5000");                  // bind a TCP port, then
  *   // m2k_listen_accept(ctx);                         //   wait for a client to connect
+ *   // m2k_setup_app_io(ctx);                          // or: host supplies TTY bytes itself
+ *
+ *   // Optional, combines with any mode: answer incoming "calls" (RING/ATA/S0)
+ *   // m2k_setup_answer(ctx, "2400");
  *
  *   // Optional: apply AT commands before entering the command loop
  *   m2k_atcmd(ctx, "ATS7=30");
@@ -134,15 +138,18 @@ typedef enum {
 
 /**
  * @brief Return codes used by all m2k_* functions.
+ *
+ * Values are stable across releases: new codes are appended and existing
+ * values are never reordered, so callers can safely cache the numbers.
  */
-/* Note: new codes are appended; existing values must never be reordered
-   so external callers can safely cache numeric values across releases. */
 typedef enum {
   M2K_OK = 0,       /**< Success. */
   M2K_ERR_NOMEM,    /**< Memory allocation failed. */
   M2K_ERR_PTY,      /**< PTY open or allocation failed. */
   M2K_ERR_SOCKET,   /**< TCP connect or I/O error. */
-  M2K_ERR_TIMEOUT,  /**< Operation timed out. */
+  M2K_ERR_TIMEOUT,  /**< Operation timed out. (Reserved; not currently
+                         returned — dial timeouts surface as NO CARRIER
+                         through the step machine.) */
   M2K_ERR_CANCELED, /**< Operation canceled (e.g., +++ escape sequence). */
   M2K_ERR_BUG,      /**< Internal assertion failure — should not happen. */
   M2K_ERR_WOULDBLOCK, /**< Operation would block; call m2k_step() (or wait
@@ -212,19 +219,19 @@ M2K_API void        m2k_set_error_buffer(m2k_t *ctx, char *buf, size_t size);
  * @brief Feed a Hayes AT command string to the modem.
  *
  * Intended for one-shot configuration commands (S-register sets, mode
- * toggles, etc.). Action commands like ATD/ATO are recognised by the
- * lexer but do not drive a connection from this entry point; use
- * m2k_dial() / m2k_online() for those.
+ * toggles, etc.). Action commands like ATD/ATO/ATA are recognised by
+ * the lexer but do not drive a connection from this entry point; feed
+ * them through the CMD-mode line buffer instead (see @return below).
  *
  * @param ctx Modem context.
  * @param cmd NUL-terminated AT command (e.g. @c "ATZ" or @c "ATS0=1").
  *            A string with no @c AT prefix is silently ignored.
  * @return M2K_OK on successful execution or no-op (missing @c AT prefix);
  *         M2K_ERR_AT if the lexer rejected the command as malformed, or
- *         if the command was an action verb (ATD or ATO) — those drive a
- *         connection and so are not actionable from this one-shot
- *         configuration entry. To dial or resume online mode from code,
- *         feed the ATD/ATO string through the CMD-mode line buffer
+ *         if the command was an action verb (ATD, ATO, or ATA) — those
+ *         drive a connection and so are not actionable from this one-shot
+ *         configuration entry. To dial, answer, or resume online mode from
+ *         code, feed the command string through the CMD-mode line buffer
  *         (m2k_write_from_app() in embed mode, or just write to the TTY
  *         in standalone mode) and let m2k_step() dispatch it.
  *         M2K_ERR_BUG only for unexpected lexer states.
@@ -273,9 +280,16 @@ M2K_API M2K_DEPRECATED("use m2k_run() or the step API instead")
 m2k_err_t           m2k_online(m2k_t *ctx);
 
 /**
- * @brief Tear down the active TCP connection.
+ * @brief Hang up: abandon whatever connection activity is in progress.
+ *
+ * Covers all three connection phases: aborts a dial in progress
+ * (M2K_STATE_DIAL), cancels an ATA/auto-answer wait (M2K_STATE_ANSWER),
+ * or tears down a live TCP connection. In each case the modem emits
+ * NO CARRIER and returns to command mode. A no-op when idle. The answer
+ * listener from m2k_setup_answer() stays bound.
+ *
  * @param ctx Modem context.
- * @return M2K_OK on success.
+ * @return M2K_OK (always).
  */
 M2K_API m2k_err_t   m2k_hangup(m2k_t *ctx);
 
@@ -411,7 +425,8 @@ M2K_API m2k_err_t   m2k_setup_app_io(m2k_t *ctx);
  * @param buf      Bytes to inject. Must be non-NULL when @p len > 0.
  * @param len      Length of @p buf in bytes. May be 0.
  * @param consumed Out: bytes actually accepted (0 .. len). Must be non-NULL.
- * @return M2K_OK if any bytes were accepted, M2K_ERR_WOULDBLOCK if none
+ * @return M2K_OK if any bytes were accepted (a call with @p len == 0 is a
+ *         no-op returning M2K_OK), M2K_ERR_WOULDBLOCK if none
  *         were, M2K_ERR_PTY (overloaded as "wrong I/O mode") if the
  *         context is not in app-I/O mode — call m2k_setup_app_io() first.
  */
@@ -539,7 +554,7 @@ M2K_API int         m2k_get_answer_fd(const m2k_t *ctx);
  * +++ escape or disconnection.  Call one of the m2k_setup_*() functions
  * before calling m2k_run().
  *
- * Equivalent to:
+ * Equivalent (modulo poll-error handling) to:
  * @code
  *   while (!m2k_run_done(ctx)) {
  *     struct pollfd fds[M2K_MAX_POLLFDS];
@@ -552,7 +567,9 @@ M2K_API int         m2k_get_answer_fd(const m2k_t *ctx);
  * @endcode
  *
  * @param ctx Modem context.
- * @return M2K_OK when the session ends normally.
+ * @return M2K_OK when the session ends normally; otherwise the first
+ *         non-OK code from m2k_get_pollfds()/m2k_step() (realistically
+ *         only M2K_ERR_BUG).
  */
 M2K_API m2k_err_t   m2k_run(m2k_t *ctx);
 
@@ -580,6 +597,11 @@ M2K_API m2k_err_t   m2k_run(m2k_t *ctx);
  * host event loop is not held up by connect(). m2k_get_pollfds()
  * publishes the in-progress socket fd while DIAL is active, so the
  * host pollset stays accurate without special-casing.
+ *
+ * Answering (ATA, or S0 auto-answer) works the same way: the context
+ * parks in an internal ANSWER state while waiting for a caller within
+ * the S7 window, and m2k_get_pollfds() publishes the answer listener
+ * fd for the duration.
  */
 
 /** Maximum number of pollfds modemu2k will ever ask the caller to watch. */
@@ -596,8 +618,11 @@ M2K_API m2k_err_t   m2k_run(m2k_t *ctx);
  * @param ctx        Modem context.
  * @param fds        Caller-provided array of at least @ref M2K_MAX_POLLFDS entries.
  * @param nfds_inout In:  capacity of @p fds (must be >= @ref M2K_MAX_POLLFDS).
- *                   Out: number of entries actually populated. Zero means
- *                        the session is done; the caller should exit the loop.
+ *                   Out: number of entries actually populated. May be zero
+ *                        while the session is still alive (app-IO command
+ *                        mode with no listener: the host's own fds drive
+ *                        progress) — use m2k_run_done() to decide when to
+ *                        exit the loop.
  * @param timeout_ms Out: maximum wait in milliseconds before m2k_step() needs
  *                   to be called again. -1 means no deadline.
  * @return M2K_OK on success, M2K_ERR_BUG if @p *nfds_inout is too small.
@@ -618,7 +643,7 @@ M2K_API m2k_err_t   m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds,
  *             with the OS's `.revents` values populated by the caller.
  * @param nfds Number of entries in @p fds (the value m2k_get_pollfds
  *             returned in @p *nfds_inout).
- * @return M2K_OK on success.
+ * @return M2K_OK on success, M2K_ERR_BUG on a corrupted state value.
  */
 M2K_API m2k_err_t   m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds);
 
@@ -714,16 +739,15 @@ M2K_API int         m2k_get_dtr(const m2k_t *ctx);
 M2K_API int         m2k_get_rts(const m2k_t *ctx);
 
 /**
- * @brief Bypass the AT%V verbose mask in verboseOut() / verbosePerror().
+ * @brief Bypass the AT%V verbose category mask.
  *
- * Normally narration sites are gated by `ctx->atcmd.pv & mask`, which the
- * Hayes `AT%V` command sets. ATZ resets `atcmd.pv` to its NV default of 0
- * (via the `atcmdNV` copy inside `atcmdZ`), so a host that wanted log
- * output for the whole run can be silenced by any user-issued `ATZ`. This
- * flag is OR'd into the gate, so log output survives regardless of the
- * AT%V mask. Default is off. Hosts should prefer m2k_set_log_level(),
- * which the standalone CLI's `-v` flag now uses; this flag remains as a
- * plain mask bypass.
+ * Narration sites are normally gated by the category mask the Hayes
+ * `AT%V` command sets. ATZ resets that mask to its saved default of 0,
+ * so a host that wanted log output for the whole run can be silenced by
+ * any user-issued `ATZ`. This flag is OR'd into the gate, so narration
+ * survives regardless of the AT%V mask. Default is off. Hosts should
+ * prefer m2k_set_log_level(), which the standalone CLI's `-v` flag now
+ * uses; this flag remains as a plain mask bypass.
  *
  * @param ctx Modem context.
  * @param on  Non-zero to force narration on, zero to defer to AT%V.
@@ -736,8 +760,9 @@ M2K_API int         m2k_get_force_verbose(const m2k_t *ctx);
 /**
  * @brief Set the severity threshold for log delivery.
  *
- * Messages at levels above @p level are dropped before they reach the
- * log callback (or stderr). The default is M2K_LOG_INFO, which matches
+ * Messages less severe than @p level (numerically greater
+ * m2k_log_level_t values) are dropped before they reach the log
+ * callback (or stderr). The default is M2K_LOG_INFO, which matches
  * the library's historical always-on output: errors, warnings, and
  * lifecycle notices flow; DEBUG narration and TRACE byte traffic stay
  * quiet until asked for.

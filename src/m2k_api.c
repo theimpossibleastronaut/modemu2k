@@ -85,10 +85,10 @@ m2k_atcmd(m2k_t *ctx, const char *cmd)
     m2k_err_set(ctx, "AT command rejected: \"%s\"\n", cmd);
     return M2K_ERR_AT;
   case CMDST_ATD:
-    m2k_err_set(ctx, "ATD is not actionable from m2k_atcmd; use m2k_dial()\n");
+    m2k_err_set(ctx, "ATD is not actionable from m2k_atcmd; use the step loop\n");
     return M2K_ERR_AT;
   case CMDST_ATO:
-    m2k_err_set(ctx, "ATO is not actionable from m2k_atcmd; use m2k_online()\n");
+    m2k_err_set(ctx, "ATO is not actionable from m2k_atcmd; use the step loop\n");
     return M2K_ERR_AT;
   case CMDST_ATA:
     m2k_err_set(ctx, "ATA is not actionable from m2k_atcmd; use the step loop\n");
