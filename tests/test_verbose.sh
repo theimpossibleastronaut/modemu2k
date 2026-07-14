@@ -47,8 +47,9 @@ assert_verbose_narrates "short" -v
 assert_verbose_narrates "long" --verbose
 
 # Regression guard: ATZ wipes ctx->atcmd.pv (via the atcmdNV copy in
-# atcmdZ). The CLI uses m2k_set_force_verbose() to bypass that mask, so
-# both startup-time (-e atz) and interactive ATZ must keep narrating.
+# atcmdZ). The CLI's -v sets the log level (ctx->log.level), which lives
+# outside the ATZ-reset state, so both startup-time (-e atz) and
+# interactive ATZ must keep narrating.
 assert_verbose_after_atz() {
   label="$1"
   shift

@@ -721,7 +721,9 @@ M2K_API int         m2k_get_rts(const m2k_t *ctx);
  * (via the `atcmdNV` copy inside `atcmdZ`), so a host that wanted log
  * output for the whole run can be silenced by any user-issued `ATZ`. This
  * flag is OR'd into the gate, so log output survives regardless of the
- * AT%V mask. Default is off. Used by the standalone CLI's `-v` flag.
+ * AT%V mask. Default is off. Hosts should prefer m2k_set_log_level(),
+ * which the standalone CLI's `-v` flag now uses; this flag remains as a
+ * plain mask bypass.
  *
  * @param ctx Modem context.
  * @param on  Non-zero to force narration on, zero to defer to AT%V.

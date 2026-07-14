@@ -448,6 +448,7 @@ atcmdPTSet(m2k_t *ctx, const char *s)
 /* n: 0-255 */
 /*    bit0: output misc info to make up for less descriptive ATX0 indication */
 /*    bit1: output telnet option negotioation */
+/*    bit2: output byte-level buffer traffic (VERB_BYTES) */
 int
 atcmdPV(m2k_t *ctx, const char *s)
 {
