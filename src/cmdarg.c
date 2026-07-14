@@ -66,7 +66,8 @@ showUsage(char *const argv[])
   printf("  %s-s, --show%s                              show which device will be used\n", opt, r);
   puts("");
   printf("  %s-v, --verbose%s                           log internal events to stderr\n"
-         "                                          (repeat for more detail: -vv adds byte-level traffic)\n", opt, r);
+         "                                          (repeat for more detail: -vv adds byte-level traffic)\n",
+         opt, r);
   printf("  %s-h, --help%s                              display help\n", opt, r);
   printf("  %s-V, --version%s                           display version\n", opt, r);
   printf("  %s-w, --warranty%s                          display warranty\n", opt, r);

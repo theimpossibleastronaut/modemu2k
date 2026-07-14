@@ -10,14 +10,14 @@ struct m2k_s
     st_sock conn;
     struct st_sockBufR bufR;
     struct st_sockBufW bufW;
-    int listen_fd;            /* Bound listener from m2k_setup_listen,
+    int listen_fd; /* Bound listener from m2k_setup_listen,
                                    consumed by m2k_listen_accept; -1 when
                                    no listener is open. */
   } sock;
   struct
   {
-    int rfd, wfd;             /* absorbed st_tty */
-    bool owned;               /* true when rfd/wfd is a library-opened fd
+    int rfd, wfd; /* absorbed st_tty */
+    bool owned;   /* true when rfd/wfd is a library-opened fd
                                    (PTY master, dev, or accepted client)
                                    that m2k_free() must close; false for
                                    stdin (0/1, caller-owned) and app-IO.
@@ -31,16 +31,16 @@ struct m2k_s
   {
     m2k_log_fn fn;
     void *userdata;
-    char *err_buf;            /* m2k_set_error_buffer() — caller-owned. */
+    char *err_buf; /* m2k_set_error_buffer() — caller-owned. */
     size_t err_buf_size;
-    bool force_verbose;       /* m2k_set_force_verbose() — bypasses the
+    bool force_verbose;    /* m2k_set_force_verbose() — bypasses the
                                    AT%V mask in verboseOut/verbosePerror so
                                    ATZ (which resets atcmd.pv via the
                                    atcmdNV copy) can't silence the host. */
-    m2k_log_level_t level;    /* m2k_set_log_level() delivery threshold;
+    m2k_log_level_t level; /* m2k_set_log_level() delivery threshold;
                                    default M2K_LOG_INFO. */
   } log;
-  char slave_path[64];           /* PTY slave path filled by
+  char slave_path[64]; /* PTY slave path filled by
                                            m2k_setup_pty/m2k_setup_comm_program;
                                            lifetime = ctx. */
   struct
@@ -69,19 +69,19 @@ struct m2k_s
   } step;
   struct
   {
-    bool dtr, rts;            /* m2k_set_dtr()/m2k_set_rts() — DTE control
+    bool dtr, rts; /* m2k_set_dtr()/m2k_set_rts() — DTE control
                                    lines. */
   } ctrl;
   struct
   {
-    struct addrinfo *result;  /* getaddrinfo() head during non-blocking
+    struct addrinfo *result; /* getaddrinfo() head during non-blocking
                                    dial (M2K_STATE_DIAL); freed when the
                                    dial resolves or is aborted. */
     struct timeval deadline;
   } dial;
   struct
   {
-    int state, cmd, opt;      /* sockReadLoop's telnet IAC stream parser
+    int state, cmd, opt; /* sockReadLoop's telnet IAC stream parser
                                    (SRL_* states in m2k_step.c). */
   } srl;
   struct m2k_escseq escSeq;   /* +++ escape detector (online mode). */

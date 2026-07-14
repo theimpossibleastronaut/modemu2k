@@ -334,7 +334,7 @@ putTtyCmdstat(m2k_t *ctx, Cmdstat s)
     "",
     "",
     "",
-    "",     /* CMDST_ATA — never printed */
+    "", /* CMDST_ATA — never printed */
     "RING",
   };
 
@@ -1273,4 +1273,3 @@ m2k_has_carrier(const m2k_t *ctx)
 {
   return ctx->sock.conn.alive;
 }
-
