@@ -55,7 +55,7 @@ atcmdInit(m2k_t *ctx, struct st_cmdarg *cmdarg, st_sock *sock)
   /*memset(atcmd, 0, sizeof(atcmd)); */
   if (cmdLex(ctx, INITSTR, sock) != CMDST_OK || ((s = cmdLex(ctx, getenv("MODEMU2k"), sock)) != CMDST_OK && s != CMDST_NOAT) || (cmdarg != NULL && (s = cmdLex(ctx, cmdarg->atcmd, sock)) != CMDST_OK && s != CMDST_NOAT))
   {
-    m2k_log(ctx, "Error in initialization commands.\r\n");
+    m2k_log(ctx, M2K_LOG_ERROR, "Error in initialization commands.\r\n");
     CHAR_CR(ctx) = '\r'; /* force normal settings */
     CHAR_LF(ctx) = '\n';
   }

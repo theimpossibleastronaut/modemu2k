@@ -285,7 +285,7 @@ onlineMode(m2k_t *ctx, st_sock *sock)
     if (select(sock->fd + 1, &rfds, &wfds, NULL, tp) < 0)
     {
       if (errno != EINTR)
-        m2k_log(ctx, "select(): %s\n", strerror(errno));
+        m2k_log(ctx, M2K_LOG_ERROR, "select(): %s\n", strerror(errno));
       continue;
     }
 
@@ -375,6 +375,7 @@ m2k_new(void)
     return NULL;
   ctx->sock.listen_fd = -1;
   ctx->answer.fd = -1;
+  ctx->log.level = M2K_LOG_INFO;
   ctx->step.state = M2K_STATE_CMD;
   ctx->ctrl.dtr = true;
   ctx->ctrl.rts = true;
@@ -1599,6 +1600,18 @@ m2k_get_force_verbose(const m2k_t *ctx)
   return ctx->log.force_verbose;
 }
 
+void
+m2k_set_log_level(m2k_t *ctx, m2k_log_level_t level)
+{
+  ctx->log.level = level;
+}
+
+m2k_log_level_t
+m2k_get_log_level(const m2k_t *ctx)
+{
+  return ctx->log.level;
+}
+
 int
 m2k_get_rts(const m2k_t *ctx)
 {
@@ -1622,7 +1635,7 @@ m2k_run(m2k_t *ctx)
       if (pr < 0)
       {
         if (errno != EINTR)
-          m2k_log(ctx, "poll(): %s\n", strerror(errno));
+          m2k_log(ctx, M2K_LOG_ERROR, "poll(): %s\n", strerror(errno));
         continue;
       }
     }

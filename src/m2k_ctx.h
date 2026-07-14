@@ -37,6 +37,8 @@ struct m2k_s
                                    AT%V mask in verboseOut/verbosePerror so
                                    ATZ (which resets atcmd.pv via the
                                    atcmdNV copy) can't silence the host. */
+    m2k_log_level_t level;    /* m2k_set_log_level() delivery threshold;
+                                   default M2K_LOG_INFO. */
   } log;
   char slave_path[64];           /* PTY slave path filled by
                                            m2k_setup_pty/m2k_setup_comm_program;

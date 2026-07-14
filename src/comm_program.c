@@ -36,7 +36,7 @@ forkExec(m2k_t *ctx, char *s)
   switch (commProgramPid)
   {
   case -1: /*error */
-    m2k_log(ctx, "fork(): %s\n", strerror(errno));
+    m2k_log(ctx, M2K_LOG_ERROR, "fork(): %s\n", strerror(errno));
     return -1;
   case 0: /*child */
     signal(SIGCHLD, SIG_DFL);

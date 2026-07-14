@@ -387,11 +387,12 @@ void *m2k_calloc_at(m2k_t *ctx, size_t n, size_t size,
 
 // logging / verbose
 
-void m2k_log(m2k_t *ctx, const char *fmt, ...);
+void m2k_log(m2k_t *ctx, m2k_log_level_t level, const char *fmt, ...);
 void m2k_err_set(m2k_t *ctx, const char *fmt, ...);
 
 #define VERB_MISC 1
 #define VERB_TELOPT 2
+#define VERB_BYTES 4
 
 void verboseOut(m2k_t *ctx, int mask, const char *format, ...);
 void verbosePerror(m2k_t *ctx, int mask, const char *s);

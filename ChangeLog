@@ -1,5 +1,8 @@
 (in-progress)
 - modemu2k (v0.2.3)
+  * Add m2k_set_log_level() / m2k_get_log_level() — severity-threshold
+    log filter (ERROR/WARN/INFO/DEBUG/TRACE); AT%V category semantics
+    unchanged
   * Fix telnet IAC parser state being shared between modem contexts
     (two m2k_t instances online at once corrupted each other's stream)
   * Add m2k_describe_state() — one-call state snapshot for bug reports

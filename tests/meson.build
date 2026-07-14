@@ -6,6 +6,7 @@ test_cases = [
   'connect',
   'describe',
   'dial_step',
+  'log_level',
   'error_buffer',
   'ipv6',
   'listen',

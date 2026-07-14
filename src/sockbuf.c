@@ -36,7 +36,7 @@ sockBufRead(m2k_t *ctx, st_sock *sock)
       /* PPP link down or something to reach here. */
       /* v0.0 exited, which comm progs don't expect. */
       /* now just NO CARRIERs. Thanks >> Rod May */
-      m2k_log(ctx, "recv(): %s\n", strerror(errno));
+      m2k_log(ctx, M2K_LOG_WARN, "recv(): %s\n", strerror(errno));
     return;
   }
   ctx->sock.bufR.ptr = ctx->sock.bufR.buf;
@@ -79,7 +79,7 @@ sockBufWrite(m2k_t *ctx, st_sock *sock)
     if (l == 0)
       verboseOut(ctx, VERB_MISC, MSG_CONNECTION_CLOSED_BY_PEER);
     else
-      m2k_log(ctx, "send(): %s\n", strerror(errno));
+      m2k_log(ctx, M2K_LOG_WARN, "send(): %s\n", strerror(errno));
     return;
   }
   else if (l < wl)
@@ -100,7 +100,7 @@ putSock1(m2k_t *ctx, uchar c)
   { /* limit */
     if (ctx->sock.bufW.ptr >= ctx->sock.bufW.buf + SOCKBUFW_SIZE_A)
     { /*actual limit */
-      m2k_log(ctx, "\asockBufW overrun.\n");
+      m2k_log(ctx, M2K_LOG_WARN, "\asockBufW overrun.\n");
       return;
     }
     else

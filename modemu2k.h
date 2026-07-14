@@ -115,6 +115,24 @@ M2K_API const char *m2k_version(void);
 typedef void (*m2k_log_fn)(const char *msg, void *userdata);
 
 /**
+ * @brief Log severity levels, ordered from most to least severe.
+ *
+ * Every message the library emits carries one of these levels; only
+ * messages at or above the threshold set by m2k_set_log_level() reach
+ * the log callback (or stderr). DEBUG opens the state-machine and
+ * telnet-negotiation narration; TRACE additionally opens byte-level
+ * buffer traffic. The Hayes-side AT%V mask can still open individual
+ * DEBUG/TRACE categories independently of the level.
+ */
+typedef enum {
+  M2K_LOG_ERROR = 0, /**< Failures: syscall errors, rejected commands. */
+  M2K_LOG_WARN,      /**< Abnormal but survivable: peer resets, overruns. */
+  M2K_LOG_INFO,      /**< Notable lifecycle events (default threshold). */
+  M2K_LOG_DEBUG,     /**< State transitions, AT dispatch, telnet options. */
+  M2K_LOG_TRACE      /**< Byte-level buffer traffic. Very noisy. */
+} m2k_log_level_t;
+
+/**
  * @brief Return codes used by all m2k_* functions.
  */
 /* Note: new codes are appended; existing values must never be reordered
@@ -712,6 +730,33 @@ M2K_API void        m2k_set_force_verbose(m2k_t *ctx, int on);
 
 /** Return the most recent value passed to m2k_set_force_verbose() (0 by default). */
 M2K_API int         m2k_get_force_verbose(const m2k_t *ctx);
+
+/**
+ * @brief Set the severity threshold for log delivery.
+ *
+ * Messages at levels above @p level are dropped before they reach the
+ * log callback (or stderr). The default is M2K_LOG_INFO, which matches
+ * the library's historical always-on output: errors, warnings, and
+ * lifecycle notices flow; DEBUG narration and TRACE byte traffic stay
+ * quiet until asked for.
+ *
+ * The threshold lives outside the Hayes-visible S/`%` registers, so an
+ * ATZ from the far side cannot reset it — this supersedes
+ * m2k_set_force_verbose() as the host-side knob (that flag remains as a
+ * plain AT%V-mask bypass). The `AT%V` mask itself keeps working: it can
+ * open individual DEBUG/TRACE categories even when the level threshold
+ * would hide them.
+ *
+ * The standalone CLI maps `-v` to M2K_LOG_DEBUG and `-vv` to
+ * M2K_LOG_TRACE.
+ *
+ * @param ctx   Modem context.
+ * @param level New threshold; one of @ref m2k_log_level_t.
+ */
+M2K_API void        m2k_set_log_level(m2k_t *ctx, m2k_log_level_t level);
+
+/** Return the current log level threshold (M2K_LOG_INFO by default). */
+M2K_API m2k_log_level_t m2k_get_log_level(const m2k_t *ctx);
 
 #ifdef __cplusplus
 }

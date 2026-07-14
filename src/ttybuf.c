@@ -102,7 +102,7 @@ putTty1(m2k_t *ctx, uchar c)
   { /* limit */
     if (ctx->tty.bufW.ptr >= ctx->tty.bufW.buf + TTYBUFW_SIZE_A)
     { /*actual limit */
-      m2k_log(ctx, "\attyBufW overrun.\n");
+      m2k_log(ctx, M2K_LOG_WARN, "\attyBufW overrun.\n");
       return;
     }
     else

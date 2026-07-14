@@ -116,7 +116,7 @@ m2k_sockListen(m2k_t *ctx, const char *port)
       {
         /* Don't write to err_buf yet — we may still find another addr;
            only commit a message if we exit the loop without success. */
-        m2k_log(ctx, "bind/listen: %s\n", strerror(errno));
+        m2k_log(ctx, M2K_LOG_ERROR, "bind/listen: %s\n", strerror(errno));
         close(server_fd);
         server_fd = -1;
         continue;
@@ -134,7 +134,7 @@ m2k_sockListen(m2k_t *ctx, const char *port)
     return -1;
   }
 
-  m2k_log(ctx, "Listening on port %s...\n", port);
+  m2k_log(ctx, M2K_LOG_INFO, "Listening on port %s...\n", port);
   return server_fd;
 }
 
@@ -214,7 +214,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
     int tmp = 1;
     if (setsockopt(sock->fd, SOL_SOCKET, SO_OOBINLINE, &tmp, sizeof(tmp)) < 0)
     {
-      m2k_log(ctx, "setsockopt(): %s\n", strerror(errno));
+      m2k_log(ctx, M2K_LOG_ERROR, "setsockopt(): %s\n", strerror(errno));
       sockClose(sock);
       continue;
     }
@@ -227,7 +227,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
       freeaddrinfo(result);
       return 0;
     }
-    m2k_log(ctx, "connect(): %s\n", strerror(errno));
+    m2k_log(ctx, M2K_LOG_ERROR, "connect(): %s\n", strerror(errno));
     sockClose(sock);
     /* try next address */
 #else /*!ifdef NO_DIAL_CANCELING */
@@ -244,7 +244,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
       /* but Term's connect() blocks here... */
       if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0 && errno != EINPROGRESS)
       {
-        m2k_log(ctx, "connect(): %s\n", strerror(errno));
+        m2k_log(ctx, M2K_LOG_ERROR, "connect(): %s\n", strerror(errno));
         sockClose(sock);
         continue; /* try next address */
       }
@@ -271,7 +271,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
         {
           if (errno == EINTR)
             goto RETRY;
-          m2k_log(ctx, "select(): %s\n", strerror(errno));
+          m2k_log(ctx, M2K_LOG_ERROR, "select(): %s\n", strerror(errno));
           freeaddrinfo(result);
           sockShutdown(sock);
           return 1;
@@ -298,7 +298,7 @@ m2k_sockDial(m2k_t *ctx, st_sock *sock)
         {
           if (connect(sock->fd, sock->rp->ai_addr, sock->rp->ai_addrlen) < 0 && errno != EISCONN)
           {
-            m2k_log(ctx, "connect()-2: %s\n", strerror(errno));
+            m2k_log(ctx, M2K_LOG_ERROR, "connect()-2: %s\n", strerror(errno));
             sockClose(sock);
             goto next_addr; /* try next address */
           }
@@ -358,7 +358,7 @@ dialTryCurrent(m2k_t *ctx, st_sock *sock)
   int one = 1;
   if (setsockopt(sock->fd, SOL_SOCKET, SO_OOBINLINE, &one, sizeof(one)) < 0)
   {
-    m2k_log(ctx, "setsockopt(): %s\n", strerror(errno));
+    m2k_log(ctx, M2K_LOG_ERROR, "setsockopt(): %s\n", strerror(errno));
     sockClose(sock);
     return -1;
   }
@@ -381,7 +381,7 @@ dialTryCurrent(m2k_t *ctx, st_sock *sock)
     timevalAdd(&ctx->dial.deadline, &t);
     return 0;
   }
-  m2k_log(ctx, "connect(): %s\n", strerror(errno));
+  m2k_log(ctx, M2K_LOG_ERROR, "connect(): %s\n", strerror(errno));
   sockClose(sock);
   return -1;
 }
@@ -458,7 +458,7 @@ m2k_sockDialProgress(m2k_t *ctx, st_sock *sock)
     if (errno == EALREADY || errno == EINPROGRESS)
       return 0;
     /* Hard error on this address — fall through to advance. */
-    m2k_log(ctx, "connect(): %s\n", strerror(errno));
+    m2k_log(ctx, M2K_LOG_ERROR, "connect(): %s\n", strerror(errno));
   }
 
   sockClose(sock);

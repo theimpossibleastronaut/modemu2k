@@ -40,7 +40,7 @@ m2k_alloc_at(m2k_t *ctx, size_t size, const char *func, int line)
   if (!p)
   {
     int err = errno;
-    m2k_log(ctx, "malloc(%zu) failed at %s:%d: %s\n",
+    m2k_log(ctx, M2K_LOG_ERROR, "malloc(%zu) failed at %s:%d: %s\n",
             size, func, line, strerror(err));
   }
   return p;
@@ -54,7 +54,7 @@ m2k_calloc_at(m2k_t *ctx, size_t n, size_t size,
   if (!p)
   {
     int err = errno;
-    m2k_log(ctx, "calloc(%zu, %zu) failed at %s:%d: %s\n",
+    m2k_log(ctx, M2K_LOG_ERROR, "calloc(%zu, %zu) failed at %s:%d: %s\n",
             n, size, func, line, strerror(err));
   }
   return p;
