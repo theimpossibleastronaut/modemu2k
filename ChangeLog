@@ -1,17 +1,23 @@
-(in-progress)
+2026-07-14
 - modemu2k (v0.2.3)
+  * Add -a/--answer and ATA/RING/S0 answer-side modem semantics, so a
+    BBS on the PTY can receive incoming TCP calls (new m2k_setup_answer
+    / m2k_get_answer_fd API)
   * -v/--verbose is now repeatable: -vv adds byte-level buffer
     narration (new VERB_BYTES category, AT%V4)
   * Add m2k_set_log_level() / m2k_get_log_level() — severity-threshold
     log filter (ERROR/WARN/INFO/DEBUG/TRACE); AT%V category semantics
     unchanged
-  * Fix telnet IAC parser state being shared between modem contexts
-    (two m2k_t instances online at once corrupted each other's stream)
   * Add m2k_describe_state() — one-call state snapshot for bug reports
     and host-side debugging
-  * Add -a/--answer and ATA/RING/S0 answer-side modem semantics, so a
-    BBS on the PTY can receive incoming TCP calls (new m2k_setup_answer
-    / m2k_get_answer_fd API)
+  * Stop treating the comm-program command as a printf format string;
+    substitute the slave path safely (overflow / format-string fix)
+  * Fix out-of-bounds read of telopts[] when a telnet peer sends a
+    malformed subnegotiation option byte
+  * Fix telnet IAC parser state being shared between modem contexts
+    (two m2k_t instances online at once corrupted each other's stream)
+  * Close the library-owned PTY / dev / accepted-client fd in
+    m2k_free() (was leaked every session)
   * m2k-minicom: pass options after `--` to minicom (e.g.
     `m2k-minicom -- -R CP437` to convert a BBS's CP437 characters
     for a UTF-8 terminal)
@@ -20,14 +26,6 @@
     GitHub IP and the need for any `network` suite tag
   * Refresh public-header docblocks: drop deprecated m2k_dial /
     m2k_online guidance; clarify several error-code edges
-  * Extract the loopback-listener helper from test_connect / test_ipv6
-    into tests/test_helpers.{c,h}
-  * Fix out-of-bounds read of telopts[] when a telnet peer sends a
-    malformed subnegotiation option byte
-  * Stop treating the comm-program command as a printf format string;
-    substitute the slave path safely (overflow / format-string fix)
-  * Close the library-owned PTY / dev / accepted-client fd in
-    m2k_free() (was leaked every session)
 
 2026-05-30
 - modemu2k (v0.2.2)
