@@ -391,7 +391,8 @@ Typical usage</h2>
 </div><div class="memdoc">
 
 <p>Log severity levels, ordered from most to least severe. </p>
-<p>Every message the library emits carries one of these levels; only messages at or above the threshold set by <a class="el" href="#a67cbffcb274adb0d4199f532c7eb83e9" title="Set the severity threshold for log delivery.">m2k_set_log_level()</a> reach the log callback (or stderr). DEBUG opens the state-machine and telnet-negotiation narration; TRACE additionally opens byte-level buffer traffic. The Hayes-side ATV mask can still open individual DEBUG/TRACE categories independently of the level. </p>
+<p>Every message the library emits carries one of these levels; only messages at or above the threshold set by <a class="el" href="#a67cbffcb274adb0d4199f532c7eb83e9" title="Set the severity threshold for log delivery.">m2k_set_log_level()</a> reach the log callback (or stderr). DEBUG opens the state-machine and telnet-negotiation narration; TRACE additionally opens byte-level buffer traffic. The Hayes-side ATV mask can still open individual DEBUG/TRACE categories independently of the level.</p>
+<dl class="section since"><dt>Since</dt><dd>0.2.3 </dd></dl>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a8c2d83717f3b11394cf70fc52cf868bea6150286b5d34b588ae413136b7231ae2" name="a8c2d83717f3b11394cf70fc52cf868bea6150286b5d34b588ae413136b7231ae2"></a>M2K_LOG_ERROR&#160;</td><td class="fielddoc"><p>Failures: syscall errors, rejected commands. </p>
 </td></tr>
@@ -539,7 +540,8 @@ Typical usage</h2>
 <div class="fragment"><div class="line">  <span class="keywordtype">char</span> state[512];</div>
 <div class="line">  <a class="code hl_function" href="#a99a21024f7ea4bd1ffd8f290c14eb300">m2k_describe_state</a>(ctx, state, <span class="keyword">sizeof</span> state);</div>
 <div class="line">  fprintf(stderr, <span class="stringliteral">&quot;modem state:\n%s\n&quot;</span>, state);   <span class="comment">/* paste into bug reports */</span></div>
-</div><!-- fragment --> 
+</div><!-- fragment --><dl class="section since"><dt>Since</dt><dd>0.2.3 </dd></dl>
+
 </div>
 </div>
 <a id="a8497dabd96dab585f2e6255bd9414a0a" name="a8497dabd96dab585f2e6255bd9414a0a"></a>
@@ -621,7 +623,8 @@ Typical usage</h2>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The bound answer listener fd, or -1 when none is bound. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The bound answer listener fd, or -1 when none is bound.</dd></dl>
+<dl class="section since"><dt>Since</dt><dd>0.2.3 </dd></dl>
 
 </div>
 </div>
@@ -657,7 +660,7 @@ Typical usage</h2>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Return the most recent value passed to <a class="el" href="#a0163af0c01d8839179943e37e339e04c" title="Bypass the ATV verbose category mask.">m2k_set_force_verbose()</a> (0 by default). </p>
+<p>Return the most recent value passed to <a class="el" href="#a0163af0c01d8839179943e37e339e04c" title="Bypass the ATV verbose category mask.">m2k_set_force_verbose()</a> (0 by default). </p><dl class="section since"><dt>Since</dt><dd>0.2.2 </dd></dl>
 
 </div>
 </div>
@@ -702,7 +705,7 @@ Typical usage</h2>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Return the current log level threshold (M2K_LOG_INFO by default). </p>
+<p>Return the current log level threshold (M2K_LOG_INFO by default). </p><dl class="section since"><dt>Since</dt><dd>0.2.3 </dd></dl>
 
 </div>
 </div>
@@ -1006,7 +1009,7 @@ per poll timeout."</p>
 <div class="line">  <a class="code hl_function" href="#aa65c8ca18be730d3ea347c59a969dd2a">m2k_step</a>(ctx, fds, nfds);</div>
 <div class="line">}</div>
 <div class="ttc" id="amodemu2k_8h_html_a73e7663351359d6537023e1c94d043c3"><div class="ttname"><a href="#a73e7663351359d6537023e1c94d043c3">m2k_run_done</a></div><div class="ttdeci">M2K_API int m2k_run_done(const m2k_t *ctx)</div><div class="ttdoc">Test whether the session has ended.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a83a9fe0262eb8987dd3873a32ca340db"><div class="ttname"><a href="#a83a9fe0262eb8987dd3873a32ca340db">M2K_MAX_POLLFDS</a></div><div class="ttdeci">#define M2K_MAX_POLLFDS</div><div class="ttdef"><b>Definition</b> modemu2k.h:608</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a83a9fe0262eb8987dd3873a32ca340db"><div class="ttname"><a href="#a83a9fe0262eb8987dd3873a32ca340db">M2K_MAX_POLLFDS</a></div><div class="ttdeci">#define M2K_MAX_POLLFDS</div><div class="ttdef"><b>Definition</b> modemu2k.h:614</div></div>
 <div class="ttc" id="amodemu2k_8h_html_aa65c8ca18be730d3ea347c59a969dd2a"><div class="ttname"><a href="#aa65c8ca18be730d3ea347c59a969dd2a">m2k_step</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)</div><div class="ttdoc">Run one non-blocking iteration of the state machine.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_ac5b18ee79f93f53d862beae6a719a7f2"><div class="ttname"><a href="#ac5b18ee79f93f53d862beae6a719a7f2">m2k_get_pollfds</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)</div><div class="ttdoc">Describe the fds and timeout the caller&#39;s event loop should watch.</div></div>
 </div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
@@ -1145,10 +1148,11 @@ per poll timeout."</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
-    <tr><td class="paramname">on</td><td>Non-zero to force narration on, zero to defer to ATV. </td></tr>
+    <tr><td class="paramname">on</td><td>Non-zero to force narration on, zero to defer to ATV.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section since"><dt>Since</dt><dd>0.2.2 </dd></dl>
 
 </div>
 </div>
@@ -1224,10 +1228,11 @@ per poll timeout."</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
-    <tr><td class="paramname">level</td><td>New threshold; one of <a class="el" href="#a8c2d83717f3b11394cf70fc52cf868be" title="m2k_log_level_t">m2k_log_level_t</a>. </td></tr>
+    <tr><td class="paramname">level</td><td>New threshold; one of <a class="el" href="#a8c2d83717f3b11394cf70fc52cf868be" title="m2k_log_level_t">m2k_log_level_t</a>.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section since"><dt>Since</dt><dd>0.2.3 </dd></dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#a4">main.c</a>.</dd>
 </dl>
 
@@ -1307,7 +1312,8 @@ per poll timeout."</p>
 <div class="line">  <a class="code hl_function" href="#a53bda9fcaa8c027a446b9ce19549cfa3">m2k_run</a>(ctx);   <span class="comment">/* callers now RING; answer with ATA or S0 */</span></div>
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
-</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#_a14">main.c</a>.</dd>
+</div><!-- fragment --><dl class="section since"><dt>Since</dt><dd>0.2.3 </dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="main_8c-example.html#_a14">main.c</a>.</dd>
 </dl>
 
 </div>
