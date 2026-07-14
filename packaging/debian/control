@@ -16,10 +16,11 @@ Package: modemu2k
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Hayes-style AT-command modem emulator bridging serial to TCP/Telnet
- modemu2k ships as a C library (libmodemu2k) exposing the modem state
- machine, plus a small CLI built on top. The CLI allocates a PTY and
- either reads stdin/stdout directly, forks a comm program (minicom,
- picocom) on the slave, or accepts an incoming TCP connection as the
- TTY. IPv4 and IPv6 are supported.
+ modemu2k "dials" out and answers incoming connections. It ships as a
+ C library (libmodemu2k) exposing the modem state machine, plus a
+ small CLI built on top that allocates a PTY and either reads
+ stdin/stdout directly, forks a comm program (minicom, picocom) on
+ the slave, or accepts an incoming TCP connection as the TTY. IPv4
+ and IPv6 are supported.
  .
  modemu2k is based on modemu, originally developed by Toru Egashira.

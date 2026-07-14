@@ -2,7 +2,7 @@
 Type=Application
 Name=modemu2k
 GenericName=Modem Emulator
-Comment=PTY-based modem emulator that proxies serial I/O over TCP/telnet
+Comment=Hayes-style AT-command modem emulator bridging serial-style I/O to TCP/Telnet
 Exec=modemu2k
 Icon=modemu2k
 Terminal=true
