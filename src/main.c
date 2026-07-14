@@ -86,7 +86,12 @@ main(int argc, char *const argv[])
   if (cmdarg.verbose)
   {
     m2k_set_log_fn(ctx, stderr_log_fn, NULL);
-    fputs("modemu2k: verbose logging enabled (MISC|TELOPT)\n", stderr);
+    /* -v: DEBUG (state machine, AT dispatch, telnet options);
+       -vv: TRACE (adds byte-level buffer traffic). The level lives
+       outside the AT%V mask, so a user-issued ATZ can't silence it. */
+    m2k_set_log_level(ctx, cmdarg.verbose >= 2 ? M2K_LOG_TRACE : M2K_LOG_DEBUG);
+    fprintf(stderr, "modemu2k: verbose logging enabled (%s)\n",
+            cmdarg.verbose >= 2 ? "TRACE: debug + byte traffic" : "DEBUG");
   }
   puts(PACKAGE_STRING " " VERSION);
   puts("Enter 'at%q' (or Ctrl-C twice) to quit\n");
@@ -138,8 +143,6 @@ main(int argc, char *const argv[])
     return EXIT_FAILURE;
   }
 
-  if (cmdarg.verbose)
-    m2k_set_force_verbose(ctx, 1);
 
   if (cmdarg.atcmd != NULL && m2k_atcmd(ctx, cmdarg.atcmd) != M2K_OK)
     fprintf(stderr, "Error in initialization commands.\r\n");

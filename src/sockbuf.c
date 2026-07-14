@@ -41,6 +41,7 @@ sockBufRead(m2k_t *ctx, st_sock *sock)
   }
   ctx->sock.bufR.ptr = ctx->sock.bufR.buf;
   ctx->sock.bufR.end = ctx->sock.bufR.buf + l;
+  verboseOut(ctx, VERB_BYTES, "sock: recv %d bytes\r\n", l);
 }
 
 /* writing socket */
@@ -82,7 +83,8 @@ sockBufWrite(m2k_t *ctx, st_sock *sock)
       m2k_log(ctx, M2K_LOG_WARN, "send(): %s\n", strerror(errno));
     return;
   }
-  else if (l < wl)
+  verboseOut(ctx, VERB_BYTES, "sock: sent %d/%d bytes\r\n", l, wl);
+  if (l < wl)
   {
     ctx->sock.bufW.top += l;
     /*return 1; */ /* needs retry */

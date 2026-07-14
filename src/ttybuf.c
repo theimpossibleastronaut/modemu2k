@@ -43,6 +43,7 @@ ttyBufRead(m2k_t *ctx, st_sock *sock)
   gettimeofday(&ctx->tty.bufR.newT, NULL);
   ctx->tty.bufR.ptr = ctx->tty.bufR.buf;
   ctx->tty.bufR.end = ctx->tty.bufR.buf + l;
+  verboseOut(ctx, VERB_BYTES, "tty: read %d bytes\r\n", l);
   return M2K_OK;
 }
 
@@ -85,7 +86,8 @@ ttyBufWrite(m2k_t *ctx, st_sock *sock)
       verbosePerror(ctx, VERB_MISC, "write()");
     return M2K_ERR_PTY;
   }
-  else if (l < wl)
+  verboseOut(ctx, VERB_BYTES, "tty: wrote %d/%d bytes\r\n", l, wl);
+  if (l < wl)
   {
     ctx->tty.bufW.top += l;
     return M2K_OK;

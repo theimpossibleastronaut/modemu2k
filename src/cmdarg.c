@@ -65,7 +65,8 @@ showUsage(char *const argv[])
   printf("  %s-l, --listen=%s<port>                     listen for an incoming TCP connection on [port]\n", opt, r);
   printf("  %s-s, --show%s                              show which device will be used\n", opt, r);
   puts("");
-  printf("  %s-v, --verbose%s                           log internal events to stderr\n", opt, r);
+  printf("  %s-v, --verbose%s                           log internal events to stderr\n"
+         "                                          (repeat for more detail: -vv adds byte-level traffic)\n", opt, r);
   printf("  %s-h, --help%s                              display help\n", opt, r);
   printf("  %s-V, --version%s                           display version\n", opt, r);
   printf("  %s-w, --warranty%s                          display warranty\n", opt, r);
@@ -201,8 +202,8 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
       SET_MODE('s');
       x->ttymode = CA_SHOWDEV;
       break;
-    case 'v':
-      x->verbose = 1;
+    case 'v': /* repeatable: -v debug, -vv adds byte-level trace */
+      x->verbose++;
       break;
     case 'V':
       version(argv);

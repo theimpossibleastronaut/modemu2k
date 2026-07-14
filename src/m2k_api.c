@@ -136,6 +136,7 @@ escSeqHandle(m2k_t *ctx, int c)
       timevalSet10ms(&es->expireT, ctx->atcmd.s[12] * 2);
       timevalAdd(&es->expireT, &ctx->tty.bufR.newT);
       es->state = ESH_P3;
+      verboseOut(ctx, VERB_BYTES, "+++ seen; escape arms after guard silence\r\n");
     }
     else
       es->state = ESH_NORM;

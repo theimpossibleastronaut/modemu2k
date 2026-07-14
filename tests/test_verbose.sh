@@ -66,3 +66,23 @@ assert_verbose_after_atz() {
 assert_verbose_after_atz "startup" sh -c 'printf "" | "$1" -v -e atz' sh "$bin"
 # Interactive: ATZ typed into the CMD-mode line buffer mid-session.
 assert_verbose_after_atz "interactive" sh -c 'printf "atz\n" | "$1" -v -e AT' sh "$bin"
+
+# --- -vv byte-level narration -----------------------------------------------
+# -vv (TRACE) must emit byte-count lines from the buffer layer; plain -v
+# (DEBUG) must not.
+err=$(printf 'at\n' | "$bin" -vv -e 'AT' 2>&1 1>/dev/null)
+case "$err" in
+  *"tty: read"*) ;;
+  *)
+    echo "FAIL (vv-bytes): expected byte narration with -vv, got:" >&2
+    printf '%s\n' "$err" >&2
+    exit 1
+    ;;
+esac
+err=$(printf 'at\n' | "$bin" -v -e 'AT' 2>&1 1>/dev/null)
+case "$err" in
+  *"tty: read"*)
+    echo "FAIL (v-no-bytes): -v must not emit byte-level narration" >&2
+    exit 1
+    ;;
+esac

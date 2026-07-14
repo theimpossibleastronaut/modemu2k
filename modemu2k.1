@@ -117,13 +117,12 @@ Print a usage summary.
 .\" ===== -v =====
 .TP
 .B -v
-Enable verbose narration to stderr.
-Installs a log callback and opens the runtime verbose mask
-.RB ( AT%V3 ,
-i.e.
-.B VERB_MISC | VERB_TELOPT )
-so the existing instrumentation sites (telnet IAC negotiation,
-socket and pty events, ATH/ATZ disconnect) actually print.
+Enable verbose narration to stderr (DEBUG level: state transitions,
+AT command dispatch, telnet IAC negotiation, socket and pty events,
+ATH/ATZ disconnect). Repeat the flag for more detail:
+.B -vv
+adds byte-level buffer traffic (TRACE level). The runtime AT%V mask
+can still open individual categories by hand.
 Useful for diagnosing connection or transfer issues.
 With
 .B -c
