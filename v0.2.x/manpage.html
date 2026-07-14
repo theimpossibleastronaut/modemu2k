@@ -240,12 +240,13 @@ IPv4/IPv6.</p>
 <td width="86%">
 
 
-<p>Enable verbose narration to stderr. Installs a log
-callback and opens the runtime verbose mask (<b>AT%V3</b>,
-i.e. <b>VERB_MISC | VERB_TELOPT )</b> so the existing
-instrumentation sites (telnet IAC negotiation, socket and
-pty events, ATH/ATZ disconnect) actually print. Useful for
-diagnosing connection or transfer issues. With <b>-c</b>
+<p>Enable verbose narration to stderr (DEBUG level: state
+transitions, AT command dispatch, telnet IAC negotiation,
+socket and pty events, ATH/ATZ disconnect). Repeat the flag
+for more detail: <b>-vv</b> adds byte-level buffer traffic
+(TRACE level). The runtime AT%V mask can still open
+individual categories by hand. Useful for diagnosing
+connection or transfer issues. With <b>-c</b>
 (<b>comm-program</b> mode), modemu2k refuses to run when
 stderr is a terminal, because verbose output would corrupt
 the comm program&rsquo;s display. Redirect stderr first:</p></td></tr>
@@ -935,6 +936,18 @@ less descriptive ATX0 indication</p></td></tr>
 
 
 <p>Print TELNET option negotiation</p></td></tr>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="3%">
+
+
+<p>+4</p></td>
+<td width="6%"></td>
+<td width="73%">
+
+
+<p>Print byte-level buffer traffic (socket and TTY
+read/write sizes)</p></td></tr>
 </table>
 
 <h2>ONLINE MODE

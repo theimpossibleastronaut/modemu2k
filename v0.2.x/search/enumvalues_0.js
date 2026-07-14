@@ -8,5 +8,10 @@ var searchData=
   ['m2k_5ferr_5fsocket_5',['M2K_ERR_SOCKET',['../modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19ac6beaadf0b6e9d4a35684cb250017c25',1,'modemu2k.h']]],
   ['m2k_5ferr_5ftimeout_6',['M2K_ERR_TIMEOUT',['../modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a4099531099a5ecc8e0eefcef3f1f9268',1,'modemu2k.h']]],
   ['m2k_5ferr_5fwouldblock_7',['M2K_ERR_WOULDBLOCK',['../modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a2fb9df08e88d3db15f4663bb84686e35',1,'modemu2k.h']]],
-  ['m2k_5fok_8',['M2K_OK',['../modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe',1,'modemu2k.h']]]
+  ['m2k_5flog_5fdebug_8',['M2K_LOG_DEBUG',['../modemu2k_8h.html#a8c2d83717f3b11394cf70fc52cf868bea9f8809ec6c241b81bbdabe9feeb95c6c',1,'modemu2k.h']]],
+  ['m2k_5flog_5ferror_9',['M2K_LOG_ERROR',['../modemu2k_8h.html#a8c2d83717f3b11394cf70fc52cf868bea6150286b5d34b588ae413136b7231ae2',1,'modemu2k.h']]],
+  ['m2k_5flog_5finfo_10',['M2K_LOG_INFO',['../modemu2k_8h.html#a8c2d83717f3b11394cf70fc52cf868beae8ad2289ac7786359e6020457dc5f8d9',1,'modemu2k.h']]],
+  ['m2k_5flog_5ftrace_11',['M2K_LOG_TRACE',['../modemu2k_8h.html#a8c2d83717f3b11394cf70fc52cf868bea858aadc0ed7ae8e23fff0d6b124b7a5d',1,'modemu2k.h']]],
+  ['m2k_5flog_5fwarn_12',['M2K_LOG_WARN',['../modemu2k_8h.html#a8c2d83717f3b11394cf70fc52cf868bea13f65fef8983fa899d9d27a8ce1b5ca2',1,'modemu2k.h']]],
+  ['m2k_5fok_13',['M2K_OK',['../modemu2k_8h.html#ab031108ada7cc3a5b255fe58041dce19a76b1608c8f2fefdb383bbe3366f7ffbe',1,'modemu2k.h']]]
 ];
