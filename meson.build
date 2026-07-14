@@ -1,26 +1,23 @@
 project(
-  'modemu2k',
-  'c',
-  version: '0.2.3',
-  meson_version : '>= 0.56.0',
-  default_options: [
-    'warning_level=3',
-    'c_std=gnu99',
-    ]
-  )
+    'modemu2k',
+    'c',
+    version: '0.2.3',
+    meson_version: '>= 0.56.0',
+    default_options: [
+        'warning_level=3',
+        'c_std=gnu99',
+    ],
+)
 
-add_project_arguments(
-  ['-D_GNU_SOURCE'],
-  language : 'c'
-  )
+add_project_arguments(['-D_GNU_SOURCE'], language: 'c')
 
 cc = meson.get_compiler('c')
 
 extra_flags = [
-  '-fno-common',
-  '-fstack-protector-strong',
-  '-Wformat-security',
-  '-Wformat-overflow=2'
+    '-fno-common',
+    '-fstack-protector-strong',
+    '-Wformat-security',
+    '-Wformat-overflow=2',
 ]
 
 add_project_arguments(cc.get_supported_arguments(extra_flags), language: 'c')
@@ -29,18 +26,23 @@ conf = configuration_data()
 conf.set_quoted('VERSION', meson.project_version())
 conf.set_quoted('PACKAGE_STRING', meson.project_name())
 conf.set_quoted('PACKAGE_URL', 'http://theimpossibleastronaut.com/modemu2k/')
-conf.set_quoted('PACKAGE_BUGREPORT', 'https://github.com/theimpossibleastronaut/modemu2k/issues')
+conf.set_quoted(
+    'PACKAGE_BUGREPORT',
+    'https://github.com/theimpossibleastronaut/modemu2k/issues',
+)
 
 # Require POSIX PTY allocation (posix_openpt/grantpt/unlockpt/ptsname),
 # POSIX since 2001. The legacy BSD /dev/pty?? scan fallback was
 # removed; if you ever need to bring up a pre-POSIX platform, recover
 # the fallback from git history.
-if not cc.has_function('posix_openpt',
-                       prefix: '#define _XOPEN_SOURCE 600\n#include <stdlib.h>\n#include <fcntl.h>')
-  error('posix_openpt() is required but was not found on this platform.')
+if not cc.has_function(
+    'posix_openpt',
+    prefix: '#define _XOPEN_SOURCE 600\n#include <stdlib.h>\n#include <fcntl.h>',
+)
+    error('posix_openpt() is required but was not found on this platform.')
 endif
 
-config_h = configure_file(output : 'config.h', configuration : conf)
+config_h = configure_file(output: 'config.h', configuration: conf)
 
 pkg = import('pkgconfig')
 
@@ -51,8 +53,8 @@ version_conf.set('M2K_VERSION_MINOR', version_components[1])
 version_conf.set('M2K_VERSION_PATCH', version_components[2])
 version_conf.set_quoted('M2K_VERSION', meson.project_version())
 version_h = configure_file(
-  output: 'modemu2k_version.h',
-  configuration: version_conf,
+    output: 'modemu2k_version.h',
+    configuration: version_conf,
 )
 
 subdir('src')
@@ -68,80 +70,82 @@ subdir('examples')
 # and the doc data files — those are only relevant to a standalone
 # build.
 if not meson.is_subproject()
-  modemu2k_exe = executable(
-    'modemu2k',
-    ['src/main.c', 'src/cmdarg.c'],
-    include_directories: 'src',
-    dependencies: dep_modemu2k,
-    install : true
+    modemu2k_exe = executable(
+        'modemu2k',
+        ['src/main.c', 'src/cmdarg.c'],
+        include_directories: 'src',
+        dependencies: dep_modemu2k,
+        install: true,
     )
 
-  install_headers('modemu2k.h', version_h, subdir: 'modemu2k')
+    install_headers('modemu2k.h', version_h, subdir: 'modemu2k')
 endif
 
 if get_option('gen-docs')
-  doxygen = find_program('doxygen', required: true)
-  groff   = find_program('groff',   required: true)
-  man_to_fragment = find_program('doxygen/man-to-fragment.sh')
-  subdir('doxygen')
-  doxyfile = configure_file(
-    input:  'doxygen/Doxyfile.in',
-    output: 'Doxyfile',
-    configuration: {
-      'PROJECT_NAME':    meson.project_name(),
-      'PROJECT_VERSION': meson.project_version(),
-      'SOURCE_ROOT':     meson.project_source_root(),
-      'BUILD_ROOT':      meson.project_build_root(),
-    }
-  )
-  # Render the man page to an HTML fragment that doxygen/manpage.md
-  # @htmlincludes into the Related Pages section. man-to-fragment.sh
-  # wraps `groff -Thtml -mandoc` and strips the standalone HTML
-  # wrapper so the result slots into doxygen's page chrome cleanly.
-  manpage_fragment = custom_target('manpage-fragment',
-    input:  'modemu2k.1',
-    output: 'modemu2k.1.fragment.html',
-    command: [man_to_fragment, '@INPUT@'],
-    capture: true,
+    doxygen = find_program('doxygen', required: true)
+    groff = find_program('groff', required: true)
+    man_to_fragment = find_program('doxygen/man-to-fragment.sh')
+    subdir('doxygen')
+    doxyfile = configure_file(
+        input: 'doxygen/Doxyfile.in',
+        output: 'Doxyfile',
+        configuration: {
+            'PROJECT_NAME': meson.project_name(),
+            'PROJECT_VERSION': meson.project_version(),
+            'SOURCE_ROOT': meson.project_source_root(),
+            'BUILD_ROOT': meson.project_build_root(),
+        },
     )
-  docs_tgt = custom_target('doxygen-html',
-    output: 'html',
-    command: [doxygen, doxyfile],
-    depends: manpage_fragment,
-    depend_files: [
-      files(
-        'modemu2k.h',
-        'README.md',
-        'QUICKSTART.md',
-        'HACKING.md',
-        'ChangeLog',
-        'modemu2k.1',
-        'tests/test_connect.c',
-      ),
-      example_sources,
-      doxygen_inputs,
-    ],
-    install: true,
-    install_dir: get_option('docdir'),
-    build_by_default: true,
-  )
-  alias_target('docs', docs_tgt)
+    # Render the man page to an HTML fragment that doxygen/manpage.md
+    # @htmlincludes into the Related Pages section. man-to-fragment.sh
+    # wraps `groff -Thtml -mandoc` and strips the standalone HTML
+    # wrapper so the result slots into doxygen's page chrome cleanly.
+    manpage_fragment = custom_target(
+        'manpage-fragment',
+        input: 'modemu2k.1',
+        output: 'modemu2k.1.fragment.html',
+        command: [man_to_fragment, '@INPUT@'],
+        capture: true,
+    )
+    docs_tgt = custom_target(
+        'doxygen-html',
+        output: 'html',
+        command: [doxygen, doxyfile],
+        depends: manpage_fragment,
+        depend_files: [
+            files(
+                'modemu2k.h',
+                'README.md',
+                'QUICKSTART.md',
+                'HACKING.md',
+                'ChangeLog',
+                'modemu2k.1',
+                'tests/test_connect.c',
+            ),
+            example_sources,
+            doxygen_inputs,
+        ],
+        install: true,
+        install_dir: get_option('docdir'),
+        build_by_default: true,
+    )
+    alias_target('docs', docs_tgt)
 endif
 
 if not meson.is_subproject()
-  install_man('modemu2k.1')
-  subdir ('scripts')
-  subdir ('tests')
+    install_man('modemu2k.1')
+    subdir('scripts')
+    subdir('tests')
 
-  install_data(
-    files(
-      'README.md',
-      'QUICKSTART.md',
-      'HACKING.md',
-      'COPYING',
-      'AUTHORS',
-      'ChangeLog',
-      ),
-    install_dir : get_option('docdir')
+    install_data(
+        files(
+            'README.md',
+            'QUICKSTART.md',
+            'HACKING.md',
+            'COPYING',
+            'AUTHORS',
+            'ChangeLog',
+        ),
+        install_dir: get_option('docdir'),
     )
 endif

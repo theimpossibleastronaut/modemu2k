@@ -8,29 +8,29 @@
 # prefix. Executables are only built in standalone mode — parent
 # projects pulling us in as a subproject don't need them.
 example_cases = [
-  'm2k_dial',
-  'm2k_describe_state',
-  'm2k_set_log_fn',
-  'm2k_set_error_buffer',
-  'm2k_setup_answer',
-  'm2k_setup_comm_program',
-  'm2k_setup_listen',
-  ]
+    'm2k_dial',
+    'm2k_describe_state',
+    'm2k_set_log_fn',
+    'm2k_set_error_buffer',
+    'm2k_setup_answer',
+    'm2k_setup_comm_program',
+    'm2k_setup_listen',
+]
 example_sources = files()
 foreach case : example_cases
-  example_sources += files(case + '.c')
+    example_sources += files(case + '.c')
 endforeach
 
 if not meson.is_subproject()
-  foreach case : example_cases
-    executable(
-      'example_' + case,
-      case + '.c',
-      # m2k_dial's docblock still ships, so its example uses the
-      # deprecated entry point; suppress so -Werror doesn't trip.
-      c_args : ['-DM2K_SUPPRESS_DEPRECATED'],
-      dependencies: dep_modemu2k,
-      install: false,
-      )
-  endforeach
+    foreach case : example_cases
+        executable(
+            'example_' + case,
+            case + '.c',
+            # m2k_dial's docblock still ships, so its example uses the
+            # deprecated entry point; suppress so -Werror doesn't trip.
+            c_args: ['-DM2K_SUPPRESS_DEPRECATED'],
+            dependencies: dep_modemu2k,
+            install: false,
+        )
+    endforeach
 endif
