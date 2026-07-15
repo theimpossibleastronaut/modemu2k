@@ -51,8 +51,15 @@ Generate the dist tarball from the FINAL pre-tag commit (meson dist
 archives the latest committed revision), then record here in the
 post-release housekeeping commit — recording before the final dist
 is circular (the commit changes the next tarball):
-    sha256: <fill in post-dist>
-    md5:    <fill in post-dist>
+    sha256: 7ea0fd0757a27a32144ed0b99afe4e0bf684e8d022e7a2d217bf19314f7641ba
+    md5:    0a1ec367463f4d5aa66afb56b4d421ff
+
+FileGate (BBS distribution — email attach to the sysop)
+-------------------------------------------------------
+[ ] Build ~/Downloads/modemu2k.zip (overwrite): extract the release
+    tarball, add packaging/file_id.diz as top-level FILE_ID.DIZ, then
+    zip the modemu2k-X.Y.Z/ tree + FILE_ID.DIZ.
+[ ] Email-attach the zip for FileGate.
 
 GitHub Release (which also creates the tag)
 -------------------------------------------

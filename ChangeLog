@@ -1,3 +1,6 @@
+(in-progress)
+- modemu2k (v0.2.4)
+
 2026-07-14
 - modemu2k (v0.2.3)
   * Add -a/--answer and ATA/RING/S0 answer-side modem semantics, so a
@@ -22,7 +25,7 @@
     `m2k-minicom -- -R CP437` to convert a BBS's CP437 characters
     for a UTF-8 terminal)
   * Rewrite test_connect / test_ipv6 to use loopback only; the dial
-    docblock @snippet moves to examples/m2k_dial.c. Removes hardcoded
+    docblock `@snippet` moves to examples/m2k_dial.c. Removes hardcoded
     GitHub IP and the need for any `network` suite tag
   * Refresh public-header docblocks: drop deprecated m2k_dial /
     m2k_online guidance; clarify several error-code edges

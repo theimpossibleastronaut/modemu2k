@@ -5,5 +5,4 @@ answers incoming connections) over IPv4
 or IPv6. Ships as a C library
 (libmodemu2k) plus a small CLI. Based on
 modemu, by Toru Egashira (1995-1996).
-
 github.com/theimpossibleastronaut/modemu2k
