@@ -1,5 +1,8 @@
 (in-progress)
 - modemu2k (v0.2.4)
+  * Fix ATD aborting when the command line arrives as CR LF (DOS-style
+    DTEs): stray CR/LF/NUL during dialing no longer cancel the call;
+    any other input still does (V.250 abort-on-input)
 
 2026-07-14
 - modemu2k (v0.2.3)

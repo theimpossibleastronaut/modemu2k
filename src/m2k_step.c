@@ -814,15 +814,37 @@ dialPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
 static int
 dialIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 {
-  /* User-cancel via TTY input. Only meaningful outside app_io; in
-     app_io the host can call m2k_hangup() to abort. */
+  /* User-cancel via TTY input (V.250 abort-on-input). Only meaningful
+     outside app_io; in app_io the host can call m2k_hangup() to abort.
+
+     Tolerate line terminators trailing the ATD command itself: DOS-style
+     DTEs send the command line as CR LF (e.g. `echo atd... > com1`), and
+     the LF arrives after dispatch, mid-DIAL. Real modem firmware ignores
+     CR/LF/NUL here; only a substantive byte cancels the dial. */
   if (!ctx->step.app_io)
   {
     struct pollfd *p = findPollfd(fds, nfds, ctx->tty.rfd);
     if (p && (p->revents & READ_EV))
     {
-      m2k_sockDialAbort(ctx, &ctx->sock.conn);
-      return -1;
+      uchar junk[64];
+      ssize_t n = read(ctx->tty.rfd, junk, sizeof junk);
+      int cancel = 0;
+      if (n > 0)
+      {
+        for (ssize_t i = 0; i < n; i++)
+          if (junk[i] != '\r' && junk[i] != '\n' && junk[i] != '\0')
+            cancel = 1;
+      }
+      else if (n == 0 || (errno != EAGAIN && errno != EWOULDBLOCK &&
+                          errno != EINTR))
+      {
+        cancel = 1; /* TTY gone (EOF/EIO): no one left to answer to. */
+      }
+      if (cancel)
+      {
+        m2k_sockDialAbort(ctx, &ctx->sock.conn);
+        return -1;
+      }
     }
   }
   /* Whether the socket fired or the deadline elapsed, ask Progress. */
