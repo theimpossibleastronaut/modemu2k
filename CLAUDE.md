@@ -134,7 +134,7 @@ Complementary surfaces:
 
 | File | Role |
 |------|------|
-| `src/cmdlex.l` | Flex lexer that parses the AT command set; compiled to `cmdlex.c` at build time |
+| `src/cmdlex.l` | Flex lexer that parses the AT command set; compiled to `cmdlex.c` at build time. **`cmdlex.c` is committed** (for flex-less builds, e.g. OBS) — regenerate it in the same commit as any `cmdlex.l` change: `flex -o src/cmdlex.c src/cmdlex.l`. Regenerate in place: the output path lands in `#line` directives, so generating to another path always diffs |
 | `src/atcmd.c` | AT command handlers (`atcmdD`, `atcmdH`, `atcmdZ`, S-register ops, etc.); state in `Atcmd atcmd` / `atcmdNV` |
 | `src/sock.c` | TCP socket dial (`m2k_sockDial`, plus non-blocking `m2k_sockDialStart`/`Progress`/`Abort`), listen/accept, close, shutdown; uses `getaddrinfo` for IPv4/IPv6 |
 | `src/sockbuf.c` | Buffered socket I/O (`st_sockBufR`, `st_sockBufW`) |
@@ -158,6 +158,17 @@ Tests under `tests/` link against `libmodemu2k` compiled with `-DUSE_AS_TEST_LIB
 
 `src/meson.build` builds `libmodemu2k` via meson's `library()` (default-library kind — usually shared, picked by the platform default). The top-level `meson.build` then links `main.c` + `cmdarg.c` against it for the CLI binary.
 
+#### Symbol visibility (`src/libmodemu2k.map`, since 0.2.4)
+
+The shared library exports **only `m2k_*`**; everything else is forced local by a linker version script (`-Wl,--version-script`, gated on `cc.has_link_argument` so non-GNU linkers just skip it). Before this, all ~90 internal symbols leaked — including flex's `yylex`/`yyrestart`/`yyin` family from `cmdlex.l`. Under ELF symbol interposition, an embedding host that has its *own* flex lexer (dosemu2's config parser) resolves those names first, so `cmdLex()` was silently calling the host's lexer: every AT command returned `CMDST_NOAT` (Hayes "ignore garbage" semantics) with no error anywhere. Debug narration (`dispatch:` fires, then nothing) plus a hex dump proving the buffer identical between CLI (works) and host (doesn't) is what isolated it.
+
+Consequences to keep in mind:
+
+- **New public API must be named `m2k_*`** or it won't be exported at all.
+- The white-box tests can't link the shared lib anymore; they link `lib_modemu2k_whitebox`, a static archive of the same objects (`extract_all_objects` — note it does **not** pull in `cmdlex_lib`'s objects, which is why the whitebox dep also carries `link_with: cmdlex_lib`).
+- Generic-named internals (`cmdLex`, `sockInit`, `onlineMode`, `telcmds`, `telopts`) are now safe from host collisions — relevant for the minicom integration too, since minicom links other libraries.
+- dosemu2's modemu plugin requires `modemu2k >= 0.2.4` in its `configure.ac` for exactly this reason.
+
 ### PTY / TTY modes
 
 Controlled by `cmdarg.ttymode` (see `src/cmdarg.h`):
@@ -165,7 +176,7 @@ Controlled by `cmdarg.ttymode` (see `src/cmdarg.h`):
 - `CA_COMM_PROGRAM` — allocates PTY master, forks and execs the comm program with the slave path
 - `CA_SHOWDEV` — allocates PTY master, prints slave device name, exits
 - `CA_DEVGIVEN` — opens a caller-specified PTY device
-- `CA_LISTEN` — binds a TCP port and uses the accepted socket as the TTY (intended for dosemu2 plugin use)
+- `CA_LISTEN` — binds a TCP port and uses the accepted socket as the TTY (predates the dosemu2 plugin work, which embeds the library via `m2k_setup_pty` + `m2k_step` instead)
 
 `-c`, `-d`, `-l`, and `-s` (which set these modes) are mutually exclusive — passing more than one exits with status 2 and a message naming both flags, instead of silently honoring the last one. `-a/--answer <port>` (the line-side RING/ATA/S0 listener) is orthogonal and combines with any mode.
 
@@ -181,9 +192,21 @@ When consumed via `subproject('modemu2k')` from a parent meson project, the top-
 
 The header uses `add_project_arguments` (not `add_global_arguments`, which meson forbids in subprojects) for `-D_GNU_SOURCE`.
 
-### Native libmodemu2k integration in minicom (and similar hosts)
+### Embedding in hosts (dosemu2 branch pending; minicom open)
 
-The library side is in place: `m2k_get_pollfds` / `m2k_step` / `m2k_run_done` for the event loop, plus `m2k_setup_app_io` + `m2k_write_from_app` / `m2k_read_to_app` for host-owned TTY I/O, plus the predicates / control lines listed above. ATD is non-blocking under `m2k_step` (M2K_STATE_DIAL), so dialing no longer freezes the host event loop. The remaining work is host-side — a `--modem-emu` flag (or equivalent) in minicom that swaps its `portfd`-based read/write/dial path for libmodemu2k calls. End-to-end validation against a real comm program is the open task; no API blockers are known.
+The library side is in place: `m2k_get_pollfds` / `m2k_step` / `m2k_run_done` for the event loop, plus `m2k_setup_app_io` + `m2k_write_from_app` / `m2k_read_to_app` for host-owned TTY I/O, plus the predicates / control lines listed above. ATD is non-blocking under `m2k_step` (M2K_STATE_DIAL), so dialing no longer freezes the host event loop.
+
+A dosemu2 integration branch exists (`~/src/dosemu2`, branch `modemu2k-plugin`; not yet merged upstream — PR https://github.com/dosemu2/dosemu2/pull/2925 pending as of July 2026): `src/plugin/modemu/modemu2k.c` replaces the vendored modemu, pumping the state machine from ioselect fd callbacks plus the serial engine tick. Config: `$_com1 = "vmodem"`, or `"vmodem <port>"` to also bind the inbound answer listener (RING/S0). Requires modemu2k >= 0.2.4 — it was this embedding that exposed the yylex symbol collision (see Symbol visibility above) and validated the step API end-to-end against a real DOS.
+
+minicom (`--modem-emu` flag or equivalent, swapping its `portfd` read/write/dial path for libmodemu2k calls) is still open; no API blockers are known.
+
+#### Testing against dosemu2 (m2kdev container)
+
+`ghcr.io/theimpossibleastronaut/dosemu2-container:build-env` with the dosemu2 src bind-mounted read-only; copy the tree inside, `./autogen.sh && ./default-configure && make`, then run `python3 test/test_dosemu.py PPDOSGITTestCase.test_serial_vmodem_dial_data_exchange` (and `_ipv6`, `_answer_...`). Gotchas:
+
+- Run the test framework from the dosemu2 repo root — `topdir` resolves from cwd, so running inside `test/` fails on missing bindist files.
+- The container runs as root, so `test_serial_simple_read_echo` always fails there (`SER: "exec" ignored because of root privs`) — environment artifact, not a regression.
+- The framework's `-td` log flags don't enable `s_printf`'s serial class; plugin/library narration is invisible unless logged via `error()` or dosemu runs with `-D+s`.
 
 ### Testing
 

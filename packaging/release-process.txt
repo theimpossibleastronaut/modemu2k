@@ -23,8 +23,12 @@ In-tree edits (before tagging)
         git add -A && git commit -m "reformat with clang-format"
 [ ] meson fmt -ir — reformat all meson.build files (default style; no
     .editorconfig in this repo). Own commit, same reasoning as above.
-[ ] Regenerate the committed lexer and commit if it changed:
-        flex -o src/cmdlex.c src/cmdlex.l
+[ ] Verify the committed lexer is in sync (regenerate in place; the
+    output path is embedded in #line directives, so regenerating to a
+    different path always differs):
+        flex -o src/cmdlex.c src/cmdlex.l && git diff --exit-code src/cmdlex.c
+    Should be a no-op: cmdlex.c is regenerated in the same commit as
+    any cmdlex.l change (see CLAUDE.md).
     Environments without flex (e.g. OBS) build from the committed copy;
     a stale one silently drops newer AT commands (bit us for v0.2.3:
     ATA was missing → test_describe/test_answer SIGABRT in osc build).
