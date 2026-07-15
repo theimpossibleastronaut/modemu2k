@@ -42,17 +42,42 @@ cmdlex_lib = static_library(
 
 version = meson.project_version()
 
+# Hide everything but the public m2k_* API from the shared library's
+# dynamic symbol table. Without this, internal symbols leak — notably
+# flex's yylex/yyrestart/yyin — and ELF interposition makes an
+# embedding host with its own lexer (dosemu2's config parser) capture
+# our lexer calls, silently breaking all AT command parsing.
+vscript = meson.current_source_dir() / 'libmodemu2k.map'
+vscript_args = []
+if cc.has_link_argument('-Wl,--version-script,' + vscript)
+    vscript_args = ['-Wl,--version-script,' + vscript]
+endif
+
 lib_modemu2k = library(
     meson.project_name(),
     src,
     link_with: cmdlex_lib,
     version: version,
     include_directories: ['..'],
+    link_args: vscript_args,
+    link_depends: vscript,
     install: true,
 )
 
 dep_modemu2k = declare_dependency(
     link_with: lib_modemu2k,
+    include_directories: include_directories('..'),
+)
+
+# White-box tests need the internal symbols the version script hides,
+# so give them a static archive of the same objects (no recompile).
+lib_modemu2k_whitebox = static_library(
+    'modemu2k-whitebox',
+    objects: lib_modemu2k.extract_all_objects(recursive: true),
+)
+
+dep_modemu2k_whitebox = declare_dependency(
+    link_with: [lib_modemu2k_whitebox, cmdlex_lib],
     include_directories: include_directories('..'),
 )
 

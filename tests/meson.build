@@ -44,7 +44,9 @@ foreach case : test_cases
         # deprecated synchronous API (m2k_dial / m2k_online) compiling
         # clean. Drop it once those functions are removed.
         c_args: ['-DUSE_AS_TEST_LIB', '-DM2K_SUPPRESS_DEPRECATED'],
-        dependencies: [dep_modemu2k],
+        # whitebox: the installed shared lib hides internal symbols
+        # (src/libmodemu2k.map); these tests link them directly.
+        dependencies: [dep_modemu2k_whitebox],
     )
     test(name, exe, suite: 'unit')
 endforeach
