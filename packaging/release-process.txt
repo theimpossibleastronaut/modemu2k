@@ -10,7 +10,9 @@ In-tree edits (before tagging)
     v0.2.0 sealed in commit 4b6702c (2026-05-27).
 [ ] packaging/debian/changelog: change `UNRELEASED` → `unstable` (or the
     relevant Debian distribution) and refresh the date stamp.
-[ ] meson.build: confirm `version:` matches the planned tag.
+[ ] meson.build: confirm `version:` matches the planned tag. The man
+    page .TH version is templated from it (modemu2k.1.in), so no separate
+    edit — but bump `man_date` in meson.build to the release month/year.
 [ ] packaging/file_id.diz: bump the `vX.Y.Z` on the first line to the
     planned tag (the BBS-distribution DIZ ships in the source tarball).
 [ ] scripts/reformat.sh — reformat hand-written sources with

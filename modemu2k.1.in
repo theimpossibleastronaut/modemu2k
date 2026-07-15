@@ -1,5 +1,5 @@
 .\" -*- nroff -*-
-.TH MODEMU2k 1 "May 2026" "Version 0.2.0"
+.TH MODEMU2k 1 "@MAN_DATE@" "Version @VERSION@"
 .\"
 .\"
 .SH NAME

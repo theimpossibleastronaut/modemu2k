@@ -1,7 +1,7 @@
 project(
     'modemu2k',
     'c',
-    version: '0.2.3',
+    version: '0.2.4',
     meson_version: '>= 0.56.0',
     default_options: [
         'warning_level=3',
@@ -81,6 +81,18 @@ if not meson.is_subproject()
     install_headers('modemu2k.h', version_h, subdir: 'modemu2k')
 endif
 
+# The man page .TH version is templated from the project version so it can
+# never drift; MAN_DATE is bumped by hand at release (see release-process.txt).
+man_date = 'July 2026'
+man_page = configure_file(
+    input: 'modemu2k.1.in',
+    output: 'modemu2k.1',
+    configuration: {
+        'VERSION': meson.project_version(),
+        'MAN_DATE': man_date,
+    },
+)
+
 if get_option('gen-docs')
     doxygen = find_program('doxygen', required: true)
     groff = find_program('groff', required: true)
@@ -102,7 +114,7 @@ if get_option('gen-docs')
     # wrapper so the result slots into doxygen's page chrome cleanly.
     manpage_fragment = custom_target(
         'manpage-fragment',
-        input: 'modemu2k.1',
+        input: man_page,
         output: 'modemu2k.1.fragment.html',
         command: [man_to_fragment, '@INPUT@'],
         capture: true,
@@ -119,9 +131,9 @@ if get_option('gen-docs')
                 'QUICKSTART.md',
                 'HACKING.md',
                 'ChangeLog',
-                'modemu2k.1',
                 'tests/test_connect.c',
             ),
+            man_page,
             example_sources,
             doxygen_inputs,
         ],
@@ -133,7 +145,7 @@ if get_option('gen-docs')
 endif
 
 if not meson.is_subproject()
-    install_man('modemu2k.1')
+    install_man(man_page)
     subdir('scripts')
     subdir('tests')
 
