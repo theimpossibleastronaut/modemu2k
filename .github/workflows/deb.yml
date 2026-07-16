@@ -1,0 +1,97 @@
+name: Build Debian package
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'version number'
+        required: false
+        type: string
+  push:
+    tags:
+      - 'v*'
+
+  pull_request:
+    branches: master
+    paths:
+      - '.github/workflows/deb.yml'
+      - 'packaging/debian/**'
+
+jobs:
+  build-deb:
+    runs-on: ${{ matrix.runs-on }}
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ inputs.version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: amd64
+            runs-on: ubuntu-24.04
+          - platform: arm64
+            runs-on: ubuntu-24.04-arm
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set version
+        run: |
+          if [[ -z "${VERSION}" ]]; then
+            if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+              VERSION="${GITHUB_REF#refs/tags/v}"
+            else
+              VERSION="snapshot"
+            fi
+            echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Update changelog version
+        run: |
+          sed -i "1s/([^)]*)/($VERSION)/" packaging/debian/changelog
+
+      - name: Copy debian directory
+        run: cp -a packaging/debian .
+
+      - uses: andy5995/gh-action-build-deb@v1
+        with:
+          args: |
+            --no-sign
+            --compression=xz
+          platform: ${{ matrix.platform }}
+          codename: trixie
+          lintian_check: 'true'
+          fail_on_lintian_error: 'false'
+
+      - name: Checksum
+        run: |
+          DEB_FILENAME=$(basename $(find output/ -name "modemu2k_*.deb" | head -1))
+          echo "DEB_FILENAME=$DEB_FILENAME" >> "$GITHUB_ENV"
+          cd output
+          sha256sum "$DEB_FILENAME" > "../${DEB_FILENAME}.sha256sum"
+
+      - if: ${{ github.event_name == 'pull_request' }}
+        name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: modemu2k-deb-${{ matrix.platform }}
+          path: |
+            output/*.deb
+            *.sha256sum
+          if-no-files-found: error
+
+      - name: Release (tagged)
+        if: startsWith(github.ref, 'refs/tags/') || inputs.version != ''
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "output/${{ env.DEB_FILENAME }},${{ env.DEB_FILENAME }}.sha256sum"
+          tag: ${{ inputs.version != '' && format('v{0}', env.VERSION) || '' }}
+          allowUpdates: true
+          prerelease: false
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          token: ${{ secrets.GITHUB_TOKEN }}
