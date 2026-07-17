@@ -158,14 +158,16 @@ Tests under `tests/` link against `libmodemu2k` compiled with `-DUSE_AS_TEST_LIB
 
 `src/meson.build` builds `libmodemu2k` via meson's `library()` (default-library kind — usually shared, picked by the platform default). The top-level `meson.build` then links `main.c` + `cmdarg.c` against it for the CLI binary.
 
-#### Symbol visibility (`src/libmodemu2k.map`, since 0.2.4)
+#### Symbol visibility (since 0.2.4)
 
-The shared library exports **only `m2k_*`**; everything else is forced local by a linker version script (`-Wl,--version-script`, gated on `cc.has_link_argument` so non-GNU linkers just skip it). Before this, all ~90 internal symbols leaked — including flex's `yylex`/`yyrestart`/`yyin` family from `cmdlex.l`. Under ELF symbol interposition, an embedding host that has its *own* flex lexer (dosemu2's config parser) resolves those names first, so `cmdLex()` was silently calling the host's lexer: every AT command returned `CMDST_NOAT` (Hayes "ignore garbage" semantics) with no error anywhere. Debug narration (`dispatch:` fires, then nothing) plus a hex dump proving the buffer identical between CLI (works) and host (doesn't) is what isolated it.
+The shared library exports **only its public API**: `src/meson.build` compiles both library targets with `gnu_symbol_visibility: 'hidden'` (`-fvisibility=hidden`), and the `M2K_API` macro in `modemu2k.h` (`__attribute__((visibility("default")))`, borrowed from libuv/curl) re-exposes each public symbol. Everything unannotated stays hidden. Before this, all ~90 internal symbols leaked — including flex's `yylex`/`yyrestart`/`yyin` family from `cmdlex.l`. Under ELF symbol interposition, an embedding host that has its *own* flex lexer (dosemu2's config parser) resolves those names first, so `cmdLex()` was silently calling the host's lexer: every AT command returned `CMDST_NOAT` (Hayes "ignore garbage" semantics) with no error anywhere. Debug narration (`dispatch:` fires, then nothing) plus a hex dump proving the buffer identical between CLI (works) and host (doesn't) is what isolated it.
+
+The `M2K_API` macro predates the fix — all 44 public decls already carried it — but the build never passed `-fvisibility=hidden`, so it sat inert. 0.2.4 flipped on the flag. (An earlier fix used a `-Wl,--version-script` map keyed on the `m2k_*` glob; it was replaced because the glob is GNU-ld-only and over-exported 12 internal `m2k_`-prefixed symbols like `m2k_sockDial`/`m2k_log` — the visibility macro exports exactly what's annotated.)
 
 Consequences to keep in mind:
 
-- **New public API must be named `m2k_*`** or it won't be exported at all.
-- The white-box tests can't link the shared lib anymore; they link `lib_modemu2k_whitebox`, a static archive of the same objects (`extract_all_objects` — note it does **not** pull in `cmdlex_lib`'s objects, which is why the whitebox dep also carries `link_with: cmdlex_lib`).
+- **New public API must carry `M2K_API`** on its declaration in `modemu2k.h`, or it won't be exported (naming is irrelevant now — the annotation is what counts).
+- The white-box tests can't link the shared lib anymore; they link `lib_modemu2k_whitebox`, a static archive of the same objects (`extract_all_objects` — note it does **not** pull in `cmdlex_lib`'s objects, which is why the whitebox dep also carries `link_with: cmdlex_lib`). Static linking ignores visibility, so the tests still see the hidden internals.
 - Generic-named internals (`cmdLex`, `sockInit`, `onlineMode`, `telcmds`, `telopts`) are now safe from host collisions — relevant for the minicom integration too, since minicom links other libraries.
 - dosemu2's modemu plugin requires `modemu2k >= 0.2.4` in its `configure.ac` for exactly this reason.
 

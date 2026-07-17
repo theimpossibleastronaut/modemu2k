@@ -38,29 +38,25 @@ cmdlex_lib = static_library(
     c_args: ['-Wno-sign-compare'],
     include_directories: ['..'],
     pic: true,
+    gnu_symbol_visibility: 'hidden',
 )
 
 version = meson.project_version()
 
-# Hide everything but the public m2k_* API from the shared library's
-# dynamic symbol table. Without this, internal symbols leak — notably
-# flex's yylex/yyrestart/yyin — and ELF interposition makes an
-# embedding host with its own lexer (dosemu2's config parser) capture
-# our lexer calls, silently breaking all AT command parsing.
-vscript = meson.current_source_dir() / 'libmodemu2k.map'
-vscript_args = []
-if cc.has_link_argument('-Wl,--version-script,' + vscript)
-    vscript_args = ['-Wl,--version-script,' + vscript]
-endif
-
+# Export only the public m2k_* API. Everything else is hidden by
+# compiling with -fvisibility=hidden; the M2K_API macro in modemu2k.h
+# (visibility("default")) re-exposes the public symbols. Without this,
+# internal symbols leak — notably flex's yylex/yyrestart/yyin — and ELF
+# interposition makes an embedding host with its own lexer (dosemu2's
+# config parser) capture our lexer calls, silently breaking all AT
+# command parsing.
 lib_modemu2k = library(
     meson.project_name(),
     src,
     link_with: cmdlex_lib,
     version: version,
     include_directories: ['..'],
-    link_args: vscript_args,
-    link_depends: vscript,
+    gnu_symbol_visibility: 'hidden',
     install: true,
 )
 
