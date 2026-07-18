@@ -101,6 +101,8 @@ $(function() {
   * Hide internal symbols from the shared library; only m2k_* is
     exported now (flex's yylex leaked and collided with dosemu2's
     config lexer, silently breaking all AT parsing when embedded)
+  * m2k_setup_answer now errors out if the listener can't be set
+    non-blocking, instead of risking a hung m2k_step
 
 2026-07-14
 - modemu2k (v0.2.3)
