@@ -1,3 +1,6 @@
+(in-progress)
+- modemu2k (v0.2.5)
+
 2026-07-18
 - modemu2k (v0.2.4)
   * Fix ATD aborting when the command line arrives as CR LF (DOS-style

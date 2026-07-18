@@ -51,6 +51,11 @@ Per-distro packaging files
 [ ] ~/src/OpenSuse/home:andy5995:branches:network:utilities/modemu2k/:
     bump spec Version, prepend a modemu2k.changes entry, osc build test.
 
+v0.2.4 (2026-07-18) tarball checksums
+-------------------------------------
+    sha256: 7ad7994e3ffee235a62228f0cb99f37a8b473979b54ae089b5e249796f70650c
+    md5:    94c8b3d6bda88df30e6c8f5c1c52ffda
+
 v0.2.3 (2026-07-14) tarball checksums
 -------------------------------------
 Generate the dist tarball from the FINAL pre-tag commit (meson dist
