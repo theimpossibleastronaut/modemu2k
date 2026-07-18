@@ -3,17 +3,30 @@
 #include <signal.h>
 #include <poll.h>
 
-#define MAX_LOOPBACK_SERVERS 4
-static pid_t loopback_pids[MAX_LOOPBACK_SERVERS];
-static int   loopback_pid_count = 0;
+#define MAX_TEST_CHILDREN 4
+static pid_t child_pids[MAX_TEST_CHILDREN];
+static int   child_pid_count = 0;
 static int   atexit_installed = 0;
 
 static void
-stop_loopback_servers(void)
+stop_test_children(void)
 {
-  for (int i = 0; i < loopback_pid_count; i++)
-    if (loopback_pids[i] > 0)
-      kill(loopback_pids[i], SIGTERM);
+  for (int i = 0; i < child_pid_count; i++)
+    if (child_pids[i] > 0)
+      kill(child_pids[i], SIGTERM);
+}
+
+/* Track a forked test child so it's SIGTERM'd at process exit. */
+static void
+register_child(pid_t pid)
+{
+  if (child_pid_count < MAX_TEST_CHILDREN)
+    child_pids[child_pid_count++] = pid;
+  if (!atexit_installed)
+  {
+    atexit(stop_test_children);
+    atexit_installed = 1;
+  }
 }
 
 int
@@ -79,15 +92,47 @@ start_loopback_listener(int family, int *port_out)
   if (pid < 0)
     return -1;
 
-  if (loopback_pid_count < MAX_LOOPBACK_SERVERS)
-    loopback_pids[loopback_pid_count++] = pid;
-  if (!atexit_installed)
-  {
-    atexit(stop_loopback_servers);
-    atexit_installed = 1;
-  }
+  register_child(pid);
   *port_out = port;
   return 0;
+}
+
+int
+start_connector(int family, int port)
+{
+  pid_t pid = fork();
+  if (pid == 0)
+  {
+    struct sockaddr_storage ss = {0};
+    socklen_t slen;
+    if (family == AF_INET6)
+    {
+      struct sockaddr_in6 *a = (struct sockaddr_in6 *) &ss;
+      a->sin6_family = AF_INET6;
+      a->sin6_port = htons((unsigned short) port);
+      inet_pton(AF_INET6, "::1", &a->sin6_addr);
+      slen = sizeof *a;
+    }
+    else
+    {
+      struct sockaddr_in *a = (struct sockaddr_in *) &ss;
+      a->sin_family = AF_INET;
+      a->sin_port = htons((unsigned short) port);
+      inet_pton(AF_INET, "127.0.0.1", &a->sin_addr);
+      slen = sizeof *a;
+    }
+    int fd = socket(family, SOCK_STREAM, 0);
+    if (fd < 0)
+      _exit(1);
+    if (connect(fd, (struct sockaddr *) &ss, slen) != 0)
+      _exit(1);
+    usleep(100000); /* stay connected until parent's accept() returns */
+    close(fd);
+    _exit(0);
+  }
+  if (pid > 0)
+    register_child(pid);
+  return pid;
 }
 
 void

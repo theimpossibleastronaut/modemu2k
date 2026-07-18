@@ -12,6 +12,14 @@
            first use. */
 int start_loopback_listener(int family, int *port_out);
 
+/* Fork a child that connects once to an already-bound loopback listener
+   on the given family (AF_INET/AF_INET6) and port, staying connected
+   briefly so the parent's accept() returns. The child is reaped at
+   process exit like start_loopback_listener's.
+
+   @return the child pid (> 0) on success, -1 on fork failure. */
+int start_connector(int family, int port);
+
 /* Shared step-loop and loopback-socket helpers for step-API tests.
    test_step polls (timeout capped at 100 ms so tests stay snappy) and
    runs one m2k_step; test_step_drain additionally appends any app-IO

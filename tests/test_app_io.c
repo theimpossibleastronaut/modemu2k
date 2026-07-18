@@ -1,18 +1,6 @@
 #include "test.h"
-#include <poll.h>
-#include <stddef.h>
+#include "test_helpers.h"
 #include <string.h>
-
-static int
-contains(const char *hay, size_t haylen, const char *needle)
-{
-  size_t nlen = strlen(needle);
-  if (nlen > haylen) return 0;
-  for (size_t i = 0; i + nlen <= haylen; i++)
-    if (memcmp(hay + i, needle, nlen) == 0)
-      return 1;
-  return 0;
-}
 
 static void
 test_at_round_trip(void)
@@ -29,19 +17,11 @@ test_at_round_trip(void)
   size_t total = 0;
   for (int i = 0; i < 32; i++)
   {
-    struct pollfd fds[M2K_MAX_POLLFDS];
-    size_t nfds = M2K_MAX_POLLFDS;
-    int timeout_ms;
-    assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
-    assert(m2k_step(ctx, fds, nfds) == M2K_OK);
-
-    size_t n = 0;
-    assert(m2k_read_to_app(ctx, drained + total, sizeof(drained) - total, &n) == M2K_OK);
-    total += n;
-    if (contains(drained, total, "OK"))
+    test_step_drain(ctx, drained, sizeof(drained), &total);
+    if (strstr(drained, "OK"))
       break;
   }
-  assert(contains(drained, total, "OK"));
+  assert(strstr(drained, "OK"));
   m2k_free(ctx);
 }
 
@@ -57,26 +37,14 @@ test_multi_line_in_one_write(void)
   assert(m2k_write_from_app(ctx, batch, strlen(batch), &consumed) == M2K_OK);
   assert(consumed == strlen(batch));
 
-  struct pollfd fds[M2K_MAX_POLLFDS];
-  size_t nfds = M2K_MAX_POLLFDS;
-  int timeout_ms;
-  assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
-  assert(m2k_step(ctx, fds, nfds) == M2K_OK);
-
   char drained[512];
   size_t total = 0;
-  for (int i = 0; i < 8; i++)
-  {
-    size_t n = 0;
-    assert(m2k_read_to_app(ctx, drained + total, sizeof(drained) - total, &n) == M2K_OK);
-    total += n;
-    nfds = M2K_MAX_POLLFDS;
-    assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
-    assert(m2k_step(ctx, fds, nfds) == M2K_OK);
-  }
+  for (int i = 0; i < 9; i++)
+    test_step_drain(ctx, drained, sizeof(drained), &total);
+
   size_t hits = 0;
   for (size_t i = 0; i + 1 < total; i++)
-    if (drained[i] == 'O' && drained[i+1] == 'K')
+    if (drained[i] == 'O' && drained[i + 1] == 'K')
       hits++;
   assert(hits >= 2);
   m2k_free(ctx);
@@ -128,11 +96,7 @@ test_has_pending_output(void)
   assert(m2k_write_from_app(ctx, "ATZ\r", 4, &consumed) == M2K_OK);
   assert(consumed == 4);
 
-  struct pollfd fds[M2K_MAX_POLLFDS];
-  size_t nfds = M2K_MAX_POLLFDS;
-  int t;
-  assert(m2k_get_pollfds(ctx, fds, &nfds, &t) == M2K_OK);
-  assert(m2k_step(ctx, fds, nfds) == M2K_OK);
+  test_step(ctx);
 
   /* After the step, output is queued. */
   assert(m2k_has_pending_output(ctx) != 0);
@@ -222,21 +186,12 @@ test_atcmd_quit(void)
   size_t total = 0;
   for (int i = 0; i < 32; i++)
   {
-    struct pollfd fds[M2K_MAX_POLLFDS];
-    size_t nfds = M2K_MAX_POLLFDS;
-    int timeout_ms;
-    assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
-    assert(m2k_step(ctx, fds, nfds) == M2K_OK);
-
-    size_t n = 0;
-    assert(m2k_read_to_app(ctx, drained + total, sizeof(drained) - total, &n) == M2K_OK);
-    total += n;
-
+    test_step_drain(ctx, drained, sizeof(drained), &total);
     if (m2k_run_done(ctx))
       break;
   }
   assert(m2k_run_done(ctx));
-  assert(contains(drained, total, "OK"));
+  assert(strstr(drained, "OK"));
   m2k_free(ctx);
 }
 
@@ -274,17 +229,12 @@ test_verbose_narrates_dispatch_and_state(void)
   char drained[256];
   for (int i = 0; i < 32 && !m2k_run_done(ctx); i++)
   {
-    struct pollfd fds[M2K_MAX_POLLFDS];
-    size_t nfds = M2K_MAX_POLLFDS;
-    int timeout_ms;
-    assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
-    assert(m2k_step(ctx, fds, nfds) == M2K_OK);
-    size_t n = 0;
-    assert(m2k_read_to_app(ctx, drained, sizeof(drained), &n) == M2K_OK);
+    size_t total = 0;
+    test_step_drain(ctx, drained, sizeof(drained), &total);
   }
   assert(m2k_run_done(ctx));
-  assert(contains(verbose_capture, verbose_capture_len, "dispatch: at%q"));
-  assert(contains(verbose_capture, verbose_capture_len, "state: CMD -> DONE"));
+  assert(strstr(verbose_capture, "dispatch: at%q"));
+  assert(strstr(verbose_capture, "state: CMD -> DONE"));
   m2k_free(ctx);
 }
 
@@ -294,13 +244,8 @@ step_until_done_or_n(m2k_t *ctx, int max_iters)
   char drained[256];
   for (int i = 0; i < max_iters && !m2k_run_done(ctx); i++)
   {
-    struct pollfd fds[M2K_MAX_POLLFDS];
-    size_t nfds = M2K_MAX_POLLFDS;
-    int timeout_ms;
-    assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
-    assert(m2k_step(ctx, fds, nfds) == M2K_OK);
-    size_t n = 0;
-    assert(m2k_read_to_app(ctx, drained, sizeof(drained), &n) == M2K_OK);
+    size_t total = 0;
+    test_step_drain(ctx, drained, sizeof(drained), &total);
   }
 }
 

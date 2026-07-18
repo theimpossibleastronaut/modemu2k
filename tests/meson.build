@@ -21,6 +21,7 @@ test_cases = [
 
 helper_cases = [
     'answer',
+    'app_io',
     'connect',
     'describe',
     'dial_crlf',
@@ -28,6 +29,7 @@ helper_cases = [
     'ipv6',
     'listen',
     'listen_ipv6',
+    'localhost',
 ]
 
 foreach case : test_cases
