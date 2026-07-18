@@ -29,6 +29,12 @@ Adding a new test in any kind is one line in `tests/meson.build` — the
 suite labels: `meson test -C builddir --suite unit` (or `integration`,
 `cli`) runs one kind.
 
+Every C test includes `tests/test.h` first. That header undefines
+`NDEBUG`, so `assert()` stays active even in a release build. The C
+tests use `assert()` to check syscalls and API return values, so a new
+test must include `test.h` before anything else, or its checks would
+compile out under `-DNDEBUG`.
+
 ### White-box vs black-box
 
 C tests link against `libmodemu2k` compiled with `-DUSE_AS_TEST_LIB`,
