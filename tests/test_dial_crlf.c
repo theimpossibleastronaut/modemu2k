@@ -29,7 +29,7 @@ bind_quiet_listener(int *port_out)
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   assert(fd >= 0);
   int one = 1;
-  setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof one);
+  assert(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof one) == 0);
   struct sockaddr_in addr = {0};
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
