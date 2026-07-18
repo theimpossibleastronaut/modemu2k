@@ -1,11 +1,27 @@
-option('docdir', type : 'string', value : 'share/doc/modemu2k',
-       description : 'directory where the documentation should be installed to')
+option(
+    'docdir',
+    type: 'string',
+    value: 'share/doc/modemu2k',
+    description: 'directory where the documentation should be installed to',
+)
 
-option('gen-docs', type : 'boolean', value : false,
-       description : 'Build API documentation with Doxygen')
+option(
+    'gen-docs',
+    type: 'boolean',
+    value: false,
+    description: 'Build API documentation with Doxygen',
+)
 
-option('helper-scripts', type : 'boolean', value : false,
-       description : 'Install the m2k-minicom / m2k-picocom wrapper scripts to bindir')
+option(
+    'helper-scripts',
+    type: 'boolean',
+    value: false,
+    description: 'Install the m2k-minicom / m2k-picocom wrapper scripts to bindir',
+)
 
-option('docker-test', type : 'boolean', value : false,
-       description : 'Enable test_docker_telnet (brings up a busybox telnetd container). The test itself still skips at runtime if docker is unavailable or requires sudo; this option just controls whether meson registers it at all.')
+option(
+    'docker-test',
+    type: 'boolean',
+    value: false,
+    description: 'Enable test_docker_telnet (brings up a busybox telnetd container). The test itself still skips at runtime if docker is unavailable or requires sudo; this option just controls whether meson registers it at all.',
+)

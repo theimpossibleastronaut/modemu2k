@@ -57,6 +57,15 @@ version_h = configure_file(
     configuration: version_conf,
 )
 
+# Docs shipped by install_data and tracked as doc-target inputs; listed
+# once so the two lists can't drift apart.
+doc_files = files(
+    'README.md',
+    'QUICKSTART.md',
+    'HACKING.md',
+    'ChangeLog',
+)
+
 subdir('src')
 
 # examples/ exposes `example_sources` (used by the doc target's
@@ -125,12 +134,9 @@ if get_option('gen-docs')
         command: [doxygen, doxyfile],
         depends: manpage_fragment,
         depend_files: [
+            doc_files,
             files(
                 'modemu2k.h',
-                'README.md',
-                'QUICKSTART.md',
-                'HACKING.md',
-                'ChangeLog',
                 'tests/test_connect.c',
             ),
             man_page,
@@ -150,14 +156,7 @@ if not meson.is_subproject()
     subdir('tests')
 
     install_data(
-        files(
-            'README.md',
-            'QUICKSTART.md',
-            'HACKING.md',
-            'COPYING',
-            'AUTHORS',
-            'ChangeLog',
-        ),
+        [doc_files, files('COPYING', 'AUTHORS')],
         install_dir: get_option('docdir'),
     )
 endif
