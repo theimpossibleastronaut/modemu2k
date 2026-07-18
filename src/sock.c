@@ -101,14 +101,12 @@ m2k_sockListen(m2k_t *ctx, const char *port)
       if (ai->ai_family == AF_INET6)
       {
         int zero = 0;
-        if (setsockopt(server_fd, IPPROTO_IPV6, IPV6_V6ONLY, &zero, sizeof zero)
-            != 0)
+        if (setsockopt(server_fd, IPPROTO_IPV6, IPV6_V6ONLY, &zero, sizeof zero) != 0)
           m2k_log(ctx, M2K_LOG_WARN, "setsockopt(IPV6_V6ONLY): %s\n",
                   strerror(errno));
         int v6only = 1;
         socklen_t vlen = sizeof v6only;
-        if (getsockopt(server_fd, IPPROTO_IPV6, IPV6_V6ONLY, &v6only, &vlen) != 0
-            || v6only != 0)
+        if (getsockopt(server_fd, IPPROTO_IPV6, IPV6_V6ONLY, &v6only, &vlen) != 0 || v6only != 0)
         {
           close(server_fd);
           server_fd = -1;
