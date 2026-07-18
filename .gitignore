@@ -9,3 +9,6 @@ lex.yy.c
 
 # gh-pages worktree directory
 /gh-pages/
+
+# internal AI-session design docs (not shipped)
+/docs/superpowers/
