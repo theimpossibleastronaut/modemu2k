@@ -50,3 +50,19 @@ timevalCmp(const struct timeval *ap, const struct timeval *bp)
     return 1;
   return 0;
 }
+
+/* Milliseconds from now until *deadline, as a poll() timeout: 0 if the
+   deadline has passed (poll returns immediately), otherwise at least 1 so
+   a sub-millisecond remainder never rounds to a busy-wait 0. */
+int
+timevalRemainingMs(const struct timeval *deadline)
+{
+  struct timeval now, remaining;
+  gettimeofday(&now, NULL);
+  if (timevalCmp(&now, deadline) >= 0)
+    return 0;
+  remaining = *deadline;
+  timevalSub(&remaining, &now);
+  long ms = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
+  return ms <= 0 ? 1 : (int) ms;
+}

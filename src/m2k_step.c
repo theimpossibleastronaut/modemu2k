@@ -694,16 +694,7 @@ cmdPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
     {
       /* Ring cycle in progress: the listener stays readable (level-
          triggered), so wake on the next-RING deadline instead. */
-      struct timeval now, remaining;
-      gettimeofday(&now, NULL);
-      int ms = 0;
-      if (timevalCmp(&now, &ctx->answer.ring_next) < 0)
-      {
-        remaining = ctx->answer.ring_next;
-        timevalSub(&remaining, &now);
-        long l = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
-        ms = l > 0 ? (int) l : 1;
-      }
+      int ms = timevalRemainingMs(&ctx->answer.ring_next);
       if (*timeout_ms < 0 || ms < *timeout_ms)
         *timeout_ms = ms;
     }
@@ -797,18 +788,7 @@ dialPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
   appendTtyPollfds(ctx, fds, &n, POLLIN, 0);
   *nfds_inout = n;
 
-  struct timeval now, remaining;
-  gettimeofday(&now, NULL);
-  if (timevalCmp(&now, &ctx->dial.deadline) >= 0)
-  {
-    *timeout_ms = 0;
-    return;
-  }
-  remaining = ctx->dial.deadline;
-  timevalSub(&remaining, &now);
-  long ms = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
-  if (ms <= 0) ms = 1;
-  *timeout_ms = (int) ms;
+  *timeout_ms = timevalRemainingMs(&ctx->dial.deadline);
 }
 
 /* Returns 1 (connected — caller transitions to ONLINE), 0 (continue
@@ -898,18 +878,7 @@ answerPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_m
   appendTtyPollfds(ctx, fds, &n, POLLIN, 0);
   *nfds_inout = n;
 
-  struct timeval now, remaining;
-  gettimeofday(&now, NULL);
-  if (timevalCmp(&now, &ctx->answer.deadline) >= 0)
-  {
-    *timeout_ms = 0;
-    return;
-  }
-  remaining = ctx->answer.deadline;
-  timevalSub(&remaining, &now);
-  long ms = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
-  if (ms <= 0) ms = 1;
-  *timeout_ms = (int) ms;
+  *timeout_ms = timevalRemainingMs(&ctx->answer.deadline);
 }
 
 /* Returns 1 (accepted — caller transitions to ONLINE), 0 (continue
@@ -958,20 +927,7 @@ onlinePollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_m
   /* Compute timeout for the +++ silence guard. */
   if (ctx->escSeq.checkSilence)
   {
-    struct timeval now, remaining;
-    gettimeofday(&now, NULL);
-    if (timevalCmp(&now, &ctx->escSeq.expireT) >= 0)
-    {
-      *timeout_ms = 0;
-    }
-    else
-    {
-      remaining = ctx->escSeq.expireT;
-      timevalSub(&remaining, &now);
-      long ms = remaining.tv_sec * 1000L + remaining.tv_usec / 1000L;
-      if (ms <= 0) ms = 1;
-      *timeout_ms = (int) ms;
-    }
+    *timeout_ms = timevalRemainingMs(&ctx->escSeq.expireT);
   }
   else
   {
