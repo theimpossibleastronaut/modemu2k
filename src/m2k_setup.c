@@ -134,7 +134,14 @@ m2k_setup_answer(m2k_t *ctx, const char *port)
   /* Non-blocking: Linux silently removes RST-aborted callers from the
      accept queue, so a blocking accept() after a positive poll could
      hang m2k_step indefinitely. */
-  fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
+  int flags = fcntl(fd, F_GETFL, 0);
+  if (flags == -1 || fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+  {
+    m2k_err_set(ctx, "m2k_setup_answer: fcntl(O_NONBLOCK): %s\n",
+                strerror(errno));
+    close(fd);
+    return M2K_ERR_SOCKET;
+  }
   ctx->answer.fd = fd;
   return M2K_OK;
 }

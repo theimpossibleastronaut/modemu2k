@@ -94,16 +94,21 @@ m2k_sockListen(m2k_t *ctx, const char *port)
       if (server_fd == -1)
         continue;
       int one = 1;
-      setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof one);
+      if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof one) != 0)
+        m2k_log(ctx, M2K_LOG_WARN, "setsockopt(SO_REUSEADDR): %s\n",
+                strerror(errno));
 #ifdef IPV6_V6ONLY
       if (ai->ai_family == AF_INET6)
       {
         int zero = 0;
-        setsockopt(server_fd, IPPROTO_IPV6, IPV6_V6ONLY, &zero, sizeof zero);
+        if (setsockopt(server_fd, IPPROTO_IPV6, IPV6_V6ONLY, &zero, sizeof zero)
+            != 0)
+          m2k_log(ctx, M2K_LOG_WARN, "setsockopt(IPV6_V6ONLY): %s\n",
+                  strerror(errno));
         int v6only = 1;
         socklen_t vlen = sizeof v6only;
-        getsockopt(server_fd, IPPROTO_IPV6, IPV6_V6ONLY, &v6only, &vlen);
-        if (v6only != 0)
+        if (getsockopt(server_fd, IPPROTO_IPV6, IPV6_V6ONLY, &v6only, &vlen) != 0
+            || v6only != 0)
         {
           close(server_fd);
           server_fd = -1;
@@ -169,7 +174,9 @@ m2k_sockAcceptKeep(m2k_t *ctx, int server_fd)
     return -1;
   }
   int tmp = 1;
-  setsockopt(client_fd, SOL_SOCKET, SO_OOBINLINE, &tmp, sizeof(tmp));
+  if (setsockopt(client_fd, SOL_SOCKET, SO_OOBINLINE, &tmp, sizeof(tmp)) != 0)
+    m2k_log(ctx, M2K_LOG_WARN, "setsockopt(SO_OOBINLINE): %s\n",
+            strerror(errno));
   return client_fd;
 }
 

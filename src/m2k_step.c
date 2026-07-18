@@ -86,7 +86,9 @@ sockReadLoop(m2k_t *ctx, st_sock *sock)
         ctx->srl.state = (c == IAC) ? SRL_SBI : SRL_NORM;
         break;
       case SRL_SBI:
-        telOptSBHandle(ctx, ctx->srl.opt);
+        if (telOptSBHandle(ctx, ctx->srl.opt) != 0)
+          m2k_log(ctx, M2K_LOG_DEBUG, "unhandled telnet SB option %d\n",
+                  ctx->srl.opt);
         ctx->srl.state = SRL_NORM;
         break;
       default:
