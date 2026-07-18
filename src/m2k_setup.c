@@ -2,15 +2,10 @@
    TTY side (stdin, PTY, comm program, device, TCP listener) and its
    line-side answer listener. Split out of m2k_api.c (issue #71). */
 
-#include <arpa/telnet.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <poll.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/select.h>
-#include <sys/stat.h>
-#include <sys/time.h>
 #include <unistd.h>
 #include "m2k_private.h"
 #include "m2k_ctx.h"

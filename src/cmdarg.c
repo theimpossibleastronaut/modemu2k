@@ -188,7 +188,7 @@ cmdargParse(const int argc, char *const argv[], struct st_cmdarg *x)
       x->ttymode = CA_DEVGIVEN;
       x->dev = optarg;
       break;
-    case 'e': /* -a <atcommands> */
+    case 'e': /* -e <atcommands> */
       x->atcmd = optarg;
       break;
     case 'l': /* -l <port> */
