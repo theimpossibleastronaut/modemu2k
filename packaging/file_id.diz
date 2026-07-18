@@ -1,4 +1,4 @@
-modemu2k v0.2.3 - Hayes AT-command modem
+modemu2k v0.2.4 - Hayes AT-command modem
 emulator bridging a serial-style
 interface to TCP/Telnet ("dials" out and
 answers incoming connections) over IPv4
