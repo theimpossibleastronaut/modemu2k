@@ -166,11 +166,59 @@ test_dial_keypress_still_cancels(void)
   m2k_free(ctx);
 }
 
+/* Regression for a dosemu2 CI failure: DOS wrote a line to the PTY and
+   the host tore the context down immediately after, losing the bytes.
+   Delivering them takes a further step — onlinePollfds only asks for
+   POLLOUT once the socket write buffer already holds data — so a host
+   must be able to see that they are still queued and drain before
+   freeing. Lives here for the PTY fixture: the count has to work
+   outside app_io mode, which is the whole point.  */
+static void
+test_pending_to_line_visible_in_pty_mode(void)
+{
+  int port, sfd;
+  int lfd = bind_quiet_listener(&port);
+  m2k_t *ctx = make_pty_ctx(&sfd);
+
+  dial_via_slave(sfd, port, "", ctx);
+  PUMP_UNTIL(ctx, m2k_is_online(ctx));
+  assert(m2k_is_online(ctx));
+  /* Both counts answer outside app-I/O mode — the reason neither is
+     gated like m2k_has_pending_output(), which reports 0 here. The
+     transition queues the CONNECT banner for the DTE; a later step
+     writes it out. */
+  assert(m2k_pending_to_dte(ctx) > 0);
+  assert(m2k_has_pending_output(ctx) == 0);
+  PUMP_UNTIL(ctx, m2k_pending_to_dte(ctx) == 0);
+  PUMP_UNTIL(ctx, m2k_pending_to_line(ctx) == 0);
+  assert(m2k_pending_to_line(ctx) == 0);
+
+  /* CR-terminated: in telnet line mode the library holds an unfinished
+     line in its own buffer and only commits it to the socket on CR. */
+  assert(write(sfd, "hello\r", 6) == 6);
+  /* onlineIter reads the PTY at the end of the step, after the point
+     where it would have written the socket, so the step that commits
+     the line provably cannot also send it. Pumped rather than asserted
+     after exactly one step: nothing guarantees the PTY hands over
+     "hello\r" in a single read, and a read stopping short of the CR
+     leaves the payload in the uncounted line buffer. */
+  PUMP_UNTIL(ctx, m2k_pending_to_line(ctx) > 0);
+  assert(m2k_pending_to_line(ctx) > 0);
+
+  PUMP_UNTIL(ctx, m2k_pending_to_line(ctx) == 0);
+  assert(m2k_pending_to_line(ctx) == 0);
+
+  close(sfd);
+  close(lfd);
+  m2k_free(ctx);
+}
+
 int
 main(void)
 {
   test_dial_survives_trailing_lf();
   test_dial_survives_crlf_nul();
   test_dial_keypress_still_cancels();
+  test_pending_to_line_visible_in_pty_mode();
   return 0;
 }

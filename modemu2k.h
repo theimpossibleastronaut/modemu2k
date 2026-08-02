@@ -484,6 +484,62 @@ M2K_API m2k_err_t   m2k_read_to_app(m2k_t *ctx, void *buf, size_t max, size_t *l
 M2K_API int         m2k_has_pending_output(const m2k_t *ctx);
 
 /**
+ * @brief Count bytes queued for the DTE that it has not taken yet.
+ *
+ * The byte-count form of m2k_has_pending_output(), for a host that
+ * emulates a UART and needs a number rather than a predicate. Unlike
+ * that predicate this works in any I/O mode: in app-I/O mode it counts
+ * what m2k_read_to_app() would deliver, otherwise what is still to be
+ * written to the TTY.
+ *
+ * @warning Nothing drains this once the state machine reaches
+ * M2K_STATE_DONE, so bound any drain loop rather than stepping until
+ * it reports zero.
+ *
+ * @since 0.2.5
+ * @param ctx Modem context.
+ * @return Bytes queued toward the DTE.
+ */
+M2K_API size_t      m2k_pending_to_dte(const m2k_t *ctx);
+
+/**
+ * @brief Count bytes taken from the DTE that have not reached the line.
+ *
+ * Covers both stages a byte passes through: the DTE-side read
+ * buffer it lands in, and the socket write buffer it moves to when
+ * online. Works in any I/O mode, whether the bytes arrived through
+ * m2k_write_from_app() or off a PTY.
+ *
+ * A host emulating a UART needs this for the transmit-empty bit, which
+ * must stay clear until the data has actually gone out. It also tells
+ * the host when it is safe to tear down: sending a byte takes a
+ * further m2k_step() after the one that accepted it, so a context
+ * freed immediately after a write loses those bytes.
+ *
+ * @warning Only the ONLINE state drains the socket write buffer, so
+ * drain **while still online** and bound the loop. Stepping alone will
+ * not take the count to zero once the state machine has left ONLINE,
+ * after a `+++` escape or a lost carrier. It can still reach zero
+ * another way, though: the buffers get discarded instead of sent, as
+ * going off-hook for a dial or an answer drops pending DTE input and
+ * ATO clears whatever the escape left queued. Zero therefore means
+ * "nothing left to send", not "everything was delivered".
+ *
+ * Two things are deliberately not counted. An unfinished line in
+ * telnet line mode is held until the DTE sends CR and is owed to
+ * nobody before that. Conversely, the socket-side figure is *wire*
+ * bytes after telnet encoding, so it can exceed what the DTE wrote:
+ * line mode appends LF to each CR, and binary mode doubles every 0xFF
+ * as IAC IAC. Do not subtract it from a byte count the host kept
+ * itself.
+ *
+ * @since 0.2.5
+ * @param ctx Modem context.
+ * @return Bytes taken from the DTE but not yet sent.
+ */
+M2K_API size_t      m2k_pending_to_line(const m2k_t *ctx);
+
+/**
  * @brief Expose the listening socket's fd (after m2k_setup_listen,
  *        before m2k_listen_accept).
  *
@@ -711,6 +767,28 @@ M2K_API int         m2k_describe_state(const m2k_t *ctx, char *buf, size_t cap);
  * @return Nonzero when a connection is alive, zero otherwise.
  */
 M2K_API int         m2k_has_carrier(const m2k_t *ctx);
+
+/**
+ * @brief Report how many RINGs the current inbound call has produced.
+ *
+ * The public view of the S1 register: it counts up while a caller
+ * waits on the answer listener, and returns to zero once the call is
+ * answered, the caller gives up, or the modem goes off-hook to dial
+ * out.
+ *
+ * It is a ring *count*, not a Ring Indicator line. RI pulses once per
+ * ring; this value stays nonzero for the whole ring cycle, including
+ * the roughly six seconds of silence between one RING and the next, so
+ * a host cannot derive RI edges from it — count RING result codes for
+ * that. With S0 nonzero, auto-answer accepts the call in the same
+ * m2k_step() that counts the first ring, so a poller may never observe
+ * the value above zero.
+ *
+ * @since 0.2.5
+ * @param ctx Modem context.
+ * @return RING count for the call now ringing; 0 when none is.
+ */
+M2K_API int         m2k_get_ring_count(const m2k_t *ctx);
 
 /**
  * @brief Set the host's DTR (Data Terminal Ready) signal state.

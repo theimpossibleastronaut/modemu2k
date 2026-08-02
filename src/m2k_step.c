@@ -507,6 +507,22 @@ m2k_has_pending_output(const m2k_t *ctx)
   return ctx->tty.bufW.ptr > ctx->tty.bufW.top;
 }
 
+size_t
+m2k_pending_to_dte(const m2k_t *ctx)
+{
+  if (!ctx)
+    return 0;
+  return (size_t) (ctx->tty.bufW.ptr - ctx->tty.bufW.top);
+}
+
+size_t
+m2k_pending_to_line(const m2k_t *ctx)
+{
+  if (!ctx)
+    return 0;
+  return (size_t) (ctx->tty.bufR.end - ctx->tty.bufR.ptr) + (size_t) (ctx->sock.bufW.ptr - ctx->sock.bufW.top);
+}
+
 /* ── Steppable event-loop API ────────────────────────────────────────
    m2k_run() is a poll()-driven wrapper over m2k_get_pollfds + m2k_step.
 
@@ -573,6 +589,9 @@ stepEnterDial(m2k_t *ctx)
   verboseOut(ctx, VERB_MISC, "state: %s -> DIAL\r\n", stepStateName(ctx->step.state));
   /* Drop any pending TTY input — semantics of going off-hook. */
   ttyBufRReset(ctx);
+  /* Off-hook ends any inbound ring cycle: a stale S1 would otherwise
+     hold RI asserted for the whole outbound call. */
+  ctx->atcmd.s[1] = 0;
   cmdBufReset(&ctx->step.cmdbuf);
   ctx->step.state = M2K_STATE_DIAL;
 }
@@ -1252,4 +1271,12 @@ int
 m2k_has_carrier(const m2k_t *ctx)
 {
   return ctx->sock.conn.alive;
+}
+
+int
+m2k_get_ring_count(const m2k_t *ctx)
+{
+  if (!ctx)
+    return 0;
+  return ctx->atcmd.s[1];
 }

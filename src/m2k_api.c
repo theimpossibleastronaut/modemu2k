@@ -33,6 +33,11 @@ m2k_new(void)
   sockInit(&ctx->sock.conn);
   ttyBufRReset(ctx);
   ttyBufWReset(ctx);
+  /* Also point the socket buffers into their arrays: until the first
+     ONLINE transition they would otherwise stay NULL, and the public
+     byte counts subtract them. */
+  sockBufRReset(ctx);
+  sockBufWReset(ctx);
   telOptInit(ctx);
   atcmdInit(ctx, NULL, &ctx->sock.conn);
   return ctx;

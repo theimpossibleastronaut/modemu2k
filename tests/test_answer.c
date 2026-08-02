@@ -235,6 +235,56 @@ test_ring_emitted_for_pending_caller(void)
   m2k_free(ctx);
 }
 
+/* m2k_get_ring_count() is the public view of the S1 ring counter, so a
+   host driving a UART can raise RI without white-boxing atcmd.s[1]. */
+static void
+test_ring_count_tracks_pending_call(void)
+{
+  m2k_t *ctx = new_answer_ctx();
+  assert(m2k_get_ring_count(ctx) == 0);
+
+  int client = test_connect_client(answer_port(ctx));
+  for (int i = 0; i < 50 && m2k_get_ring_count(ctx) == 0; i++)
+    step_once(ctx);
+  assert(m2k_get_ring_count(ctx) == 1);
+
+  push_line(ctx, "ATA");
+  for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+  assert(m2k_get_ring_count(ctx) == 0);
+
+  close(client);
+  m2k_free(ctx);
+}
+
+/* S1 must not stay latched once the modem goes off-hook for an
+   outbound call: a host mapping the count to RI would otherwise assert
+   Ring Indicator for the whole data call. */
+static void
+test_ring_count_cleared_by_outbound_dial(void)
+{
+  m2k_t *ctx = new_answer_ctx();
+  int client = test_connect_client(answer_port(ctx));
+  for (int i = 0; i < 50 && m2k_get_ring_count(ctx) == 0; i++)
+    step_once(ctx);
+  assert(m2k_get_ring_count(ctx) == 1);
+
+  /* Dial out instead of answering. */
+  int port;
+  assert(start_loopback_listener(AF_INET, &port) == 0);
+  char cmd[64];
+  snprintf(cmd, sizeof cmd, "atd\"127.0.0.1 %d\"", port);
+  push_line(ctx, cmd);
+  for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+  assert(m2k_get_ring_count(ctx) == 0);
+
+  close(client);
+  m2k_free(ctx);
+}
+
 static void
 test_s0_auto_answer(void)
 {
@@ -481,6 +531,8 @@ main(void)
   test_ata_s7_timeout_nocarrier();
   test_second_call_after_hangup();
   test_ring_emitted_for_pending_caller();
+  test_ring_count_tracks_pending_call();
+  test_ring_count_cleared_by_outbound_dial();
   test_s0_auto_answer();
   test_ath_keeps_listener();
   test_aborted_caller_does_not_hang();

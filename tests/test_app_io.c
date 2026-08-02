@@ -75,6 +75,51 @@ test_full_buffer_returns_full(void)
   assert(0 && "expected M2K_ERR_WOULDBLOCK before 128KB consumed");
 }
 
+/* A host emulating a UART needs byte counts, not just predicates: the
+   transmit-empty bit depends on how much it wrote that is still short
+   of the line. Bytes sit in the DTE-side read buffer until a step
+   consumes them, so an unterminated command stays queued. */
+static void
+test_pending_to_line_counts_unconsumed_bytes(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+  assert(m2k_pending_to_line(ctx) == 0);
+
+  size_t consumed = 0;
+  assert(m2k_write_from_app(ctx, "ATZ", 3, &consumed) == M2K_OK);
+  assert(consumed == 3);
+  assert(m2k_pending_to_line(ctx) == 3);
+
+  m2k_free(ctx);
+}
+
+static void
+test_pending_to_dte_counts_queued_bytes(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+  assert(m2k_pending_to_dte(ctx) == 0);
+
+  size_t consumed = 0;
+  assert(m2k_write_from_app(ctx, "ATZ\r", 4, &consumed) == M2K_OK);
+  test_step(ctx);
+  assert(m2k_has_pending_output(ctx) != 0);
+
+  size_t queued = m2k_pending_to_dte(ctx);
+  assert(queued > 0);
+
+  char buf[512];
+  size_t got = 0;
+  assert(m2k_read_to_app(ctx, buf, sizeof buf, &got) == M2K_OK);
+  assert(got == queued);
+  assert(m2k_pending_to_dte(ctx) == 0);
+
+  m2k_free(ctx);
+}
+
 /* The drain-pattern test for m2k_has_pending_output(). Without the
    predicate, a host doing a tiny-buffer drain has no precise way to
    know whether more bytes are queued — only a heuristic ("did I get
@@ -289,6 +334,8 @@ main(void)
   test_full_buffer_returns_full();
   test_has_pending_output();
   test_has_pending_output_wrong_mode();
+  test_pending_to_line_counts_unconsumed_bytes();
+  test_pending_to_dte_counts_queued_bytes();
   test_escape_in_cmd_mode();
   test_atcmd_quit();
   test_verbose_narrates_dispatch_and_state();
