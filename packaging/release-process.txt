@@ -108,6 +108,12 @@ CI sanity (do before tagging)
 
 Post-release housekeeping
 -------------------------
+[ ] meson.build: bump `version:` to the next release. Everything derives
+    from it -- pkg-config, the man page .TH, modemu2k_version.h -- so a
+    consumer that needs an unreleased symbol can require the new version
+    against a git build. Missed after v0.2.4, because the pre-release
+    check at the top of this file only asks that the version match the
+    tag, which it already did.
 [ ] ChangeLog: open a new `(in-progress):` block at the top for the next
     release. Bullets land here as breaking/notable changes accrue.
 [ ] If any deprecations were honored this release (e.g. m2k_dial /
