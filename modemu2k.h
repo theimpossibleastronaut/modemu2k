@@ -525,6 +525,13 @@ M2K_API size_t      m2k_pending_to_dte(const m2k_t *ctx);
  * ATO clears whatever the escape left queued. Zero therefore means
  * "nothing left to send", not "everything was delivered".
  *
+ * @warning In app-I/O mode the DIAL and ANSWER states never consume
+ * the DTE-side buffer: nothing reads it until ONLINE, which discards
+ * it. Bytes accepted by m2k_write_from_app() during a dial or an
+ * answer wait are therefore counted here but can never be stepped
+ * down to zero, and will not be sent. A host that wants back-pressure
+ * in those states must apply it itself; m2k_is_online() is the test.
+ *
  * Two things are deliberately not counted. An unfinished line in
  * telnet line mode is held until the DTE sends CR and is owed to
  * nobody before that. Conversely, the socket-side figure is *wire*
@@ -771,18 +778,25 @@ M2K_API int         m2k_has_carrier(const m2k_t *ctx);
 /**
  * @brief Report how many RINGs the current inbound call has produced.
  *
- * The public view of the S1 register: it counts up while a caller
- * waits on the answer listener, and returns to zero once the call is
- * answered, the caller gives up, or the modem goes off-hook to dial
- * out.
+ * Counts up while a caller waits on the answer listener, and returns
+ * to zero once the call is answered, the caller gives up, or the modem
+ * goes off-hook to dial out.
+ *
+ * This is not the S1 register. S1 is writable by the DTE (`ATS1=n`)
+ * and also gates the RING cadence, so it reports neither what a host
+ * wants nor only what the line did. This count is maintained
+ * separately and moves only when modemu2k emits a RING.
  *
  * It is a ring *count*, not a Ring Indicator line. RI pulses once per
  * ring; this value stays nonzero for the whole ring cycle, including
  * the roughly six seconds of silence between one RING and the next, so
  * a host cannot derive RI edges from it — count RING result codes for
- * that. With S0 nonzero, auto-answer accepts the call in the same
- * m2k_step() that counts the first ring, so a poller may never observe
- * the value above zero.
+ * that.
+ *
+ * With `S0 == 1` the call is accepted in the same m2k_step() that
+ * counts the first ring, so a poller may never observe a nonzero
+ * value. Higher S0 values answer on the Nth ring, leaving the count
+ * observable at 1 .. S0-1 for a ring interval each.
  *
  * @since 0.2.5
  * @param ctx Modem context.

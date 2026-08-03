@@ -235,8 +235,8 @@ test_ring_emitted_for_pending_caller(void)
   m2k_free(ctx);
 }
 
-/* m2k_get_ring_count() is the public view of the S1 ring counter, so a
-   host driving a UART can raise RI without white-boxing atcmd.s[1]. */
+/* m2k_get_ring_count() lets a host driving a UART raise RI without
+   white-boxing the context. */
 static void
 test_ring_count_tracks_pending_call(void)
 {
@@ -258,9 +258,11 @@ test_ring_count_tracks_pending_call(void)
   m2k_free(ctx);
 }
 
-/* S1 must not stay latched once the modem goes off-hook for an
-   outbound call: a host mapping the count to RI would otherwise assert
-   Ring Indicator for the whole data call. */
+/* The count must not stay latched once the modem goes off-hook for an
+   outbound call: a host mapping it to RI would otherwise assert Ring
+   Indicator for the whole data call. Covers both dial paths -- the
+   asynchronous one through stepEnterDial() and the immediate-connect
+   one that skips it -- since stepEnterOnline() clears the count too. */
 static void
 test_ring_count_cleared_by_outbound_dial(void)
 {
@@ -280,6 +282,59 @@ test_ring_count_cleared_by_outbound_dial(void)
     step_once(ctx);
   assert(m2k_is_online(ctx));
   assert(m2k_get_ring_count(ctx) == 0);
+
+  close(client);
+  m2k_free(ctx);
+}
+
+/* The count reports what the line did, not what the DTE typed. S1 is
+   writable with ATS1=n, so forwarding it would let a modem init string
+   raise RI on a host that maps the two together, with no call at all.
+   No answer listener here on purpose: with one bound, cmdRingCheck()
+   forces S1 back to 0 on every step while nobody is calling, which
+   would hide the leak rather than test it. */
+static void
+test_ring_count_ignores_dte_written_s1(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+  out_reset();
+
+  push_line(ctx, "ATS1=5");
+  for (int i = 0; i < 20; i++)
+    step_once(ctx);
+  assert(ctx->atcmd.s[1] == 5);         /* the register took the write */
+  assert(m2k_get_ring_count(ctx) == 0); /* but nothing is ringing */
+
+  m2k_free(ctx);
+}
+
+/* Going off-hook must not disturb S1, because cmdRingCheck() uses a
+   zero S1 to mean "ring now, ignore the cadence". Clearing it under a
+   caller who is still waiting emitted a second RING immediately and
+   restarted the auto-answer countdown. */
+static void
+test_failed_dial_keeps_ring_cadence(void)
+{
+  m2k_t *ctx = new_answer_ctx();
+  int client = test_connect_client(answer_port(ctx));
+
+  for (int i = 0; i < 50 && m2k_get_ring_count(ctx) == 0; i++)
+    step_once(ctx);
+  assert(m2k_get_ring_count(ctx) == 1);
+  assert(ctx->atcmd.s[1] == 1);
+
+  /* Dial a port nothing is listening on, so it fails back to CMD. */
+  push_line(ctx, "atd\"127.0.0.1 1\"");
+  for (int i = 0; i < 50 && m2k_is_online(ctx) == 0
+                  && ctx->step.state != M2K_STATE_CMD; i++)
+    step_once(ctx);
+  assert(!m2k_is_online(ctx));
+
+  /* S1 survives, so the ~6 s cadence gate still holds and the caller
+     is not pushed back to the start of its auto-answer countdown. */
+  assert(ctx->atcmd.s[1] == 1);
 
   close(client);
   m2k_free(ctx);
@@ -533,6 +588,8 @@ main(void)
   test_ring_emitted_for_pending_caller();
   test_ring_count_tracks_pending_call();
   test_ring_count_cleared_by_outbound_dial();
+  test_ring_count_ignores_dte_written_s1();
+  test_failed_dial_keeps_ring_cadence();
   test_s0_auto_answer();
   test_ath_keeps_listener();
   test_aborted_caller_does_not_hang();

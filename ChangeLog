@@ -2,8 +2,6 @@
 - modemu2k (v0.2.5)
   * New accessors for hosts that emulate a UART: m2k_pending_to_dte,
     m2k_pending_to_line and m2k_get_ring_count
-  * Clear the S1 ring counter when dialing out; it stayed latched from
-    an unanswered inbound ring for the whole of the next outbound call
 
 2026-07-18
 - modemu2k (v0.2.4)

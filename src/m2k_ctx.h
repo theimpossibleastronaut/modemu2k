@@ -50,6 +50,13 @@ struct m2k_s
                                    Survives hangup; closed by m2k_free(). */
     struct timeval deadline;  /* S7 wait window for M2K_STATE_ANSWER. */
     struct timeval ring_next; /* Next RING emission while a caller waits. */
+    int rings;                /* RINGs emitted for the call now ringing;
+                                   0 when none is. Deliberately not the S1
+                                   register: the DTE can write that with
+                                   ATS1=n, and S1's value also gates the
+                                   ring cadence, so neither reading nor
+                                   clearing it would mean what a host
+                                   raising RI needs. */
   } answer;
   struct
   {

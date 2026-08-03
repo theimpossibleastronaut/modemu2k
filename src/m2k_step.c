@@ -577,6 +577,11 @@ stepEnterOnline(m2k_t *ctx)
   escSeqReset(ctx);
   ctx->srl.state = SRL_NORM; /* don't inherit mid-IAC state from a
                                  previous connection */
+  /* Nothing is ringing once a call is up, whichever way we got here.
+     Every path lands here: an answered call, and a dial that connected
+     either asynchronously (via stepEnterDial) or immediately, which
+     skips stepEnterDial altogether. */
+  ctx->answer.rings = 0;
   if (!ctx->telOpt.sentReqs && !ctx->atcmd.pr)
     telOptSendReqs(ctx);
   putTtyCmdstat(ctx, CMDST_CONNECT);
@@ -589,9 +594,11 @@ stepEnterDial(m2k_t *ctx)
   verboseOut(ctx, VERB_MISC, "state: %s -> DIAL\r\n", stepStateName(ctx->step.state));
   /* Drop any pending TTY input — semantics of going off-hook. */
   ttyBufRReset(ctx);
-  /* Off-hook ends any inbound ring cycle: a stale S1 would otherwise
-     hold RI asserted for the whole outbound call. */
-  ctx->atcmd.s[1] = 0;
+  /* Off-hook ends any inbound ring cycle, so a stale count cannot hold
+     RI asserted for the whole outbound call. S1 is left alone: it also
+     gates the RING cadence in cmdRingCheck(), and zeroing it would
+     restart the auto-answer countdown for a caller still waiting. */
+  ctx->answer.rings = 0;
   cmdBufReset(&ctx->step.cmdbuf);
   ctx->step.state = M2K_STATE_DIAL;
 }
@@ -1035,6 +1042,7 @@ cmdRingCheck(m2k_t *ctx)
   if (!answerPending(ctx))
   {
     ctx->atcmd.s[1] = 0; /* caller gone (or none): ring cycle over */
+    ctx->answer.rings = 0;
     return 0;
   }
   struct timeval now;
@@ -1044,6 +1052,8 @@ cmdRingCheck(m2k_t *ctx)
   putTtyCmdstat(ctx, CMDST_RING);
   if (ctx->atcmd.s[1] < 255)
     ctx->atcmd.s[1]++;
+  if (ctx->answer.rings < 255)
+    ctx->answer.rings++;
   ctx->answer.ring_next = now;
   ctx->answer.ring_next.tv_sec += RING_INTERVAL_SEC;
   if (ctx->atcmd.s[0] > 0 && ctx->atcmd.s[1] >= ctx->atcmd.s[0])
@@ -1278,5 +1288,5 @@ m2k_get_ring_count(const m2k_t *ctx)
 {
   if (!ctx)
     return 0;
-  return ctx->atcmd.s[1];
+  return ctx->answer.rings;
 }
