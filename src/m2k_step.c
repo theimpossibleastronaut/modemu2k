@@ -563,6 +563,13 @@ stepEnterCmd(m2k_t *ctx)
   verboseOut(ctx, VERB_MISC, "state: %s -> CMD\r\n", stepStateName(ctx->step.state));
   cmdBufReset(&ctx->step.cmdbuf);
   ttyBufRReset(ctx);
+  /* Only ONLINE drains the socket write buffer, so anything left in it
+     is never going out: a lost carrier has no socket left to write to,
+     and ATO discards it on the way back anyway. Dropping it here keeps
+     m2k_pending_to_line() honest -- a host that watches it for a
+     transmit-empty bit would otherwise see a count that can never
+     reach zero, and hold the bit off forever. */
+  sockBufWReset(ctx);
   ctx->step.state = M2K_STATE_CMD;
 }
 

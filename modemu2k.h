@@ -516,14 +516,13 @@ M2K_API size_t      m2k_pending_to_dte(const m2k_t *ctx);
  * further m2k_step() after the one that accepted it, so a context
  * freed immediately after a write loses those bytes.
  *
- * @warning Only the ONLINE state drains the socket write buffer, so
- * drain **while still online** and bound the loop. Stepping alone will
- * not take the count to zero once the state machine has left ONLINE,
- * after a `+++` escape or a lost carrier. It can still reach zero
- * another way, though: the buffers get discarded instead of sent, as
- * going off-hook for a dial or an answer drops pending DTE input and
- * ATO clears whatever the escape left queued. Zero therefore means
- * "nothing left to send", not "everything was delivered".
+ * @warning Zero means "nothing left to send", not "everything was
+ * delivered". Only the ONLINE state drains the socket write buffer, so
+ * to see data actually reach the peer, drain **while still online**
+ * and bound the loop. Leaving ONLINE — a `+++` escape or a lost
+ * carrier — discards whatever was still queued for the socket rather
+ * than sending it, and going off-hook for a dial or an answer likewise
+ * drops pending DTE input.
  *
  * @warning In app-I/O mode the DIAL and ANSWER states never consume
  * the DTE-side buffer: nothing reads it until ONLINE, which discards

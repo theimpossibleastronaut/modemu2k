@@ -1,5 +1,6 @@
 #include "test.h"
 #include "test_helpers.h"
+#include <stdio.h>
 #include <string.h>
 
 static void
@@ -91,6 +92,43 @@ test_pending_to_line_counts_unconsumed_bytes(void)
   assert(m2k_write_from_app(ctx, "ATZ", 3, &consumed) == M2K_OK);
   assert(consumed == 3);
   assert(m2k_pending_to_line(ctx) == 3);
+
+  m2k_free(ctx);
+}
+
+/* Leaving ONLINE must take the count back to zero. Only ONLINE drains
+   the socket write buffer, so anything left there when carrier drops
+   can never be sent; a host watching this for a transmit-empty bit
+   would hold that bit off forever. */
+static void
+test_pending_to_line_clears_when_carrier_drops(void)
+{
+  int port;
+  assert(start_loopback_listener(AF_INET, &port) == 0);
+
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_setup_app_io(ctx) == M2K_OK);
+  assert(m2k_atcmd(ctx, "AT%R1") == M2K_OK); /* raw: no telnet line mode */
+
+  char cmd[64];
+  int n = snprintf(cmd, sizeof cmd, "atd\"127.0.0.1 %d\"\r", port);
+  size_t consumed = 0;
+  assert(m2k_write_from_app(ctx, cmd, n, &consumed) == M2K_OK);
+  for (int i = 0; i < 200 && !m2k_is_online(ctx); i++)
+    test_step(ctx);
+  assert(m2k_is_online(ctx));
+
+  /* Queue for the socket, then drop carrier before a step can send it. */
+  assert(m2k_write_from_app(ctx, "queued", 6, &consumed) == M2K_OK);
+  assert(consumed == 6);
+  assert(m2k_pending_to_line(ctx) > 0);
+
+  assert(m2k_hangup(ctx) == M2K_OK);
+  for (int i = 0; i < 50 && m2k_is_online(ctx); i++)
+    test_step(ctx);
+  assert(!m2k_is_online(ctx));
+  assert(m2k_pending_to_line(ctx) == 0);
 
   m2k_free(ctx);
 }
@@ -335,6 +373,7 @@ main(void)
   test_has_pending_output();
   test_has_pending_output_wrong_mode();
   test_pending_to_line_counts_unconsumed_bytes();
+  test_pending_to_line_clears_when_carrier_drops();
   test_pending_to_dte_counts_queued_bytes();
   test_escape_in_cmd_mode();
   test_atcmd_quit();
