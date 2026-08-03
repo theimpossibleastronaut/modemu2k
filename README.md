@@ -34,6 +34,25 @@ today's BBSes over the internet. Works on Linux and BSD, with IPv4 and IPv6.
 * [Issues and bug reporting](https://github.com/theimpossibleastronaut/modemu2k/issues)
 * [Downloads](https://github.com/theimpossibleastronaut/modemu2k/releases/latest)
 
+## Install with Homebrew
+
+This repository is also a Homebrew tap, for macOS and Linuxbrew:
+
+    brew tap theimpossibleastronaut/modemu2k https://github.com/theimpossibleastronaut/modemu2k
+    brew trust theimpossibleastronaut/modemu2k
+    brew install modemu2k
+
+Homebrew does not load formulas from a third-party tap until you mark
+the tap as trusted. That is what the `brew trust` line does.
+
+Homebrew builds modemu2k from source. On macOS, it gives a telnet BBS to
+software that can only talk to a modem. Run `modemu2k -s` to print the
+pty, then point the emulator at it:
+
+* QEMU or UTM, with `-serial pty`
+* 86Box, with serial passthrough
+* VICE, with userport RS232
+
 ## Build
 
 ```sh

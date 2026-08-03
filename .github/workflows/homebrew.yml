@@ -1,0 +1,69 @@
+name: Homebrew formula
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+# Only when the formula or the build it drives changes. Nothing here checks the
+# library or the CLI -- c-cpp.yml does that -- so there is no reason to run it
+# for a change under src/ that leaves the build files alone. modemu2k.1.in is
+# listed because the test block asserts on the installed man page.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths: &shared_paths
+      - 'HomebrewFormula/**'
+      - 'meson.build'
+      - 'meson_options.txt'
+      - 'src/meson.build'
+      - 'modemu2k.1.in'
+      - '.github/workflows/homebrew.yml'
+
+  pull_request:
+    branches: [ master ]
+    paths: *shared_paths
+
+jobs:
+  formula:
+    name: audit and install
+    runs-on: macos-latest
+    env:
+      # A plain "brew install --dry-run" will otherwise auto-update Homebrew
+      # itself before doing anything.
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+    steps:
+    - uses: actions/checkout@v7
+
+    # Homebrew refuses a formula that is not in a tap: install by path and by
+    # URL are both rejected, and audit by path is disabled. Dropping the file
+    # into Library/Taps is enough to make it "local/test/modemu2k" -- no
+    # brew tap-new needed. HomebrewFormula/ mirrors the layout in this repo,
+    # which is itself a tap, so this checks the discovery rule we rely on.
+    - name: Put the formula in a tap
+      run: |
+        TAP="$(brew --repository)/Library/Taps/local/homebrew-test"
+        mkdir -p "$TAP/HomebrewFormula"
+        cp HomebrewFormula/modemu2k.rb "$TAP/HomebrewFormula/"
+        echo "TAP=$TAP" >> "$GITHUB_ENV"
+        brew info local/test/modemu2k
+
+    # brew style takes a path, but Homebrew's formula rules are keyed to a
+    # directory named exactly Formula, so under HomebrewFormula/ the generic Ruby
+    # cops apply. The formula is written to satisfy both sets.
+    - name: Style
+      run: brew style "$TAP/HomebrewFormula/modemu2k.rb"
+
+    # --online additionally checks that the url resolves; it is slower and can
+    # be flaky, so it is left for the manual check before a release.
+    - name: Audit
+      run: brew audit --strict local/test/modemu2k
+
+    # Builds the tarball the formula pins, which is what a user would get. Use
+    # "brew install --HEAD local/test/modemu2k" by hand to build master instead.
+    - name: Install from source
+      run: brew install --build-from-source local/test/modemu2k
+
+    - name: Test
+      run: brew test local/test/modemu2k
