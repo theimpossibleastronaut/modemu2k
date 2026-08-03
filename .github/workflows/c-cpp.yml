@@ -59,6 +59,45 @@ jobs:
     - name: Test
       run: meson test -C builddir --print-errorlogs
 
+  musl:
+    # Alpine, i.e. musl instead of glibc. The BSD jobs already cover
+    # "not glibc", but they cover it on a different OS, so a glibc-only
+    # call reads there as a BSD quirk. This job is Linux, so a failure
+    # here means exactly one thing: something reached for a glibc
+    # extension. -D_GNU_SOURCE is set project-wide (meson.build), and
+    # musl accepts that macro while providing far less behind it, which
+    # is what makes the mistake easy to make and invisible elsewhere.
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v7
+
+    # The build runs in `docker run` rather than a job-level
+    # `container:` because the runner injects its own glibc-built node
+    # for JavaScript actions, which cannot execute under musl —
+    # actions/checkout would fail before any of this got a chance.
+    #
+    # python3 is not optional here despite tests/meson.build treating it
+    # as such: without it those tests are never registered and the job
+    # goes green having run fewer tests than it looks like.
+    #
+    # No sanitizers, unlike the linux job — Alpine's libasan does not
+    # link (undefined __sanitizer::struct_sock_fprog_sz).
+    #
+    # -Dwerror=true rather than the workflow's CFLAGS: meson's own
+    # option is recorded in the build config and scoped to this
+    # project's targets. The other jobs still use CFLAGS; moving them
+    # over is a separate change.
+    - name: Build and test under musl
+      run: |
+        docker run --rm -v "$PWD:/src" -w /src alpine:latest sh -c '
+            set -e
+            apk add --no-cache build-base meson ninja flex pkgconf python3
+            meson setup builddir -Dwerror=true
+            ninja -v -C builddir
+            meson test -C builddir --print-errorlogs
+          '
+
   macos:
     runs-on: ${{ matrix.os }}
     strategy:
