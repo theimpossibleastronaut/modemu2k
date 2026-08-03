@@ -109,6 +109,18 @@ The App</h1>
 <li><a href="https://github.com/theimpossibleastronaut/modemu2k/issues">Issues and bug reporting</a></li>
 <li><a href="https://github.com/theimpossibleastronaut/modemu2k/releases/latest">Downloads</a></li>
 </ul>
+<h2 class="doxsection"><a class="anchor" id="install-with-homebrew"></a>
+Install with Homebrew</h2>
+<p>This repository is also a Homebrew tap, for macOS and Linuxbrew: </p><pre class="fragment">brew tap theimpossibleastronaut/modemu2k https://github.com/theimpossibleastronaut/modemu2k
+brew trust theimpossibleastronaut/modemu2k
+brew install modemu2k
+</pre><p>Homebrew does not load formulas from a third-party tap until you mark the tap as trusted. That is what the <span class="tt">brew trust</span> line does.</p>
+<p>Homebrew builds modemu2k from source. On macOS, it gives a telnet BBS to software that can only talk to a modem. Run <span class="tt">modemu2k -s</span> to print the pty, then point the emulator at it:</p>
+<ul>
+<li>QEMU or UTM, with <span class="tt">-serial pty</span></li>
+<li>86Box, with serial passthrough</li>
+<li>VICE, with userport RS232</li>
+</ul>
 <h2 class="doxsection"><a class="anchor" id="build"></a>
 Build</h2>
 <div class="fragment"><div class="line">meson setup builddir</div>
