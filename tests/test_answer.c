@@ -340,19 +340,18 @@ test_failed_dial_keeps_ring_cadence(void)
      Stepping is unconditional: the state is CMD both before the dial
      and after it fails, so it cannot be used as a loop guard -- doing
      that is what made an earlier version of this test run zero steps
-     and never dial at all. */
+     and never dial at all. NO CARRIER is what proves the dial really
+     happened; M2K_STATE_DIAL cannot be used for that, because whether
+     the state machine passes through it depends on the platform. On
+     Linux the refused connect() returns EINPROGRESS and DIAL is
+     entered; on FreeBSD it fails outright and m2k_step goes straight
+     to NO CARRIER (m2k_step.c, the r < 0 arm of m2k_sockDialStart). */
   push_line(ctx, "atd\"127.0.0.1 1\"");
-  int reached_dial = 0;
   for (int i = 0; i < 80; i++)
-  {
     step_once(ctx);
-    if (ctx->step.state == M2K_STATE_DIAL)
-      reached_dial = 1;
-  }
-  assert(reached_dial); /* the dial really happened */
+  assert(strstr(outbuf, "NO CARRIER") != NULL);
   assert(!m2k_is_online(ctx));
   assert(ctx->step.state == M2K_STATE_CMD);
-  assert(strstr(outbuf, "NO CARRIER") != NULL);
 
   /* The caller is still waiting, and the ~6 s cadence gate has not
      expired, so no further RING may be emitted. Zeroing S1 on going
