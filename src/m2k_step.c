@@ -1246,7 +1246,7 @@ m2k_describe_state(const m2k_t *ctx, char *buf, size_t cap)
                    "state=%s carrier=%s app_io=%s\n"
                    "tty: rfd=%d wfd=%d owned=%s bufR=%zu/%zu bufW=%zu/%zu\n"
                    "sock: fd=%d alive=%s bufR=%zu/%zu bufW=%zu/%zu listen_fd=%d\n"
-                   "line: answer_fd=%d rings(S1)=%u dial=%s dtr=%d rts=%d "
+                   "line: answer_fd=%d rings=%u s1=%u dial=%s dtr=%d rts=%d "
                    "verbose=0x%02x force=%s",
                    stepStateName(ctx->step.state),
                    ctx->sock.conn.alive ? "yes" : "no",
@@ -1266,7 +1266,8 @@ m2k_describe_state(const m2k_t *ctx, char *buf, size_t cap)
                    (size_t) (ctx->sock.bufW.ptr - ctx->sock.bufW.top),
                    sizeof ctx->sock.bufW.buf,
                    ctx->sock.listen_fd,
-                   ctx->answer.fd, (unsigned) ctx->atcmd.s[1],
+                   ctx->answer.fd, (unsigned) ctx->answer.rings,
+                   (unsigned) ctx->atcmd.s[1],
                    ctx->dial.result ? "in-progress" : "idle",
                    ctx->ctrl.dtr, ctx->ctrl.rts,
                    (unsigned) ctx->atcmd.pv,

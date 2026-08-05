@@ -522,14 +522,16 @@ M2K_API size_t      m2k_pending_to_dte(const m2k_t *ctx);
  * and bound the loop. Leaving ONLINE — a `+++` escape or a lost
  * carrier — discards whatever was still queued for the socket rather
  * than sending it, and going off-hook for a dial or an answer likewise
- * drops pending DTE input.
+ * drops pending DTE input. Returning to ONLINE with ATO discards both
+ * buffers again.
  *
  * @warning In app-I/O mode the DIAL and ANSWER states never consume
  * the DTE-side buffer: nothing reads it until ONLINE, which discards
  * it. Bytes accepted by m2k_write_from_app() during a dial or an
- * answer wait are therefore counted here but can never be stepped
- * down to zero, and will not be sent. A host that wants back-pressure
- * in those states must apply it itself; m2k_is_online() is the test.
+ * answer wait are counted here until the call connects, then dropped
+ * unsent: the count reaches zero because the data was discarded, not
+ * because it went out. A host that wants back-pressure in those
+ * states must apply it itself; m2k_is_online() is the test.
  *
  * Two things are deliberately not counted. An unfinished line in
  * telnet line mode is held until the DTE sends CR and is owed to
@@ -796,6 +798,9 @@ M2K_API int         m2k_has_carrier(const m2k_t *ctx);
  * counts the first ring, so a poller may never observe a nonzero
  * value. Higher S0 values answer on the Nth ring, leaving the count
  * observable at 1 .. S0-1 for a ring interval each.
+ *
+ * A call left ringing forever stops the count at 255 rather than
+ * wrapping, so a host may compare it against a threshold safely.
  *
  * @since 0.2.5
  * @param ctx Modem context.
