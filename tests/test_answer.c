@@ -34,6 +34,16 @@ step_once(m2k_t *ctx)
   test_step_drain(ctx, outbuf, sizeof outbuf, &outlen);
 }
 
+static int
+count_substr(const char *hay, const char *needle)
+{
+  int n = 0;
+  size_t len = strlen(needle);
+  for (const char *p = hay; (p = strstr(p, needle)) != NULL; p += len)
+    n++;
+  return n;
+}
+
 static void
 push_line(m2k_t *ctx, const char *line)
 {
@@ -324,16 +334,34 @@ test_failed_dial_keeps_ring_cadence(void)
     step_once(ctx);
   assert(m2k_get_ring_count(ctx) == 1);
   assert(ctx->atcmd.s[1] == 1);
+  assert(count_substr(outbuf, "RING") == 1);
 
-  /* Dial a port nothing is listening on, so it fails back to CMD. */
+  /* Dial a port nothing is listening on, so it fails back to CMD.
+     Stepping is unconditional: the state is CMD both before the dial
+     and after it fails, so it cannot be used as a loop guard -- doing
+     that is what made an earlier version of this test run zero steps
+     and never dial at all. */
   push_line(ctx, "atd\"127.0.0.1 1\"");
-  for (int i = 0; i < 50 && m2k_is_online(ctx) == 0
-                  && ctx->step.state != M2K_STATE_CMD; i++)
+  int reached_dial = 0;
+  for (int i = 0; i < 80; i++)
+  {
     step_once(ctx);
+    if (ctx->step.state == M2K_STATE_DIAL)
+      reached_dial = 1;
+  }
+  assert(reached_dial); /* the dial really happened */
   assert(!m2k_is_online(ctx));
+  assert(ctx->step.state == M2K_STATE_CMD);
+  assert(strstr(outbuf, "NO CARRIER") != NULL);
 
-  /* S1 survives, so the ~6 s cadence gate still holds and the caller
-     is not pushed back to the start of its auto-answer countdown. */
+  /* The caller is still waiting, and the ~6 s cadence gate has not
+     expired, so no further RING may be emitted. Zeroing S1 on going
+     off-hook breaks exactly this: cmdRingCheck() reads S1 == 0 as
+     "ring now, ignore the cadence", so a second RING appears at once
+     and the S0 auto-answer countdown restarts. Counting RINGs is the
+     assertion that separates the two -- S1 itself is back to 1 either
+     way, because that extra RING increments it again. */
+  assert(count_substr(outbuf, "RING") == 1);
   assert(ctx->atcmd.s[1] == 1);
 
   close(client);
