@@ -203,7 +203,11 @@ ttyReadLoop(m2k_t *ctx)
   }
   else
   {
-    while ((c = getTty1(ctx)) >= 0)
+    /* Same flow-control gate as the two branches above. Line mode can
+       emit two socket bytes per input byte (CR becomes CRLF), so a
+       full DTE buffer overshoots the headroom putSock1() keeps past
+       the soft limit, and the excess is dropped rather than sent. */
+    while (sockBufWReady(ctx) && (c = getTty1(ctx)) >= 0)
     {
       putTty1(ctx, c);
       if (c == CHAR_CR(ctx))

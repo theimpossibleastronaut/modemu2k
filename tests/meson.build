@@ -2,6 +2,7 @@ test_cases = [
     'answer',
     'app_io',
     'atcmd',
+    'backpressure',
     'comm_program',
     'connect',
     'describe',
@@ -22,6 +23,7 @@ test_cases = [
 helper_cases = [
     'answer',
     'app_io',
+    'backpressure',
     'connect',
     'describe',
     'dial_crlf',
