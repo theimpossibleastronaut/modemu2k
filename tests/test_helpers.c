@@ -1,5 +1,6 @@
 #include "test.h"
 #include "test_helpers.h"
+#include <errno.h>
 #include <signal.h>
 #include <poll.h>
 
@@ -77,20 +78,57 @@ start_loopback_listener(int family, int *port_out)
     return -1;
   }
 
+  /* Parent-death guard. The child watches the read end of this pipe
+     and exits when the parent's write end closes, whatever killed the
+     parent. stop_test_children() cannot cover that case: it runs from
+     atexit(), and a failed assert() calls abort(), which skips atexit
+     handlers. The orphan then holds the test's stdout open, so the run
+     reports as a 30s TIMEOUT instead of a failure -- and one survives
+     every direct run of a failing test binary. */
+  int guard[2];
+  if (pipe(guard) != 0)
+  {
+    close(fd);
+    return -1;
+  }
+
   pid_t pid = fork();
   if (pid == 0)
   {
+    close(guard[1]);
+    struct pollfd p[2];
+    p[0].fd = fd;
+    p[0].events = POLLIN;
+    p[1].fd = guard[0];
+    p[1].events = 0; /* POLLHUP is reported whether or not it is asked for */
     while (1)
     {
-      int conn = accept(fd, NULL, NULL);
-      if (conn >= 0)
-        close(conn);
+      if (poll(p, 2, -1) < 0)
+      {
+        if (errno == EINTR)
+          continue;
+        break;
+      }
+      if (p[1].revents)
+        break;
+      if (p[0].revents & POLLIN)
+      {
+        int conn = accept(fd, NULL, NULL);
+        if (conn >= 0)
+          close(conn);
+      }
     }
     _exit(0);
   }
   close(fd);
+  close(guard[0]);
   if (pid < 0)
+  {
+    close(guard[1]);
     return -1;
+  }
+  /* guard[1] stays open for the life of the process on purpose: its
+     closing is the signal the child waits for. */
 
   register_child(pid);
   *port_out = port;

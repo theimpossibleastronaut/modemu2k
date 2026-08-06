@@ -203,7 +203,11 @@ ttyReadLoop(m2k_t *ctx)
   }
   else
   {
-    while ((c = getTty1(ctx)) >= 0)
+    /* Same flow-control gate as the two branches above. Line mode can
+       emit two socket bytes per input byte (CR becomes CRLF), so a
+       full DTE buffer overshoots the headroom putSock1() keeps past
+       the soft limit, and the excess is dropped rather than sent. */
+    while (sockBufWReady(ctx) && (c = getTty1(ctx)) >= 0)
     {
       putTty1(ctx, c);
       if (c == CHAR_CR(ctx))
@@ -507,6 +511,22 @@ m2k_has_pending_output(const m2k_t *ctx)
   return ctx->tty.bufW.ptr > ctx->tty.bufW.top;
 }
 
+size_t
+m2k_pending_to_dte(const m2k_t *ctx)
+{
+  if (!ctx)
+    return 0;
+  return (size_t) (ctx->tty.bufW.ptr - ctx->tty.bufW.top);
+}
+
+size_t
+m2k_pending_to_line(const m2k_t *ctx)
+{
+  if (!ctx)
+    return 0;
+  return (size_t) (ctx->tty.bufR.end - ctx->tty.bufR.ptr) + (size_t) (ctx->sock.bufW.ptr - ctx->sock.bufW.top);
+}
+
 /* ── Steppable event-loop API ────────────────────────────────────────
    m2k_run() is a poll()-driven wrapper over m2k_get_pollfds + m2k_step.
 
@@ -547,6 +567,13 @@ stepEnterCmd(m2k_t *ctx)
   verboseOut(ctx, VERB_MISC, "state: %s -> CMD\r\n", stepStateName(ctx->step.state));
   cmdBufReset(&ctx->step.cmdbuf);
   ttyBufRReset(ctx);
+  /* Only ONLINE drains the socket write buffer, so anything left in it
+     is never going out: a lost carrier has no socket left to write to,
+     and ATO discards it on the way back anyway. Dropping it here keeps
+     m2k_pending_to_line() honest -- a host that watches it for a
+     transmit-empty bit would otherwise see a count that can never
+     reach zero, and hold the bit off forever. */
+  sockBufWReset(ctx);
   ctx->step.state = M2K_STATE_CMD;
 }
 
@@ -561,6 +588,11 @@ stepEnterOnline(m2k_t *ctx)
   escSeqReset(ctx);
   ctx->srl.state = SRL_NORM; /* don't inherit mid-IAC state from a
                                  previous connection */
+  /* Nothing is ringing once a call is up, whichever way we got here.
+     Every path lands here: an answered call, and a dial that connected
+     either asynchronously (via stepEnterDial) or immediately, which
+     skips stepEnterDial altogether. */
+  ctx->answer.rings = 0;
   if (!ctx->telOpt.sentReqs && !ctx->atcmd.pr)
     telOptSendReqs(ctx);
   putTtyCmdstat(ctx, CMDST_CONNECT);
@@ -573,6 +605,11 @@ stepEnterDial(m2k_t *ctx)
   verboseOut(ctx, VERB_MISC, "state: %s -> DIAL\r\n", stepStateName(ctx->step.state));
   /* Drop any pending TTY input — semantics of going off-hook. */
   ttyBufRReset(ctx);
+  /* Off-hook ends any inbound ring cycle, so a stale count cannot hold
+     RI asserted for the whole outbound call. S1 is left alone: it also
+     gates the RING cadence in cmdRingCheck(), and zeroing it would
+     restart the auto-answer countdown for a caller still waiting. */
+  ctx->answer.rings = 0;
   cmdBufReset(&ctx->step.cmdbuf);
   ctx->step.state = M2K_STATE_DIAL;
 }
@@ -1016,6 +1053,7 @@ cmdRingCheck(m2k_t *ctx)
   if (!answerPending(ctx))
   {
     ctx->atcmd.s[1] = 0; /* caller gone (or none): ring cycle over */
+    ctx->answer.rings = 0;
     return 0;
   }
   struct timeval now;
@@ -1025,6 +1063,8 @@ cmdRingCheck(m2k_t *ctx)
   putTtyCmdstat(ctx, CMDST_RING);
   if (ctx->atcmd.s[1] < 255)
     ctx->atcmd.s[1]++;
+  if (ctx->answer.rings < 255)
+    ctx->answer.rings++;
   ctx->answer.ring_next = now;
   ctx->answer.ring_next.tv_sec += RING_INTERVAL_SEC;
   if (ctx->atcmd.s[0] > 0 && ctx->atcmd.s[1] >= ctx->atcmd.s[0])
@@ -1210,7 +1250,7 @@ m2k_describe_state(const m2k_t *ctx, char *buf, size_t cap)
                    "state=%s carrier=%s app_io=%s\n"
                    "tty: rfd=%d wfd=%d owned=%s bufR=%zu/%zu bufW=%zu/%zu\n"
                    "sock: fd=%d alive=%s bufR=%zu/%zu bufW=%zu/%zu listen_fd=%d\n"
-                   "line: answer_fd=%d rings(S1)=%u dial=%s dtr=%d rts=%d "
+                   "line: answer_fd=%d rings=%u s1=%u dial=%s dtr=%d rts=%d "
                    "verbose=0x%02x force=%s",
                    stepStateName(ctx->step.state),
                    ctx->sock.conn.alive ? "yes" : "no",
@@ -1230,7 +1270,8 @@ m2k_describe_state(const m2k_t *ctx, char *buf, size_t cap)
                    (size_t) (ctx->sock.bufW.ptr - ctx->sock.bufW.top),
                    sizeof ctx->sock.bufW.buf,
                    ctx->sock.listen_fd,
-                   ctx->answer.fd, (unsigned) ctx->atcmd.s[1],
+                   ctx->answer.fd, (unsigned) ctx->answer.rings,
+                   (unsigned) ctx->atcmd.s[1],
                    ctx->dial.result ? "in-progress" : "idle",
                    ctx->ctrl.dtr, ctx->ctrl.rts,
                    (unsigned) ctx->atcmd.pv,
@@ -1252,4 +1293,12 @@ int
 m2k_has_carrier(const m2k_t *ctx)
 {
   return ctx->sock.conn.alive;
+}
+
+int
+m2k_get_ring_count(const m2k_t *ctx)
+{
+  if (!ctx)
+    return 0;
+  return ctx->answer.rings;
 }

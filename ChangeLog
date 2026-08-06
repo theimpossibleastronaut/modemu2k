@@ -1,5 +1,10 @@
 (in-progress)
 - modemu2k (v0.2.5)
+  * New accessors for hosts that emulate a UART: m2k_pending_to_dte,
+    m2k_pending_to_line and m2k_get_ring_count
+  * Fix data loss in telnet line mode when the peer stops reading: the
+    DTE side kept being drained past the socket buffer's limit, where
+    the excess was discarded instead of held back
 
 2026-07-18
 - modemu2k (v0.2.4)

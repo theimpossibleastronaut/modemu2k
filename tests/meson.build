@@ -2,6 +2,7 @@ test_cases = [
     'answer',
     'app_io',
     'atcmd',
+    'backpressure',
     'comm_program',
     'connect',
     'describe',
@@ -22,6 +23,7 @@ test_cases = [
 helper_cases = [
     'answer',
     'app_io',
+    'backpressure',
     'connect',
     'describe',
     'dial_crlf',
@@ -47,7 +49,8 @@ foreach case : test_cases
         # clean. Drop it once those functions are removed.
         c_args: ['-DUSE_AS_TEST_LIB', '-DM2K_SUPPRESS_DEPRECATED'],
         # whitebox: the installed shared lib hides internal symbols
-        # (src/libmodemu2k.map); these tests link them directly.
+        # (gnu_symbol_visibility in src/meson.build); these tests link
+        # them directly.
         dependencies: [dep_modemu2k_whitebox],
     )
     test(name, exe, suite: 'unit')
