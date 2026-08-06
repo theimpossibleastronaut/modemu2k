@@ -3,6 +3,7 @@
    public m2k_get_pollfds/m2k_step/m2k_run surface. Split out of
    m2k_api.c (issue #71). */
 
+#include <assert.h>
 #include <arpa/telnet.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -561,33 +562,53 @@ stepStateName(m2k_step_state s)
   return "?";
 }
 
+/* A +++ escape leaves the call up with bytes still queued for the peer,
+   and CMD keeps flushing them (cmdPollfds/cmdIter) so ATO can resume
+   with nothing lost. Once the socket is gone there is nothing left to
+   send them on, so they go: otherwise m2k_pending_to_line() reports a
+   count that can never reach zero and a host watching it for a
+   transmit-empty bit holds that bit off forever. Called on entry to CMD
+   and again each iteration, because ATH and ATZ close the connection
+   from inside CMD, without another state transition. */
+static void
+sockBufWDropIfDead(m2k_t *ctx)
+{
+  if (!ctx->sock.conn.alive && sockBufWHasData(ctx))
+    sockBufWReset(ctx);
+}
+
 static void
 stepEnterCmd(m2k_t *ctx)
 {
   verboseOut(ctx, VERB_MISC, "state: %s -> CMD\r\n", stepStateName(ctx->step.state));
   cmdBufReset(&ctx->step.cmdbuf);
   ttyBufRReset(ctx);
-  /* Only ONLINE drains the socket write buffer, so anything left in it
-     is never going out: a lost carrier has no socket left to write to,
-     and ATO discards it on the way back anyway. Dropping it here keeps
-     m2k_pending_to_line() honest -- a host that watches it for a
-     transmit-empty bit would otherwise see a count that can never
-     reach zero, and hold the bit off forever. */
-  sockBufWReset(ctx);
+  sockBufWDropIfDead(ctx);
   ctx->step.state = M2K_STATE_CMD;
 }
 
+/* @param resume ATO returning to a call that is still up, rather than a
+   new connection. The socket buffers carry that call's traffic, so they
+   survive: what the DTE queued before the escape is still owed to the
+   peer, and what the peer sent is still owed to the DTE. A fresh call
+   must not inherit either. */
 static void
-stepEnterOnline(m2k_t *ctx)
+stepEnterOnline(m2k_t *ctx, int resume)
 {
   verboseOut(ctx, VERB_MISC, "state: %s -> ONLINE\r\n", stepStateName(ctx->step.state));
-  sockBufRReset(ctx);
-  sockBufWReset(ctx);
+  if (!resume)
+  {
+    sockBufRReset(ctx);
+    sockBufWReset(ctx);
+    /* Don't inherit mid-IAC state from a previous connection. On a
+       resume it is this connection's own state, and sock.bufR may hold
+       bytes from the middle of a sequence, so clearing it would
+       misdecode them. */
+    ctx->srl.state = SRL_NORM;
+  }
   ttyBufRReset(ctx);
   lineBufReset(ctx);
   escSeqReset(ctx);
-  ctx->srl.state = SRL_NORM; /* don't inherit mid-IAC state from a
-                                 previous connection */
   /* Nothing is ringing once a call is up, whichever way we got here.
      Every path lands here: an answered call, and a dial that connected
      either asynchronously (via stepEnterDial) or immediately, which
@@ -657,10 +678,26 @@ findPollfd(struct pollfd *fds, size_t nfds, int fd)
   return NULL;
 }
 
+
 /* POLLHUP/POLLERR fire regardless of requested events — fold them into
    the read trigger so EOF closure flows through the read path. */
 #define READ_EV (POLLIN | POLLHUP | POLLERR)
 #define WRITE_EV (POLLOUT | POLLERR)
+
+/* Send whatever the poll reported the socket can take. Shared by CMD
+   and ONLINE, which both drain the socket write buffer while the call
+   is up. */
+static void
+sockFlushIfWritable(m2k_t *ctx, struct pollfd *fds, size_t nfds)
+{
+  st_sock *sock = &ctx->sock.conn;
+
+  if (!sock->alive)
+    return;
+  struct pollfd *p = findPollfd(fds, nfds, sock->fd);
+  if (p && (p->revents & WRITE_EV))
+    sockBufWrite(ctx, sock);
+}
 
 /* Seconds between RING emissions while a caller waits (US ring cadence). */
 #define RING_INTERVAL_SEC 6
@@ -717,6 +754,23 @@ cmdPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
     *timeout_ms = -1;
   }
 
+  /* Escaped out of a call that is still up, with bytes owed to the
+     peer. ONLINE is not running to drain them, so CMD does.
+
+     This entry and the answer-listener one below are mutually
+     exclusive -- one needs a live connection, the other needs no
+     connection -- which is what keeps CMD inside M2K_MAX_POLLFDS
+     alongside the two TTY fds. M2K_MAX_POLLFDS is public API and sizes
+     the caller's array, so a third watcher here overruns the host's
+     stack, not ours. The assert below is the backstop. */
+  if (ctx->sock.conn.alive && sockBufWHasData(ctx))
+  {
+    fds[n].fd = ctx->sock.conn.fd;
+    fds[n].events = POLLOUT;
+    fds[n].revents = 0;
+    n++;
+  }
+
   if (ctx->answer.fd != -1 && !ctx->sock.conn.alive)
   {
     if (ctx->atcmd.s[1] == 0)
@@ -736,6 +790,7 @@ cmdPollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)
         *timeout_ms = ms;
     }
   }
+  assert(n <= M2K_MAX_POLLFDS);
   *nfds_inout = n;
 }
 
@@ -763,10 +818,12 @@ cmdDispatchIfReady(m2k_t *ctx, struct m2k_cmdbuf *cmdBuf, st_sock *sock)
 }
 
 static Cmdstat
-cmdIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
+cmdIterBody(m2k_t *ctx, struct pollfd *fds, size_t nfds)
 {
   st_sock *sock = &ctx->sock.conn;
   struct m2k_cmdbuf *cmdBuf = &ctx->step.cmdbuf;
+
+  sockFlushIfWritable(ctx, fds, nfds);
 
   if (ctx->step.app_io)
   {
@@ -805,6 +862,17 @@ cmdIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
   if (ctx->step.quit_req && !ttyBufWHasData(ctx))
     return CMDST_PTY_CLOSED;
   return CMDST_OK;
+}
+
+static Cmdstat
+cmdIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
+{
+  /* The drop has to come after the body, not before it: ATH and ATZ
+     close the connection from inside the dispatch the body runs, and
+     they do it without a state transition to hang the cleanup on. */
+  Cmdstat s = cmdIterBody(ctx, fds, nfds);
+  sockBufWDropIfDead(ctx);
+  return s;
 }
 
 /* Dial mode: wait on the in-progress connect socket (POLLOUT) plus the
@@ -998,13 +1066,10 @@ onlineIter(m2k_t *ctx, struct pollfd *fds, size_t nfds)
     }
   }
 
-  p = findPollfd(fds, nfds, sock->fd);
-  if (p && (p->revents & WRITE_EV))
-  {
-    sockBufWrite(ctx, sock);
-    if (sock->alive && ttyBufRHasData(ctx) && sockBufWReady(ctx))
-      ttyReadLoop(ctx);
-  }
+  sockFlushIfWritable(ctx, fds, nfds);
+  /* A flush that cleared the stop flag makes room for more DTE input. */
+  if (sock->alive && ttyBufRHasData(ctx) && sockBufWReady(ctx))
+    ttyReadLoop(ctx);
 
   if (ctx->step.app_io)
   {
@@ -1110,7 +1175,7 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
   {
     if (cmdRingCheck(ctx))
     {
-      stepEnterOnline(ctx);
+      stepEnterOnline(ctx, 0);
       return M2K_OK;
     }
     Cmdstat s = cmdIter(ctx, fds, nfds);
@@ -1127,7 +1192,7 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
         int r = m2k_sockDialStart(ctx, &ctx->sock.conn);
         if (r == 1)
         {
-          stepEnterOnline(ctx);
+          stepEnterOnline(ctx, 0);
         }
         else if (r == 0)
         {
@@ -1145,7 +1210,7 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
         putTtyCmdstat(ctx, CMDST_NOCARRIER);
         return M2K_OK;
       }
-      stepEnterOnline(ctx);
+      stepEnterOnline(ctx, 1); /* same call: keep its queued traffic */
       return M2K_OK;
     case CMDST_ATA:
       if (ctx->sock.conn.alive || ctx->answer.fd == -1)
@@ -1156,7 +1221,7 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
       if (answerPending(ctx))
       {
         if (answerAccept(ctx) == 0)
-          stepEnterOnline(ctx);
+          stepEnterOnline(ctx, 0);
         else
           putTtyCmdstat(ctx, CMDST_NOCARRIER);
       }
@@ -1182,7 +1247,7 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
     int r = dialIter(ctx, fds, nfds);
     if (r == 1)
     {
-      stepEnterOnline(ctx);
+      stepEnterOnline(ctx, 0);
     }
     else if (r == -1)
     {
@@ -1196,7 +1261,7 @@ m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)
     int r = answerIter(ctx, fds, nfds);
     if (r == 1)
     {
-      stepEnterOnline(ctx);
+      stepEnterOnline(ctx, 0);
     }
     else if (r == -1)
     {

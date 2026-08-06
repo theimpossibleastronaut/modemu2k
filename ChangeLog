@@ -5,6 +5,9 @@
   * Fix data loss in telnet line mode when the peer stops reading: the
     DTE side kept being drained past the socket buffer's limit, where
     the excess was discarded instead of held back
+  * Bytes queued for the peer now survive a +++ escape: command mode
+    keeps sending them while the call is up, and ATO resumes with
+    them intact
 
 2026-07-18
 - modemu2k (v0.2.4)
