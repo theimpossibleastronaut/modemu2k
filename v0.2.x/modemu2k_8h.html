@@ -193,6 +193,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:ac0c99a7b4195f817956429d35ababf80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drain bytes from the modem that would normally have been written to the TTY.  <br /></td></tr>
 <tr class="memitem:aa7c407dbd9898fa4748dd29298dc78aa" id="r_aa7c407dbd9898fa4748dd29298dc78aa"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#aa7c407dbd9898fa4748dd29298dc78aa">m2k_has_pending_output</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
 <tr class="memdesc:aa7c407dbd9898fa4748dd29298dc78aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether the modem has TTY-bound bytes still buffered.  <br /></td></tr>
+<tr class="memitem:a9cbb1f5b3cfdc800b4993ad679046e0b" id="r_a9cbb1f5b3cfdc800b4993ad679046e0b"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> size_t&#160;</td><td class="memItemRight"><a class="el" href="#a9cbb1f5b3cfdc800b4993ad679046e0b">m2k_pending_to_dte</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a9cbb1f5b3cfdc800b4993ad679046e0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count bytes queued for the DTE that it has not taken yet.  <br /></td></tr>
+<tr class="memitem:a4cce044d055ecd004e3e42d39a15fcbe" id="r_a4cce044d055ecd004e3e42d39a15fcbe"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> size_t&#160;</td><td class="memItemRight"><a class="el" href="#a4cce044d055ecd004e3e42d39a15fcbe">m2k_pending_to_line</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a4cce044d055ecd004e3e42d39a15fcbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count bytes taken from the DTE that have not reached the line.  <br /></td></tr>
 <tr class="memitem:afce831817901d6602f4a430f8eaa728b" id="r_afce831817901d6602f4a430f8eaa728b"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#afce831817901d6602f4a430f8eaa728b">m2k_get_listen_fd</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
 <tr class="memdesc:afce831817901d6602f4a430f8eaa728b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expose the listening socket's fd (after m2k_setup_listen, before m2k_listen_accept).  <br /></td></tr>
 <tr class="memitem:a3f20db8d832b116f49dcbe9b8e41ce48" id="r_a3f20db8d832b116f49dcbe9b8e41ce48"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> <a class="el" href="#ab031108ada7cc3a5b255fe58041dce19">m2k_err_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3f20db8d832b116f49dcbe9b8e41ce48">m2k_listen_accept</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
@@ -215,6 +219,8 @@ Functions</h2></td></tr>
 <tr class="memdesc:a99a21024f7ea4bd1ffd8f290c14eb300"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a human-readable snapshot of the modem's state into <code class="param">buf</code>.  <br /></td></tr>
 <tr class="memitem:ac4737dc8597b34c735dd8b54a539aa90" id="r_ac4737dc8597b34c735dd8b54a539aa90"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#ac4737dc8597b34c735dd8b54a539aa90">m2k_has_carrier</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
 <tr class="memdesc:ac4737dc8597b34c735dd8b54a539aa90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether the modem has an active carrier (live TCP socket).  <br /></td></tr>
+<tr class="memitem:a0feb0cdb1c9ee0f1be9a388fb56d4b00" id="r_a0feb0cdb1c9ee0f1be9a388fb56d4b00"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int&#160;</td><td class="memItemRight"><a class="el" href="#a0feb0cdb1c9ee0f1be9a388fb56d4b00">m2k_get_ring_count</a> (const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx)</td></tr>
+<tr class="memdesc:a0feb0cdb1c9ee0f1be9a388fb56d4b00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report how many RINGs the current inbound call has produced.  <br /></td></tr>
 <tr class="memitem:ae9f1b813716263592afd965e37cc5703" id="r_ae9f1b813716263592afd965e37cc5703"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void&#160;</td><td class="memItemRight"><a class="el" href="#ae9f1b813716263592afd965e37cc5703">m2k_set_dtr</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, int on)</td></tr>
 <tr class="memdesc:ae9f1b813716263592afd965e37cc5703"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the host's DTR (Data Terminal Ready) signal state.  <br /></td></tr>
 <tr class="memitem:ac7c4ec21a02fba2794af4d2c51fb9603" id="r_ac7c4ec21a02fba2794af4d2c51fb9603"><td class="memItemLeft"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> void&#160;</td><td class="memItemRight"><a class="el" href="#ac7c4ec21a02fba2794af4d2c51fb9603">m2k_set_rts</a> (<a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *ctx, int on)</td></tr>
@@ -753,6 +759,38 @@ Typical usage</h2>
 
 </div>
 </div>
+<a id="a0feb0cdb1c9ee0f1be9a388fb56d4b00" name="a0feb0cdb1c9ee0f1be9a388fb56d4b00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0feb0cdb1c9ee0f1be9a388fb56d4b00">&#9670;&#160;</a></span>m2k_get_ring_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> int m2k_get_ring_count </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Report how many RINGs the current inbound call has produced. </p>
+<p>Counts up while a caller waits on the answer listener, and returns to zero once the call is answered, the caller gives up, or the modem goes off-hook to dial out.</p>
+<p>This is not the S1 register. S1 is writable by the DTE (<span class="tt">ATS1=n</span>) and also gates the RING cadence, so it reports neither what a host wants nor only what the line did. This count is maintained separately and moves only when modemu2k emits a RING.</p>
+<p>It is a ring <em>count</em>, not a Ring Indicator line. RI pulses once per ring; this value stays nonzero for the whole ring cycle, including the roughly six seconds of silence between one RING and the next, so a host cannot derive RI edges from it — count RING result codes for that.</p>
+<p>With <span class="tt">S0 == 1</span> the call is accepted in the same <a class="el" href="#aa65c8ca18be730d3ea347c59a969dd2a" title="Run one non-blocking iteration of the state machine.">m2k_step()</a> that counts the first ring, so a poller may never observe a nonzero value. Higher S0 values answer on the Nth ring, leaving the count observable at 1 .. S0-1 for a ring interval each.</p>
+<p>A call left ringing forever stops the count at 255 rather than wrapping, so a host may compare it against a threshold safely.</p>
+<dl class="section since"><dt>Since</dt><dd>0.2.5 </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>RING count for the call now ringing; 0 when none is. </dd></dl>
+
+</div>
+</div>
 <a id="aa8104482881dc715489f7830b882012b" name="aa8104482881dc715489f7830b882012b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa8104482881dc715489f7830b882012b">&#9670;&#160;</a></span>m2k_get_rts()</h2>
 
@@ -931,6 +969,69 @@ Typical usage</h2>
 
 </div>
 </div>
+<a id="a9cbb1f5b3cfdc800b4993ad679046e0b" name="a9cbb1f5b3cfdc800b4993ad679046e0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cbb1f5b3cfdc800b4993ad679046e0b">&#9670;&#160;</a></span>m2k_pending_to_dte()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> size_t m2k_pending_to_dte </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Count bytes queued for the DTE that it has not taken yet. </p>
+<p>The byte-count form of <a class="el" href="#aa7c407dbd9898fa4748dd29298dc78aa" title="Test whether the modem has TTY-bound bytes still buffered.">m2k_has_pending_output()</a>, for a host that emulates a UART and needs a number rather than a predicate. Unlike that predicate this works in any I/O mode: in app-I/O mode it counts what <a class="el" href="#ac0c99a7b4195f817956429d35ababf80" title="Drain bytes from the modem that would normally have been written to the TTY.">m2k_read_to_app()</a> would deliver, otherwise what is still to be written to the TTY.</p>
+<dl class="section warning"><dt>Warning</dt><dd>Nothing drains this once the state machine reaches M2K_STATE_DONE, so bound any drain loop rather than stepping until it reports zero.</dd></dl>
+<dl class="section since"><dt>Since</dt><dd>0.2.5 </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Bytes queued toward the DTE. </dd></dl>
+
+</div>
+</div>
+<a id="a4cce044d055ecd004e3e42d39a15fcbe" name="a4cce044d055ecd004e3e42d39a15fcbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cce044d055ecd004e3e42d39a15fcbe">&#9670;&#160;</a></span>m2k_pending_to_line()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#af827f32b40d60938ee7fa1c73cbb9d29">M2K_API</a> size_t m2k_pending_to_line </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a861720925b561f9640e9e606fb6d9ec6">m2k_t</a> *</td>          <td class="paramname"><span class="paramname"><em>ctx</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Count bytes taken from the DTE that have not reached the line. </p>
+<p>Covers both stages a byte passes through: the DTE-side read buffer it lands in, and the socket write buffer it moves to when online. Works in any I/O mode, whether the bytes arrived through <a class="el" href="#ab0800ff35135cf932b508c41bb42bed7" title="Push bytes into the modem as if they had been read from the TTY.">m2k_write_from_app()</a> or off a PTY.</p>
+<p>A host emulating a UART needs this for the transmit-empty bit, which must stay clear until the data has actually gone out. It also tells the host when it is safe to tear down: sending a byte takes a further <a class="el" href="#aa65c8ca18be730d3ea347c59a969dd2a" title="Run one non-blocking iteration of the state machine.">m2k_step()</a> after the one that accepted it, so a context freed immediately after a write loses those bytes.</p>
+<dl class="section warning"><dt>Warning</dt><dd>Zero means "nothing left to send", not "everything was
+delivered". Only the ONLINE state drains the socket write buffer, so to see data actually reach the peer, drain <b>while still online</b> and bound the loop. Leaving ONLINE — a <span class="tt">+++</span> escape or a lost carrier — discards whatever was still queued for the socket rather than sending it, and going off-hook for a dial or an answer likewise drops pending DTE input. Returning to ONLINE with ATO discards both buffers again.</dd>
+<dd>
+In app-I/O mode the DIAL and ANSWER states never consume the DTE-side buffer: nothing reads it until ONLINE, which discards it. Bytes accepted by <a class="el" href="#ab0800ff35135cf932b508c41bb42bed7" title="Push bytes into the modem as if they had been read from the TTY.">m2k_write_from_app()</a> during a dial or an answer wait are counted here until the call connects, then dropped unsent: the count reaches zero because the data was discarded, not because it went out. A host that wants back-pressure in those states must apply it itself; <a class="el" href="#a39b416897d3718145945526703b81c5b" title="Test whether the modem is currently in online mode.">m2k_is_online()</a> is the test.</dd></dl>
+<p>Two things are deliberately not counted. An unfinished line in telnet line mode is held until the DTE sends CR and is owed to nobody before that. Conversely, the socket-side figure is <em>wire</em> bytes after telnet encoding, so it can exceed what the DTE wrote: line mode appends LF to each CR, and binary mode doubles every 0xFF as IAC IAC. Do not subtract it from a byte count the host kept itself.</p>
+<dl class="section since"><dt>Since</dt><dd>0.2.5 </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Modem context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Bytes taken from the DTE but not yet sent. </dd></dl>
+
+</div>
+</div>
 <a id="ac0c99a7b4195f817956429d35ababf80" name="ac0c99a7b4195f817956429d35ababf80"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac0c99a7b4195f817956429d35ababf80">&#9670;&#160;</a></span>m2k_read_to_app()</h2>
 
@@ -1009,7 +1110,7 @@ per poll timeout."</p>
 <div class="line">  <a class="code hl_function" href="#aa65c8ca18be730d3ea347c59a969dd2a">m2k_step</a>(ctx, fds, nfds);</div>
 <div class="line">}</div>
 <div class="ttc" id="amodemu2k_8h_html_a73e7663351359d6537023e1c94d043c3"><div class="ttname"><a href="#a73e7663351359d6537023e1c94d043c3">m2k_run_done</a></div><div class="ttdeci">M2K_API int m2k_run_done(const m2k_t *ctx)</div><div class="ttdoc">Test whether the session has ended.</div></div>
-<div class="ttc" id="amodemu2k_8h_html_a83a9fe0262eb8987dd3873a32ca340db"><div class="ttname"><a href="#a83a9fe0262eb8987dd3873a32ca340db">M2K_MAX_POLLFDS</a></div><div class="ttdeci">#define M2K_MAX_POLLFDS</div><div class="ttdef"><b>Definition</b> modemu2k.h:614</div></div>
+<div class="ttc" id="amodemu2k_8h_html_a83a9fe0262eb8987dd3873a32ca340db"><div class="ttname"><a href="#a83a9fe0262eb8987dd3873a32ca340db">M2K_MAX_POLLFDS</a></div><div class="ttdeci">#define M2K_MAX_POLLFDS</div><div class="ttdef"><b>Definition</b> modemu2k.h:678</div></div>
 <div class="ttc" id="amodemu2k_8h_html_aa65c8ca18be730d3ea347c59a969dd2a"><div class="ttname"><a href="#aa65c8ca18be730d3ea347c59a969dd2a">m2k_step</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_step(m2k_t *ctx, struct pollfd *fds, size_t nfds)</div><div class="ttdoc">Run one non-blocking iteration of the state machine.</div></div>
 <div class="ttc" id="amodemu2k_8h_html_ac5b18ee79f93f53d862beae6a719a7f2"><div class="ttname"><a href="#ac5b18ee79f93f53d862beae6a719a7f2">m2k_get_pollfds</a></div><div class="ttdeci">M2K_API m2k_err_t m2k_get_pollfds(m2k_t *ctx, struct pollfd *fds, size_t *nfds_inout, int *timeout_ms)</div><div class="ttdoc">Describe the fds and timeout the caller&#39;s event loop should watch.</div></div>
 </div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
