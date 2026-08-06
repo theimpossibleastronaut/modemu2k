@@ -184,7 +184,7 @@ Controlled by `cmdarg.ttymode` (see `src/cmdarg.h`):
 
 ### No-argument behavior
 
-When run with no arguments (`argc == 1`), `main.c` calls `showUsage()` (from `cmdarg.c`, exposed via `cmdarg.h`) — printing the same output as `-h` / `--help` — and exits 0 instead of entering the interactive `CA_STDINOUT` AT command session. `CA_STDINOUT` is reachable **only via `-e`**; flags that describe *how* to run (currently just `-v` / `--verbose`) but don't request an operation are treated the same as no args. Mode flags (`-c/-d/-l/-s`) of course override this.
+When run with no arguments (`argc == 1`), `main.c` calls `showUsage()` (from `cmdarg.c`, exposed via `cmdarg.h`) — printing the same output as `-h` / `--help` — and exits 0 instead of entering the interactive `CA_STDINOUT` AT command session. `CA_STDINOUT` is reachable **only via `-e`**; flags that describe *how* to run (currently just `-v` / `--verbose`) but don't request an operation are treated the same as no args. Mode flags (`-c/-d/-l/-s`) override this.
 
 `showUsage()` emits ANSI color (cyan section labels, yellow flag names, green example commands) when stdout is a TTY and `NO_COLOR` is unset; piped/redirected output stays plain.
 
@@ -194,21 +194,17 @@ When consumed via `subproject('modemu2k')` from a parent meson project, the top-
 
 The header uses `add_project_arguments` (not `add_global_arguments`, which meson forbids in subprojects) for `-D_GNU_SOURCE`.
 
-### Embedding in hosts (dosemu2 branch pending; minicom open)
+### Embedding in hosts
 
 The library side is in place: `m2k_get_pollfds` / `m2k_step` / `m2k_run_done` for the event loop, plus `m2k_setup_app_io` + `m2k_write_from_app` / `m2k_read_to_app` for host-owned TTY I/O, plus the predicates / control lines listed above. ATD is non-blocking under `m2k_step` (M2K_STATE_DIAL), so dialing no longer freezes the host event loop.
 
-A dosemu2 integration branch exists (`~/src/dosemu2`, branch `modemu2k-plugin`; not yet merged upstream — PR https://github.com/dosemu2/dosemu2/pull/2925 pending as of July 2026): `src/plugin/modemu/modemu2k.c` replaces the vendored modemu, pumping the state machine from ioselect fd callbacks plus the serial engine tick. Config: `$_com1 = "vmodem"`, or `"vmodem <port>"` to also bind the inbound answer listener (RING/S0). Requires modemu2k >= 0.2.4 — it was this embedding that exposed the yylex symbol collision (see Symbol visibility above) and validated the step API end-to-end against a real DOS.
+A dosemu2 integration branch exists (`~/src/dosemu2`, branch `modemu2k-plugin`), proposed upstream as https://github.com/dosemu2/dosemu2/pull/2925 — check the PR for its current state rather than trusting a date here. `src/plugin/modemu/vmodem.c` replaces the vendored modemu, pumping the state machine from ioselect fd callbacks plus the serial engine tick. Config is `$_com1 = "vmodem"`; the driver dials out only, since the inbound answer listener was cut from the PR at the maintainer's request and is tracked in issue #82. Requires modemu2k >= 0.2.4 — it was this embedding that exposed the yylex symbol collision (see Symbol visibility above) and validated the step API end-to-end against a real DOS.
 
 minicom (`--modem-emu` flag or equivalent, swapping its `portfd` read/write/dial path for libmodemu2k calls) is still open; no API blockers are known.
 
-#### Testing against dosemu2 (m2kdev container)
+#### Testing against dosemu2
 
-`ghcr.io/theimpossibleastronaut/dosemu2-container:build-env` with the dosemu2 src bind-mounted read-only; copy the tree inside, `./autogen.sh && ./default-configure && make`, then run `python3 test/test_dosemu.py PPDOSGITTestCase.test_serial_vmodem_dial_data_exchange` (and `_ipv6`, `_answer_...`). Gotchas:
-
-- Run the test framework from the dosemu2 repo root — `topdir` resolves from cwd, so running inside `test/` fails on missing bindist files.
-- The container runs as root, so `test_serial_simple_read_echo` always fails there (`SER: "exec" ignored because of root privs`) — environment artifact, not a regression.
-- The framework's `-td` log flags don't enable `s_printf`'s serial class; plugin/library narration is invisible unless logged via `error()` or dosemu runs with `-D+s`.
+The container setup, the build commands and the traps that cost time live in the `dosemu2-testing` skill (`.claude/skills/dosemu2-testing/SKILL.md`), which is kept current as the procedure changes. Read it rather than a copy here; an earlier copy in this file had drifted into recommending a read-only mount and misdiagnosing a test failure.
 
 ### Testing
 
@@ -230,7 +226,7 @@ For an HTML report:
 gcovr --root . --filter src/ --filter modemu2k.h --html-details _build-cov/coverage.html
 ```
 
-`gcovr` is the recommended frontend; raw `gcov` also works but emits per-file `.gcov` files rather than a roll-up. On Debian/Ubuntu install `gcovr`; on Arch it's in the `extra` repo. Fall back to `pip install --user gcovr` if your distro lags.
+`gcovr` is the recommended frontend; raw `gcov` also works but emits per-file `.gcov` files rather than a roll-up. On Debian/Ubuntu install `gcovr`; on Arch it's in the `extra` repo. Ask for it to be installed rather than reaching for `pip` — the global rule on installing software covers user-level installs too.
 
 To target a specific weakness, filter to one file:
 
