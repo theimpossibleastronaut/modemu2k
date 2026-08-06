@@ -5,6 +5,8 @@
   * Fix data loss in telnet line mode when the peer stops reading: the
     DTE side kept being drained past the socket buffer's limit, where
     the excess was discarded instead of held back
+  * Report the bound port when -a or -l is given 0, and add
+    m2k_get_answer_port() / m2k_get_listen_port() so a host can read it
 
 2026-07-18
 - modemu2k (v0.2.4)

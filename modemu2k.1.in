@@ -62,6 +62,11 @@ bound after hangup, so the next caller can be answered without a
 restart. Can be combined with any of the -c, -d, -e, -l, and -s
 options. Dual-stack IPv4/IPv6.
 .IP
+Use 0 to let the system choose any free port.
+.B Modemu2k
+prints the number it bound on startup, so you can run several
+instances without giving each one a port.
+.IP
 ATA is not accepted inside an -e init string; to answer without
 typing, enable auto-answer instead (for example -e "ATS0=1").
 When combined with -l, the answer port is bound only after the
@@ -110,6 +115,10 @@ and use the accepted socket as the TTY. The connecting peer drives
 .B modemu2k
 with AT commands. Intended primarily for use as a virtual modem
 backend for emulators such as dosemu2. Dual-stack IPv4/IPv6.
+.IP
+Use 0 to let the system choose any free port.
+.B Modemu2k
+prints the number it bound on startup.
 .\" ===== -h =====
 .TP
 .B -h

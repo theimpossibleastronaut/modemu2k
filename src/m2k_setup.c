@@ -147,6 +147,12 @@ m2k_get_answer_fd(const m2k_t *ctx)
   return ctx->answer.fd;
 }
 
+int
+m2k_get_answer_port(const m2k_t *ctx)
+{
+  return m2k_sockPort(ctx->answer.fd);
+}
+
 /* ── App-IO (embed) mode ──────────────────────────────────────────────
    m2k_write_from_app appends to ttyBufR (replacing read() from tty.rfd);
    m2k_read_to_app drains ttyBufW (replacing write() to tty.wfd). The
@@ -165,4 +171,10 @@ int
 m2k_get_listen_fd(const m2k_t *ctx)
 {
   return ctx->sock.listen_fd;
+}
+
+int
+m2k_get_listen_port(const m2k_t *ctx)
+{
+  return m2k_sockPort(ctx->sock.listen_fd);
 }

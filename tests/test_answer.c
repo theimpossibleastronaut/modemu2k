@@ -11,7 +11,12 @@
 #include <time.h>
 #include <arpa/telnet.h>
 
-/* Discover the ephemeral port of the bound answer listener. */
+/* Discover the ephemeral port of the bound answer listener.
+
+   This duplicates what m2k_get_answer_port() does, on purpose: it is
+   the independent oracle test_get_answer_port() checks the accessor
+   against. Routing it through the accessor would make that test
+   compare the function with itself. */
 static int
 answer_port(m2k_t *ctx)
 {
@@ -80,6 +85,71 @@ test_setup_answer_binds(void)
   int fd = m2k_get_answer_fd(ctx);
   assert(m2k_setup_answer(ctx, "0") != M2K_OK);
   assert(m2k_get_answer_fd(ctx) == fd);
+  m2k_free(ctx);
+}
+
+/* The accessor must agree with getsockname() on the listener fd, and
+   keep agreeing after a call is answered. */
+static void
+test_get_answer_port(void)
+{
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  assert(m2k_get_answer_port(ctx) == -1); /* nothing bound yet */
+
+  assert(m2k_setup_answer(ctx, "0") == M2K_OK);
+  int port = m2k_get_answer_port(ctx);
+  assert(port > 0);
+  assert(port == test_local_port(m2k_get_answer_fd(ctx)));
+
+  /* The listener outlives an answered call, so the port has to keep
+     reporting after one -- a host showing it in a status line must not
+     see it blank out when a caller connects. */
+  int client = test_connect_client(port);
+  assert(m2k_atcmd(ctx, "ATS0=1") == M2K_OK);
+  for (int i = 0; i < 50 && !m2k_is_online(ctx); i++)
+    step_once(ctx);
+  assert(m2k_is_online(ctx));
+  assert(m2k_get_answer_port(ctx) == port);
+
+  close(client);
+  m2k_free(ctx);
+}
+
+static char listen_log[1024];
+static size_t listen_log_len;
+
+static void
+listen_log_cb(const char *msg, void *userdata)
+{
+  (void) userdata;
+  size_t n = strlen(msg);
+  if (listen_log_len + n >= sizeof listen_log)
+    return;
+  memcpy(listen_log + listen_log_len, msg, n);
+  listen_log_len += n;
+  listen_log[listen_log_len] = '\0';
+}
+
+/* The CLI side of the same contract: the message names the bound port,
+   never the requested one. */
+static void
+test_listen_narration_reports_bound_port(void)
+{
+  listen_log_len = 0;
+  listen_log[0] = '\0';
+
+  m2k_t *ctx = m2k_new();
+  assert(ctx);
+  m2k_set_log_fn(ctx, listen_log_cb, NULL);
+  assert(m2k_setup_answer(ctx, "0") == M2K_OK);
+
+  char expect[64];
+  snprintf(expect, sizeof expect, "Listening on port %d...",
+           m2k_get_answer_port(ctx));
+  assert(strstr(listen_log, expect) != NULL);
+  assert(strstr(listen_log, "Listening on port 0...") == NULL);
+
   m2k_free(ctx);
 }
 
@@ -606,6 +676,8 @@ int
 main(void)
 {
   test_setup_answer_binds();
+  test_get_answer_port();
+  test_listen_narration_reports_bound_port();
   test_ata_lexes();
   test_ata_no_listener_errors();
   test_ata_accepts_pending_caller();
