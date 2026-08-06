@@ -136,17 +136,22 @@ Read these when the question goes past the summary above:
 Prefer these to recollection or web search. They are contemporaneous and
 specific:
 
-- `~/Documents/modem/Hayes_100498D.pdf` — **the normative one.** Conexant *Commands
-  Reference Manual* (2001), 166 pages, a chipset vendor's reference for the
-  extended Hayes set: every command with its defined values and defaults, the
-  full result-code table against `ATX` levels, and every S-register. Extract
-  with `pdftotext -layout` and grep rather than reading it whole. Prefer this to
-  any client's documentation for what a modem is *supposed* to do
-- the HTML reference saved beside it in `~/Documents/modem/` — a second,
-  independent Hayes command list. Useful as a cross-check: it agrees with the
+- `~/Documents/modem/Hayes_100498D.pdf` — **the normative one.** Conexant
+  *Commands Reference Manual*, Doc. 100498D (2001), 166 pages: every command
+  with its defined values and defaults, the full result-code table against
+  `ATX` levels, and every S-register. Written by the chipset vendor and
+  redistributed by Zoom Telephonics with their modems, which is what makes it
+  authoritative — this is the document the hardware was built to. Extract with
+  `pdftotext -layout` and grep rather than reading it whole. Prefer it to any
+  client's documentation for what a modem is *supposed* to do.
+  Originally <https://web.archive.org/web/20151028101531/http://www.zoomtel.com/documentation/dial_up/100498D.pdf>
+- the HTML page saved beside it in `~/Documents/modem/` — ActiveXperts' Hayes
+  command list, a vendor's compilation rather than a specification, so treat it
+  as corroboration and not as an authority on its own. It agrees with the
   Conexant manual on E, Q, V and the X levels, and it documents `ATW`, which
   selects whether `CONNECT` reports the DTE or the DCE speed — the question
-  behind "what rate should a virtual modem claim"
+  behind "what rate should a virtual modem claim".
+  Originally <https://web.archive.org/web/20120817070530/http://www.activexperts.com/mobile-messaging-component/at/hayes/>
 - `~/Downloads/spitfire/SPITFIRE.DOC` — a 1994 DOS BBS manual. Useful for what
   one real client *expects and does*, not for what is correct: required
   registers, its own result-code interpretation, per-modem init strings, and the

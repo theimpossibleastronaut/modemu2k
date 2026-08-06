@@ -3,9 +3,10 @@
 Normative column from the Conexant *Commands Reference Manual*
 (`~/Documents/modem/Hayes_100498D.pdf`, section 3) — a chipset vendor's reference for
 the extended Hayes set, and the closest thing to an authority available here.
-Cross-checked against the HTML reference beside it in `~/Documents/modem/`; the
-two agree on E, Q, V and the X levels, including that X0 enables exactly result
-codes 0-4.
+Cross-checked against the ActiveXperts command list saved beside it in
+`~/Documents/modem/` — a vendor compilation rather than a spec, so corroboration
+only. The two agree on E, Q, V and the X levels, including that X0 enables
+exactly result codes 0-4.
 
 Where vendors differ they differ in the margins — `ATO` is one, described as
 retraining control in one source and return-to-online in the other — so treat a
@@ -101,7 +102,7 @@ the honest response given it always sends text.
 
 ## ATW decides *which* speed CONNECT reports
 
-The HTML reference in `~/Documents/modem/` adds a
+The ActiveXperts list in `~/Documents/modem/` adds a
 command the Conexant extract did not surface, and it matters for any decision
 about what rate to claim:
 
