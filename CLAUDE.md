@@ -168,7 +168,7 @@ Consequences to keep in mind:
 
 - **New public API must carry `M2K_API`** on its declaration in `modemu2k.h`, or it won't be exported (naming is irrelevant now — the annotation is what counts).
 - The white-box tests can't link the shared lib anymore; they link `lib_modemu2k_whitebox`, a static archive of the same objects (`extract_all_objects` — note it does **not** pull in `cmdlex_lib`'s objects, which is why the whitebox dep also carries `link_with: cmdlex_lib`). Static linking ignores visibility, so the tests still see the hidden internals.
-- Generic-named internals (`cmdLex`, `sockInit`, `onlineMode`, `telcmds`, `telopts`) are now safe from host collisions — relevant for the minicom integration too, since minicom links other libraries.
+- Generic-named internals (`cmdLex`, `sockInit`, `onlineMode`, `telcmds`, `telopts`) are now safe from host collisions — relevant for any host that links other libraries.
 - dosemu2's modemu plugin requires `modemu2k >= 0.2.4` in its `configure.ac` for exactly this reason.
 
 ### PTY / TTY modes
@@ -199,8 +199,6 @@ The header uses `add_project_arguments` (not `add_global_arguments`, which meson
 The library side is in place: `m2k_get_pollfds` / `m2k_step` / `m2k_run_done` for the event loop, plus `m2k_setup_app_io` + `m2k_write_from_app` / `m2k_read_to_app` for host-owned TTY I/O, plus the predicates / control lines listed above. ATD is non-blocking under `m2k_step` (M2K_STATE_DIAL), so dialing no longer freezes the host event loop.
 
 A dosemu2 integration branch exists (`~/src/dosemu2`, branch `modemu2k-plugin`), proposed upstream as https://github.com/dosemu2/dosemu2/pull/2925 — check the PR for its current state rather than trusting a date here. `src/plugin/modemu/vmodem.c` replaces the vendored modemu, pumping the state machine from ioselect fd callbacks plus the serial engine tick. Config is `$_com1 = "vmodem"`; the driver dials out only, since the inbound answer listener was cut from the PR at the maintainer's request and is tracked in issue #82. Requires modemu2k >= 0.2.4 — it was this embedding that exposed the yylex symbol collision (see Symbol visibility above) and validated the step API end-to-end against a real DOS.
-
-minicom (`--modem-emu` flag or equivalent, swapping its `portfd` read/write/dial path for libmodemu2k calls) is still open; no API blockers are known.
 
 #### Testing against dosemu2
 
