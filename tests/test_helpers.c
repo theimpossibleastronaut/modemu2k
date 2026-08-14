@@ -211,6 +211,36 @@ test_connect_client(int port)
 }
 
 int
+test_connect_slow_peer(int port)
+{
+  int fd = socket(AF_INET, SOCK_STREAM, 0);
+  assert(fd >= 0);
+  /* SO_RCVBUF has to be set before connect() for the advertised window
+     to shrink. */
+  int sz = 2048;
+  setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &sz, sizeof sz);
+
+  struct sockaddr_in addr = {0};
+  addr.sin_family = AF_INET;
+  inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
+  addr.sin_port = htons((unsigned short) port);
+  assert(connect(fd, (struct sockaddr *) &addr, sizeof addr) == 0);
+  return fd;
+}
+
+void
+test_step_nowait(m2k_t *ctx)
+{
+  struct pollfd fds[M2K_MAX_POLLFDS];
+  size_t nfds = M2K_MAX_POLLFDS;
+  int timeout_ms;
+  assert(m2k_get_pollfds(ctx, fds, &nfds, &timeout_ms) == M2K_OK);
+  if (nfds > 0)
+    poll(fds, nfds, 0);
+  assert(m2k_step(ctx, fds, nfds) == M2K_OK);
+}
+
+int
 test_local_port(int fd)
 {
   struct sockaddr_storage ss;

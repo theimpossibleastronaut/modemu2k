@@ -30,5 +30,18 @@ void test_step_drain(m2k_t *ctx, char *buf, size_t cap, size_t *len);
 /* Connect a blocking IPv4 client to 127.0.0.1:port. Asserts on failure. */
 int test_connect_client(int port);
 
+/* Like test_connect_client, but the peer has a small receive buffer and
+   the caller is expected not to read from it, so the connection
+   saturates after a few KB instead of the hundreds the kernel would
+   otherwise absorb. Lets a test put the socket write buffer under
+   back-pressure in bounded time. Asserts on failure. */
+int test_connect_slow_peer(int port);
+
+/* One m2k_step with a non-blocking poll. test_step waits up to 100 ms,
+   which dominates any loop that runs while nothing is readable -- a
+   stalled socket, say. Use this where the loop drives the state itself
+   rather than waiting on an event. */
+void test_step_nowait(m2k_t *ctx);
+
 /* Kernel-assigned local port of a bound socket fd (v4 or v6). */
 int test_local_port(int fd);
