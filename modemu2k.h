@@ -383,8 +383,12 @@ M2K_API m2k_err_t   m2k_setup_dev(m2k_t *ctx, const char *dev);
  * Suitable for use as a virtual-modem backend for programs that connect
  * to modemu2k over TCP, such as dosemu2.
  *
+ * Passing "0" binds any free port, so a host needs no port setting of
+ * its own. m2k_get_listen_port() reports which port that was.
+ *
  * @param ctx  Modem context.
- * @param port Service name or decimal port number to listen on.
+ * @param port Service name or decimal port number to listen on, or "0"
+ *             for any free port.
  * @return M2K_OK on success, M2K_ERR_SOCKET on failure. All bind /
  *         listen / getaddrinfo failures (port in use, address family
  *         unavailable, etc.) funnel through M2K_ERR_SOCKET; pair with
@@ -563,6 +567,25 @@ M2K_API size_t      m2k_pending_to_line(const m2k_t *ctx);
 M2K_API int         m2k_get_listen_fd(const m2k_t *ctx);
 
 /**
+ * @brief Report the port the TTY-side listener is bound to.
+ *
+ * A host that passed "0" to m2k_setup_listen() gets a free port of the
+ * system's choosing. This is how it learns which one, so it can tell
+ * the user where to connect.
+ *
+ * m2k_listen_accept() consumes the listener, so this reports -1 once a
+ * connection has been accepted. The answer-side m2k_get_answer_port()
+ * differs there: that listener persists across calls.
+ *
+ * @param ctx Modem context.
+ * @return The bound port in host byte order, or -1 when no listener is
+ *         bound or the socket cannot be queried.
+ *
+ * @since 0.2.5
+ */
+M2K_API int         m2k_get_listen_port(const m2k_t *ctx);
+
+/**
  * @brief Accept a single incoming connection on the listening socket
  *        opened by m2k_setup_listen() and adopt it as the TTY.
  *
@@ -592,8 +615,12 @@ M2K_API m2k_err_t   m2k_listen_accept(m2k_t *ctx);
  * Not to be confused with m2k_setup_listen(), which accepts a TCP
  * connection to use as the TTY (DTE side).
  *
+ * Passing "0" binds any free port, so a host needs no port setting of
+ * its own. m2k_get_answer_port() reports which port that was.
+ *
  * @param ctx  Modem context.
- * @param port Service name or decimal port number to listen on.
+ * @param port Service name or decimal port number to listen on, or "0"
+ *             for any free port.
  * @return M2K_OK on success; M2K_ERR_SOCKET if a listener is already
  *         bound or on bind / listen / getaddrinfo failure.
  *
@@ -615,6 +642,24 @@ M2K_API m2k_err_t   m2k_setup_answer(m2k_t *ctx, const char *port);
  * @since 0.2.3
  */
 M2K_API int         m2k_get_answer_fd(const m2k_t *ctx);
+
+/**
+ * @brief Report the port the answer listener is bound to.
+ *
+ * A host that passed "0" to m2k_setup_answer() gets a free port of the
+ * system's choosing. This is how it learns which one, so it can tell
+ * the user where to call in.
+ *
+ * The listener survives an answered call, so this keeps reporting the
+ * same port for the life of the binding. It is unaffected by ATZ.
+ *
+ * @param ctx Modem context.
+ * @return The bound port in host byte order, or -1 when no listener is
+ *         bound or the socket cannot be queried.
+ *
+ * @since 0.2.5
+ */
+M2K_API int         m2k_get_answer_port(const m2k_t *ctx);
 
 /**
  * @brief Run the modem command/online loop until the PTY closes.

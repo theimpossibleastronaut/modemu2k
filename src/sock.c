@@ -137,8 +137,29 @@ m2k_sockListen(m2k_t *ctx, const char *port)
     return -1;
   }
 
-  m2k_log(ctx, M2K_LOG_INFO, "Listening on port %s...\n", port);
+  /* Echo the bound port: "0" means "any free port", so the requested
+     string tells the user nothing. */
+  int bound = m2k_sockPort(server_fd);
+  if (bound == -1)
+    m2k_log(ctx, M2K_LOG_INFO, "Listening on port %s...\n", port);
+  else
+    m2k_log(ctx, M2K_LOG_INFO, "Listening on port %d...\n", bound);
   return server_fd;
+}
+
+int
+m2k_sockPort(int fd)
+{
+  struct sockaddr_storage ss;
+  socklen_t slen = sizeof ss;
+
+  if (fd < 0 || getsockname(fd, (struct sockaddr *) &ss, &slen) != 0)
+    return -1;
+  if (ss.ss_family == AF_INET6)
+    return ntohs(((struct sockaddr_in6 *) &ss)->sin6_port);
+  if (ss.ss_family == AF_INET)
+    return ntohs(((struct sockaddr_in *) &ss)->sin_port);
+  return -1;
 }
 
 int

@@ -7,7 +7,7 @@
 #include <modemu2k.h>
 
 //! [setup_answer]
-/* Bind TCP port 2030 as the "phone line": while a caller waits, command
+/* Bind a TCP port as the "phone line": while a caller waits, command
    mode emits RING; ATA (or ATS0=1 auto-answer) accepts the call. Pair
    with -a/--answer on the CLI for the same flow. */
 static int run_answerer(m2k_t *ctx, const char *port)
@@ -17,6 +17,8 @@ static int run_answerer(m2k_t *ctx, const char *port)
     fprintf(stderr, "setup_answer: %s\n", m2k_strerror(err));
     return 1;
   }
+  /* Pass "0" as the port to have the system choose a free one. */
+  printf("dial in on port %d\n", m2k_get_answer_port(ctx));
   m2k_run(ctx);   /* callers now RING; answer with ATA or S0 */
   return 0;
 }
